@@ -279,6 +279,28 @@ export interface Lesson {
 /** Global project theme ID (button and interactive styles). See src/theme. */
 export type ThemeId = 'rose' | 'ocean' | 'forest' | 'sunset'
 
+/** What marks the course complete in the LMS. */
+export type CompletionRule =
+  /** Complete once every lesson is viewed (and restricted gates passed). */
+  | 'view'
+  /** Additionally requires every quiz to be answered. */
+  | 'quiz'
+
+/** Course-level SCORM completion and scoring settings. */
+export interface CourseSettings {
+  completion: CompletionRule
+  /** Report a pass/fail result against `passingScore`. Off = completion only. */
+  scored: boolean
+  /** Overall passing score as a percentage (0–100); used when `scored`. */
+  passingScore: number
+}
+
+export const DEFAULT_COURSE_SETTINGS: CourseSettings = {
+  completion: 'quiz',
+  scored: true,
+  passingScore: 80,
+}
+
 export interface Course {
   id: string
   title: string
@@ -286,5 +308,7 @@ export interface Course {
   coverImage?: string
   /** Global project theme. Affects the accent, buttons, and interactive blocks. */
   theme: ThemeId
+  /** Completion/scoring settings. Optional in legacy projects (see migration). */
+  settings?: CourseSettings
   lessons: Lesson[]
 }

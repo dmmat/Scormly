@@ -3,10 +3,12 @@ import type {
   Block,
   BlockType,
   Course,
+  CourseSettings,
   Lesson,
   LessonStatus,
   ThemeId,
 } from '../types/course'
+import { DEFAULT_COURSE_SETTINGS } from '../types/course'
 import { createBlock } from '../blocks/registry'
 import { DEFAULT_THEME, THEMES } from '../theme/themes'
 import { uid } from '../lib/id'
@@ -19,6 +21,7 @@ const initialCourse: Course = {
   title: 'Новий курс',
   description: 'Демонстраційний курс Scormly',
   theme: DEFAULT_THEME,
+  settings: { ...DEFAULT_COURSE_SETTINGS },
   lessons: [
     { id: 'lesson-1', title: 'Вступ', status: 'draft', blocks: [] },
     { id: 'lesson-2', title: 'Основні поняття', status: 'draft', blocks: [] },
@@ -64,6 +67,7 @@ export interface CourseState {
     patch: Partial<Pick<Course, 'title' | 'description' | 'coverImage'>>,
   ) => void
   setTheme: (theme: ThemeId) => void
+  updateSettings: (patch: Partial<CourseSettings>) => void
   loadCourse: (course: Course) => void
 
   // ── Project ──
@@ -109,11 +113,12 @@ function findLesson(course: Course, lessonId: string): Lesson | undefined {
   return course.lessons.find((l) => l.id === lessonId)
 }
 
-// Coerce a loaded course to current invariants (e.g. migrate a renamed/legacy
-// theme id to the default so the UI never reads an unknown theme).
+// Coerce a loaded course to current invariants: migrate a renamed/legacy theme
+// id to the default, and backfill completion/scoring settings for older projects.
 function migrateCourse(course: Course): Course {
-  if (THEMES[course.theme]) return course
-  return { ...course, theme: DEFAULT_THEME }
+  const theme = THEMES[course.theme] ? course.theme : DEFAULT_THEME
+  const settings = { ...DEFAULT_COURSE_SETTINGS, ...course.settings }
+  return { ...course, theme, settings }
 }
 
 export const useCourseStore = create<CourseState>((set, get) => {
@@ -171,6 +176,11 @@ export const useCourseStore = create<CourseState>((set, get) => {
     setTheme: (theme) =>
       mutate((c) => {
         c.theme = theme
+      }),
+
+    updateSettings: (patch) =>
+      mutate((c) => {
+        c.settings = { ...DEFAULT_COURSE_SETTINGS, ...c.settings, ...patch }
       }),
 
     loadCourse: (input) => {

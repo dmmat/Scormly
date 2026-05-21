@@ -30,7 +30,15 @@
 
   var API = null, v2004 = false, ready = false;
 
-  function set(key, value) { if (ready && API) API[v2004 ? 'SetValue' : 'LMSSetValue'](key, String(value)); }
+  function lastError() { return API ? API[v2004 ? 'GetLastError' : 'LMSGetLastError']() : '0'; }
+  function errorString(code) { return API ? API[v2004 ? 'GetErrorString' : 'LMSGetErrorString'](code) : ''; }
+
+  function set(key, value) {
+    if (!(ready && API)) return;
+    API[v2004 ? 'SetValue' : 'LMSSetValue'](key, String(value));
+    var code = lastError();
+    if (code && code !== '0') console.warn('[SCORM] SetValue(' + key + ') failed: ' + code + ' ' + errorString(code));
+  }
   function get(key) { return ready && API ? API[v2004 ? 'GetValue' : 'LMSGetValue'](key) : ''; }
 
   // 1.2 wants CMITimespan HHHH:MM:SS.SS; 2004 wants an ISO-8601 duration.
@@ -81,6 +89,13 @@
     getSuspend: function () { return get('cmi.suspend_data'); },
     setSuspend: function (str) { set('cmi.suspend_data', str); },
     setLocation: function (str) { set(v2004 ? 'cmi.location' : 'cmi.core.lesson_location', str); },
+    // Tell the LMS to preserve suspend_data/location for the next launch.
+    // '' (normal) on completion, 'suspend' while the attempt is still in progress.
+    setExit: function (mode) { set(v2004 ? 'cmi.exit' : 'cmi.core.exit', mode); },
+    // 2004 only: fraction 0..1 for the LMS progress bar.
+    setProgress: function (fraction) {
+      if (v2004) set('cmi.progress_measure', Math.max(0, Math.min(1, fraction)).toFixed(4));
+    },
     setSessionTime: function (seconds) {
       set(v2004 ? 'cmi.session_time' : 'cmi.core.session_time', formatTime(seconds));
     },

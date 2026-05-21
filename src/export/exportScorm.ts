@@ -1,8 +1,19 @@
 import JSZip from 'jszip'
 import { useCourseStore } from '../store/courseStore'
 import { buildManifest, type ScormVersion } from './scormManifest'
+import type { Course } from '../types/course'
 
 const PLAYER_FILES = ['index.html', 'player.css', 'player.js', 'scorm.js']
+
+// Passing score declared in the manifest so the LMS knows the mastery
+// threshold. Comes from project settings; undefined when the course is not
+// scored or has no quizzes (completion-only course).
+function overallPassingScore(course: Course): number | undefined {
+  if (!course.settings?.scored) return undefined
+  const hasQuiz = course.lessons.some((l) => l.blocks.some((b) => b.type === 'quiz'))
+  if (!hasQuiz) return undefined
+  return Math.round(course.settings.passingScore)
+}
 
 function escapeHtml(s: string): string {
   return s.replace(/</g, '&lt;').replace(/>/g, '&gt;')
@@ -37,7 +48,7 @@ async function addDir(
 }
 
 // Build and download a SCORM package (1.2 or 2004) for the current course.
-export async function exportScorm(version: ScormVersion = '1.2'): Promise<void> {
+export async function exportScorm(version: ScormVersion = '2004'): Promise<void> {
   const { course, directoryHandle } = useCourseStore.getState()
   const zip = new JSZip()
   const base = import.meta.env.BASE_URL
@@ -68,7 +79,7 @@ export async function exportScorm(version: ScormVersion = '1.2'): Promise<void> 
     }
   }
 
-  zip.file('imsmanifest.xml', buildManifest(course, files, version))
+  zip.file('imsmanifest.xml', buildManifest(course, files, version, overallPassingScore(course)))
 
   const blob = await zip.generateAsync({ type: 'blob' })
   const url = URL.createObjectURL(blob)

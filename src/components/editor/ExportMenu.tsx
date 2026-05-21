@@ -45,18 +45,17 @@ export default function ExportMenu() {
         <div className="absolute right-0 top-full z-30 mt-2 w-52 rounded-xl border border-gray-200 bg-white p-1.5 shadow-lg">
           <button
             type="button"
+            onClick={() => run('2004')}
+            className="block w-full rounded-lg px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-50"
+          >
+            {t('export2004')}
+          </button>
+          <button
+            type="button"
             onClick={() => run('1.2')}
             className="block w-full rounded-lg px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-50"
           >
             {t('export12')}
-          </button>
-          <button
-            type="button"
-            onClick={() => run('2004')}
-            className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-50"
-          >
-            {t('export2004')}
-            <span className="text-xs text-gray-400">({t('untested')})</span>
           </button>
         </div>
       )}
