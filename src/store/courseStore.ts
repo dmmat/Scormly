@@ -8,7 +8,7 @@ import type {
   ThemeId,
 } from '../types/course'
 import { createBlock } from '../blocks/registry'
-import { DEFAULT_THEME } from '../theme/themes'
+import { DEFAULT_THEME, THEMES } from '../theme/themes'
 import { uid } from '../lib/id'
 import { translate } from '../i18n/I18nProvider'
 
@@ -105,6 +105,13 @@ function findLesson(course: Course, lessonId: string): Lesson | undefined {
   return course.lessons.find((l) => l.id === lessonId)
 }
 
+// Coerce a loaded course to current invariants (e.g. migrate a renamed/legacy
+// theme id to the default so the UI never reads an unknown theme).
+function migrateCourse(course: Course): Course {
+  if (THEMES[course.theme]) return course
+  return { ...course, theme: DEFAULT_THEME }
+}
+
 export const useCourseStore = create<CourseState>((set, get) => {
   /**
    * Applies a mutation to a deep copy of the course and maintains the history stack.
@@ -159,7 +166,8 @@ export const useCourseStore = create<CourseState>((set, get) => {
         c.theme = theme
       }),
 
-    loadCourse: (course) =>
+    loadCourse: (input) => {
+      const course = migrateCourse(input)
       set({
         course,
         activeLessonId: course.lessons[0]?.id ?? null,
@@ -167,9 +175,11 @@ export const useCourseStore = create<CourseState>((set, get) => {
         past: [],
         future: [],
         lastCoalesceKey: null,
-      }),
+      })
+    },
 
-    openProject: (handle, name, course, history) =>
+    openProject: (handle, name, input, history) => {
+      const course = migrateCourse(input)
       set({
         directoryHandle: handle,
         projectName: name,
@@ -180,10 +190,14 @@ export const useCourseStore = create<CourseState>((set, get) => {
         past: history?.past ?? [],
         future: history?.future ?? [],
         lastCoalesceKey: null,
-      }),
+      })
+    },
 
-    closeProject: () =>
-      set({ directoryHandle: null, projectName: null, saveState: 'idle' }),
+    closeProject: () => {
+      // Drop the project key from the URL.
+      if (window.location.hash.startsWith('#/app/')) window.location.hash = '/app'
+      set({ directoryHandle: null, projectName: null, saveState: 'idle' })
+    },
 
     setSaveState: (saveState) => set({ saveState }),
 

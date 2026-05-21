@@ -8,6 +8,11 @@ import NoteBlock from './components/NoteBlock'
 import ImageBlock from './components/ImageBlock'
 import GalleryBlock from './components/GalleryBlock'
 import VideoBlock from './components/VideoBlock'
+import AudioBlock from './components/AudioBlock'
+import EmbedBlock from './components/EmbedBlock'
+import CodeBlock from './components/CodeBlock'
+import TableBlock from './components/TableBlock'
+import QuoteBlock from './components/QuoteBlock'
 import ContinueBlock from './components/ContinueBlock'
 import DividerBlock from './components/DividerBlock'
 import TabsBlock from './components/TabsBlock'
@@ -29,6 +34,11 @@ const BLOCK_COMPONENTS: Record<
   image: ImageBlock as ComponentType<BlockComponentProps>,
   gallery: GalleryBlock as ComponentType<BlockComponentProps>,
   video: VideoBlock as ComponentType<BlockComponentProps>,
+  audio: AudioBlock as ComponentType<BlockComponentProps>,
+  embed: EmbedBlock as ComponentType<BlockComponentProps>,
+  code: CodeBlock as ComponentType<BlockComponentProps>,
+  table: TableBlock as ComponentType<BlockComponentProps>,
+  quote: QuoteBlock as ComponentType<BlockComponentProps>,
   continue: ContinueBlock as ComponentType<BlockComponentProps>,
   divider: DividerBlock as ComponentType<BlockComponentProps>,
   tabs: TabsBlock as ComponentType<BlockComponentProps>,

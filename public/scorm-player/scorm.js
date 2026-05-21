@@ -31,6 +31,16 @@
   var API = null, v2004 = false, ready = false;
 
   function set(key, value) { if (ready && API) API[v2004 ? 'SetValue' : 'LMSSetValue'](key, String(value)); }
+  function get(key) { return ready && API ? API[v2004 ? 'GetValue' : 'LMSGetValue'](key) : ''; }
+
+  // 1.2 wants CMITimespan HHHH:MM:SS.SS; 2004 wants an ISO-8601 duration.
+  function formatTime(totalSeconds) {
+    var s = Math.max(0, Math.floor(totalSeconds));
+    var hh = Math.floor(s / 3600), mm = Math.floor((s % 3600) / 60), ss = s % 60;
+    if (v2004) return 'PT' + hh + 'H' + mm + 'M' + ss + 'S';
+    function pad(n, w) { return ('0000' + n).slice(-w); }
+    return pad(hh, 4) + ':' + pad(mm, 2) + ':' + pad(ss, 2) + '.00';
+  }
 
   var SCORM = {
     init: function () {
@@ -66,6 +76,21 @@
         set('cmi.core.score.min', lo);
         set('cmi.core.score.max', hi);
       }
+    },
+    // Resume support: a small JSON blob of progress.
+    getSuspend: function () { return get('cmi.suspend_data'); },
+    setSuspend: function (str) { set('cmi.suspend_data', str); },
+    setLocation: function (str) { set(v2004 ? 'cmi.location' : 'cmi.core.lesson_location', str); },
+    setSessionTime: function (seconds) {
+      set(v2004 ? 'cmi.session_time' : 'cmi.core.session_time', formatTime(seconds));
+    },
+    // Record a quiz answer as a SCORM interaction (for LMS analytics).
+    recordInteraction: function (i, data) {
+      var p = 'cmi.interactions.' + i + '.';
+      set(p + 'id', data.id);
+      set(p + 'type', data.type);
+      set(p + (v2004 ? 'learner_response' : 'student_response'), data.response);
+      set(p + 'result', v2004 ? (data.correct ? 'correct' : 'incorrect') : (data.correct ? 'correct' : 'wrong'));
     },
     commit: function () { if (ready && API) API[v2004 ? 'Commit' : 'LMSCommit'](''); },
     finish: function () {

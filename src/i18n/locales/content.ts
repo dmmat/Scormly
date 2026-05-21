@@ -32,6 +32,11 @@ const content: LocaleTable = {
     newTab: 'New tab',
     newSection: 'New section',
     newListItem: 'List item',
+
+    codeSample: 'console.log("Hello, world!")',
+    tableHeader: 'Header',
+    tableCell: 'Cell',
+    quoteText: 'Your quote goes here.',
   },
   uk: {
     newCourse: 'Новий курс',
@@ -61,6 +66,11 @@ const content: LocaleTable = {
     newTab: 'Нова вкладка',
     newSection: 'Нова секція',
     newListItem: 'Пункт списку',
+
+    codeSample: 'console.log("Привіт, світ!")',
+    tableHeader: 'Заголовок',
+    tableCell: 'Клітинка',
+    quoteText: 'Тут ваша цитата.',
   },
 }
 

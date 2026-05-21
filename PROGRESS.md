@@ -26,7 +26,7 @@ Legend: `[ ]` planned · `[~]` in progress · `[x]` done
 
 ## Phase 1.5 — Global project themes (done)
 
-- [x] `Course.theme` field (`ThemeId`), 4 themes: Rise / Ocean / Forest / Sunset
+- [x] `Course.theme` field (`ThemeId`), 4 themes: Rose / Ocean / Forest / Sunset
 - [x] Applied via `data-theme` + CSS variables (accent, button/interactive radius)
 - [x] `.btn-primary` / `.btn-secondary` / `.interactive-surface` classes for blocks
 - [x] Theme switcher in the Header (`ThemePicker`)
@@ -134,3 +134,4 @@ encoding, so these requirements are tracked here as the living list.
 - 2026-05-21 — SCORM 1.2 export: vanilla player in public/scorm-player/ (renders project.json + all block interactivity), SCORM API wrapper, imsmanifest.xml, JSZip packaging with assets/, download. Build clean (105 modules).
 - 2026-05-21 — SCORM 2004 export added: player auto-detects API_1484_11 vs API; 2004 manifest; Header export version menu (2004 labelled "untested"). 2004 NOT verified in a real LMS. Build clean (106 modules).
 - 2026-05-21 — Fixed rich-text image insertion (file input survives blur), list rendering (restored markers), added image resize (width slider). History optimized (limit 50, persist last 20). Inline rich-text images moved to assets/ (RichHtml resolves paths) to keep data URLs out of the model/history. Build clean (107 modules).
+- 2026-05-22 — Big batch: 5 new blocks (audio, embed, code, table, quote); drag-and-drop reordering (dnd-kit) for blocks & lessons; richer SCORM (resume via suspend_data, session time, cmi.interactions); editor keyboard shortcuts + right-click context menu; AddBlockMenu auto-flip placement; per-tab project restore on refresh (sessionStorage + IndexedDB handle); full meta/OG tags + og-image.svg. Removed all "Articulate" mentions; renamed theme Rise → Rose (with legacy migration). Build clean (126 modules).

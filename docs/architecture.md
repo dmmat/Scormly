@@ -81,7 +81,7 @@ method: it shallow-merges `partialData` into `block.data`.
 
 ## Block rendering and editing
 
-The editor works in **inline WYSIWYG** mode (like Articulate Rise): a block is
+The editor works in **inline WYSIWYG** mode: a block is
 both the preview and the editor at the same time.
 
 - [`BlockRenderer`](../src/blocks/BlockRenderer.tsx) — the `type → component` dispatcher.

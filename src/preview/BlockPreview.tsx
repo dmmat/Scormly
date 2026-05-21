@@ -3,6 +3,11 @@ import RichHtml from './RichHtml'
 import ImagePreview from './components/ImagePreview'
 import GalleryPreview from './components/GalleryPreview'
 import VideoPreview from './components/VideoPreview'
+import AudioPreview from './components/AudioPreview'
+import EmbedPreview from './components/EmbedPreview'
+import CodePreview from './components/CodePreview'
+import TablePreview from './components/TablePreview'
+import QuotePreview from './components/QuotePreview'
 import TabsPreview from './components/TabsPreview'
 import AccordionPreview from './components/AccordionPreview'
 import FlashcardsPreview from './components/FlashcardsPreview'
@@ -68,6 +73,16 @@ export default function BlockPreview({ block }: { block: Block }) {
       return <GalleryPreview block={block} />
     case 'video':
       return <VideoPreview block={block} />
+    case 'audio':
+      return <AudioPreview block={block} />
+    case 'embed':
+      return <EmbedPreview block={block} />
+    case 'code':
+      return <CodePreview block={block} />
+    case 'table':
+      return <TablePreview block={block} />
+    case 'quote':
+      return <QuotePreview block={block} />
     case 'continue':
       return (
         <div className="flex justify-center py-2">

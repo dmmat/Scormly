@@ -68,6 +68,18 @@ figcaption { margin-top: 0.5rem; text-align: center; font-size: 0.875rem; font-s
 @media (min-width: 640px) { .gallery { grid-template-columns: repeat(3, 1fr); } }
 .gallery img { aspect-ratio: 1/1; object-fit: cover; border-radius: 0.5rem; }
 
+/* Audio / embed / code / table / quote */
+audio { width: 100%; }
+.embed { position: relative; width: 100%; aspect-ratio: 16 / 9; border-radius: 0.5rem; overflow: hidden; }
+.embed iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+pre.code { overflow-x: auto; border-radius: 0.5rem; background: #111827; color: #f3f4f6; padding: 1rem; font-size: 0.875rem; }
+pre.code code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+table.data-table { border-collapse: collapse; width: 100%; }
+table.data-table th, table.data-table td { border: 1px solid #e5e7eb; padding: 0.5rem 0.75rem; text-align: left; }
+table.data-table th { background: #f9fafb; font-weight: 600; }
+blockquote.quote { border-left: 4px solid var(--brand); padding-left: 1rem; margin: 0; font-style: italic; color: #374151; }
+.quote-author { margin-top: 0.5rem; font-size: 0.875rem; font-style: normal; color: #6b7280; }
+
 /* Continue / divider */
 .continue { display: flex; justify-content: center; padding: 0.5rem 0; }
 hr.divider { border: 0; border-top: 2px solid #d1d5db; margin: 0.5rem 0; }

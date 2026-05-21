@@ -4,7 +4,7 @@
   'use strict';
 
   var THEME_ACCENT = {
-    rise: ['#ec4899', '#db2777'],
+    rose: ['#ec4899', '#db2777'],
     ocean: ['#0ea5e9', '#0284c7'],
     forest: ['#16a34a', '#15803d'],
     sunset: ['#f97316', '#ea580c'],
@@ -43,11 +43,11 @@
     return el;
   }
 
-  var state = { course: null, lessonIndex: 0, visited: {}, quizResults: {}, quizzes: [] };
+  var state = { course: null, lessonIndex: 0, visited: {}, quizResults: {}, quizzes: [], interactionIndex: 0, sessionStart: 0 };
 
   function start(course) {
     state.course = course;
-    var accent = THEME_ACCENT[course.theme] || THEME_ACCENT.rise;
+    var accent = THEME_ACCENT[course.theme] || THEME_ACCENT.rose;
     document.documentElement.style.setProperty('--brand', accent[0]);
     document.documentElement.style.setProperty('--brand-dark', accent[1]);
     document.title = course.title || 'Course';
@@ -61,8 +61,22 @@
     });
 
     SCORM.init();
-    visit(0);
-    window.addEventListener('beforeunload', function () { SCORM.finish(); });
+    state.sessionStart = Date.now();
+
+    // Resume from saved progress, if any.
+    var saved = null;
+    try { saved = JSON.parse(SCORM.getSuspend() || 'null'); } catch (e) { saved = null; }
+    if (saved) {
+      state.visited = saved.visited || {};
+      state.quizResults = saved.quizResults || {};
+    }
+
+    window.addEventListener('beforeunload', function () {
+      SCORM.setSessionTime((Date.now() - state.sessionStart) / 1000);
+      SCORM.finish();
+    });
+
+    visit(saved && typeof saved.lesson === 'number' ? saved.lesson : 0);
   }
 
   function visit(index) {
@@ -89,6 +103,12 @@
     } else {
       SCORM.report(allVisited, null);
     }
+    SCORM.setSuspend(JSON.stringify({
+      lesson: state.lessonIndex,
+      visited: state.visited,
+      quizResults: state.quizResults,
+    }));
+    SCORM.setLocation(String(state.lessonIndex));
     SCORM.commit();
   }
 
@@ -171,6 +191,26 @@
       case 'video':
         if (!b.data.src) return null;
         return h('video', { controls: 'true', src: b.data.src, poster: b.data.poster || null });
+      case 'audio':
+        if (!b.data.src) return null;
+        return h('audio', { controls: 'true', src: b.data.src, style: 'width:100%' });
+      case 'embed': {
+        var em = toEmbedUrl(b.data.url || '');
+        if (!em) return null;
+        return h('div', { class: 'embed' }, h('iframe', {
+          src: em, title: b.data.title || '', allowfullscreen: 'true',
+          allow: 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture',
+        }));
+      }
+      case 'code':
+        return h('pre', { class: 'code' }, h('code', { text: b.data.code || '' }));
+      case 'table':
+        return renderTable(b);
+      case 'quote':
+        return h('blockquote', { class: 'quote' }, [
+          h('p', { text: b.data.text || '', style: 'margin:0' }),
+          b.data.author ? h('footer', { class: 'quote-author', text: '— ' + b.data.author }) : null,
+        ]);
       case 'continue':
         return h('div', { class: 'continue' }, h('button', { class: 'btn', text: b.data.label }));
       case 'divider': {
@@ -185,6 +225,38 @@
       case 'quiz': return renderQuiz(b);
       default: return null;
     }
+  }
+
+  function toEmbedUrl(url) {
+    if (!url) return '';
+    try {
+      var u = new URL(url);
+      var host = u.hostname.replace(/^www\.|^m\./, '');
+      if (host === 'youtube.com' && u.searchParams.get('v')) {
+        return 'https://www.youtube.com/embed/' + u.searchParams.get('v');
+      }
+      if (host === 'youtu.be') {
+        return 'https://www.youtube.com/embed/' + u.pathname.slice(1);
+      }
+      if (host === 'vimeo.com') {
+        var id = u.pathname.split('/').filter(Boolean)[0];
+        if (/^\d+$/.test(id)) return 'https://player.vimeo.com/video/' + id;
+      }
+      return u.protocol === 'https:' ? url : '';
+    } catch (e) { return ''; }
+  }
+
+  function renderTable(b) {
+    var rows = b.data.rows || [];
+    var table = h('table', { class: 'data-table' });
+    rows.forEach(function (row, ri) {
+      var tr = h('tr');
+      row.forEach(function (cell) {
+        tr.appendChild(h(b.data.header && ri === 0 ? 'th' : 'td', { text: cell }));
+      });
+      table.appendChild(tr);
+    });
+    return table;
   }
 
   function renderTabs(b) {
@@ -363,6 +435,19 @@
 
     function recordScore() {
       state.quizResults[b.id] = computeScore();
+      // Record each question as a SCORM interaction for LMS analytics.
+      (data.questions || []).forEach(function (q) {
+        var a = answers[q.id];
+        var resp = q.type === 'matching'
+          ? Object.keys(a || {}).map(function (k) { return k + '=' + a[k]; }).join(',')
+          : (Array.isArray(a) ? a.join(',') : (a || ''));
+        SCORM.recordInteraction(state.interactionIndex++, {
+          id: q.id,
+          type: q.type === 'matching' ? 'matching' : 'choice',
+          response: String(resp),
+          correct: isCorrect(q),
+        });
+      });
       reportProgress();
     }
 

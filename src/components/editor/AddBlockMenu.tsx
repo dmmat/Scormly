@@ -26,7 +26,22 @@ export default function AddBlockMenu({ lessonId, atIndex }: AddBlockMenuProps) {
   const { t } = useT('common')
   const { t: tb } = useT('blocks')
   const [open, setOpen] = useState(false)
+  const [placement, setPlacement] = useState<'down' | 'up'>('down')
   const rootRef = useRef<HTMLDivElement>(null)
+  const triggerRef = useRef<HTMLButtonElement>(null)
+
+  // Open upward when there isn't enough room below the trigger.
+  function toggle() {
+    if (!open) {
+      const rect = triggerRef.current?.getBoundingClientRect()
+      if (rect) {
+        const below = window.innerHeight - rect.bottom
+        const above = rect.top
+        setPlacement(below < 420 && above > below ? 'up' : 'down')
+      }
+    }
+    setOpen((v) => !v)
+  }
 
   useEffect(() => {
     if (!open) return
@@ -52,15 +67,20 @@ export default function AddBlockMenu({ lessonId, atIndex }: AddBlockMenuProps) {
   return (
     <div ref={rootRef} className="relative flex justify-center">
       <button
+        ref={triggerRef}
         type="button"
-        onClick={() => setOpen((v) => !v)}
+        onClick={toggle}
         className="flex items-center gap-1.5 rounded-full border border-dashed border-gray-300 bg-white px-5 py-2 text-sm font-medium text-gray-500 transition-colors hover:border-brand hover:text-brand"
       >
         <span className="text-base leading-none">+</span> {t('addBlock')}
       </button>
 
       {open && (
-        <div className="absolute top-full z-20 mt-2 max-h-[28rem] w-80 overflow-y-auto rounded-xl border border-gray-200 bg-white p-2 shadow-lg">
+        <div
+          className={`absolute z-20 max-h-[28rem] w-80 overflow-y-auto rounded-xl border border-gray-200 bg-white p-2 shadow-lg ${
+            placement === 'up' ? 'bottom-full mb-2' : 'top-full mt-2'
+          }`}
+        >
           {BLOCK_CATEGORIES.map(({ category }) => {
             const items = Object.values(BLOCK_REGISTRY).filter(
               (m) => m.category === category,

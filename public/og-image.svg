@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#fff1f7" />
+      <stop offset="1" stop-color="#ffffff" />
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)" />
+  <circle cx="980" cy="120" r="260" fill="#ec4899" opacity="0.10" />
+  <g transform="translate(96,210)">
+    <rect width="96" height="96" rx="20" fill="#ec4899" />
+    <text x="48" y="68" font-family="system-ui, Arial, sans-serif" font-size="64" font-weight="700" fill="#ffffff" text-anchor="middle">S</text>
+    <text x="130" y="74" font-family="system-ui, Arial, sans-serif" font-size="76" font-weight="800" fill="#111827">Scorm<tspan fill="#ec4899">ly</tspan></text>
+  </g>
+  <text x="96" y="400" font-family="system-ui, Arial, sans-serif" font-size="44" font-weight="700" fill="#111827">Build interactive courses · export to SCORM</text>
+  <text x="96" y="460" font-family="system-ui, Arial, sans-serif" font-size="32" fill="#6b7280">Open source · Free · 100% local — your data never leaves your computer</text>
+</svg>

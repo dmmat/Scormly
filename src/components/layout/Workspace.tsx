@@ -1,3 +1,15 @@
+import {
+  DndContext,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  closestCenter,
+  type DragEndEvent,
+} from '@dnd-kit/core'
+import {
+  SortableContext,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable'
 import { useCourseStore, selectActiveLesson } from '../../store/courseStore'
 import BlockShell from '../editor/BlockShell'
 import AddBlockMenu from '../editor/AddBlockMenu'
@@ -6,7 +18,19 @@ import { useT } from '../../i18n/I18nProvider'
 export default function Workspace() {
   const activeLesson = useCourseStore(selectActiveLesson)
   const selectBlock = useCourseStore((s) => s.selectBlock)
+  const moveBlock = useCourseStore((s) => s.moveBlock)
   const { t } = useT('common')
+  // Small distance so a click still selects/edits; drag starts only past 5px.
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+  )
+
+  function onDragEnd(e: DragEndEvent) {
+    if (!activeLesson || !e.over || e.active.id === e.over.id) return
+    const from = activeLesson.blocks.findIndex((b) => b.id === e.active.id)
+    const to = activeLesson.blocks.findIndex((b) => b.id === e.over!.id)
+    if (from !== -1 && to !== -1) moveBlock(activeLesson.id, from, to)
+  }
 
   return (
     <main
@@ -45,15 +69,28 @@ export default function Workspace() {
                 className="space-y-3"
                 onClick={(e) => e.stopPropagation()}
               >
-                {activeLesson.blocks.map((block, index) => (
-                  <BlockShell
-                    key={block.id}
-                    block={block}
-                    lessonId={activeLesson.id}
-                    index={index}
-                    total={activeLesson.blocks.length}
-                  />
-                ))}
+                <DndContext
+                  sensors={sensors}
+                  collisionDetection={closestCenter}
+                  onDragEnd={onDragEnd}
+                >
+                  <SortableContext
+                    items={activeLesson.blocks.map((b) => b.id)}
+                    strategy={verticalListSortingStrategy}
+                  >
+                    <div className="space-y-1">
+                      {activeLesson.blocks.map((block, index) => (
+                        <BlockShell
+                          key={block.id}
+                          block={block}
+                          lessonId={activeLesson.id}
+                          index={index}
+                          total={activeLesson.blocks.length}
+                        />
+                      ))}
+                    </div>
+                  </SortableContext>
+                </DndContext>
                 <div className="pt-3">
                   <AddBlockMenu lessonId={activeLesson.id} />
                 </div>

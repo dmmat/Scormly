@@ -4,7 +4,7 @@
 
 **Local-first block-based course builder with SCORM export**
 
-Build interactive, block-based courses (an Articulate Rise alternative) right in
+Build interactive, block-based courses right in
 your browser — no server, no cloud. Everything is stored in your own file
 system, and the finished course is exported as a **SCORM 1.2 / 2004** package for
 any LMS.
@@ -19,18 +19,18 @@ any LMS.
 
 ---
 
-> **Scormly** is a local-first, in-browser course builder (an Articulate Rise
-> alternative) that exports standards-compliant **SCORM 1.2 / 2004** packages.
+> **Scormly** is a local-first, in-browser course builder that exports
+> standards-compliant **SCORM 1.2 / 2004** packages.
 > No backend, no account — your data and media live in your own file system via
 > the File System Access API, and packaging happens entirely client-side.
 
 ## ✨ Features
 
-- **Block-based editor** in the style of Articulate Rise — a lesson is built from content blocks.
+- **Block-based editor** — a lesson is built from content blocks with inline WYSIWYG editing.
 - **Many block types:** headings, paragraphs, lists, notes, images,
   galleries, videos, a "Continue" button, tabs, accordions, flashcards,
   a dialogue scenario, and quizzes (single / multiple / matching with feedback).
-- **Global project themes** — several ready-made styles (Rise, Ocean, Forest,
+- **Global project themes** — several ready-made styles (Rose, Ocean, Forest,
   Sunset) that change the accent and the look of buttons/interactions with one click.
 - **Undo / Redo** with history and keyboard shortcuts (Ctrl/Cmd + Z / Y).
 - **Local-first:** the project and media are saved to your own folder via the

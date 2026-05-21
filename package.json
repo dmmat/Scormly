@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.1.0",
   "type": "module",
-  "description": "Local-first блочний конструктор навчальних курсів з експортом у SCORM 1.2 / 2004 (аналог Articulate Rise), що працює повністю в браузері.",
+  "description": "Local-first блочний конструктор навчальних курсів з експортом у SCORM 1.2 / 2004, що працює повністю в браузері.",
   "license": "MIT",
   "author": "Dmytro Matsiuk",
   "scripts": {
@@ -12,6 +12,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@dnd-kit/core": "^6.3.1",
+    "@dnd-kit/sortable": "^10.0.0",
+    "@dnd-kit/utilities": "^3.2.2",
     "jszip": "^3.10.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",

@@ -15,9 +15,9 @@ export interface ThemeMeta {
 }
 
 export const THEMES: Record<ThemeId, ThemeMeta> = {
-  rise: {
-    id: 'rise',
-    label: 'Rise',
+  rose: {
+    id: 'rose',
+    label: 'Rose',
     accent: '#ec4899',
     description: 'Рожевий акцент, м’які заокруглені кнопки',
   },
@@ -43,4 +43,4 @@ export const THEMES: Record<ThemeId, ThemeMeta> = {
 
 export const THEME_LIST: ThemeMeta[] = Object.values(THEMES)
 
-export const DEFAULT_THEME: ThemeId = 'rise'
+export const DEFAULT_THEME: ThemeId = 'rose'

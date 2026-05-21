@@ -14,7 +14,7 @@ const landing: LocaleTable = {
     heroBadge: 'Open source · Free · 100% local',
     heroTitle: 'Build interactive courses and export to SCORM — right in your browser',
     heroSubtitle:
-      'Scormly is a local-first, block-based course builder (an Articulate Rise alternative). No backend, no sign-up. Your content never leaves your computer, and you export a standards-compliant SCORM package in one click.',
+      'Scormly is a local-first, block-based course builder. No backend, no sign-up. Your content never leaves your computer, and you export a standards-compliant SCORM package in one click.',
     heroCtaPrimary: 'Start building — free',
     heroCtaSecondary: 'View on GitHub',
     heroNote: 'Runs entirely in your browser. Nothing to install.',
@@ -40,7 +40,7 @@ const landing: LocaleTable = {
     featuresTitle: 'Everything you need to author a course',
     featuresSubtitle: 'A focused block editor with the building blocks of modern e-learning.',
     f1Title: 'Block-based editor',
-    f1Text: 'Compose lessons from content blocks with inline WYSIWYG editing, just like Articulate Rise.',
+    f1Text: 'Compose lessons from content blocks with inline WYSIWYG editing.',
     f2Title: 'Rich block library',
     f2Text: 'Headings, text, lists, images, galleries, video, tabs, accordions, flashcards, dialogue scenarios and quizzes.',
     f3Title: 'Graded quizzes',
@@ -73,8 +73,8 @@ const landing: LocaleTable = {
     faqA4: 'No. Scormly runs entirely in the browser. For saving to disk you need a Chromium-based browser (Chrome or Edge) that supports the File System Access API.',
     faqQ5: 'Can I self-host it?',
     faqA5: 'Absolutely. It is a static site — clone the repository, run the build, and host the output anywhere, or just use it locally.',
-    faqQ6: 'Is it an Articulate Rise replacement?',
-    faqA6: 'Scormly follows the same block-based authoring philosophy as Rise, but it is local-first, free and open source. It is a great fit if you want full control over your data.',
+    faqQ6: 'Can it replace commercial authoring tools?',
+    faqA6: 'Scormly follows a modern block-based authoring approach, but it is local-first, free and open source. It is a great fit if you want full control over your data.',
 
     // Footer
     footerTagline: 'Local-first course builder with SCORM export.',
@@ -94,7 +94,7 @@ const landing: LocaleTable = {
     heroBadge: 'Open source · Безкоштовно · 100% локально',
     heroTitle: 'Створюйте інтерактивні курси й експортуйте в SCORM — прямо в браузері',
     heroSubtitle:
-      'Scormly — це local-first блочний конструктор курсів (аналог Articulate Rise). Без сервера й реєстрації. Ваш контент ніколи не залишає комп’ютер, а готовий SCORM-пакет ви отримуєте в один клік.',
+      'Scormly — це local-first блочний конструктор курсів. Без сервера й реєстрації. Ваш контент ніколи не залишає комп’ютер, а готовий SCORM-пакет ви отримуєте в один клік.',
     heroCtaPrimary: 'Почати безкоштовно',
     heroCtaSecondary: 'Подивитися на GitHub',
     heroNote: 'Працює повністю в браузері. Нічого не треба встановлювати.',
@@ -120,7 +120,7 @@ const landing: LocaleTable = {
     featuresTitle: 'Усе для створення курсу',
     featuresSubtitle: 'Сфокусований блочний редактор з будівельними блоками сучасного e-learning.',
     f1Title: 'Блочний редактор',
-    f1Text: 'Складайте уроки з контентних блоків з інлайн-редагуванням WYSIWYG, як в Articulate Rise.',
+    f1Text: 'Складайте уроки з контентних блоків з інлайн-редагуванням WYSIWYG.',
     f2Title: 'Багата бібліотека блоків',
     f2Text: 'Заголовки, текст, списки, зображення, галереї, відео, вкладки, акордеони, картки, діалогові сценарії та квізи.',
     f3Title: 'Квізи з оцінюванням',
@@ -153,8 +153,8 @@ const landing: LocaleTable = {
     faqA4: 'Ні. Scormly працює повністю в браузері. Для збереження на диск потрібен браузер на базі Chromium (Chrome або Edge) із підтримкою File System Access API.',
     faqQ5: 'Чи можна розгорнути в себе?',
     faqA5: 'Звісно. Це статичний сайт — клонуйте репозиторій, зберіть і розмістіть результат будь-де, або просто використовуйте локально.',
-    faqQ6: 'Це заміна Articulate Rise?',
-    faqA6: 'Scormly слідує тій самій блочній філософії, що й Rise, але є local-first, безкоштовним і відкритим. Чудовий вибір, якщо хочете повний контроль над даними.',
+    faqQ6: 'Чи може це замінити комерційні інструменти авторингу?',
+    faqA6: 'Scormly використовує сучасний блочний підхід до авторингу, але є local-first, безкоштовним і відкритим. Чудовий вибір, якщо хочете повний контроль над даними.',
 
     // Footer
     footerTagline: 'Local-first конструктор курсів з експортом у SCORM.',

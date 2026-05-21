@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
-/* Default brand tokens (Rise theme). Overridden per-theme below. */
+/* Default brand tokens (Rose theme). Overridden per-theme below. */
 @theme {
   --color-brand: #ec4899;
   --color-brand-light: #f9a8d4;
@@ -17,7 +17,7 @@
   --radius-interactive: 0.5rem;
 }
 
-[data-theme="rise"] {
+[data-theme="rose"] {
   --color-brand: #ec4899;
   --color-brand-light: #f9a8d4;
   --color-brand-dark: #db2777;

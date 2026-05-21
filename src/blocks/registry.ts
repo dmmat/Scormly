@@ -101,6 +101,67 @@ export const BLOCK_REGISTRY: Record<BlockType, BlockMeta> = {
       data: { src: '', poster: '' },
     }),
   },
+  audio: {
+    type: 'audio',
+    category: 'media',
+    icon: '♪',
+    create: () => ({
+      id: uid('block'),
+      type: 'audio',
+      settings: { ...baseSettings },
+      data: { src: '' },
+    }),
+  },
+  embed: {
+    type: 'embed',
+    category: 'media',
+    icon: '⧉',
+    create: () => ({
+      id: uid('block'),
+      type: 'embed',
+      settings: { ...baseSettings },
+      data: { url: '', title: '' },
+    }),
+  },
+  code: {
+    type: 'code',
+    category: 'text',
+    icon: '</>',
+    create: () => ({
+      id: uid('block'),
+      type: 'code',
+      settings: { ...baseSettings },
+      data: { code: c('codeSample'), language: '' },
+    }),
+  },
+  table: {
+    type: 'table',
+    category: 'text',
+    icon: '▦',
+    create: () => ({
+      id: uid('block'),
+      type: 'table',
+      settings: { ...baseSettings },
+      data: {
+        header: true,
+        rows: [
+          [c('tableHeader') + ' 1', c('tableHeader') + ' 2'],
+          [c('tableCell'), c('tableCell')],
+        ],
+      },
+    }),
+  },
+  quote: {
+    type: 'quote',
+    category: 'text',
+    icon: '❝',
+    create: () => ({
+      id: uid('block'),
+      type: 'quote',
+      settings: { ...baseSettings },
+      data: { text: c('quoteText'), author: '' },
+    }),
+  },
   continue: {
     type: 'continue',
     category: 'navigation',

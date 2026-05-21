@@ -7,7 +7,7 @@ import { useCourseStore } from '../store/courseStore'
 import { writeBlobToSubdir, getSubdirectory } from './fileSystem'
 import { uid } from './id'
 
-export type AssetKind = 'image' | 'video'
+export type AssetKind = 'image' | 'video' | 'audio'
 
 // SCORM-safe formats. These render as plain HTML in any LMS.
 const IMAGE_MIME: Record<string, string> = {
@@ -20,6 +20,24 @@ const IMAGE_MIME: Record<string, string> = {
 const VIDEO_MIME: Record<string, string> = {
   'video/mp4': 'mp4',
   'video/webm': 'webm',
+}
+const AUDIO_MIME: Record<string, string> = {
+  'audio/mpeg': 'mp3',
+  'audio/ogg': 'ogg',
+  'audio/wav': 'wav',
+  'audio/x-wav': 'wav',
+  'audio/mp4': 'm4a',
+}
+
+const MIME_BY_KIND: Record<AssetKind, Record<string, string>> = {
+  image: IMAGE_MIME,
+  video: VIDEO_MIME,
+  audio: AUDIO_MIME,
+}
+const SUBDIR_BY_KIND: Record<AssetKind, string> = {
+  image: 'images',
+  video: 'videos',
+  audio: 'audio',
 }
 
 const MAX_DIMENSION = 1920
@@ -88,14 +106,14 @@ function blobToDataUrl(blob: Blob): Promise<string> {
  * working in-memory. Throws UnsupportedFormatError for disallowed formats.
  */
 export async function saveAsset(file: File, kind: AssetKind): Promise<string> {
-  const ext = (kind === 'image' ? IMAGE_MIME : VIDEO_MIME)[file.type]
+  const ext = MIME_BY_KIND[kind][file.type]
   if (!ext) throw new UnsupportedFormatError(kind)
 
   const blob = kind === 'image' ? await optimizeImage(file) : file
   const handle = useCourseStore.getState().directoryHandle
   if (!handle) return blobToDataUrl(blob) // no project: keep it self-contained
 
-  const sub = kind === 'image' ? 'images' : 'videos'
+  const sub = SUBDIR_BY_KIND[kind]
   const name = `${uid()}.${ext}`
   await writeBlobToSubdir(handle, ['assets', sub], name, blob)
   return `assets/${sub}/${name}`

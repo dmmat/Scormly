@@ -12,6 +12,11 @@ export type BlockType =
   | 'image'
   | 'gallery'
   | 'video'
+  | 'audio'
+  | 'embed'
+  | 'code'
+  | 'table'
+  | 'quote'
   | 'continue'
   | 'divider'
   | 'tabs'
@@ -78,6 +83,34 @@ export interface VideoData {
   /** Relative path to the file in assets/videos/. */
   src: string
   poster?: string
+}
+
+export interface AudioData {
+  /** Relative path to the file in assets/audio/. */
+  src: string
+}
+
+export interface EmbedData {
+  /** URL to embed in an iframe (e.g. a YouTube video). */
+  url: string
+  title?: string
+}
+
+export interface CodeData {
+  code: string
+  language?: string
+}
+
+export interface TableData {
+  /** Whether the first row is a header. */
+  header: boolean
+  /** Rows of cell text; every row has the same number of columns. */
+  rows: string[][]
+}
+
+export interface QuoteData {
+  text: string
+  author?: string
 }
 
 // ── Continue ─────────────────────────────────────────────────────────────────
@@ -218,6 +251,11 @@ export type Block =
   | (BaseBlock & { type: 'image'; data: ImageData })
   | (BaseBlock & { type: 'gallery'; data: GalleryData })
   | (BaseBlock & { type: 'video'; data: VideoData })
+  | (BaseBlock & { type: 'audio'; data: AudioData })
+  | (BaseBlock & { type: 'embed'; data: EmbedData })
+  | (BaseBlock & { type: 'code'; data: CodeData })
+  | (BaseBlock & { type: 'table'; data: TableData })
+  | (BaseBlock & { type: 'quote'; data: QuoteData })
   | (BaseBlock & { type: 'continue'; data: ContinueData })
   | (BaseBlock & { type: 'divider'; data: DividerData })
   | (BaseBlock & { type: 'tabs'; data: TabsData })
@@ -239,7 +277,7 @@ export interface Lesson {
 }
 
 /** Global project theme ID (button and interactive styles). See src/theme. */
-export type ThemeId = 'rise' | 'ocean' | 'forest' | 'sunset'
+export type ThemeId = 'rose' | 'ocean' | 'forest' | 'sunset'
 
 export interface Course {
   id: string

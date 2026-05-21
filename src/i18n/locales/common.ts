@@ -29,6 +29,7 @@ const common: LocaleTable = {
     moveDown: 'Move down',
     duplicate: 'Duplicate',
     delete: 'Delete',
+    drag: 'Drag to reorder',
 
     catText: 'Text',
     catMedia: 'Media',
@@ -68,6 +69,7 @@ const common: LocaleTable = {
     moveDown: 'Вниз',
     duplicate: 'Дублювати',
     delete: 'Видалити',
+    drag: 'Перетягнути',
 
     catText: 'Текст',
     catMedia: 'Медіа',

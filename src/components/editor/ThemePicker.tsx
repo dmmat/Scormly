@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useCourseStore } from '../../store/courseStore'
-import { THEME_LIST, THEMES } from '../../theme/themes'
+import { THEME_LIST, THEMES, DEFAULT_THEME } from '../../theme/themes'
 import { useT } from '../../i18n/I18nProvider'
 
 // Switcher for the project's global theme.
@@ -21,7 +21,8 @@ export default function ThemePicker() {
     return () => document.removeEventListener('pointerdown', onPointerDown)
   }, [open])
 
-  const current = THEMES[theme]
+  // Fall back for legacy/unknown theme ids saved in older projects.
+  const current = THEMES[theme] ?? THEMES[DEFAULT_THEME]
 
   return (
     <div ref={rootRef} className="relative">

@@ -13,7 +13,8 @@ import {
   readJson,
   writeJson,
 } from './fileSystem'
-import { rememberRecentProject } from './recentProjects'
+import { rememberRecentProject, listRecentProjects } from './recentProjects'
+import { navigate } from '../hooks/useRoute'
 
 const PROJECT_FILE = 'project.json'
 const HISTORY_FILE = '.scormly-history.json'
@@ -62,6 +63,7 @@ export async function createNewProject(): Promise<void> {
   await writeJson(handle, PROJECT_FILE, course)
   useCourseStore.getState().openProject(handle, handle.name, course)
   await rememberRecentProject(handle)
+  navigate('app', handle.name)
 }
 
 /** Pick a folder that already contains a project and load it (with history). */
@@ -89,6 +91,25 @@ async function loadProjectFromHandle(
     (await readJson<ProjectHistory>(handle, HISTORY_FILE)) ?? undefined
   useCourseStore.getState().openProject(handle, handle.name, course, history)
   await rememberRecentProject(handle)
+  navigate('app', handle.name)
+}
+
+/** Try to silently restore the project named in the URL, if permission persists. */
+export async function restoreOpenProject(projectKey: string | null): Promise<boolean> {
+  if (useCourseStore.getState().directoryHandle) return true
+  if (!projectKey) return false
+  const match = (await listRecentProjects()).find((r) => r.name === projectKey)
+  if (!match) return false
+  // Re-requesting permission needs a user gesture, so only auto-open if the
+  // browser still reports the handle as granted.
+  const perm = await match.handle.queryPermission?.({ mode: 'readwrite' })
+  if (perm !== 'granted') return false
+  try {
+    await loadProjectFromHandle(match.handle)
+    return true
+  } catch {
+    return false
+  }
 }
 
 /** Persist the current course and history to the open project's folder. */

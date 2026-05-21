@@ -1,6 +1,6 @@
 # Scormly
 
-A local-first, block-based course builder (an Articulate Rise alternative) that
+A local-first, block-based course builder that
 exports to **SCORM 1.2 / 2004**. It runs entirely client-side, with no backend.
 Projects, media, and exports are stored in the user's file system via the **File
 System Access API**, and SCORM packages are generated in the browser (JSZip).
@@ -60,9 +60,7 @@ src/
 ## Brand
 
 The name is **Scormly**. The default accent is pink `#EC4899` (Tailwind
-utilities `text-brand` / `bg-brand`, shades `brand-light`, `brand-dark`). The UI
-is light, in the spirit of Articulate Rise (lots of white space, accent color on
-active elements). The accent is driven by a CSS variable and overridden per
+utilities `text-brand` / `bg-brand`, shades `brand-light`, `brand-dark`). The accent is driven by a CSS variable and overridden per
 theme — never hardcode the pink hex in components; use the `*-brand` utilities or
 the global button/interactive classes.
 
@@ -89,7 +87,7 @@ Keyboard shortcuts (Ctrl/Cmd+Z / Y) are wired by `useUndoRedoShortcuts`. See
 
 ## Themes
 
-There is one global theme per course (Rise / Ocean / Forest / Sunset). The theme
+There is one global theme per course (Rose / Ocean / Forest / Sunset). The theme
 is applied via a `data-theme` attribute on the builder root (`ThemeProvider`),
 which overrides CSS variables in `index.css`: the accent color (`--color-brand`,
 which all `*-brand` utilities read) and the button/interactive radius. Components
