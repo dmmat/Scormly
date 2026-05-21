@@ -115,10 +115,11 @@ src/
 
 - [x] Editor foundation: model, store, undo/redo, block rendering
 - [x] Global project themes
-- [x] All content and interactive block types
-- [ ] Local saving via the File System Access API (`project.json`, `assets/`)
-- [ ] SCORM 1.2 export (player, `imsmanifest.xml`, JSZip)
-- [ ] SCORM 2004 export
+- [x] Bilingual UI (English / Ukrainian) and an SEO landing page
+- [x] All content and interactive block types (+ rich-text editor, divider, learner Preview)
+- [x] Local saving via the File System Access API (`project.json`, `assets/`, autosave, recent projects)
+- [x] SCORM 1.2 export (player, `imsmanifest.xml`, JSZip)
+- [x] SCORM 2004 export — implemented but **not yet tested in a real LMS**
 - [ ] Drag-and-drop reordering of blocks and lessons
 
 For the detailed up-to-date status, see [PROGRESS.md](PROGRESS.md).

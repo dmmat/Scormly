@@ -47,6 +47,9 @@ body {
 /* Text blocks */
 .rich-text { line-height: 1.7; }
 .rich-text img { max-width: 100%; height: auto; border-radius: 0.5rem; }
+.rich-text ul { list-style: disc; padding-left: 1.5rem; }
+.rich-text ol { list-style: decimal; padding-left: 1.5rem; }
+.rich-text a { color: var(--brand); text-decoration: underline; }
 h1, h2, h3 { color: #111827; }
 ul.list, ol.list { padding-left: 1.5rem; }
 ul.list { list-style: disc; }

@@ -78,7 +78,8 @@ Legend: `[ ]` planned · `[~]` in progress · `[x]` done
 - [x] In-browser image optimization via canvas (downscale ~1920px + re-encode); preserves transparency (PNG/WebP keep type, never flattened to JPEG; GIF/SVG kept as-is); no video transcoding
 - [x] Supported formats enforced: images PNG/JPEG/WebP/GIF/SVG; video MP4/WebM; others rejected with a message
 - [x] Applied to Image, Gallery, Video and Scenario character images (editor + preview); no project / old browser → data-URL fallback
-- [ ] Inline rich-text images still embed as data URLs (contentEditable limitation; exports fine to SCORM)
+- [x] Inline rich-text images also stored in assets/ (model keeps relative paths; editor & preview resolve to object URLs via `RichHtml`; player uses paths directly) — keeps data URLs out of the model/history
+- [x] History size optimized: in-memory limit 50, sidecar persists only the last 20 steps
 
 - [x] Localized default content at creation time (course/lesson/block defaults follow the UI language via a non-React `translate()`)
 - [x] Rename course (Sidebar) and lessons (inline edit + delete) ; localized "Add lesson"
@@ -109,9 +110,9 @@ encoding, so these requirements are tracked here as the living list.
 - [x] Completion + scoring: lesson_status completed/passed/failed; quiz scores aggregated → score.raw vs passing
 - [x] Generate `imsmanifest.xml` (`src/export/scormManifest.ts`)
 - [x] Pack into a .zip with JSZip incl. media from assets/ (`src/export/exportScorm.ts`) + download; wired to the Header button
-- [ ] SCORM 2004 (after 1.2)
+- [x] SCORM 2004 — manifest + runtime support (one player auto-detects `API_1484_11` vs `API`, maps completion/success/score). Export version chooser in the Header. ⚠️ **Not tested in a real LMS yet.**
 
-> Note: SCORM runtime needs a real LMS (Moodle/SCORM Cloud) to fully verify; the player no-ops the API gracefully outside an LMS.
+> Note: SCORM runtime needs a real LMS (Moodle/SCORM Cloud) to fully verify; the player no-ops the API gracefully outside an LMS. SCORM 1.2 is the primary, exercised path; **SCORM 2004 export is implemented but UNTESTED.**
 
 ---
 
@@ -130,4 +131,6 @@ encoding, so these requirements are tracked here as the living list.
 - 2026-05-21 — Added a Divider block (solid/dashed/dotted) and a learner Preview mode (full-screen overlay with lesson navigation, read-only/interactive renderers for every block type incl. quiz scoring and scenario branching). Build clean (94 modules).
 - 2026-05-21 — Media-to-assets: uploaded images/videos copied into project assets/ with canvas image optimization (alpha-preserving) and format validation; display via resolved object URLs. Build clean (99 modules). Next: SCORM export.
 - 2026-05-21 — Fixed RichTextEditor image insertion (selection save/restore) and replaced symbol icons with inline SVGs.
-- 2026-05-21 — SCORM 1.2 export: vanilla player in public/scorm-player/ (renders project.json + all block interactivity), SCORM API wrapper, imsmanifest.xml, JSZip packaging with assets/, download. Build clean (105 modules). SCORM 2004 still pending.
+- 2026-05-21 — SCORM 1.2 export: vanilla player in public/scorm-player/ (renders project.json + all block interactivity), SCORM API wrapper, imsmanifest.xml, JSZip packaging with assets/, download. Build clean (105 modules).
+- 2026-05-21 — SCORM 2004 export added: player auto-detects API_1484_11 vs API; 2004 manifest; Header export version menu (2004 labelled "untested"). 2004 NOT verified in a real LMS. Build clean (106 modules).
+- 2026-05-21 — Fixed rich-text image insertion (file input survives blur), list rendering (restored markers), added image resize (width slider). History optimized (limit 50, persist last 20). Inline rich-text images moved to assets/ (RichHtml resolves paths) to keep data URLs out of the model/history. Build clean (107 modules).

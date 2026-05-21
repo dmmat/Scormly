@@ -18,6 +18,10 @@ import { rememberRecentProject } from './recentProjects'
 const PROJECT_FILE = 'project.json'
 const HISTORY_FILE = '.scormly-history.json'
 
+// Only the most recent steps are persisted, so the history sidecar stays small
+// even when the course embeds large data (e.g. inline images as data URLs).
+const PERSISTED_HISTORY = 20
+
 /** Thrown when the chosen folder has no project.json. */
 export class NoProjectError extends Error {
   constructor() {
@@ -100,7 +104,10 @@ export async function saveProject(): Promise<void> {
       return
     }
     await writeJson(directoryHandle, PROJECT_FILE, course)
-    await writeJson(directoryHandle, HISTORY_FILE, { past, future })
+    await writeJson(directoryHandle, HISTORY_FILE, {
+      past: past.slice(-PERSISTED_HISTORY),
+      future: future.slice(0, PERSISTED_HISTORY),
+    })
     store.setSaveState('saved')
   } catch {
     store.setSaveState('error')

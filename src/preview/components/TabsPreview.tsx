@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import type { PreviewProps } from '../types'
+import RichHtml from '../RichHtml'
 
 export default function TabsPreview({ block }: PreviewProps<'tabs'>) {
   const { tabs } = block.data
@@ -26,9 +27,9 @@ export default function TabsPreview({ block }: PreviewProps<'tabs'>) {
           </button>
         ))}
       </div>
-      <div
+      <RichHtml
+        html={activeTab.html}
         className="rich-text p-5 leading-relaxed text-gray-800"
-        dangerouslySetInnerHTML={{ __html: activeTab.html }}
       />
     </div>
   )

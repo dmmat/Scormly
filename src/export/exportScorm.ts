@@ -1,6 +1,6 @@
 import JSZip from 'jszip'
 import { useCourseStore } from '../store/courseStore'
-import { buildManifest } from './scormManifest'
+import { buildManifest, type ScormVersion } from './scormManifest'
 
 const PLAYER_FILES = ['index.html', 'player.css', 'player.js', 'scorm.js']
 
@@ -36,8 +36,8 @@ async function addDir(
   return paths
 }
 
-// Build and download a SCORM 1.2 package for the current course.
-export async function exportScorm(): Promise<void> {
+// Build and download a SCORM package (1.2 or 2004) for the current course.
+export async function exportScorm(version: ScormVersion = '1.2'): Promise<void> {
   const { course, directoryHandle } = useCourseStore.getState()
   const zip = new JSZip()
   const base = import.meta.env.BASE_URL
@@ -68,13 +68,13 @@ export async function exportScorm(): Promise<void> {
     }
   }
 
-  zip.file('imsmanifest.xml', buildManifest(course, files))
+  zip.file('imsmanifest.xml', buildManifest(course, files, version))
 
   const blob = await zip.generateAsync({ type: 'blob' })
   const url = URL.createObjectURL(blob)
   const a = document.createElement('a')
   a.href = url
-  a.download = `${sanitize(course.title)}-scorm12.zip`
+  a.download = `${sanitize(course.title)}-scorm${version === '2004' ? '2004' : '12'}.zip`
   document.body.appendChild(a)
   a.click()
   a.remove()

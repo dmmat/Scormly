@@ -12,7 +12,7 @@ import { DEFAULT_THEME } from '../theme/themes'
 import { uid } from '../lib/id'
 import { translate } from '../i18n/I18nProvider'
 
-const HISTORY_LIMIT = 100
+const HISTORY_LIMIT = 50
 
 const initialCourse: Course = {
   id: 'course-1',

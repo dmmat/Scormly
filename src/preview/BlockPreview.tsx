@@ -1,4 +1,5 @@
 import type { Block } from '../types/course'
+import RichHtml from './RichHtml'
 import ImagePreview from './components/ImagePreview'
 import GalleryPreview from './components/GalleryPreview'
 import VideoPreview from './components/VideoPreview'
@@ -28,9 +29,9 @@ export default function BlockPreview({ block }: { block: Block }) {
     }
     case 'paragraph':
       return (
-        <div
+        <RichHtml
+          html={block.data.html}
           className="rich-text leading-relaxed text-gray-800"
-          dangerouslySetInnerHTML={{ __html: block.data.html }}
         />
       )
     case 'list': {

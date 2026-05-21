@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import type { PreviewProps } from '../types'
+import RichHtml from '../RichHtml'
 
 export default function AccordionPreview({ block }: PreviewProps<'accordion'>) {
   const { items } = block.data
@@ -33,9 +34,9 @@ export default function AccordionPreview({ block }: PreviewProps<'accordion'>) {
               {item.title}
             </button>
             {isOpen && (
-              <div
+              <RichHtml
+                html={item.html}
                 className="rich-text border-t border-gray-200 px-4 py-3 leading-relaxed text-gray-800"
-                dangerouslySetInnerHTML={{ __html: item.html }}
               />
             )}
           </div>

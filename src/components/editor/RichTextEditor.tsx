@@ -1,5 +1,17 @@
-import { useEffect, useRef, useState, type ChangeEvent, type ReactNode } from 'react'
+import {
+  useEffect,
+  useRef,
+  useState,
+  type ChangeEvent,
+  type MouseEvent as ReactMouseEvent,
+  type ReactNode,
+} from 'react'
 import { useT } from '../../i18n/I18nProvider'
+import { saveAsset, resolveAssetUrl } from '../../lib/assets'
+
+function isDirectUrl(src: string): boolean {
+  return /^(data:|blob:|https?:)/.test(src)
+}
 
 interface RichTextEditorProps {
   html: string
@@ -20,22 +32,107 @@ export default function RichTextEditor({
 }: RichTextEditorProps) {
   const { t } = useT('richtext')
   const ref = useRef<HTMLDivElement>(null)
+  const rootRef = useRef<HTMLDivElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const savedRange = useRef<Range | null>(null)
   const [focused, setFocused] = useState(false)
+  // Currently selected image + its position relative to the root, for the
+  // floating resize control (contentEditable has no native image handles).
+  const [imgSel, setImgSel] = useState<{ el: HTMLImageElement; left: number; top: number } | null>(null)
 
-  // Seed/resync innerHTML only when the field is NOT focused, so typing never
-  // moves the caret.
+  function clearImageSelection() {
+    setImgSel((prev) => {
+      prev?.el.classList.remove('rte-selected-img')
+      return null
+    })
+  }
+
+  function boxFor(el: HTMLImageElement) {
+    const root = rootRef.current!
+    const r = el.getBoundingClientRect()
+    const rr = root.getBoundingClientRect()
+    return { el, left: r.left - rr.left, top: r.top - rr.top }
+  }
+
+  function onEditorClick(e: ReactMouseEvent) {
+    const target = e.target as HTMLElement
+    if (target.tagName === 'IMG' && rootRef.current) {
+      imgSel?.el.classList.remove('rte-selected-img')
+      const el = target as HTMLImageElement
+      el.classList.add('rte-selected-img')
+      setImgSel(boxFor(el))
+    } else {
+      clearImageSelection()
+    }
+  }
+
+  function setImageWidth(pct: number) {
+    if (!imgSel) return
+    imgSel.el.style.width = pct + '%'
+    imgSel.el.style.height = 'auto'
+    emit()
+    setImgSel(boxFor(imgSel.el))
+  }
+
+  // Hide the resize control when clicking outside the editor.
+  useEffect(() => {
+    if (!imgSel) return
+    function onDown(e: PointerEvent) {
+      if (!rootRef.current?.contains(e.target as Node)) clearImageSelection()
+    }
+    document.addEventListener('pointerdown', onDown)
+    return () => document.removeEventListener('pointerdown', onDown)
+  }, [imgSel])
+
+  // Seed/resync from the model only when NOT focused (so typing never moves the
+  // caret). Compares against modelHtml() — the DOM shows resolved object URLs for
+  // asset images while the model stores relative paths.
   useEffect(() => {
     const el = ref.current
     if (!el) return
-    if (document.activeElement !== el && el.innerHTML !== html) {
+    if (document.activeElement !== el && modelHtml() !== html) {
       el.innerHTML = html
+      resolveAssetImages()
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [html])
 
+  // Serialize the editor to model HTML: inline asset images carry their stored
+  // path in data-asset; emit that path as src (not the temporary object URL).
+  function modelHtml(): string {
+    const el = ref.current
+    if (!el) return ''
+    const clone = el.cloneNode(true) as HTMLElement
+    clone.querySelectorAll('img[data-asset]').forEach((img) => {
+      const path = img.getAttribute('data-asset')
+      if (path) {
+        img.setAttribute('src', path)
+        img.removeAttribute('data-asset')
+      }
+    })
+    return clone.innerHTML
+  }
+
+  // For images whose src is a stored asset path, resolve to an object URL for
+  // display and tag the element with data-asset so emit() can restore the path.
+  function resolveAssetImages() {
+    const el = ref.current
+    if (!el) return
+    el.querySelectorAll('img').forEach((img) => {
+      const raw = img.getAttribute('src') || ''
+      if (raw && !isDirectUrl(raw) && !img.getAttribute('data-asset')) {
+        void resolveAssetUrl(raw).then((url) => {
+          if (url) {
+            img.setAttribute('data-asset', raw)
+            img.src = url
+          }
+        })
+      }
+    })
+  }
+
   function emit() {
-    if (ref.current) onChange(ref.current.innerHTML)
+    onChange(modelHtml())
   }
 
   function exec(command: string, value?: string) {
@@ -53,29 +150,68 @@ export default function RichTextEditor({
     }
   }
 
-  function insertImage(e: ChangeEvent<HTMLInputElement>) {
+  async function insertImage(e: ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
     e.target.value = ''
     if (!file) return
-    const reader = new FileReader()
-    reader.onload = () => {
-      const el = ref.current
-      if (!el) return
-      el.focus()
-      const sel = window.getSelection()
-      if (sel && savedRange.current) {
-        sel.removeAllRanges()
-        sel.addRange(savedRange.current)
-      }
-      // TODO (Phase 3): copy into the project's assets/ instead of a data URL.
-      document.execCommand('insertImage', false, String(reader.result))
-      emit()
+    let path: string
+    try {
+      // Stored in assets/ when a project is open (relative path), else a data URL.
+      path = await saveAsset(file, 'image')
+    } catch {
+      return // unsupported format — ignore
     }
-    reader.readAsDataURL(file)
+    const displaySrc = (await resolveAssetUrl(path)) ?? path
+
+    const el = ref.current
+    if (!el) return
+    el.focus()
+    const sel = window.getSelection()
+    if (sel && savedRange.current) {
+      sel.removeAllRanges()
+      sel.addRange(savedRange.current)
+    }
+    const img = document.createElement('img')
+    img.src = displaySrc
+    if (!isDirectUrl(path)) img.setAttribute('data-asset', path)
+
+    const range = sel && sel.rangeCount ? sel.getRangeAt(0) : null
+    if (range) {
+      range.collapse(false)
+      range.insertNode(img)
+      range.setStartAfter(img)
+      range.collapse(true)
+      sel!.removeAllRanges()
+      sel!.addRange(range)
+    } else {
+      el.appendChild(img)
+    }
+    emit()
   }
 
+  const currentWidth = imgSel
+    ? parseInt(imgSel.el.style.width, 10) || 100
+    : 100
+
   return (
-    <div className={className}>
+    <div ref={rootRef} className={className} style={{ position: 'relative' }}>
+      {imgSel && (
+        <div
+          className="absolute z-20 flex items-center gap-2 rounded-md border border-gray-200 bg-white px-2 py-1 shadow-sm"
+          style={{ left: imgSel.left, top: Math.max(0, imgSel.top - 40) }}
+        >
+          <span className="text-xs text-gray-500">{t('width')}</span>
+          <input
+            type="range"
+            min={10}
+            max={100}
+            value={currentWidth}
+            onChange={(e) => setImageWidth(Number(e.target.value))}
+            className="accent-brand"
+          />
+          <span className="w-8 text-xs text-gray-500">{currentWidth}%</span>
+        </div>
+      )}
       {focused && (
         <div className="mb-2 flex flex-wrap items-center gap-0.5 rounded-md border border-gray-200 bg-white p-1 shadow-sm">
           <ToolButton label={t('bold')} onClick={() => exec('bold')}>
@@ -117,15 +253,18 @@ export default function RichTextEditor({
           <ToolButton label={t('clearFormat')} onClick={() => exec('removeFormat')}>
             <IconClear />
           </ToolButton>
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/*"
-            className="hidden"
-            onChange={insertImage}
-          />
         </div>
       )}
+
+      {/* Kept outside the toolbar so it survives the blur when the OS file
+          dialog opens (otherwise the change event would never fire). */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        className="hidden"
+        onChange={insertImage}
+      />
 
       <div
         ref={ref}
@@ -134,6 +273,7 @@ export default function RichTextEditor({
         suppressContentEditableWarning
         data-placeholder={placeholder}
         onInput={emit}
+        onClick={onEditorClick}
         onMouseUp={saveSelection}
         onKeyUp={saveSelection}
         onFocus={() => setFocused(true)}

@@ -13,6 +13,7 @@ const richtext: LocaleTable = {
     alignRight: 'Align right',
     insertImage: 'Insert image',
     clearFormat: 'Clear formatting',
+    width: 'Width',
   },
   uk: {
     bold: 'Жирний',
@@ -25,6 +26,7 @@ const richtext: LocaleTable = {
     alignRight: 'Вирівняти праворуч',
     insertImage: 'Вставити зображення',
     clearFormat: 'Очистити форматування',
+    width: 'Ширина',
   },
 }
 

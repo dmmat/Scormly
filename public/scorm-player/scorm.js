@@ -1,70 +1,81 @@
-/* Minimal SCORM 1.2 runtime wrapper. Discovers the LMS API and exposes helpers.
-   No-ops gracefully when launched outside an LMS (e.g. local preview). */
+/* SCORM runtime wrapper supporting both SCORM 1.2 and 2004. Auto-detects which
+   API the LMS exposes (API_1484_11 = 2004, API = 1.2) and maps a small unified
+   interface onto the right data model. No-ops gracefully outside an LMS. */
 (function () {
   'use strict';
 
-  function findAPI(win) {
+  function find(win, name) {
     var tries = 0;
     while (win && tries < 10) {
-      if (win.API) return win.API;
-      if (win.parent && win.parent !== win) {
-        win = win.parent;
-        tries++;
-      } else {
-        break;
-      }
+      if (win[name]) return win[name];
+      if (win.parent && win.parent !== win) { win = win.parent; tries++; } else break;
     }
     return null;
   }
 
-  function getAPI() {
-    var api = findAPI(window);
-    if (!api && window.opener) api = findAPI(window.opener);
-    return api;
+  function discover() {
+    // Prefer 2004, then 1.2.
+    var api = find(window, 'API_1484_11');
+    if (api) return { api: api, v2004: true };
+    api = find(window, 'API');
+    if (api) return { api: api, v2004: false };
+    if (window.opener) {
+      api = find(window.opener, 'API_1484_11');
+      if (api) return { api: api, v2004: true };
+      api = find(window.opener, 'API');
+      if (api) return { api: api, v2004: false };
+    }
+    return null;
   }
 
-  var API = null;
-  var initialized = false;
+  var API = null, v2004 = false, ready = false;
+
+  function set(key, value) { if (ready && API) API[v2004 ? 'SetValue' : 'LMSSetValue'](key, String(value)); }
 
   var SCORM = {
     init: function () {
-      API = getAPI();
-      if (!API) return false;
-      var ok = API.LMSInitialize('') === 'true';
-      initialized = ok;
-      if (ok) {
-        // Mark as started if the LMS hasn't recorded a status yet.
+      var found = discover();
+      if (!found) return false;
+      API = found.api; v2004 = found.v2004;
+      ready = API[v2004 ? 'Initialize' : 'LMSInitialize']('') === 'true';
+      if (ready && !v2004) {
         var status = API.LMSGetValue('cmi.core.lesson_status');
-        if (!status || status === 'not attempted') {
-          API.LMSSetValue('cmi.core.lesson_status', 'incomplete');
-        }
+        if (!status || status === 'not attempted') set('cmi.core.lesson_status', 'incomplete');
       }
-      return ok;
+      return ready;
     },
-    set: function (key, value) {
-      if (initialized && API) API.LMSSetValue(key, String(value));
-    },
-    setStatus: function (status) {
-      this.set('cmi.core.lesson_status', status);
+    // completed: boolean; success: 'passed' | 'failed' | null
+    report: function (completed, success) {
+      if (v2004) {
+        set('cmi.completion_status', completed ? 'completed' : 'incomplete');
+        if (success) set('cmi.success_status', success);
+      } else {
+        set('cmi.core.lesson_status', success ? success : (completed ? 'completed' : 'incomplete'));
+      }
     },
     setScore: function (raw, min, max) {
-      this.set('cmi.core.score.raw', Math.round(raw));
-      this.set('cmi.core.score.min', min == null ? 0 : min);
-      this.set('cmi.core.score.max', max == null ? 100 : max);
-    },
-    commit: function () {
-      if (initialized && API) API.LMSCommit('');
-    },
-    finish: function () {
-      if (initialized && API) {
-        API.LMSCommit('');
-        API.LMSFinish('');
-        initialized = false;
+      var lo = min == null ? 0 : min, hi = max == null ? 100 : max;
+      if (v2004) {
+        set('cmi.score.raw', Math.round(raw));
+        set('cmi.score.min', lo);
+        set('cmi.score.max', hi);
+        var range = hi - lo || 1;
+        set('cmi.score.scaled', Math.max(0, Math.min(1, (raw - lo) / range)).toFixed(4));
+      } else {
+        set('cmi.core.score.raw', Math.round(raw));
+        set('cmi.core.score.min', lo);
+        set('cmi.core.score.max', hi);
       }
     },
-    available: function () {
-      return !!API;
+    commit: function () { if (ready && API) API[v2004 ? 'Commit' : 'LMSCommit'](''); },
+    finish: function () {
+      if (ready && API) {
+        API[v2004 ? 'Commit' : 'LMSCommit']('');
+        API[v2004 ? 'Terminate' : 'LMSFinish']('');
+        ready = false;
+      }
     },
+    available: function () { return !!API; },
   };
 
   window.SCORM = SCORM;

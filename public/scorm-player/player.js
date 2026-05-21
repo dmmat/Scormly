@@ -82,12 +82,12 @@
         var avg = avgOf(state.quizzes.map(function (q) { return state.quizResults[q.id]; }));
         var threshold = avgOf(state.quizzes.map(function (q) { return q.passingScore; }));
         SCORM.setScore(avg, 0, 100);
-        SCORM.setStatus(avg >= threshold ? 'passed' : 'failed');
+        SCORM.report(true, avg >= threshold ? 'passed' : 'failed');
       } else {
-        SCORM.setStatus('incomplete');
+        SCORM.report(false, null);
       }
     } else {
-      SCORM.setStatus(allVisited ? 'completed' : 'incomplete');
+      SCORM.report(allVisited, null);
     }
     SCORM.commit();
   }
