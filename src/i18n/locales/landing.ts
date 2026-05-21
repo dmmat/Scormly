@@ -79,6 +79,7 @@ const landing: LocaleTable = {
     // Footer
     footerTagline: 'Local-first course builder with SCORM export.',
     footerLicense: 'MIT licensed',
+    footerIssues: 'Report an issue',
     footerMade: 'Open source, made for educators.',
   },
   uk: {
@@ -158,6 +159,7 @@ const landing: LocaleTable = {
     // Footer
     footerTagline: 'Local-first конструктор курсів з експортом у SCORM.',
     footerLicense: 'Ліцензія MIT',
+    footerIssues: 'Повідомити про проблему',
     footerMade: 'Open source, для освітян.',
   },
 }

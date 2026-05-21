@@ -25,6 +25,13 @@ const initialCourse: Course = {
   ],
 }
 
+export type SaveState = 'idle' | 'saving' | 'saved' | 'error'
+
+export interface ProjectHistory {
+  past: Course[]
+  future: Course[]
+}
+
 export interface CourseState {
   course: Course
   activeLessonId: string | null
@@ -33,6 +40,11 @@ export interface CourseState {
   future: Course[]
   /** Key of the last edit, used to coalesce text typing into a single undo step. */
   lastCoalesceKey: string | null
+
+  // Project persistence (File System Access)
+  directoryHandle: FileSystemDirectoryHandle | null
+  projectName: string | null
+  saveState: SaveState
 
   // ── Selection / navigation ──
   setActiveLesson: (lessonId: string) => void
@@ -44,6 +56,16 @@ export interface CourseState {
   ) => void
   setTheme: (theme: ThemeId) => void
   loadCourse: (course: Course) => void
+
+  // ── Project ──
+  openProject: (
+    handle: FileSystemDirectoryHandle,
+    name: string,
+    course: Course,
+    history?: ProjectHistory,
+  ) => void
+  closeProject: () => void
+  setSaveState: (state: SaveState) => void
 
   // ── Lessons ──
   addLesson: () => void
@@ -111,6 +133,10 @@ export const useCourseStore = create<CourseState>((set, get) => {
     future: [],
     lastCoalesceKey: null,
 
+    directoryHandle: null,
+    projectName: null,
+    saveState: 'idle',
+
     setActiveLesson: (lessonId) =>
       set({ activeLessonId: lessonId, selectedBlockId: null }),
     selectBlock: (blockId) => set({ selectedBlockId: blockId }),
@@ -134,6 +160,24 @@ export const useCourseStore = create<CourseState>((set, get) => {
         future: [],
         lastCoalesceKey: null,
       }),
+
+    openProject: (handle, name, course, history) =>
+      set({
+        directoryHandle: handle,
+        projectName: name,
+        saveState: 'saved',
+        course,
+        activeLessonId: course.lessons[0]?.id ?? null,
+        selectedBlockId: null,
+        past: history?.past ?? [],
+        future: history?.future ?? [],
+        lastCoalesceKey: null,
+      }),
+
+    closeProject: () =>
+      set({ directoryHandle: null, projectName: null, saveState: 'idle' }),
+
+    setSaveState: (saveState) => set({ saveState }),
 
     addLesson: () => {
       const id = uid('lesson')

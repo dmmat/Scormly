@@ -66,14 +66,19 @@ Legend: `[ ]` planned · `[~]` in progress · `[x]` done
 - [x] `docs/adding-blocks.md` — how to add a new block type (4 steps)
 - [x] All docs and code comments in English; `CLAUDE.md` / `AGENTS.md` updated
 
-## Phase 3 — Local persistence (planned)
+## Phase 3 — Local persistence (in progress)
 
-- [ ] File System Access API: showDirectoryPicker, permissions
-- [ ] Save/load `project.json` (auto + Ctrl+S)
-- [ ] **Autosave** of changes to `project.json`
-- [ ] **Persist undo/redo history to a file** (sidecar) so redo survives reopening a project
-- [ ] Copy media into `assets/`, relative paths
-- [ ] Fallback for older browsers
+- [x] File System Access API wrapper (`lib/fileSystem.ts`): picker, permissions, JSON/blob I/O, feature detect
+- [x] Save/load `project.json` (autosave + Ctrl+S); store holds the directory handle, project name, save state
+- [x] **Autosave** (debounced) of changes to `project.json` (`hooks/useAutosave.ts`)
+- [x] **Persist undo/redo history to a sidecar file** (`.scormly-history.json`) so redo survives reopening a project
+- [x] Welcome screen (create / open project) with fallback for browsers without the File System Access API
+- [x] Save-status indicator + project name in the Header
+- [ ] Copy every uploaded file into the project `assets/` (images, videos), store relative paths
+- [ ] In-browser image optimization via canvas (downscale ~1920px + re-encode); preserve transparency (no JPEG flatten of PNG/WebP alpha); no video transcoding
+- [ ] Supported formats (SCORM-safe): images PNG/JPEG/WebP/GIF/SVG; video MP4 (H.264/AAC) recommended, WebM accepted; reject MOV/AVI
+
+> Note: File System Access flows need a real Chromium browser + user gesture; not yet verified live in this environment.
 
 ## UX phase — Extra requirements (planned, beyond spec v2)
 
@@ -86,8 +91,8 @@ encoding, so these requirements are tracked here as the living list.
 - [ ] Full keyboard shortcuts (currently only undo/redo): add/delete/duplicate block,
       navigation between blocks/lessons, save, etc.
 - [ ] Right-click context menu (actions on blocks and lessons)
-- [ ] Welcome screen on startup: "Open project from computer" / "Create new"
-      (folder picker) — to be built together with Phase 3 (File System Access API)
+- [x] Welcome screen on startup: "Open project from computer" / "Create new" (folder picker)
+- [x] GitHub issue templates + a "Report an issue" link in the app (Header + landing footer)
 
 ## Phase 4 — SCORM export (planned)
 
@@ -108,3 +113,4 @@ encoding, so these requirements are tracked here as the living list.
 - 2026-05-21 — Added documentation: README, LICENSE (MIT), docs/architecture.md, docs/adding-blocks.md.
 - 2026-05-21 — Added i18n (EN/UK) across the whole UI + LanguagePicker; default language English. Spacing/design polish across chrome and blocks.
 - 2026-05-21 — Added the SEO landing page (bilingual, FAQ, animations) with hash routing; builder moved to `#/app`. Translated all docs and code comments to English.
+- 2026-05-21 — Phase 3 core: File System Access wrapper, project create/open/save, autosave + history sidecar, welcome screen with fallback, save status in Header. Added GitHub issue templates + "Report an issue" links. Media-to-assets still pending. Build clean (80 modules).

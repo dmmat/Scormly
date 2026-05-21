@@ -4,9 +4,7 @@ import LanguagePicker from '../editor/LanguagePicker'
 import { useT } from '../../i18n/I18nProvider'
 import { useReveal } from '../../hooks/useReveal'
 import { navigate } from '../../hooks/useRoute'
-
-// Update to the real repository when publishing.
-const GITHUB_URL = 'https://github.com/dmmat/Scormly'
+import { GITHUB_URL, GITHUB_ISSUES_URL } from '../../lib/links'
 
 function Reveal({ children, delay }: { children: ReactNode; delay?: number }) {
   const { ref, visible } = useReveal()
@@ -302,6 +300,15 @@ export default function Landing() {
               className="hover:text-brand"
             >
               {t('navGithub')}
+            </a>
+            <span aria-hidden>·</span>
+            <a
+              href={GITHUB_ISSUES_URL}
+              target="_blank"
+              rel="noreferrer"
+              className="hover:text-brand"
+            >
+              {t('footerIssues')}
             </a>
             <span aria-hidden>·</span>
             <span>{t('footerLicense')}</span>
