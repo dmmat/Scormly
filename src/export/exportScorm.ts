@@ -48,7 +48,7 @@ async function addDir(
 }
 
 // Build and download a SCORM package (1.2 or 2004) for the current course.
-export async function exportScorm(version: ScormVersion = '1.2'): Promise<void> {
+export async function exportScorm(version: ScormVersion = '2004'): Promise<void> {
   const { course, directoryHandle } = useCourseStore.getState()
   const zip = new JSZip()
   const base = import.meta.env.BASE_URL

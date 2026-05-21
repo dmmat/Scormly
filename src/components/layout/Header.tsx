@@ -171,16 +171,16 @@ export default function Header() {
                 }}
               />
               <MoreItem
-                label={t('export12')}
+                label={t('export2004')}
                 onClick={() => {
-                  void exportScorm('1.2')
+                  void exportScorm('2004')
                   setMoreOpen(false)
                 }}
               />
               <MoreItem
-                label={`${t('export2004')} (${t('untested')})`}
+                label={t('export12')}
                 onClick={() => {
-                  void exportScorm('2004')
+                  void exportScorm('1.2')
                   setMoreOpen(false)
                 }}
               />
