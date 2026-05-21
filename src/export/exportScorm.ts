@@ -5,17 +5,14 @@ import type { Course } from '../types/course'
 
 const PLAYER_FILES = ['index.html', 'player.css', 'player.js', 'scorm.js']
 
-// Overall passing score = mean of each quiz's passing score, declared in the
-// manifest so the LMS knows the mastery threshold. Undefined when no quizzes.
+// Passing score declared in the manifest so the LMS knows the mastery
+// threshold. Comes from project settings; undefined when the course is not
+// scored or has no quizzes (completion-only course).
 function overallPassingScore(course: Course): number | undefined {
-  const scores: number[] = []
-  for (const lesson of course.lessons) {
-    for (const block of lesson.blocks) {
-      if (block.type === 'quiz') scores.push(block.data.passingScore)
-    }
-  }
-  if (!scores.length) return undefined
-  return Math.round(scores.reduce((a, b) => a + b, 0) / scores.length)
+  if (!course.settings?.scored) return undefined
+  const hasQuiz = course.lessons.some((l) => l.blocks.some((b) => b.type === 'quiz'))
+  if (!hasQuiz) return undefined
+  return Math.round(course.settings.passingScore)
 }
 
 function escapeHtml(s: string): string {

@@ -4,16 +4,22 @@ import { useT } from '../../i18n/I18nProvider'
 import { THEME_LIST } from '../../theme/themes'
 import { saveAsset } from '../../lib/assets'
 import { useAssetUrl } from '../../hooks/useAssetUrl'
+import { DEFAULT_COURSE_SETTINGS, type CompletionRule } from '../../types/course'
 
 const IMAGE_ACCEPT = 'image/png,image/jpeg,image/webp,image/gif,image/svg+xml'
 
-// Lightweight project settings modal: course title, description, cover, theme.
+// Lightweight project settings modal: course title, description, cover, theme,
+// and SCORM completion/scoring rules.
 export default function ProjectSettings({ onClose }: { onClose: () => void }) {
   const course = useCourseStore((s) => s.course)
   const updateCourseMeta = useCourseStore((s) => s.updateCourseMeta)
   const setTheme = useCourseStore((s) => s.setTheme)
+  const updateSettings = useCourseStore((s) => s.updateSettings)
   const { t } = useT('settings')
   const coverUrl = useAssetUrl(course.coverImage ?? '')
+
+  const settings = course.settings ?? DEFAULT_COURSE_SETTINGS
+  const hasQuiz = course.lessons.some((l) => l.blocks.some((b) => b.type === 'quiz'))
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
@@ -129,6 +135,80 @@ export default function ProjectSettings({ onClose }: { onClose: () => void }) {
               ))}
             </div>
           </Field>
+
+          <div className="border-t border-gray-100 pt-5">
+            <h3 className="mb-3 text-sm font-semibold text-gray-900">
+              {t('completionSection')}
+            </h3>
+
+            <Field label={t('completionLabel')}>
+              <div className="space-y-2">
+                {(
+                  [
+                    ['view', t('completionView'), t('completionViewHelp')],
+                    ['quiz', t('completionQuiz'), t('completionQuizHelp')],
+                  ] as [CompletionRule, string, string][]
+                ).map(([value, label, help]) => (
+                  <button
+                    key={value}
+                    type="button"
+                    onClick={() => updateSettings({ completion: value })}
+                    className={`block w-full rounded-lg border px-3 py-2 text-left text-sm ${
+                      settings.completion === value
+                        ? 'border-brand bg-brand/5 text-gray-900'
+                        : 'border-gray-200 text-gray-600 hover:bg-gray-50'
+                    }`}
+                  >
+                    <span className="font-medium">{label}</span>
+                    <span className="mt-0.5 block text-xs text-gray-500">{help}</span>
+                  </button>
+                ))}
+              </div>
+            </Field>
+
+            <label className="mt-4 flex cursor-pointer items-start gap-2.5">
+              <input
+                type="checkbox"
+                checked={settings.scored}
+                onChange={(e) => updateSettings({ scored: e.target.checked })}
+                className="mt-0.5 h-4 w-4 accent-brand"
+              />
+              <span>
+                <span className="block text-sm font-medium text-gray-900">
+                  {t('scoredLabel')}
+                </span>
+                <span className="mt-0.5 block text-xs text-gray-500">{t('scoredHelp')}</span>
+              </span>
+            </label>
+
+            {settings.scored && (
+              <div className="mt-4">
+                <Field label={t('passingScore')}>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="number"
+                      min={0}
+                      max={100}
+                      value={settings.passingScore}
+                      onChange={(e) =>
+                        updateSettings({
+                          passingScore: Math.max(0, Math.min(100, Number(e.target.value) || 0)),
+                        })
+                      }
+                      className="w-24 rounded-md border border-gray-300 px-3 py-2 text-sm outline-none focus:border-brand"
+                    />
+                    <span className="text-sm text-gray-500">%</span>
+                  </div>
+                  <span className="mt-1.5 block text-xs text-gray-500">
+                    {t('passingScoreHelp')}
+                  </span>
+                </Field>
+                {!hasQuiz && (
+                  <p className="mt-2 text-xs text-amber-600">{t('noQuizNote')}</p>
+                )}
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>

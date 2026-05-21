@@ -56,7 +56,7 @@
     // Index all quiz blocks for scoring.
     (course.lessons || []).forEach(function (lesson) {
       (lesson.blocks || []).forEach(function (b) {
-        if (b.type === 'quiz') state.quizzes.push({ id: b.id, passingScore: b.data.passingScore });
+        if (b.type === 'quiz') state.quizzes.push({ id: b.id });
       });
     });
 
@@ -108,29 +108,45 @@
     document.querySelector('.player-body').scrollTop = 0;
   }
 
+  var DEFAULT_SETTINGS = { completion: 'quiz', scored: true, passingScore: 80 };
+  function settings() {
+    var s = state.course.settings || {};
+    return {
+      completion: s.completion || DEFAULT_SETTINGS.completion,
+      scored: s.scored !== false,
+      passingScore: typeof s.passingScore === 'number' ? s.passingScore : DEFAULT_SETTINGS.passingScore,
+    };
+  }
+
   function reportProgress() {
     var lessons = state.course.lessons || [];
+    var cfg = settings();
     var completedCount = 0;
     lessons.forEach(function (_, i) { if (lessonComplete(i)) completedCount++; });
-    var allComplete = lessons.length > 0 && completedCount === lessons.length;
+    var contentDone = lessons.length > 0 && completedCount === lessons.length;
     SCORM.setProgress(lessons.length ? completedCount / lessons.length : 0);
 
-    if (state.quizzes.length) {
-      var done = state.quizzes.filter(function (q) { return state.quizResults[q.id] != null; });
-      if (done.length === state.quizzes.length && allComplete) {
-        var avg = avgOf(state.quizzes.map(function (q) { return state.quizResults[q.id]; }));
-        var threshold = avgOf(state.quizzes.map(function (q) { return q.passingScore; }));
-        state.complete = true;
-        SCORM.setScore(avg, 0, 100);
-        SCORM.report(true, avg >= threshold ? 'passed' : 'failed');
-      } else {
-        state.complete = false;
-        SCORM.report(false, null);
-      }
-    } else {
-      state.complete = allComplete;
-      SCORM.report(allComplete, null);
+    var hasQuiz = state.quizzes.length > 0;
+    var quizzesDone = hasQuiz && state.quizzes.every(function (q) {
+      return state.quizResults[q.id] != null;
+    });
+
+    // Completion criterion (project setting). 'quiz' also requires every quiz
+    // answered; falls back to content-only when the course has no quizzes.
+    var completed = (cfg.completion === 'quiz' && hasQuiz)
+      ? (contentDone && quizzesDone)
+      : contentDone;
+
+    // Scoring / pass-fail — only when enabled and the course has quizzes.
+    var success = null;
+    if (cfg.scored && hasQuiz && quizzesDone) {
+      var avg = avgOf(state.quizzes.map(function (q) { return state.quizResults[q.id]; }));
+      SCORM.setScore(avg, 0, 100);
+      if (completed) success = avg >= cfg.passingScore ? 'passed' : 'failed';
     }
+
+    state.complete = completed;
+    SCORM.report(completed, success);
     SCORM.setSuspend(JSON.stringify({
       l: state.lessonIndex,
       v: Object.keys(state.visited).map(Number),
