@@ -37,7 +37,7 @@ export default function Workspace() {
       className="flex-1 overflow-y-auto bg-gray-100"
       onClick={() => selectBlock(null)}
     >
-      <div className="mx-auto max-w-3xl px-6 py-10">
+      <div className="mx-auto max-w-3xl px-4 py-6 sm:px-6 sm:py-10">
         {activeLesson ? (
           <>
             <header className="mb-8">

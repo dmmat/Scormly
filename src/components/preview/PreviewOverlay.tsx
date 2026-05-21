@@ -28,7 +28,7 @@ export default function PreviewOverlay() {
           <span className="truncate font-semibold text-gray-900">
             {course.title}
           </span>
-          <span className="shrink-0 text-sm text-gray-400">
+          <span className="hidden shrink-0 text-sm text-gray-400 sm:inline">
             {t('progress', { n: index + 1, total })}
           </span>
         </div>
@@ -61,7 +61,7 @@ export default function PreviewOverlay() {
       </header>
 
       <div className="flex-1 overflow-y-auto bg-gray-50">
-        <div className="mx-auto max-w-3xl px-6 py-10">
+        <div className="mx-auto max-w-3xl px-4 py-6 sm:px-6 sm:py-10">
           {lesson ? (
             <>
               <h1 className="mb-8 text-3xl font-bold text-gray-900">

@@ -22,6 +22,8 @@ export default function Sidebar() {
   const addLesson = useCourseStore((s) => s.addLesson)
   const moveLesson = useCourseStore((s) => s.moveLesson)
   const updateCourseMeta = useCourseStore((s) => s.updateCourseMeta)
+  const sidebarOpen = useCourseStore((s) => s.sidebarOpen)
+  const setSidebarOpen = useCourseStore((s) => s.setSidebarOpen)
   const { t } = useT('common')
   const [editingId, setEditingId] = useState<string | null>(null)
   const sensors = useSensors(
@@ -36,7 +38,19 @@ export default function Sidebar() {
   }
 
   return (
-    <aside className="flex w-64 shrink-0 flex-col border-r border-gray-200 bg-gray-50">
+    <>
+      {/* Backdrop for the mobile drawer. */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 z-30 bg-black/30 md:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+      <aside
+        className={`fixed inset-y-0 left-0 z-40 flex w-72 flex-col border-r border-gray-200 bg-gray-50 transition-transform md:static md:z-auto md:w-64 md:translate-x-0 ${
+          sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+        }`}
+      >
       <div className="border-b border-gray-200 px-4 py-3">
         <p className="text-xs font-semibold uppercase tracking-wide text-gray-400">
           {t('course')}
@@ -84,7 +98,8 @@ export default function Sidebar() {
           + {t('addLesson')}
         </button>
       </div>
-    </aside>
+      </aside>
+    </>
   )
 }
 
@@ -105,6 +120,7 @@ function SortableLesson({
 }: SortableLessonProps) {
   const activeLessonId = useCourseStore((s) => s.activeLessonId)
   const setActiveLesson = useCourseStore((s) => s.setActiveLesson)
+  const setSidebarOpen = useCourseStore((s) => s.setSidebarOpen)
   const renameLesson = useCourseStore((s) => s.renameLesson)
   const deleteLesson = useCourseStore((s) => s.deleteLesson)
   const { t } = useT('common')
@@ -121,7 +137,10 @@ function SortableLesson({
   return (
     <li ref={setNodeRef} style={style} className="group relative">
       <div
-        onClick={() => setActiveLesson(lesson.id)}
+        onClick={() => {
+          setActiveLesson(lesson.id)
+          setSidebarOpen(false)
+        }}
         className={`flex w-full items-center gap-2 rounded-md px-2 py-2 text-left text-sm transition-colors ${
           isActive
             ? 'bg-brand/10 font-medium text-brand-dark'

@@ -51,6 +51,10 @@ export interface CourseState {
   previewOpen: boolean
   setPreviewOpen: (open: boolean) => void
 
+  // Mobile lessons drawer
+  sidebarOpen: boolean
+  setSidebarOpen: (open: boolean) => void
+
   // ── Selection / navigation ──
   setActiveLesson: (lessonId: string) => void
   selectBlock: (blockId: string | null) => void
@@ -151,6 +155,9 @@ export const useCourseStore = create<CourseState>((set, get) => {
 
     previewOpen: false,
     setPreviewOpen: (open) => set({ previewOpen: open }),
+
+    sidebarOpen: false,
+    setSidebarOpen: (open) => set({ sidebarOpen: open }),
 
     setActiveLesson: (lessonId) =>
       set({ activeLessonId: lessonId, selectedBlockId: null }),

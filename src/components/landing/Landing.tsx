@@ -84,7 +84,7 @@ export default function Landing() {
         <div className="pointer-events-none absolute inset-0 -z-10">
           <div className="absolute -top-24 left-1/2 h-96 w-96 -translate-x-1/2 rounded-full bg-brand/10 blur-3xl" />
         </div>
-        <div className="mx-auto max-w-4xl px-6 py-24 text-center sm:py-32">
+        <div className="mx-auto max-w-4xl px-6 py-16 text-center sm:py-24 md:py-32">
           <span className="reveal-visible inline-flex items-center rounded-full border border-brand/30 bg-brand/10 px-4 py-1.5 text-sm font-medium text-brand-dark">
             {t('heroBadge')}
           </span>
