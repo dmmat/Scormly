@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import type { BlockComponentProps } from '../types'
 import type { BlockOfType, TabItem } from '../../types/course'
 import { useCourseStore } from '../../store/courseStore'
-import { useT } from '../../i18n/I18nProvider'
+import { useT, translate } from '../../i18n/I18nProvider'
 import { uid } from '../../lib/id'
 
 export default function TabsBlock({
@@ -41,7 +41,10 @@ export default function TabsBlock({
   }
 
   function addTab() {
-    const next = [...tabs, { id: uid('tab'), title: 'Нова вкладка', html: '' }]
+    const next = [
+      ...tabs,
+      { id: uid('tab'), title: translate('content', 'newTab'), html: '' },
+    ]
     update(lessonId, block.id, { tabs: next })
     setActive(next.length - 1)
   }

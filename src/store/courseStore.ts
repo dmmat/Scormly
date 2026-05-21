@@ -10,6 +10,7 @@ import type {
 import { createBlock } from '../blocks/registry'
 import { DEFAULT_THEME } from '../theme/themes'
 import { uid } from '../lib/id'
+import { translate } from '../i18n/I18nProvider'
 
 const HISTORY_LIMIT = 100
 
@@ -184,7 +185,7 @@ export const useCourseStore = create<CourseState>((set, get) => {
       mutate((c) => {
         c.lessons.push({
           id,
-          title: `Урок ${c.lessons.length + 1}`,
+          title: translate('content', 'lessonN', { n: c.lessons.length + 1 }),
           status: 'draft',
           blocks: [],
         })

@@ -30,7 +30,7 @@ export default function BlockShell({
   return (
     <div
       onClick={() => selectBlock(block.id)}
-      className={`group relative rounded-lg transition-shadow ${
+      className={`group relative rounded-lg p-4 transition-shadow ${
         selected
           ? 'ring-2 ring-brand'
           : 'ring-1 ring-transparent hover:ring-gray-200'

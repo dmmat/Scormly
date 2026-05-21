@@ -1,17 +1,16 @@
 // Block type registry: metadata for the "+ Add block" menu and a factory for
 // default blocks. Adding a new block type = a new entry here + renderer/editor.
+// Display labels/descriptions live in i18n (the `blocks` namespace); default
+// content is localized at creation time via the `content` namespace.
 
 import type { Block, BlockType } from '../types/course'
 import { uid } from '../lib/id'
+import { translate } from '../i18n/I18nProvider'
 
 export type BlockCategory = 'text' | 'media' | 'interactive' | 'navigation'
 
 export interface BlockMeta {
   type: BlockType
-  /** Label in the add menu. */
-  label: string
-  /** Short description under the label. */
-  description: string
   category: BlockCategory
   /** Icon name (emoji placeholder until an icon set is wired up). */
   icon: string
@@ -21,63 +20,56 @@ export interface BlockMeta {
 
 const baseSettings = { spacing: 'normal' as const }
 
+const c = (key: string, vars?: Record<string, string | number>) =>
+  translate('content', key, vars)
+
 export const BLOCK_REGISTRY: Record<BlockType, BlockMeta> = {
   heading: {
     type: 'heading',
-    label: 'Заголовок',
-    description: 'H1, H2 або H3',
     category: 'text',
     icon: 'H',
     create: () => ({
       id: uid('block'),
       type: 'heading',
       settings: { ...baseSettings },
-      data: { level: 2, text: 'Новий заголовок' },
+      data: { level: 2, text: c('newHeading') },
     }),
   },
   paragraph: {
     type: 'paragraph',
-    label: 'Абзац',
-    description: 'Звичайний текст',
     category: 'text',
     icon: '¶',
     create: () => ({
       id: uid('block'),
       type: 'paragraph',
       settings: { ...baseSettings },
-      data: { html: '<p>Введіть текст…</p>' },
+      data: { html: `<p>${c('newParagraph')}</p>` },
     }),
   },
   list: {
     type: 'list',
-    label: 'Список',
-    description: 'Маркований або нумерований',
     category: 'text',
     icon: '•',
     create: () => ({
       id: uid('block'),
       type: 'list',
       settings: { ...baseSettings },
-      data: { ordered: false, items: ['Перший пункт', 'Другий пункт'] },
+      data: { ordered: false, items: [c('listItem1'), c('listItem2')] },
     }),
   },
   note: {
     type: 'note',
-    label: 'Акцент',
-    description: 'Note / Warning з іконкою',
     category: 'text',
     icon: '!',
     create: () => ({
       id: uid('block'),
       type: 'note',
       settings: { ...baseSettings },
-      data: { variant: 'note', text: 'Важлива примітка для студента.' },
+      data: { variant: 'note', text: c('noteText') },
     }),
   },
   image: {
     type: 'image',
-    label: 'Зображення',
-    description: 'Одне зображення з підписом',
     category: 'media',
     icon: '🖼',
     create: () => ({
@@ -89,8 +81,6 @@ export const BLOCK_REGISTRY: Record<BlockType, BlockMeta> = {
   },
   gallery: {
     type: 'gallery',
-    label: 'Галерея',
-    description: 'Кілька зображень',
     category: 'media',
     icon: '🖼🖼',
     create: () => ({
@@ -102,8 +92,6 @@ export const BLOCK_REGISTRY: Record<BlockType, BlockMeta> = {
   },
   video: {
     type: 'video',
-    label: 'Відео',
-    description: 'Локальний файл (HTML5)',
     category: 'media',
     icon: '▶',
     create: () => ({
@@ -115,21 +103,17 @@ export const BLOCK_REGISTRY: Record<BlockType, BlockMeta> = {
   },
   continue: {
     type: 'continue',
-    label: 'Кнопка «Продовжити»',
-    description: 'Розділювач сторінки',
     category: 'navigation',
     icon: '⏭',
     create: () => ({
       id: uid('block'),
       type: 'continue',
       settings: { ...baseSettings },
-      data: { mode: 'unrestricted', label: 'Продовжити' },
+      data: { mode: 'unrestricted', label: c('continueLabel') },
     }),
   },
   tabs: {
     type: 'tabs',
-    label: 'Вкладки',
-    description: 'Контент за табами',
     category: 'interactive',
     icon: '▭',
     create: () => ({
@@ -138,16 +122,22 @@ export const BLOCK_REGISTRY: Record<BlockType, BlockMeta> = {
       settings: { ...baseSettings },
       data: {
         tabs: [
-          { id: uid('tab'), title: 'Вкладка 1', html: '<p>Зміст вкладки 1</p>' },
-          { id: uid('tab'), title: 'Вкладка 2', html: '<p>Зміст вкладки 2</p>' },
+          {
+            id: uid('tab'),
+            title: c('tabTitle', { n: 1 }),
+            html: `<p>${c('tabContent', { n: 1 })}</p>`,
+          },
+          {
+            id: uid('tab'),
+            title: c('tabTitle', { n: 2 }),
+            html: `<p>${c('tabContent', { n: 2 })}</p>`,
+          },
         ],
       },
     }),
   },
   accordion: {
     type: 'accordion',
-    label: 'Акордеон',
-    description: 'Згортувані секції',
     category: 'interactive',
     icon: '≡',
     create: () => ({
@@ -156,16 +146,22 @@ export const BLOCK_REGISTRY: Record<BlockType, BlockMeta> = {
       settings: { ...baseSettings },
       data: {
         items: [
-          { id: uid('acc'), title: 'Секція 1', html: '<p>Зміст секції 1</p>' },
-          { id: uid('acc'), title: 'Секція 2', html: '<p>Зміст секції 2</p>' },
+          {
+            id: uid('acc'),
+            title: c('sectionTitle', { n: 1 }),
+            html: `<p>${c('sectionContent', { n: 1 })}</p>`,
+          },
+          {
+            id: uid('acc'),
+            title: c('sectionTitle', { n: 2 }),
+            html: `<p>${c('sectionContent', { n: 2 })}</p>`,
+          },
         ],
       },
     }),
   },
   flashcards: {
     type: 'flashcards',
-    label: 'Картки',
-    description: 'Картки-перевертні',
     category: 'interactive',
     icon: '🂠',
     create: () => ({
@@ -173,16 +169,12 @@ export const BLOCK_REGISTRY: Record<BlockType, BlockMeta> = {
       type: 'flashcards',
       settings: { ...baseSettings },
       data: {
-        cards: [
-          { id: uid('card'), front: 'Термін', back: 'Визначення' },
-        ],
+        cards: [{ id: uid('card'), front: c('cardFront'), back: c('cardBack') }],
       },
     }),
   },
   scenario: {
     type: 'scenario',
-    label: 'Діалоговий тренажер',
-    description: 'Сценарій з вибором',
     category: 'interactive',
     icon: '💬',
     create: () => {
@@ -193,15 +185,15 @@ export const BLOCK_REGISTRY: Record<BlockType, BlockMeta> = {
         settings: { ...baseSettings },
         data: {
           characterImages: {},
-          characterName: 'Персонаж',
+          characterName: c('scenarioCharacter'),
           startNodeId: startId,
           nodes: [
             {
               id: startId,
-              text: 'Привіт! З чого почнемо?',
+              text: c('scenarioNodeText'),
               emotion: 'neutral',
               choices: [
-                { id: uid('choice'), text: 'Варіант відповіді', nextNodeId: null },
+                { id: uid('choice'), text: c('scenarioChoice'), nextNodeId: null },
               ],
             },
           ],
@@ -211,8 +203,6 @@ export const BLOCK_REGISTRY: Record<BlockType, BlockMeta> = {
   },
   quiz: {
     type: 'quiz',
-    label: 'Квіз',
-    description: 'Питання з оцінюванням',
     category: 'interactive',
     icon: '✔',
     create: () => ({
@@ -225,10 +215,10 @@ export const BLOCK_REGISTRY: Record<BlockType, BlockMeta> = {
           {
             id: uid('q'),
             type: 'single',
-            prompt: 'Текст питання?',
+            prompt: c('quizPrompt'),
             options: [
-              { id: uid('opt'), text: 'Правильна відповідь', correct: true },
-              { id: uid('opt'), text: 'Неправильна відповідь', correct: false },
+              { id: uid('opt'), text: c('quizCorrect'), correct: true },
+              { id: uid('opt'), text: c('quizWrong'), correct: false },
             ],
           },
         ],
@@ -237,12 +227,12 @@ export const BLOCK_REGISTRY: Record<BlockType, BlockMeta> = {
   },
 }
 
-/** Order and grouping for the add menu. */
-export const BLOCK_CATEGORIES: { category: BlockCategory; label: string }[] = [
-  { category: 'text', label: 'Текст' },
-  { category: 'media', label: 'Медіа' },
-  { category: 'interactive', label: 'Інтерактив' },
-  { category: 'navigation', label: 'Навігація' },
+/** Category order for the add menu (labels come from i18n `common`). */
+export const BLOCK_CATEGORIES: { category: BlockCategory }[] = [
+  { category: 'text' },
+  { category: 'media' },
+  { category: 'interactive' },
+  { category: 'navigation' },
 ]
 
 export function createBlock(type: BlockType): Block {

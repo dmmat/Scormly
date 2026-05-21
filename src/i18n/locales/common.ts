@@ -30,6 +30,13 @@ const common: LocaleTable = {
     catMedia: 'Media',
     catInteractive: 'Interactive',
     catNavigation: 'Navigation',
+
+    newProject: 'New project…',
+    openProject: 'Open project…',
+    closeProject: 'Close project',
+    renameLesson: 'Rename',
+    deleteLesson: 'Delete lesson',
+    courseTitle: 'Course title',
   },
   uk: {
     save: 'Зберегти',
@@ -58,6 +65,13 @@ const common: LocaleTable = {
     catMedia: 'Медіа',
     catInteractive: 'Інтерактив',
     catNavigation: 'Навігація',
+
+    newProject: 'Новий проєкт…',
+    openProject: 'Відкрити проєкт…',
+    closeProject: 'Закрити проєкт',
+    renameLesson: 'Перейменувати',
+    deleteLesson: 'Видалити урок',
+    courseTitle: 'Назва курсу',
   },
 }
 

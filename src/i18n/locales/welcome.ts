@@ -11,6 +11,8 @@ const welcome: LocaleTable = {
     openText: 'Select a folder that already contains a Scormly project.',
     openCta: 'Open folder',
     privacyNote: 'Everything stays on your device. Nothing is uploaded.',
+    recentTitle: 'Recent projects',
+    removeRecent: 'Remove from list',
     noProject: 'No Scormly project was found in that folder. Pick the project folder, or create a new project.',
     cancelled: 'Folder selection was cancelled.',
     genericError: 'Something went wrong. Please try again.',

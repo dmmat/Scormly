@@ -2,7 +2,7 @@ import { useState } from 'react'
 import type { BlockComponentProps } from '../types'
 import type { BlockOfType } from '../../types/course'
 import { useCourseStore } from '../../store/courseStore'
-import { useT } from '../../i18n/I18nProvider'
+import { useT, translate } from '../../i18n/I18nProvider'
 import { uid } from '../../lib/id'
 
 export default function FlashcardsBlock({
@@ -31,7 +31,14 @@ export default function FlashcardsBlock({
 
   function addCard() {
     update(lessonId, block.id, {
-      cards: [...cards, { id: uid('card'), front: 'Лицьова сторона', back: 'Зворотна сторона' }],
+      cards: [
+        ...cards,
+        {
+          id: uid('card'),
+          front: translate('content', 'cardFront'),
+          back: translate('content', 'cardBack'),
+        },
+      ],
     })
   }
 

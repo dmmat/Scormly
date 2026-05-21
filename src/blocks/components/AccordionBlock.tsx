@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import type { BlockComponentProps } from '../types'
 import type { BlockOfType } from '../../types/course'
 import { useCourseStore } from '../../store/courseStore'
-import { useT } from '../../i18n/I18nProvider'
+import { useT, translate } from '../../i18n/I18nProvider'
 import { uid } from '../../lib/id'
 
 function AccordionBody({
@@ -71,7 +71,10 @@ export default function AccordionBlock({
   function addItem() {
     const id = uid('acc')
     update(lessonId, block.id, {
-      items: [...items, { id, title: 'Нова секція', html: '' }],
+      items: [
+        ...items,
+        { id, title: translate('content', 'newSection'), html: '' },
+      ],
     })
     setOpen((prev) => new Set(prev).add(id))
   }

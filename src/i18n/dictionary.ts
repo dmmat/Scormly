@@ -8,6 +8,7 @@ import scenario from './locales/scenario'
 import quiz from './locales/quiz'
 import landing from './locales/landing'
 import welcome from './locales/welcome'
+import content from './locales/content'
 
 // All translation namespaces. Each lives in its own file (src/i18n/locales/),
 // so they can be worked on in parallel without conflicts.
@@ -22,6 +23,7 @@ export const DICTIONARY = {
   quiz,
   landing,
   welcome,
+  content,
 }
 
 export type Namespace = keyof typeof DICTIONARY

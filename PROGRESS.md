@@ -78,6 +78,12 @@ Legend: `[ ]` planned · `[~]` in progress · `[x]` done
 - [ ] In-browser image optimization via canvas (downscale ~1920px + re-encode); preserve transparency (no JPEG flatten of PNG/WebP alpha); no video transcoding
 - [ ] Supported formats (SCORM-safe): images PNG/JPEG/WebP/GIF/SVG; video MP4 (H.264/AAC) recommended, WebM accepted; reject MOV/AVI
 
+- [x] Localized default content at creation time (course/lesson/block defaults follow the UI language via a non-React `translate()`)
+- [x] Rename course (Sidebar) and lessons (inline edit + delete) ; localized "Add lesson"
+- [x] "Open another / new / close project" menu in the Header
+- [x] Recent projects remembered in IndexedDB and shown on the welcome screen
+- [x] Selection ring given 16px breathing room around block content (BlockShell)
+
 > Note: File System Access flows need a real Chromium browser + user gesture; not yet verified live in this environment.
 
 ## UX phase — Extra requirements (planned, beyond spec v2)

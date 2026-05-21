@@ -8,7 +8,7 @@ import type {
 } from '../../types/course'
 import { useCourseStore } from '../../store/courseStore'
 import { uid } from '../../lib/id'
-import { useT } from '../../i18n/I18nProvider'
+import { useT, translate } from '../../i18n/I18nProvider'
 
 // labelKey — translation key for the emotion name (resolved via t() in the component).
 const EMOTIONS: { value: ScenarioEmotion; emoji: string; labelKey: string }[] = [
@@ -117,7 +117,11 @@ export default function ScenarioBlock({
   }
 
   function addChoice(nodeId: string) {
-    const choice: ScenarioChoice = { id: uid('choice'), text: '', nextNodeId: null }
+    const choice: ScenarioChoice = {
+      id: uid('choice'),
+      text: translate('content', 'scenarioChoice'),
+      nextNodeId: null,
+    }
     patchNode(nodeId, {
       choices: [...(nodes.find((n) => n.id === nodeId)?.choices ?? []), choice],
     })

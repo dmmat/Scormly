@@ -8,7 +8,7 @@ import type {
 } from '../../types/course'
 import { useCourseStore } from '../../store/courseStore'
 import { uid } from '../../lib/id'
-import { useT } from '../../i18n/I18nProvider'
+import { useT, translate } from '../../i18n/I18nProvider'
 
 const TYPE_LABEL_KEYS: Record<QuestionType, string> = {
   single: 'typeSingle',
@@ -17,7 +17,11 @@ const TYPE_LABEL_KEYS: Record<QuestionType, string> = {
 }
 
 function newOption(correct = false): ChoiceOption {
-  return { id: uid('opt'), text: '', correct }
+  return {
+    id: uid('opt'),
+    text: translate('content', correct ? 'quizCorrect' : 'quizWrong'),
+    correct,
+  }
 }
 
 function newPair(): MatchingPair {
@@ -28,7 +32,7 @@ function newQuestion(): Question {
   return {
     id: uid('q'),
     type: 'single',
-    prompt: '',
+    prompt: translate('content', 'quizPrompt'),
     options: [newOption(true), newOption()],
   }
 }

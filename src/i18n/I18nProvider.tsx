@@ -12,6 +12,36 @@ import { DICTIONARY, type Namespace } from './dictionary'
 
 const STORAGE_KEY = 'scormly-language'
 
+// Current UI language mirrored at module scope so non-React code (the store,
+// services) can localize default content via translate().
+let currentLanguage: Language = DEFAULT_LANGUAGE
+
+export function getCurrentLanguage(): Language {
+  return currentLanguage
+}
+
+function interpolate(
+  str: string,
+  vars?: Record<string, string | number>,
+): string {
+  if (!vars) return str
+  let out = str
+  for (const [k, v] of Object.entries(vars)) {
+    out = out.replace(new RegExp(`\\{${k}\\}`, 'g'), String(v))
+  }
+  return out
+}
+
+/** Translate outside React (uses the last-known UI language). */
+export function translate(
+  namespace: Namespace,
+  key: string,
+  vars?: Record<string, string | number>,
+): string {
+  const table = DICTIONARY[namespace][currentLanguage]
+  return interpolate(table[key] ?? key, vars)
+}
+
 interface I18nContextValue {
   lang: Language
   setLang: (lang: Language) => void
@@ -32,10 +62,12 @@ export function I18nProvider({ children }: { children: ReactNode }) {
 
   const setLang = useCallback((next: Language) => {
     setLangState(next)
+    currentLanguage = next
     localStorage.setItem(STORAGE_KEY, next)
   }, [])
 
   useEffect(() => {
+    currentLanguage = lang
     document.documentElement.lang = lang
   }, [lang])
 

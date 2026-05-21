@@ -1,6 +1,7 @@
 import Logo from './Logo'
 import ThemePicker from '../editor/ThemePicker'
 import LanguagePicker from '../editor/LanguagePicker'
+import ProjectMenu from '../editor/ProjectMenu'
 import { useCourseStore } from '../../store/courseStore'
 import { useT } from '../../i18n/I18nProvider'
 import { saveProject } from '../../lib/projectService'
@@ -33,7 +34,7 @@ export default function Header() {
           <Logo />
         </a>
         {projectName ? (
-          <span className="truncate text-sm text-gray-400">/ {projectName}</span>
+          <ProjectMenu />
         ) : (
           <span className="truncate text-xs text-gray-400">
             {tw('noFolderTitle')}

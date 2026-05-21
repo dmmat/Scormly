@@ -5,6 +5,7 @@
 import type { Course } from '../types/course'
 import { DEFAULT_THEME } from '../theme/themes'
 import { uid } from './id'
+import { translate } from '../i18n/I18nProvider'
 import { useCourseStore, type ProjectHistory } from '../store/courseStore'
 import {
   ensurePermission,
@@ -12,6 +13,7 @@ import {
   readJson,
   writeJson,
 } from './fileSystem'
+import { rememberRecentProject } from './recentProjects'
 
 const PROJECT_FILE = 'project.json'
 const HISTORY_FILE = '.scormly-history.json'
@@ -30,7 +32,14 @@ function makeEmptyCourse(title: string): Course {
     title,
     description: '',
     theme: DEFAULT_THEME,
-    lessons: [{ id: uid('lesson'), title: 'Lesson 1', status: 'draft', blocks: [] }],
+    lessons: [
+      {
+        id: uid('lesson'),
+        title: translate('content', 'lessonN', { n: 1 }),
+        status: 'draft',
+        blocks: [],
+      },
+    ],
   }
 }
 
@@ -48,16 +57,34 @@ export async function createNewProject(): Promise<void> {
   const course = makeEmptyCourse(handle.name)
   await writeJson(handle, PROJECT_FILE, course)
   useCourseStore.getState().openProject(handle, handle.name, course)
+  await rememberRecentProject(handle)
 }
 
 /** Pick a folder that already contains a project and load it (with history). */
 export async function openExistingProject(): Promise<void> {
   const handle = await pickDirectory('readwrite')
+  await loadProjectFromHandle(handle)
+}
+
+/** Re-open a previously used project from a stored directory handle. */
+export async function openRecentProject(
+  handle: FileSystemDirectoryHandle,
+): Promise<void> {
+  if (!(await ensurePermission(handle, true))) {
+    throw new Error('Permission denied')
+  }
+  await loadProjectFromHandle(handle)
+}
+
+async function loadProjectFromHandle(
+  handle: FileSystemDirectoryHandle,
+): Promise<void> {
   const course = await readJson<Course>(handle, PROJECT_FILE)
   if (!looksLikeCourse(course)) throw new NoProjectError()
   const history =
     (await readJson<ProjectHistory>(handle, HISTORY_FILE)) ?? undefined
   useCourseStore.getState().openProject(handle, handle.name, course, history)
+  await rememberRecentProject(handle)
 }
 
 /** Persist the current course and history to the open project's folder. */

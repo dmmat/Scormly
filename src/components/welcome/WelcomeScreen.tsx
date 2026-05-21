@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Logo from '../layout/Logo'
 import LanguagePicker from '../editor/LanguagePicker'
 import { useT } from '../../i18n/I18nProvider'
@@ -6,8 +6,14 @@ import { isFileSystemAccessSupported } from '../../lib/fileSystem'
 import {
   createNewProject,
   openExistingProject,
+  openRecentProject,
   NoProjectError,
 } from '../../lib/projectService'
+import {
+  listRecentProjects,
+  forgetRecentProject,
+  type RecentProject,
+} from '../../lib/recentProjects'
 
 interface WelcomeScreenProps {
   /** Continue into the builder without a folder (in-memory, no saving). */
@@ -19,6 +25,11 @@ export default function WelcomeScreen({ onSkip }: WelcomeScreenProps) {
   const supported = isFileSystemAccessSupported()
   const [error, setError] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
+  const [recents, setRecents] = useState<RecentProject[]>([])
+
+  useEffect(() => {
+    if (supported) void listRecentProjects().then(setRecents)
+  }, [supported])
 
   async function run(action: () => Promise<void>) {
     setError(null)
@@ -88,6 +99,43 @@ export default function WelcomeScreen({ onSkip }: WelcomeScreenProps) {
               onClick={() => run(openExistingProject)}
             />
           </div>
+
+          {recents.length > 0 && (
+            <div className="mt-8">
+              <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-400">
+                {t('recentTitle')}
+              </p>
+              <ul className="divide-y divide-gray-100 overflow-hidden rounded-xl border border-gray-200 bg-white">
+                {recents.map((r) => (
+                  <li key={r.name} className="flex items-center">
+                    <button
+                      type="button"
+                      disabled={busy}
+                      onClick={() => run(() => openRecentProject(r.handle))}
+                      className="flex flex-1 items-center gap-3 px-4 py-3 text-left hover:bg-gray-50 disabled:opacity-50"
+                    >
+                      <span aria-hidden className="text-brand">📁</span>
+                      <span className="truncate text-sm font-medium text-gray-800">
+                        {r.name}
+                      </span>
+                    </button>
+                    <button
+                      type="button"
+                      title={t('removeRecent')}
+                      aria-label={t('removeRecent')}
+                      onClick={async () => {
+                        await forgetRecentProject(r.name)
+                        setRecents(await listRecentProjects())
+                      }}
+                      className="px-3 py-3 text-gray-400 hover:text-red-600"
+                    >
+                      ✕
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
 
           {!supported && (
             <div className="mt-6 text-center">

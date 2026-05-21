@@ -1,7 +1,7 @@
 import type { BlockComponentProps } from '../types'
 import type { BlockOfType } from '../../types/course'
 import { useCourseStore } from '../../store/courseStore'
-import { useT } from '../../i18n/I18nProvider'
+import { useT, translate } from '../../i18n/I18nProvider'
 
 export default function ListBlock({
   block,
@@ -18,7 +18,9 @@ export default function ListBlock({
   }
 
   function addItem() {
-    update(lessonId, block.id, { items: [...items, ''] })
+    update(lessonId, block.id, {
+      items: [...items, translate('content', 'newListItem')],
+    })
   }
 
   function removeItem(index: number) {
