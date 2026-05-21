@@ -12,6 +12,7 @@ import content from './locales/content'
 import richtext from './locales/richtext'
 import preview from './locales/preview'
 import newblocks from './locales/newblocks'
+import settings from './locales/settings'
 
 // All translation namespaces. Each lives in its own file (src/i18n/locales/),
 // so they can be worked on in parallel without conflicts.
@@ -30,6 +31,7 @@ export const DICTIONARY = {
   richtext,
   preview,
   newblocks,
+  settings,
 }
 
 export type Namespace = keyof typeof DICTIONARY

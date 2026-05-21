@@ -77,7 +77,7 @@ export default function AddBlockMenu({ lessonId, atIndex }: AddBlockMenuProps) {
 
       {open && (
         <div
-          className={`absolute z-20 max-h-[28rem] w-80 overflow-y-auto rounded-xl border border-gray-200 bg-white p-2 shadow-lg ${
+          className={`absolute z-20 max-h-[28rem] w-[22rem] overflow-y-auto rounded-xl border border-gray-200 bg-white p-3 shadow-lg ${
             placement === 'up' ? 'bottom-full mb-2' : 'top-full mt-2'
           }`}
         >
@@ -87,28 +87,28 @@ export default function AddBlockMenu({ lessonId, atIndex }: AddBlockMenuProps) {
             )
             if (items.length === 0) return null
             return (
-              <div key={category} className="mb-3 last:mb-1">
-                <p className="px-2 py-1 text-xs font-semibold uppercase tracking-wide text-gray-400">
+              <div key={category} className="mb-3 last:mb-0">
+                <p className="px-1 pb-1.5 text-xs font-semibold uppercase tracking-wide text-gray-400">
                   {t(CATEGORY_KEY[category])}
                 </p>
-                <div className="grid grid-cols-1 gap-0.5">
+                <div className="grid grid-cols-2 gap-1.5">
                   {items.map((meta) => (
                     <button
                       key={meta.type}
                       type="button"
                       onClick={() => handleAdd(meta.type)}
-                      className="flex items-start gap-3 rounded-lg px-2 py-2 text-left hover:bg-gray-50"
+                      className="flex flex-col gap-1 rounded-lg border border-gray-100 p-2.5 text-left transition-colors hover:border-brand/40 hover:bg-brand/5"
                     >
-                      <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-brand/10 text-sm text-brand">
-                        {meta.icon}
-                      </span>
-                      <span className="min-w-0">
-                        <span className="block text-sm font-medium text-gray-800">
+                      <span className="flex items-center gap-2">
+                        <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-brand/10 text-sm text-brand">
+                          {meta.icon}
+                        </span>
+                        <span className="text-sm font-medium text-gray-800">
                           {tb(meta.type)}
                         </span>
-                        <span className="block truncate text-xs text-gray-500">
-                          {tb(`${meta.type}Desc`)}
-                        </span>
+                      </span>
+                      <span className="text-xs leading-tight text-gray-500">
+                        {tb(`${meta.type}Desc`)}
                       </span>
                     </button>
                   ))}

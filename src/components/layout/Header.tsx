@@ -1,7 +1,9 @@
+import { useState } from 'react'
 import Logo from './Logo'
 import ThemePicker from '../editor/ThemePicker'
 import LanguagePicker from '../editor/LanguagePicker'
 import ProjectMenu from '../editor/ProjectMenu'
+import ProjectSettings from '../editor/ProjectSettings'
 import { useCourseStore } from '../../store/courseStore'
 import { useT } from '../../i18n/I18nProvider'
 import { saveProject } from '../../lib/projectService'
@@ -9,6 +11,7 @@ import ExportMenu from '../editor/ExportMenu'
 import { GITHUB_ISSUES_URL } from '../../lib/links'
 
 export default function Header() {
+  const [settingsOpen, setSettingsOpen] = useState(false)
   const undo = useCourseStore((s) => s.undo)
   const redo = useCourseStore((s) => s.redo)
   const canUndo = useCourseStore((s) => s.past.length > 0)
@@ -20,6 +23,7 @@ export default function Header() {
   const { t } = useT('common')
   const { t: tw } = useT('welcome')
   const { t: tp } = useT('preview')
+  const { t: ts } = useT('settings')
 
   const saveLabel =
     saveState === 'saving'
@@ -72,6 +76,16 @@ export default function Header() {
         <ThemePicker />
         <LanguagePicker />
 
+        <button
+          type="button"
+          onClick={() => setSettingsOpen(true)}
+          title={ts('open')}
+          aria-label={ts('open')}
+          className="flex h-8 w-8 items-center justify-center rounded-md text-gray-600 hover:bg-gray-100"
+        >
+          ⚙
+        </button>
+
         <a
           href={GITHUB_ISSUES_URL}
           target="_blank"
@@ -103,6 +117,8 @@ export default function Header() {
         </button>
         <ExportMenu />
       </div>
+
+      {settingsOpen && <ProjectSettings onClose={() => setSettingsOpen(false)} />}
     </header>
   )
 }
