@@ -1,8 +1,11 @@
 {
   "name": "scormly",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.1.0",
   "type": "module",
+  "description": "Local-first блочний конструктор навчальних курсів з експортом у SCORM 1.2 / 2004 (аналог Articulate Rise), що працює повністю в браузері.",
+  "license": "MIT",
+  "author": "Dmytro Matsiuk",
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build",

@@ -1,10 +1,23 @@
 import { create } from 'zustand'
-import type { Course } from '../types/course'
+import type {
+  Block,
+  BlockType,
+  Course,
+  Lesson,
+  LessonStatus,
+  ThemeId,
+} from '../types/course'
+import { createBlock } from '../blocks/registry'
+import { DEFAULT_THEME } from '../theme/themes'
+import { uid } from '../lib/id'
+
+const HISTORY_LIMIT = 100
 
 const initialCourse: Course = {
   id: 'course-1',
   title: 'Новий курс',
   description: 'Демонстраційний курс Scormly',
+  theme: DEFAULT_THEME,
   lessons: [
     { id: 'lesson-1', title: 'Вступ', status: 'draft', blocks: [] },
     { id: 'lesson-2', title: 'Основні поняття', status: 'draft', blocks: [] },
@@ -12,14 +25,242 @@ const initialCourse: Course = {
   ],
 }
 
-interface CourseState {
+export interface CourseState {
   course: Course
   activeLessonId: string | null
+  selectedBlockId: string | null
+  past: Course[]
+  future: Course[]
+  /** Key of the last edit, used to coalesce text typing into a single undo step. */
+  lastCoalesceKey: string | null
+
+  // ── Selection / navigation ──
   setActiveLesson: (lessonId: string) => void
+  selectBlock: (blockId: string | null) => void
+
+  // ── Course ──
+  updateCourseMeta: (
+    patch: Partial<Pick<Course, 'title' | 'description' | 'coverImage'>>,
+  ) => void
+  setTheme: (theme: ThemeId) => void
+  loadCourse: (course: Course) => void
+
+  // ── Lessons ──
+  addLesson: () => void
+  renameLesson: (lessonId: string, title: string) => void
+  deleteLesson: (lessonId: string) => void
+  moveLesson: (fromIndex: number, toIndex: number) => void
+  setLessonStatus: (lessonId: string, status: LessonStatus) => void
+
+  // ── Blocks ──
+  addBlock: (lessonId: string, type: BlockType, atIndex?: number) => void
+  updateBlockData: <T extends Block>(
+    lessonId: string,
+    blockId: string,
+    data: Partial<T['data']>,
+    coalesceKey?: string,
+  ) => void
+  updateBlockSettings: (
+    lessonId: string,
+    blockId: string,
+    settings: Partial<Block['settings']>,
+  ) => void
+  deleteBlock: (lessonId: string, blockId: string) => void
+  duplicateBlock: (lessonId: string, blockId: string) => void
+  moveBlock: (lessonId: string, fromIndex: number, toIndex: number) => void
+
+  // ── History ──
+  undo: () => void
+  redo: () => void
 }
 
-export const useCourseStore = create<CourseState>((set) => ({
-  course: initialCourse,
-  activeLessonId: initialCourse.lessons[0]?.id ?? null,
-  setActiveLesson: (lessonId) => set({ activeLessonId: lessonId }),
-}))
+function findLesson(course: Course, lessonId: string): Lesson | undefined {
+  return course.lessons.find((l) => l.id === lessonId)
+}
+
+export const useCourseStore = create<CourseState>((set, get) => {
+  /**
+   * Applies a mutation to a deep copy of the course and maintains the history stack.
+   * coalesceKey: if it matches the previous one, the edit is merged into the same
+   * undo step (for text typing). Structural actions pass undefined.
+   */
+  function mutate(fn: (draft: Course) => void, coalesceKey?: string) {
+    const state = get()
+    const draft = structuredClone(state.course)
+    fn(draft)
+
+    const coalesce =
+      coalesceKey != null && coalesceKey === state.lastCoalesceKey
+    const past = coalesce
+      ? state.past
+      : [...state.past, state.course].slice(-HISTORY_LIMIT)
+
+    set({
+      course: draft,
+      past,
+      future: [],
+      lastCoalesceKey: coalesceKey ?? null,
+    })
+  }
+
+  return {
+    course: initialCourse,
+    activeLessonId: initialCourse.lessons[0]?.id ?? null,
+    selectedBlockId: null,
+    past: [],
+    future: [],
+    lastCoalesceKey: null,
+
+    setActiveLesson: (lessonId) =>
+      set({ activeLessonId: lessonId, selectedBlockId: null }),
+    selectBlock: (blockId) => set({ selectedBlockId: blockId }),
+
+    updateCourseMeta: (patch) =>
+      mutate((c) => {
+        Object.assign(c, patch)
+      }, `course-meta`),
+
+    setTheme: (theme) =>
+      mutate((c) => {
+        c.theme = theme
+      }),
+
+    loadCourse: (course) =>
+      set({
+        course,
+        activeLessonId: course.lessons[0]?.id ?? null,
+        selectedBlockId: null,
+        past: [],
+        future: [],
+        lastCoalesceKey: null,
+      }),
+
+    addLesson: () => {
+      const id = uid('lesson')
+      mutate((c) => {
+        c.lessons.push({
+          id,
+          title: `Урок ${c.lessons.length + 1}`,
+          status: 'draft',
+          blocks: [],
+        })
+      })
+      set({ activeLessonId: id })
+    },
+
+    renameLesson: (lessonId, title) =>
+      mutate((c) => {
+        const lesson = findLesson(c, lessonId)
+        if (lesson) lesson.title = title
+      }, `lesson-title-${lessonId}`),
+
+    deleteLesson: (lessonId) => {
+      const state = get()
+      mutate((c) => {
+        c.lessons = c.lessons.filter((l) => l.id !== lessonId)
+      })
+      if (state.activeLessonId === lessonId) {
+        const remaining = get().course.lessons
+        set({ activeLessonId: remaining[0]?.id ?? null, selectedBlockId: null })
+      }
+    },
+
+    moveLesson: (fromIndex, toIndex) =>
+      mutate((c) => {
+        const [moved] = c.lessons.splice(fromIndex, 1)
+        if (moved) c.lessons.splice(toIndex, 0, moved)
+      }),
+
+    setLessonStatus: (lessonId, status) =>
+      mutate((c) => {
+        const lesson = findLesson(c, lessonId)
+        if (lesson) lesson.status = status
+      }),
+
+    addBlock: (lessonId, type, atIndex) => {
+      const block = createBlock(type)
+      mutate((c) => {
+        const lesson = findLesson(c, lessonId)
+        if (!lesson) return
+        if (atIndex == null || atIndex >= lesson.blocks.length) {
+          lesson.blocks.push(block)
+        } else {
+          lesson.blocks.splice(Math.max(0, atIndex), 0, block)
+        }
+      })
+      set({ selectedBlockId: block.id })
+    },
+
+    updateBlockData: (lessonId, blockId, data, coalesceKey) =>
+      mutate((c) => {
+        const lesson = findLesson(c, lessonId)
+        const block = lesson?.blocks.find((b) => b.id === blockId)
+        if (block) Object.assign(block.data, data)
+      }, coalesceKey),
+
+    updateBlockSettings: (lessonId, blockId, settings) =>
+      mutate((c) => {
+        const lesson = findLesson(c, lessonId)
+        const block = lesson?.blocks.find((b) => b.id === blockId)
+        if (block) Object.assign(block.settings, settings)
+      }),
+
+    deleteBlock: (lessonId, blockId) => {
+      mutate((c) => {
+        const lesson = findLesson(c, lessonId)
+        if (lesson) lesson.blocks = lesson.blocks.filter((b) => b.id !== blockId)
+      })
+      if (get().selectedBlockId === blockId) set({ selectedBlockId: null })
+    },
+
+    duplicateBlock: (lessonId, blockId) => {
+      const clonedId = uid('block')
+      mutate((c) => {
+        const lesson = findLesson(c, lessonId)
+        if (!lesson) return
+        const index = lesson.blocks.findIndex((b) => b.id === blockId)
+        if (index === -1) return
+        const copy = structuredClone(lesson.blocks[index]) as Block
+        copy.id = clonedId
+        lesson.blocks.splice(index + 1, 0, copy)
+      })
+      set({ selectedBlockId: clonedId })
+    },
+
+    moveBlock: (lessonId, fromIndex, toIndex) =>
+      mutate((c) => {
+        const lesson = findLesson(c, lessonId)
+        if (!lesson) return
+        const [moved] = lesson.blocks.splice(fromIndex, 1)
+        if (moved) lesson.blocks.splice(toIndex, 0, moved)
+      }),
+
+    undo: () => {
+      const state = get()
+      if (state.past.length === 0) return
+      const previous = state.past[state.past.length - 1]
+      set({
+        course: previous,
+        past: state.past.slice(0, -1),
+        future: [state.course, ...state.future],
+        lastCoalesceKey: null,
+      })
+    },
+
+    redo: () => {
+      const state = get()
+      if (state.future.length === 0) return
+      const next = state.future[0]
+      set({
+        course: next,
+        past: [...state.past, state.course],
+        future: state.future.slice(1),
+        lastCoalesceKey: null,
+      })
+    },
+  }
+})
+
+// Convenience selectors.
+export const selectActiveLesson = (s: CourseState): Lesson | undefined =>
+  s.course.lessons.find((l) => l.id === s.activeLessonId)

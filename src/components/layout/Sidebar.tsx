@@ -1,15 +1,18 @@
 import { useCourseStore } from '../../store/courseStore'
+import { useT } from '../../i18n/I18nProvider'
 
 export default function Sidebar() {
   const course = useCourseStore((s) => s.course)
   const activeLessonId = useCourseStore((s) => s.activeLessonId)
   const setActiveLesson = useCourseStore((s) => s.setActiveLesson)
+  const addLesson = useCourseStore((s) => s.addLesson)
+  const { t } = useT('common')
 
   return (
     <aside className="flex w-64 shrink-0 flex-col border-r border-gray-200 bg-gray-50">
       <div className="border-b border-gray-200 px-4 py-3">
         <p className="text-xs font-semibold uppercase tracking-wide text-gray-400">
-          Курс
+          {t('course')}
         </p>
         <h2 className="truncate text-sm font-semibold text-gray-900">
           {course.title}
@@ -51,9 +54,10 @@ export default function Sidebar() {
       <div className="border-t border-gray-200 p-2">
         <button
           type="button"
+          onClick={addLesson}
           className="flex w-full items-center justify-center gap-1.5 rounded-md border border-dashed border-gray-300 px-3 py-2 text-sm font-medium text-gray-500 hover:border-brand hover:text-brand"
         >
-          + Додати урок
+          + {t('addLesson')}
         </button>
       </div>
     </aside>

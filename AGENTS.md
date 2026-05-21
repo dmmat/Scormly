@@ -1,27 +1,34 @@
 # AGENTS.md
 
-Інструкції для AI-агентів, що працюють із цим репозиторієм. Повний опис проєкту,
-стек, структуру та конвенції див. у [CLAUDE.md](./CLAUDE.md).
+Instructions for AI agents working in this repository. For the full project
+overview, stack, structure, and conventions, see [CLAUDE.md](./CLAUDE.md).
 
-## Коротко
+## In short
 
-**Scormly** — local-first конструктор SCORM-курсів (React + TypeScript + Vite +
-Tailwind v4 + Zustand). Без бекенду; робота з диском — через File System Access
-API, експорт SCORM — у браузері через JSZip.
+**Scormly** is a local-first SCORM course builder (React + TypeScript + Vite +
+Tailwind v4 + Zustand). No backend; disk I/O goes through the File System Access
+API, and SCORM export happens in the browser via JSZip. The app UI is bilingual
+(English / Ukrainian) via i18n, and a marketing landing page is the default route
+(the builder lives at `#/app`).
 
-## Перед змінами
+## Before you start
 
-- Встановити залежності: `npm install`.
+- Install dependencies: `npm install`.
 
-## Перевірка перед комітом
+## Check before committing
 
-- `npm run build` має проходити без помилок (включає `tsc --noEmit`).
-- За можливості перевірити UI в браузері: `npm run dev`.
+- `npm run build` must pass without errors (it includes `tsc --noEmit`).
+- When possible, verify the UI in a browser: `npm run dev`.
 
-## Принципи
+## Principles
 
-- Тримати модель даних (`src/types/course.ts`) декларативною та серіалізованою у
-  JSON — це основа для `project.json` та SCORM-експорту.
-- Не додавати залежності чи абстракції понад потребу поточної задачі.
-- Дотримуватися суворого TypeScript та наявного стилю компонентів.
-- Бренд: назва **Scormly**, акцент — рожевий `#EC4899` (`text-brand`/`bg-brand`).
+- Keep the data model (`src/types/course.ts`) declarative and JSON-serializable —
+  it is the basis for `project.json` and SCORM export.
+- Don't add dependencies or abstractions beyond what the current task needs.
+- Follow strict TypeScript and the existing component style.
+- **All code comments and documentation are in English.** User-facing UI strings
+  go through i18n (`src/i18n/locales/`, English + Ukrainian) — don't hardcode them.
+- Brand: the name is **Scormly**, the default accent is pink `#EC4899`
+  (`text-brand` / `bg-brand`). Use the `*-brand` utilities and the global
+  `.btn-primary` / `.btn-secondary` / `.interactive-surface` classes so themes
+  apply — never hardcode the accent hex.

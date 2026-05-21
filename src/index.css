@@ -1,9 +1,52 @@
 @import "tailwindcss";
 
+/* Default brand tokens (Rise theme). Overridden per-theme below. */
 @theme {
   --color-brand: #ec4899;
   --color-brand-light: #f9a8d4;
   --color-brand-dark: #db2777;
+}
+
+/*
+ * Global project themes. data-theme is set on the root container
+ * (see ThemeProvider). Overrides the accent color (and therefore all
+ * bg-brand / text-brand utilities) and the button/interactive shape via radius tokens.
+ */
+:root {
+  --radius-btn: 0.5rem;
+  --radius-interactive: 0.5rem;
+}
+
+[data-theme="rise"] {
+  --color-brand: #ec4899;
+  --color-brand-light: #f9a8d4;
+  --color-brand-dark: #db2777;
+  --radius-btn: 0.5rem;
+  --radius-interactive: 0.5rem;
+}
+
+[data-theme="ocean"] {
+  --color-brand: #0ea5e9;
+  --color-brand-light: #7dd3fc;
+  --color-brand-dark: #0284c7;
+  --radius-btn: 9999px;
+  --radius-interactive: 1rem;
+}
+
+[data-theme="forest"] {
+  --color-brand: #16a34a;
+  --color-brand-light: #86efac;
+  --color-brand-dark: #15803d;
+  --radius-btn: 0.25rem;
+  --radius-interactive: 0.25rem;
+}
+
+[data-theme="sunset"] {
+  --color-brand: #f97316;
+  --color-brand-light: #fdba74;
+  --color-brand-dark: #ea580c;
+  --radius-btn: 0.75rem;
+  --radius-interactive: 0.75rem;
 }
 
 html,
@@ -17,4 +60,91 @@ body {
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial,
     sans-serif;
   -webkit-font-smoothing: antialiased;
+}
+
+/*
+ * Themed classes for buttons and interactive surfaces. Phase 2 blocks
+ * should use them instead of hardcoding radii/colors, so that themes
+ * affect all interactive elements.
+ */
+@layer components {
+  .btn-primary {
+    border-radius: var(--radius-btn);
+    background-color: var(--color-brand);
+    color: #fff;
+    padding: 0.5rem 1rem;
+    font-weight: 600;
+    transition: background-color 0.15s ease;
+  }
+  .btn-primary:hover:not(:disabled) {
+    background-color: var(--color-brand-dark);
+  }
+  .btn-primary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .btn-secondary {
+    border-radius: var(--radius-btn);
+    border: 1px solid var(--color-brand);
+    color: var(--color-brand-dark);
+    background-color: transparent;
+    padding: 0.5rem 1rem;
+    font-weight: 600;
+    transition: background-color 0.15s ease;
+  }
+  .btn-secondary:hover:not(:disabled) {
+    background-color: color-mix(in srgb, var(--color-brand) 12%, transparent);
+  }
+
+  .interactive-surface {
+    border-radius: var(--radius-interactive);
+  }
+}
+
+/*
+ * Landing page animations. .reveal is the initial hidden state; adding
+ * .reveal-visible (via IntersectionObserver, the useReveal hook) triggers the appearance.
+ * We respect prefers-reduced-motion.
+ */
+@keyframes scormly-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scormly-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.reveal {
+  opacity: 0;
+}
+.reveal-visible {
+  animation: scormly-fade-up 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.animate-float {
+  animation: scormly-float 6s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal,
+  .reveal-visible {
+    opacity: 1;
+    animation: none;
+  }
+  .animate-float {
+    animation: none;
+  }
 }
