@@ -4,7 +4,9 @@ import LanguagePicker from '../editor/LanguagePicker'
 import ProjectMenu from '../editor/ProjectMenu'
 import { useCourseStore } from '../../store/courseStore'
 import { useT } from '../../i18n/I18nProvider'
+import { useState } from 'react'
 import { saveProject } from '../../lib/projectService'
+import { exportScorm } from '../../export/exportScorm'
 import { GITHUB_ISSUES_URL } from '../../lib/links'
 
 export default function Header() {
@@ -19,6 +21,16 @@ export default function Header() {
   const { t } = useT('common')
   const { t: tw } = useT('welcome')
   const { t: tp } = useT('preview')
+  const [exporting, setExporting] = useState(false)
+
+  async function handleExport() {
+    setExporting(true)
+    try {
+      await exportScorm()
+    } finally {
+      setExporting(false)
+    }
+  }
 
   const saveLabel =
     saveState === 'saving'
@@ -100,8 +112,13 @@ export default function Header() {
         >
           {saveLabel}
         </button>
-        <button type="button" className="btn-primary text-sm">
-          {t('export')}
+        <button
+          type="button"
+          onClick={handleExport}
+          disabled={exporting}
+          className="btn-primary text-sm disabled:opacity-50"
+        >
+          {exporting ? t('exporting') : t('export')}
         </button>
       </div>
     </header>

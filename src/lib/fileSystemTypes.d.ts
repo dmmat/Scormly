@@ -25,3 +25,7 @@ interface Window {
     options?: DirectoryPickerOptions,
   ): Promise<FileSystemDirectoryHandle>
 }
+
+interface FileSystemDirectoryHandle {
+  entries(): AsyncIterableIterator<[string, FileSystemHandle]>
+}

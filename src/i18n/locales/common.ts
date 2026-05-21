@@ -6,6 +6,7 @@ const common: LocaleTable = {
   en: {
     save: 'Save',
     export: 'Export to SCORM',
+    exporting: 'Exporting…',
     undo: 'Undo',
     redo: 'Redo',
     theme: 'Theme',
@@ -41,6 +42,7 @@ const common: LocaleTable = {
   uk: {
     save: 'Зберегти',
     export: 'Експорт у SCORM',
+    exporting: 'Експортування…',
     undo: 'Скасувати',
     redo: 'Повторити',
     theme: 'Тема',

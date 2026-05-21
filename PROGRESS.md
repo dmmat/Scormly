@@ -102,13 +102,16 @@ encoding, so these requirements are tracked here as the living list.
 - [x] Welcome screen on startup: "Open project from computer" / "Create new" (folder picker)
 - [x] GitHub issue templates + a "Report an issue" link in the app (Header + landing footer)
 
-## Phase 4 — SCORM export (planned)
+## Phase 4 — SCORM export (SCORM 1.2 done)
 
-- [ ] Player template (static HTML/JS rendering project.json)
-- [ ] SCORM 1.2 API wrapper (LMSInitialize/LMSSetValue, lesson_status, score)
-- [ ] Generate `imsmanifest.xml`
-- [ ] Pack into a .zip (JSZip) + download
+- [x] Player template (static HTML/JS in `public/scorm-player/`, renders project.json, all block types incl. interactive)
+- [x] SCORM 1.2 API wrapper (`scorm.js`: API discovery, LMSInitialize/SetValue/Commit/Finish, lesson_status, score.raw/min/max)
+- [x] Completion + scoring: lesson_status completed/passed/failed; quiz scores aggregated → score.raw vs passing
+- [x] Generate `imsmanifest.xml` (`src/export/scormManifest.ts`)
+- [x] Pack into a .zip with JSZip incl. media from assets/ (`src/export/exportScorm.ts`) + download; wired to the Header button
 - [ ] SCORM 2004 (after 1.2)
+
+> Note: SCORM runtime needs a real LMS (Moodle/SCORM Cloud) to fully verify; the player no-ops the API gracefully outside an LMS.
 
 ---
 
@@ -126,3 +129,5 @@ encoding, so these requirements are tracked here as the living list.
 - 2026-05-21 — Added a shared dependency-free RichTextEditor (bold/italic/underline, lists, alignment, image upload) used by paragraph, tabs and accordion; heading alignment. Build clean (85 modules).
 - 2026-05-21 — Added a Divider block (solid/dashed/dotted) and a learner Preview mode (full-screen overlay with lesson navigation, read-only/interactive renderers for every block type incl. quiz scoring and scenario branching). Build clean (94 modules).
 - 2026-05-21 — Media-to-assets: uploaded images/videos copied into project assets/ with canvas image optimization (alpha-preserving) and format validation; display via resolved object URLs. Build clean (99 modules). Next: SCORM export.
+- 2026-05-21 — Fixed RichTextEditor image insertion (selection save/restore) and replaced symbol icons with inline SVGs.
+- 2026-05-21 — SCORM 1.2 export: vanilla player in public/scorm-player/ (renders project.json + all block interactivity), SCORM API wrapper, imsmanifest.xml, JSZip packaging with assets/, download. Build clean (105 modules). SCORM 2004 still pending.
