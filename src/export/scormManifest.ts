@@ -18,14 +18,28 @@ export function buildManifest(
   course: Course,
   files: string[],
   version: ScormVersion,
+  masteryScore?: number,
 ): string {
   const title = escapeXml(course.title || 'Course')
   const id = `SCORMLY-${course.id}`
   const fileEntries = files
     .map((f) => `      <file href="${escapeXml(f)}" />`)
     .join('\n')
+  const hasMastery = masteryScore != null && masteryScore > 0
 
   if (version === '2004') {
+    // Communicate the passing score to the LMS via the primary objective's
+    // minimum normalized measure (0..1 scale).
+    const sequencing = hasMastery
+      ? `
+        <imsss:sequencing>
+          <imsss:objectives>
+            <imsss:primaryObjective objectiveID="PRIMARYOBJ" satisfiedByMeasure="true">
+              <imsss:minNormalizedMeasure>${(masteryScore! / 100).toFixed(2)}</imsss:minNormalizedMeasure>
+            </imsss:primaryObjective>
+          </imsss:objectives>
+        </imsss:sequencing>`
+      : ''
     return `<?xml version="1.0" encoding="UTF-8"?>
 <manifest identifier="${escapeXml(id)}" version="1"
   xmlns="http://www.imsglobal.org/xsd/imscp_v1p1"
@@ -43,7 +57,7 @@ export function buildManifest(
     <organization identifier="ORG-1">
       <title>${title}</title>
       <item identifier="ITEM-1" identifierref="RES-1">
-        <title>${title}</title>
+        <title>${title}</title>${sequencing}
       </item>
     </organization>
   </organizations>
@@ -56,6 +70,10 @@ ${fileEntries}
 `
   }
 
+  // SCORM 1.2: the passing score is declared via <adlcp:masteryscore> (0..100).
+  const masteryEl = hasMastery
+    ? `\n        <adlcp:masteryscore>${Math.round(masteryScore!)}</adlcp:masteryscore>`
+    : ''
   return `<?xml version="1.0" encoding="UTF-8"?>
 <manifest identifier="${escapeXml(id)}" version="1.2"
   xmlns="http://www.imsproject.org/xsd/imscp_rootv1p1p2"
@@ -70,7 +88,7 @@ ${fileEntries}
     <organization identifier="ORG-1">
       <title>${title}</title>
       <item identifier="ITEM-1" identifierref="RES-1">
-        <title>${title}</title>
+        <title>${title}</title>${masteryEl}
       </item>
     </organization>
   </organizations>

@@ -1,8 +1,22 @@
 import JSZip from 'jszip'
 import { useCourseStore } from '../store/courseStore'
 import { buildManifest, type ScormVersion } from './scormManifest'
+import type { Course } from '../types/course'
 
 const PLAYER_FILES = ['index.html', 'player.css', 'player.js', 'scorm.js']
+
+// Overall passing score = mean of each quiz's passing score, declared in the
+// manifest so the LMS knows the mastery threshold. Undefined when no quizzes.
+function overallPassingScore(course: Course): number | undefined {
+  const scores: number[] = []
+  for (const lesson of course.lessons) {
+    for (const block of lesson.blocks) {
+      if (block.type === 'quiz') scores.push(block.data.passingScore)
+    }
+  }
+  if (!scores.length) return undefined
+  return Math.round(scores.reduce((a, b) => a + b, 0) / scores.length)
+}
 
 function escapeHtml(s: string): string {
   return s.replace(/</g, '&lt;').replace(/>/g, '&gt;')
@@ -68,7 +82,7 @@ export async function exportScorm(version: ScormVersion = '1.2'): Promise<void> 
     }
   }
 
-  zip.file('imsmanifest.xml', buildManifest(course, files, version))
+  zip.file('imsmanifest.xml', buildManifest(course, files, version, overallPassingScore(course)))
 
   const blob = await zip.generateAsync({ type: 'blob' })
   const url = URL.createObjectURL(blob)

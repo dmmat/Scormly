@@ -43,7 +43,7 @@
     return el;
   }
 
-  var state = { course: null, lessonIndex: 0, visited: {}, quizResults: {}, quizzes: [], interactionIndex: 0, sessionStart: 0 };
+  var state = { course: null, lessonIndex: 0, visited: {}, continued: {}, quizResults: {}, quizzes: [], interactionIndex: 0, sessionStart: 0, complete: false };
 
   function start(course) {
     state.course = course;
@@ -63,20 +63,41 @@
     SCORM.init();
     state.sessionStart = Date.now();
 
-    // Resume from saved progress, if any.
+    // Resume from saved progress, if any. Compact keys keep us under the
+    // SCORM 1.2 suspend_data limit (4096 chars): l=lesson, v=visited indices,
+    // q=quiz scores by block id, c=passed restricted "Continue" gates.
     var saved = null;
     try { saved = JSON.parse(SCORM.getSuspend() || 'null'); } catch (e) { saved = null; }
     if (saved) {
-      state.visited = saved.visited || {};
-      state.quizResults = saved.quizResults || {};
+      (saved.v || []).forEach(function (i) { state.visited[i] = true; });
+      state.quizResults = saved.q || {};
+      (saved.c || []).forEach(function (id) { state.continued[id] = true; });
     }
 
     window.addEventListener('beforeunload', function () {
       SCORM.setSessionTime((Date.now() - state.sessionStart) / 1000);
+      SCORM.setExit(state.complete ? '' : 'suspend');
       SCORM.finish();
     });
 
-    visit(saved && typeof saved.lesson === 'number' ? saved.lesson : 0);
+    visit(saved && typeof saved.l === 'number' ? saved.l : 0);
+  }
+
+  // A lesson with restricted "Continue" gates is only complete once each gate
+  // has been passed; otherwise it counts as complete once visited.
+  function lessonGates(lesson) {
+    return (lesson.blocks || []).filter(function (b) {
+      return b.type === 'continue' && b.data.mode === 'restricted';
+    });
+  }
+  function lessonComplete(index) {
+    var lesson = (state.course.lessons || [])[index];
+    if (!lesson || !state.visited[index]) return false;
+    return lessonGates(lesson).every(function (b) { return state.continued[b.id]; });
+  }
+  function goNext() {
+    var lessons = state.course.lessons || [];
+    if (state.lessonIndex < lessons.length - 1) visit(state.lessonIndex + 1);
   }
 
   function visit(index) {
@@ -89,24 +110,32 @@
 
   function reportProgress() {
     var lessons = state.course.lessons || [];
-    var allVisited = Object.keys(state.visited).length >= lessons.length;
+    var completedCount = 0;
+    lessons.forEach(function (_, i) { if (lessonComplete(i)) completedCount++; });
+    var allComplete = lessons.length > 0 && completedCount === lessons.length;
+    SCORM.setProgress(lessons.length ? completedCount / lessons.length : 0);
+
     if (state.quizzes.length) {
       var done = state.quizzes.filter(function (q) { return state.quizResults[q.id] != null; });
-      if (done.length === state.quizzes.length && allVisited) {
+      if (done.length === state.quizzes.length && allComplete) {
         var avg = avgOf(state.quizzes.map(function (q) { return state.quizResults[q.id]; }));
         var threshold = avgOf(state.quizzes.map(function (q) { return q.passingScore; }));
+        state.complete = true;
         SCORM.setScore(avg, 0, 100);
         SCORM.report(true, avg >= threshold ? 'passed' : 'failed');
       } else {
+        state.complete = false;
         SCORM.report(false, null);
       }
     } else {
-      SCORM.report(allVisited, null);
+      state.complete = allComplete;
+      SCORM.report(allComplete, null);
     }
     SCORM.setSuspend(JSON.stringify({
-      lesson: state.lessonIndex,
-      visited: state.visited,
-      quizResults: state.quizResults,
+      l: state.lessonIndex,
+      v: Object.keys(state.visited).map(Number),
+      q: state.quizResults,
+      c: Object.keys(state.continued),
     }));
     SCORM.setLocation(String(state.lessonIndex));
     SCORM.commit();
@@ -124,6 +153,9 @@
     var i = state.lessonIndex;
     var lesson = lessons[i];
 
+    // Restricted "Continue" gates block advancing until every gate is passed.
+    var canAdvance = !lesson || lessonGates(lesson).every(function (b) { return state.continued[b.id]; });
+
     var header = h('header', { class: 'player-header' }, [
       h('div', { style: 'display:flex;align-items:center;gap:12px;min-width:0' }, [
         h('span', { class: 'player-title', text: state.course.title || '' }),
@@ -132,17 +164,21 @@
       h('div', { class: 'player-nav' }, [
         h('button', { class: 'btn btn-outline', text: t('prev'), disabled: i === 0 ? 'true' : null,
           onclick: function () { if (i > 0) visit(i - 1); } }),
-        h('button', { class: 'btn btn-outline', text: t('next'), disabled: i >= lessons.length - 1 ? 'true' : null,
-          onclick: function () { if (i < lessons.length - 1) visit(i + 1); } }),
+        h('button', { class: 'btn btn-outline', text: t('next'),
+          disabled: (i >= lessons.length - 1 || !canAdvance) ? 'true' : null,
+          onclick: function () { if (i < lessons.length - 1 && canAdvance) visit(i + 1); } }),
       ]),
     ]);
 
     var blocksEl = h('div', { class: 'blocks' });
     if (lesson && lesson.blocks && lesson.blocks.length) {
-      lesson.blocks.forEach(function (b) {
+      for (var bi = 0; bi < lesson.blocks.length; bi++) {
+        var b = lesson.blocks[bi];
         var el = renderBlock(b);
         if (el) blocksEl.appendChild(el);
-      });
+        // Hide everything after an unpassed restricted gate.
+        if (b.type === 'continue' && b.data.mode === 'restricted' && !state.continued[b.id]) break;
+      }
     } else {
       blocksEl.appendChild(h('p', { class: 'empty', text: t('empty') }));
     }
@@ -211,8 +247,16 @@
           h('p', { text: b.data.text || '', style: 'margin:0' }),
           b.data.author ? h('footer', { class: 'quote-author', text: '— ' + b.data.author }) : null,
         ]);
-      case 'continue':
-        return h('div', { class: 'continue' }, h('button', { class: 'btn', text: b.data.label }));
+      case 'continue': {
+        var restricted = b.data.mode === 'restricted';
+        // A passed gate disappears; the blocks it was hiding are now shown.
+        if (restricted && state.continued[b.id]) return null;
+        return h('div', { class: 'continue' }, h('button', { class: 'btn', text: b.data.label,
+          onclick: function () {
+            if (restricted) { state.continued[b.id] = true; render(); reportProgress(); }
+            else { goNext(); }
+          } }));
+      }
       case 'divider': {
         var hr = h('hr', { class: 'divider' });
         hr.style.borderTopStyle = b.data.style || 'solid';
