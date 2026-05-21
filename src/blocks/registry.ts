@@ -112,6 +112,17 @@ export const BLOCK_REGISTRY: Record<BlockType, BlockMeta> = {
       data: { mode: 'unrestricted', label: c('continueLabel') },
     }),
   },
+  divider: {
+    type: 'divider',
+    category: 'navigation',
+    icon: '─',
+    create: () => ({
+      id: uid('block'),
+      type: 'divider',
+      settings: { ...baseSettings },
+      data: { style: 'solid' },
+    }),
+  },
   tabs: {
     type: 'tabs',
     category: 'interactive',

@@ -1,43 +1,10 @@
-import { useEffect, useRef, useState } from 'react'
+import { useState } from 'react'
 import type { BlockComponentProps } from '../types'
 import type { BlockOfType } from '../../types/course'
 import { useCourseStore } from '../../store/courseStore'
 import { useT, translate } from '../../i18n/I18nProvider'
 import { uid } from '../../lib/id'
-
-function AccordionBody({
-  html,
-  placeholder,
-  onChange,
-}: {
-  html: string
-  placeholder: string
-  onChange: (html: string) => void
-}) {
-  const ref = useRef<HTMLDivElement>(null)
-
-  // Update the DOM from the model only when unfocused, so the cursor doesn't jump.
-  useEffect(() => {
-    const el = ref.current
-    if (el && document.activeElement !== el && el.innerHTML !== html) {
-      el.innerHTML = html
-    }
-  }, [html])
-
-  return (
-    <div
-      ref={ref}
-      contentEditable
-      suppressContentEditableWarning
-      role="textbox"
-      aria-multiline="true"
-      data-placeholder={placeholder}
-      onInput={(e) => onChange(e.currentTarget.innerHTML)}
-      dangerouslySetInnerHTML={{ __html: html }}
-      className="border-t border-gray-200 px-4 py-3 leading-relaxed text-gray-800 outline-none empty:before:text-gray-300 empty:before:content-[attr(data-placeholder)]"
-    />
-  )
-}
+import RichTextEditor from '../../components/editor/RichTextEditor'
 
 export default function AccordionBlock({
   block,
@@ -136,11 +103,13 @@ export default function AccordionBlock({
               )}
             </div>
             {isOpen && (
-              <AccordionBody
-                html={item.html}
-                placeholder={t('sectionContentPlaceholder')}
-                onChange={(html) => setHtml(item.id, html)}
-              />
+              <div className="border-t border-gray-200 px-4 py-3">
+                <RichTextEditor
+                  html={item.html}
+                  placeholder={t('sectionContentPlaceholder')}
+                  onChange={(html) => setHtml(item.id, html)}
+                />
+              </div>
             )}
           </div>
         )

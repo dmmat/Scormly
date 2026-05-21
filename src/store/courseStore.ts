@@ -47,6 +47,10 @@ export interface CourseState {
   projectName: string | null
   saveState: SaveState
 
+  // Learner preview overlay
+  previewOpen: boolean
+  setPreviewOpen: (open: boolean) => void
+
   // ── Selection / navigation ──
   setActiveLesson: (lessonId: string) => void
   selectBlock: (blockId: string | null) => void
@@ -137,6 +141,9 @@ export const useCourseStore = create<CourseState>((set, get) => {
     directoryHandle: null,
     projectName: null,
     saveState: 'idle',
+
+    previewOpen: false,
+    setPreviewOpen: (open) => set({ previewOpen: open }),
 
     setActiveLesson: (lessonId) =>
       set({ activeLessonId: lessonId, selectedBlockId: null }),

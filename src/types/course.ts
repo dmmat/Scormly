@@ -13,6 +13,7 @@ export type BlockType =
   | 'gallery'
   | 'video'
   | 'continue'
+  | 'divider'
   | 'tabs'
   | 'accordion'
   | 'flashcards'
@@ -33,10 +34,12 @@ interface BaseBlock {
 // ── Text blocks ───────────────────────────────────────────────────────────────
 
 export type HeadingLevel = 1 | 2 | 3
+export type TextAlign = 'left' | 'center' | 'right'
 
 export interface HeadingData {
   level: HeadingLevel
   text: string
+  align?: TextAlign
 }
 
 export interface ParagraphData {
@@ -84,6 +87,14 @@ export type ContinueMode = 'unrestricted' | 'restricted'
 export interface ContinueData {
   mode: ContinueMode
   label: string
+}
+
+// ── Divider ──────────────────────────────────────────────────────────────────
+
+export type DividerStyle = 'solid' | 'dashed' | 'dotted'
+
+export interface DividerData {
+  style: DividerStyle
 }
 
 // ── Interactive UI elements ─────────────────────────────────────────────────
@@ -208,6 +219,7 @@ export type Block =
   | (BaseBlock & { type: 'gallery'; data: GalleryData })
   | (BaseBlock & { type: 'video'; data: VideoData })
   | (BaseBlock & { type: 'continue'; data: ContinueData })
+  | (BaseBlock & { type: 'divider'; data: DividerData })
   | (BaseBlock & { type: 'tabs'; data: TabsData })
   | (BaseBlock & { type: 'accordion'; data: AccordionData })
   | (BaseBlock & { type: 'flashcards'; data: FlashcardsData })

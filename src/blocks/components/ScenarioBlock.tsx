@@ -9,6 +9,10 @@ import type {
 import { useCourseStore } from '../../store/courseStore'
 import { uid } from '../../lib/id'
 import { useT, translate } from '../../i18n/I18nProvider'
+import { saveAsset, UnsupportedFormatError } from '../../lib/assets'
+import { useAssetUrl } from '../../hooks/useAssetUrl'
+
+const IMAGE_ACCEPT = 'image/png,image/jpeg,image/webp,image/gif,image/svg+xml'
 
 // labelKey — translation key for the emotion name (resolved via t() in the component).
 const EMOTIONS: { value: ScenarioEmotion; emoji: string; labelKey: string }[] = [
@@ -50,20 +54,23 @@ export default function ScenarioBlock({
     update(lessonId, block.id, { startNodeId: nodeId })
   }
 
-  function setCharacterImage(
+  async function setCharacterImage(
     emotion: ScenarioEmotion,
     e: ChangeEvent<HTMLInputElement>,
   ) {
     const file = e.target.files?.[0]
+    e.target.value = ''
     if (!file) return
-    const reader = new FileReader()
-    reader.onload = () => {
-      // TODO (Phase 3): assets/ — for now read as a data URL for preview.
+    try {
+      const src = await saveAsset(file, 'image')
       update(lessonId, block.id, {
-        characterImages: { ...characterImages, [emotion]: String(reader.result) },
+        characterImages: { ...characterImages, [emotion]: src },
       })
+    } catch (err) {
+      if (err instanceof UnsupportedFormatError) {
+        // Silently ignore unsupported character images in the editor.
+      }
     }
-    reader.readAsDataURL(file)
   }
 
   function patchNode(nodeId: string, patch: Partial<ScenarioNode>, key?: string) {
@@ -197,15 +204,11 @@ export default function ScenarioBlock({
                 <span aria-hidden>{emoji}</span>
                 <span>{t(labelKey)}</span>
                 {characterImages[value] && (
-                  <img
-                    src={characterImages[value]}
-                    alt=""
-                    className="h-8 w-8 rounded object-cover"
-                  />
+                  <CharacterThumb src={characterImages[value]!} />
                 )}
                 <input
                   type="file"
-                  accept="image/*"
+                  accept={IMAGE_ACCEPT}
                   onChange={(e) => setCharacterImage(value, e)}
                   className="max-w-[8rem] text-xs"
                 />
@@ -377,4 +380,9 @@ export default function ScenarioBlock({
       </button>
     </div>
   )
+}
+
+function CharacterThumb({ src }: { src: string }) {
+  const url = useAssetUrl(src)
+  return <img src={url} alt="" className="h-8 w-8 rounded object-cover" />
 }

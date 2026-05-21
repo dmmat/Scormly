@@ -15,8 +15,10 @@ export default function Header() {
   const projectName = useCourseStore((s) => s.projectName)
   const directoryHandle = useCourseStore((s) => s.directoryHandle)
   const saveState = useCourseStore((s) => s.saveState)
+  const setPreviewOpen = useCourseStore((s) => s.setPreviewOpen)
   const { t } = useT('common')
   const { t: tw } = useT('welcome')
+  const { t: tp } = useT('preview')
 
   const saveLabel =
     saveState === 'saving'
@@ -82,6 +84,13 @@ export default function Header() {
 
         <div className="mx-1 h-6 w-px bg-gray-200" />
 
+        <button
+          type="button"
+          onClick={() => setPreviewOpen(true)}
+          className="rounded-md px-3 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-100"
+        >
+          {tp('open')}
+        </button>
         <button
           type="button"
           onClick={() => void saveProject()}

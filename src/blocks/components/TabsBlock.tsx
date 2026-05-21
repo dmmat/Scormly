@@ -1,9 +1,10 @@
-import { useEffect, useRef, useState } from 'react'
+import { useState } from 'react'
 import type { BlockComponentProps } from '../types'
 import type { BlockOfType, TabItem } from '../../types/course'
 import { useCourseStore } from '../../store/courseStore'
 import { useT, translate } from '../../i18n/I18nProvider'
 import { uid } from '../../lib/id'
+import RichTextEditor from '../../components/editor/RichTextEditor'
 
 export default function TabsBlock({
   block,
@@ -14,21 +15,10 @@ export default function TabsBlock({
   const update = useCourseStore((s) => s.updateBlockData)
   const { tabs } = block.data
   const [active, setActive] = useState(0)
-  const bodyRef = useRef<HTMLDivElement>(null)
 
   // The active index may have gone out of range after a tab was removed.
   const activeIndex = Math.min(active, Math.max(0, tabs.length - 1))
   const activeTab: TabItem | undefined = tabs[activeIndex]
-
-  // Sync the panel content with the model only when unfocused and on tab change,
-  // so we don't fight the cursor while typing.
-  useEffect(() => {
-    const el = bodyRef.current
-    const html = activeTab?.html ?? ''
-    if (el && document.activeElement !== el && el.innerHTML !== html) {
-      el.innerHTML = html
-    }
-  }, [activeTab?.id, activeTab?.html])
 
   function setTitle(tabId: string, title: string) {
     const next = tabs.map((t) => (t.id === tabId ? { ...t, title } : t))
@@ -115,17 +105,11 @@ export default function TabsBlock({
 
       <div className="p-5">
         {activeTab ? (
-          <div
+          <RichTextEditor
             key={activeTab.id}
-            ref={bodyRef}
-            contentEditable
-            suppressContentEditableWarning
-            role="textbox"
-            aria-multiline="true"
-            data-placeholder={t('tabContentPlaceholder')}
-            onInput={(e) => setHtml(activeTab.id, e.currentTarget.innerHTML)}
-            dangerouslySetInnerHTML={{ __html: activeTab.html }}
-            className="leading-relaxed text-gray-800 outline-none empty:before:text-gray-300 empty:before:content-[attr(data-placeholder)]"
+            html={activeTab.html}
+            placeholder={t('tabContentPlaceholder')}
+            onChange={(html) => setHtml(activeTab.id, html)}
           />
         ) : (
           <p className="text-sm text-gray-400">{t('noTabs')}</p>

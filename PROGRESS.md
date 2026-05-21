@@ -74,9 +74,11 @@ Legend: `[ ]` planned · `[~]` in progress · `[x]` done
 - [x] **Persist undo/redo history to a sidecar file** (`.scormly-history.json`) so redo survives reopening a project
 - [x] Welcome screen (create / open project) with fallback for browsers without the File System Access API
 - [x] Save-status indicator + project name in the Header
-- [ ] Copy every uploaded file into the project `assets/` (images, videos), store relative paths
-- [ ] In-browser image optimization via canvas (downscale ~1920px + re-encode); preserve transparency (no JPEG flatten of PNG/WebP alpha); no video transcoding
-- [ ] Supported formats (SCORM-safe): images PNG/JPEG/WebP/GIF/SVG; video MP4 (H.264/AAC) recommended, WebM accepted; reject MOV/AVI
+- [x] Copy every uploaded file into the project `assets/images|videos`, store relative paths (`lib/assets.ts`); display via resolved object URLs (`hooks/useAssetUrl`)
+- [x] In-browser image optimization via canvas (downscale ~1920px + re-encode); preserves transparency (PNG/WebP keep type, never flattened to JPEG; GIF/SVG kept as-is); no video transcoding
+- [x] Supported formats enforced: images PNG/JPEG/WebP/GIF/SVG; video MP4/WebM; others rejected with a message
+- [x] Applied to Image, Gallery, Video and Scenario character images (editor + preview); no project / old browser → data-URL fallback
+- [ ] Inline rich-text images still embed as data URLs (contentEditable limitation; exports fine to SCORM)
 
 - [x] Localized default content at creation time (course/lesson/block defaults follow the UI language via a non-React `translate()`)
 - [x] Rename course (Sidebar) and lessons (inline edit + delete) ; localized "Add lesson"
@@ -120,3 +122,7 @@ encoding, so these requirements are tracked here as the living list.
 - 2026-05-21 — Added i18n (EN/UK) across the whole UI + LanguagePicker; default language English. Spacing/design polish across chrome and blocks.
 - 2026-05-21 — Added the SEO landing page (bilingual, FAQ, animations) with hash routing; builder moved to `#/app`. Translated all docs and code comments to English.
 - 2026-05-21 — Phase 3 core: File System Access wrapper, project create/open/save, autosave + history sidecar, welcome screen with fallback, save status in Header. Added GitHub issue templates + "Report an issue" links. Media-to-assets still pending. Build clean (80 modules).
+- 2026-05-21 — Localized default content at creation; rename course/lessons + delete lesson; project menu (new/open/close); recent projects via IndexedDB; 16px selection padding.
+- 2026-05-21 — Added a shared dependency-free RichTextEditor (bold/italic/underline, lists, alignment, image upload) used by paragraph, tabs and accordion; heading alignment. Build clean (85 modules).
+- 2026-05-21 — Added a Divider block (solid/dashed/dotted) and a learner Preview mode (full-screen overlay with lesson navigation, read-only/interactive renderers for every block type incl. quiz scoring and scenario branching). Build clean (94 modules).
+- 2026-05-21 — Media-to-assets: uploaded images/videos copied into project assets/ with canvas image optimization (alpha-preserving) and format validation; display via resolved object URLs. Build clean (99 modules). Next: SCORM export.

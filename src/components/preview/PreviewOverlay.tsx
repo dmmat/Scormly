@@ -1,0 +1,85 @@
+import { useState } from 'react'
+import { useCourseStore } from '../../store/courseStore'
+import { useT } from '../../i18n/I18nProvider'
+import BlockPreview from '../../preview/BlockPreview'
+
+// Full-screen, learner-facing preview of the course with lesson navigation.
+export default function PreviewOverlay() {
+  const course = useCourseStore((s) => s.course)
+  const activeLessonId = useCourseStore((s) => s.activeLessonId)
+  const setPreviewOpen = useCourseStore((s) => s.setPreviewOpen)
+  const { t } = useT('preview')
+
+  const startIndex = Math.max(
+    0,
+    course.lessons.findIndex((l) => l.id === activeLessonId),
+  )
+  const [index, setIndex] = useState(startIndex)
+  const lesson = course.lessons[index]
+  const total = course.lessons.length
+
+  return (
+    <div
+      data-theme={course.theme}
+      className="fixed inset-0 z-50 flex flex-col bg-white"
+    >
+      <header className="flex h-14 shrink-0 items-center justify-between border-b border-gray-200 px-4">
+        <div className="flex min-w-0 items-center gap-3">
+          <span className="truncate font-semibold text-gray-900">
+            {course.title}
+          </span>
+          <span className="shrink-0 text-sm text-gray-400">
+            {t('progress', { n: index + 1, total })}
+          </span>
+        </div>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => setIndex((i) => Math.max(0, i - 1))}
+            disabled={index === 0}
+            className="btn-secondary text-sm disabled:opacity-30"
+          >
+            {t('prev')}
+          </button>
+          <button
+            type="button"
+            onClick={() => setIndex((i) => Math.min(total - 1, i + 1))}
+            disabled={index >= total - 1}
+            className="btn-secondary text-sm disabled:opacity-30"
+          >
+            {t('next')}
+          </button>
+          <button
+            type="button"
+            onClick={() => setPreviewOpen(false)}
+            aria-label={t('close')}
+            className="ml-2 flex h-9 w-9 items-center justify-center rounded-md text-gray-500 hover:bg-gray-100"
+          >
+            ✕
+          </button>
+        </div>
+      </header>
+
+      <div className="flex-1 overflow-y-auto bg-gray-50">
+        <div className="mx-auto max-w-3xl px-6 py-10">
+          {lesson ? (
+            <>
+              <h1 className="mb-8 text-3xl font-bold text-gray-900">
+                {lesson.title}
+              </h1>
+              {lesson.blocks.length === 0 ? (
+                <p className="text-gray-400">{t('empty')}</p>
+              ) : (
+                <div className="space-y-6">
+                  {lesson.blocks.map((block) => (
+                    <BlockPreview key={block.id} block={block} />
+                  ))}
+                </div>
+              )}
+            </>
+          ) : null}
+        </div>
+      </div>
+    </div>
+  )
+}

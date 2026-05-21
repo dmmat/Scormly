@@ -1,5 +1,5 @@
 import type { BlockComponentProps } from '../types'
-import type { BlockOfType, HeadingLevel } from '../../types/course'
+import type { BlockOfType, HeadingLevel, TextAlign } from '../../types/course'
 import { useCourseStore } from '../../store/courseStore'
 import { useT } from '../../i18n/I18nProvider'
 
@@ -11,6 +11,12 @@ const LEVEL_CLASS: Record<HeadingLevel, string> = {
   3: 'text-xl font-semibold',
 }
 
+const ALIGNS: { value: TextAlign; icon: string; key: string }[] = [
+  { value: 'left', icon: '⇤', key: 'alignLeft' },
+  { value: 'center', icon: '↔', key: 'alignCenter' },
+  { value: 'right', icon: '⇥', key: 'alignRight' },
+]
+
 export default function HeadingBlock({
   block,
   lessonId,
@@ -18,13 +24,14 @@ export default function HeadingBlock({
 }: BlockComponentProps<BlockOfType<'heading'>>) {
   const update = useCourseStore((s) => s.updateBlockData)
   const { t } = useT('text')
-  const { level, text } = block.data
+  const { t: tr } = useT('richtext')
+  const { level, text, align = 'left' } = block.data
   const Tag = `h${level}` as const
 
   return (
     <div className="space-y-3">
       {selected && (
-        <div className="flex gap-1">
+        <div className="flex flex-wrap items-center gap-1">
           {LEVELS.map((lvl) => (
             <button
               key={lvl}
@@ -40,9 +47,25 @@ export default function HeadingBlock({
               H{lvl}
             </button>
           ))}
+          <span className="mx-1 h-5 w-px bg-gray-200" />
+          {ALIGNS.map((a) => (
+            <button
+              key={a.value}
+              type="button"
+              onClick={() => update(lessonId, block.id, { align: a.value })}
+              aria-label={tr(a.key)}
+              className={`h-8 w-9 rounded-md text-sm ${
+                align === a.value
+                  ? 'bg-brand text-white'
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              }`}
+            >
+              {a.icon}
+            </button>
+          ))}
         </div>
       )}
-      <Tag className={LEVEL_CLASS[level]}>
+      <Tag className={LEVEL_CLASS[level]} style={{ textAlign: align }}>
         <input
           type="text"
           value={text}
@@ -56,6 +79,7 @@ export default function HeadingBlock({
             )
           }
           className="w-full bg-transparent text-gray-900 placeholder-gray-300 outline-none"
+          style={{ textAlign: align }}
         />
       </Tag>
     </div>

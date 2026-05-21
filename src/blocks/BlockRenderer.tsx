@@ -9,6 +9,7 @@ import ImageBlock from './components/ImageBlock'
 import GalleryBlock from './components/GalleryBlock'
 import VideoBlock from './components/VideoBlock'
 import ContinueBlock from './components/ContinueBlock'
+import DividerBlock from './components/DividerBlock'
 import TabsBlock from './components/TabsBlock'
 import AccordionBlock from './components/AccordionBlock'
 import FlashcardsBlock from './components/FlashcardsBlock'
@@ -29,6 +30,7 @@ const BLOCK_COMPONENTS: Record<
   gallery: GalleryBlock as ComponentType<BlockComponentProps>,
   video: VideoBlock as ComponentType<BlockComponentProps>,
   continue: ContinueBlock as ComponentType<BlockComponentProps>,
+  divider: DividerBlock as ComponentType<BlockComponentProps>,
   tabs: TabsBlock as ComponentType<BlockComponentProps>,
   accordion: AccordionBlock as ComponentType<BlockComponentProps>,
   flashcards: FlashcardsBlock as ComponentType<BlockComponentProps>,

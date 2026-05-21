@@ -3,6 +3,7 @@ import Header from './layout/Header'
 import Sidebar from './layout/Sidebar'
 import Workspace from './layout/Workspace'
 import WelcomeScreen from './welcome/WelcomeScreen'
+import PreviewOverlay from './preview/PreviewOverlay'
 import ThemeProvider from '../theme/ThemeProvider'
 import { useUndoRedoShortcuts } from '../hooks/useUndoRedoShortcuts'
 import { useAutosave } from '../hooks/useAutosave'
@@ -14,6 +15,7 @@ export default function Builder() {
   useUndoRedoShortcuts()
   useAutosave()
   const directoryHandle = useCourseStore((s) => s.directoryHandle)
+  const previewOpen = useCourseStore((s) => s.previewOpen)
   const [skipped, setSkipped] = useState(false)
 
   if (!directoryHandle && !skipped) {
@@ -27,6 +29,7 @@ export default function Builder() {
         <Sidebar />
         <Workspace />
       </div>
+      {previewOpen && <PreviewOverlay />}
     </ThemeProvider>
   )
 }
