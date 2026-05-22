@@ -251,6 +251,12 @@ export interface QuizData {
   questions: Question[]
   /** Passing score as a percentage (0–100). */
   passingScore: number
+  /**
+   * Reveal which answers are correct after submitting (highlighting + per-option
+   * and per-question feedback). When false, only the score is shown. Defaults to
+   * true when omitted (legacy quizzes).
+   */
+  showAnswers?: boolean
 }
 
 // ── Block: discriminated union ──────────────────────────────────────────────

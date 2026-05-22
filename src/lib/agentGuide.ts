@@ -107,6 +107,7 @@ const BLOCK_DOCS: Record<BlockType, BlockDoc> = {
     summary: 'Graded questions (single / multiple choice, or matching).',
     data: `{
     passingScore: number,  // 0–100
+    showAnswers?: boolean,  // reveal correct answers after submitting (default true)
     questions: (
       | { id: string, type: 'single' | 'multiple', prompt: string, feedback?: string,
           options: { id: string, text: string, correct: boolean, feedback?: string }[] }

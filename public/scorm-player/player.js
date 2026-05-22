@@ -564,13 +564,16 @@
     var data = b.data;
     var answers = {};
     var submitted = false;
+    // Reveal correctness after submitting unless the quiz hides answers.
+    var showAnswers = data.showAnswers !== false;
     var wrap = h('div', {});
 
     function build() {
+      var reveal = submitted && showAnswers;
       wrap.innerHTML = '';
       (data.questions || []).forEach(function (q, qi) {
-        var ok = submitted && isCorrect(q);
-        var card = h('div', { class: 'quiz-q' + (submitted ? (ok ? ' correct' : ' incorrect') : '') });
+        var ok = reveal && isCorrect(q);
+        var card = h('div', { class: 'quiz-q' + (reveal ? (ok ? ' correct' : ' incorrect') : '') });
         card.appendChild(h('p', { class: 'quiz-prompt', text: (qi + 1) + '. ' + q.prompt }));
 
         if (q.type === 'single' || q.type === 'multiple') {
@@ -589,7 +592,7 @@
               }
             });
             card.appendChild(h('label', { class: 'quiz-opt' }, [input, h('span', { text: o.text }),
-              submitted && o.feedback && input.checked ? h('span', { class: 'empty', text: '— ' + o.feedback }) : null]));
+              reveal && o.feedback && input.checked ? h('span', { class: 'empty', text: '— ' + o.feedback }) : null]));
           });
         } else if (q.type === 'matching') {
           (q.pairs || []).forEach(function (p) {
@@ -606,7 +609,7 @@
           });
         }
 
-        if (submitted) {
+        if (reveal) {
           card.appendChild(h('p', { class: 'quiz-feedback ' + (ok ? 'passed' : 'failed'),
             text: (ok ? t('correct') : t('incorrect')) + (q.feedback ? ' — ' + q.feedback : '') }));
         }

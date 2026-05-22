@@ -7,7 +7,7 @@ type Answer = string | string[] | Record<string, string>
 
 export default function QuizPreview({ block }: PreviewProps<'quiz'>) {
   const { t } = useT('preview')
-  const { questions, passingScore } = block.data
+  const { questions, passingScore, showAnswers = true } = block.data
   const [answers, setAnswers] = useState<Record<string, Answer>>({})
   const [submitted, setSubmitted] = useState(false)
 
@@ -43,11 +43,14 @@ export default function QuizPreview({ block }: PreviewProps<'quiz'>) {
     setSubmitted(false)
   }
 
+  // Reveal correctness only when the quiz is configured to show answers.
+  const reveal = submitted && showAnswers
+
   return (
     <div className="space-y-4">
       {questions.map((q, qi) => {
-        const ok = submitted && isCorrect(q)
-        const bad = submitted && !isCorrect(q)
+        const ok = reveal && isCorrect(q)
+        const bad = reveal && !isCorrect(q)
         return (
           <div
             key={q.id}
@@ -97,7 +100,7 @@ export default function QuizPreview({ block }: PreviewProps<'quiz'>) {
                         }}
                       />
                       <span className="text-gray-800">{o.text}</span>
-                      {submitted && o.feedback && selected && (
+                      {reveal && o.feedback && selected && (
                         <span className="text-xs text-gray-500">— {o.feedback}</span>
                       )}
                     </label>
@@ -135,7 +138,7 @@ export default function QuizPreview({ block }: PreviewProps<'quiz'>) {
               </div>
             )}
 
-            {submitted && (
+            {reveal && (
               <p
                 className={`mt-3 text-sm font-medium ${ok ? 'text-green-700' : 'text-red-700'}`}
               >

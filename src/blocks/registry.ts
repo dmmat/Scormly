@@ -294,6 +294,7 @@ export const BLOCK_REGISTRY: Record<BlockType, BlockMeta> = {
       settings: { ...baseSettings },
       data: {
         passingScore: 80,
+        showAnswers: true,
         questions: [
           {
             id: uid('q'),
