@@ -15,9 +15,9 @@ const demo: LocaleTable = {
     tabOutline: 'Course outline',
 
     // Chat (auto-playing scenario)
-    chatName: 'Anna · onboarding buddy',
+    chatName: 'Ksiu',
     chatStatus: 'online',
-    chatM1: "Hi! I'm Anna. Ready for a 2-minute onboarding?",
+    chatM1: "Hi! I'm Ksiu. Ready for a 2-minute onboarding?",
     chatO1a: "Let's do it",
     chatO1b: 'What will we cover?',
     chatM2: 'Great. Where do you log your work hours?',
@@ -66,9 +66,9 @@ const demo: LocaleTable = {
     tabOutline: 'Зміст курсу',
 
     // Chat
-    chatName: 'Анна · твій онбординг-бадді',
+    chatName: 'Ksiu',
     chatStatus: 'онлайн',
-    chatM1: 'Привіт! Я Анна. Готові до 2-хвилинного онбордингу?',
+    chatM1: 'Привіт! Я Ksiu. Готові до 2-хвилинного онбордингу?',
     chatO1a: 'Поїхали',
     chatO1b: 'Що будемо проходити?',
     chatM2: 'Чудово. Де ви фіксуєте робочі години?',

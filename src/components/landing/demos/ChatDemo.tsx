@@ -98,7 +98,7 @@ export default function ChatDemo() {
       <div className="phone-notch" aria-hidden />
       <div className="phone-screen">
         <header className="chatd-header">
-          <span className="chatd-ava">A</span>
+          <span className="chatd-ava">K</span>
           <span className="min-w-0">
             <span className="block truncate text-sm font-semibold leading-tight">
               {t('chatName')}
@@ -120,7 +120,7 @@ export default function ChatDemo() {
           {bubbles.map((b) =>
             b.from === 'bot' ? (
               <div key={b.id} className="chatd-row chatd-in">
-                <span className="chatd-ava chatd-ava-sm">A</span>
+                <span className="chatd-ava chatd-ava-sm">K</span>
                 <p className="chatd-bubble chatd-bot">{b.text}</p>
               </div>
             ) : (
@@ -131,7 +131,7 @@ export default function ChatDemo() {
           )}
           {typing && (
             <div className="chatd-row">
-              <span className="chatd-ava chatd-ava-sm">A</span>
+              <span className="chatd-ava chatd-ava-sm">K</span>
               <span className="chatd-bubble chatd-bot chatd-typing">
                 <i /><i /><i />
               </span>
