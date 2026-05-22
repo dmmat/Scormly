@@ -65,9 +65,13 @@ export async function exportScorm(version: ScormVersion = '2004'): Promise<void>
     files.push(name)
   }
 
-  // Course data.
-  zip.file('project.json', JSON.stringify(course, null, 2))
-  files.push('project.json')
+  // Course data, embedded as a JS global rather than a fetched JSON file:
+  // many LMS sandbox the SCO or serve it from a CDN that rejects runtime
+  // fetch()/XHR for sibling files, whereas a <script src> always loads.
+  // Escape '<' so block HTML can't break out of the <script> tag.
+  const dataJs = `window.__SCORMLY_COURSE__ = ${JSON.stringify(course).replace(/</g, '\\u003c')};`
+  zip.file('course-data.js', dataJs)
+  files.push('course-data.js')
 
   // Media copied from the project's assets/ folder (if a project is open).
   if (directoryHandle) {

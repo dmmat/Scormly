@@ -515,13 +515,16 @@
     return wrap;
   }
 
-  // Boot
-  fetch('project.json')
-    .then(function (r) { return r.json(); })
-    .then(start)
-    .catch(function () {
-      document.getElementById('app').appendChild(
-        h('p', { class: 'empty', style: 'padding:2rem', text: 'project.json not found' })
-      );
-    });
+  // Boot. Course data is embedded as a global by course-data.js (loaded via a
+  // <script> tag before this file). We deliberately avoid fetch()/XHR here:
+  // many LMS environments sandbox the SCO or serve its files from a CDN that
+  // rejects runtime requests for sibling files (404/400/403/CORS), while
+  // <script>/<link>/<img> loads work fine.
+  if (window.__SCORMLY_COURSE__) {
+    start(window.__SCORMLY_COURSE__);
+  } else {
+    document.getElementById('app').appendChild(
+      h('p', { class: 'empty', style: 'padding:2rem', text: 'Course data not found' })
+    );
+  }
 })();
