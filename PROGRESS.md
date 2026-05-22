@@ -171,6 +171,8 @@ tracking layer.
   emotion avatar, the learner's choices as outgoing bubbles, an accumulating conversation, reply
   buttons, and restart at the end. Same branching/node model; toggle in the editor; implemented in the
   in-app preview and the player (+ CSS). Documented in AGENTS.md. (Branch: claude/scenario-chat-mode.)
+  Chat layout also supports a **learner avatar** (`ScenarioData.userAvatar`) shown on the user's reply
+  bubbles, configurable in the editor when chat layout is on.
 - 2026-05-22 — Quiz setting **showAnswers** (default true): when off, submitting shows only the score
   (no correct/incorrect highlighting, per-option or per-question feedback). Wired through the model,
   registry default, editor toggle, in-app preview and the player; documented in AGENTS.md.

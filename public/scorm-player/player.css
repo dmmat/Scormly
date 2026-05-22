@@ -163,6 +163,7 @@ hr.divider { border: 0; border-top: 2px solid #d1d5db; margin: 0.5rem 0; }
   max-height: 24rem; overflow-y: auto; }
 .chat-row { display: flex; align-items: flex-end; gap: 0.5rem; }
 .chat-row-bot { align-self: flex-start; }
+.chat-row-user { align-self: flex-end; }
 .chat-msg-avatar { width: 1.5rem; height: 1.5rem; border-radius: 9999px; object-fit: cover; flex-shrink: 0; }
 span.chat-msg-avatar { background: #d1d5db; }
 .chat-bubble { max-width: 16rem; margin: 0; padding: 0.5rem 0.75rem; font-size: 0.9rem;

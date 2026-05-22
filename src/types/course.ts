@@ -209,6 +209,8 @@ export interface ScenarioData {
   nodes: ScenarioNode[]
   /** Presentation layout; defaults to 'classic' when omitted (legacy scenarios). */
   layout?: ScenarioLayout
+  /** Learner's avatar in chat layout (relative path); shown on their replies. */
+  userAvatar?: string
 }
 
 // ── Quizzes (spec §5.1) ─────────────────────────────────────────────────────

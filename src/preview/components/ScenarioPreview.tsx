@@ -15,6 +15,7 @@ export default function ScenarioPreview({ block }: PreviewProps<'scenario'>) {
     happy: useAssetUrl(characterImages.happy ?? ''),
     concerned: useAssetUrl(characterImages.concerned ?? ''),
   }
+  const userAvatar = useAssetUrl(data.userAvatar ?? '')
 
   if ((data.layout ?? 'classic') === 'chat') {
     return (
@@ -23,6 +24,7 @@ export default function ScenarioPreview({ block }: PreviewProps<'scenario'>) {
         startNodeId={startNodeId}
         characterName={characterName}
         avatars={avatars}
+        userAvatar={userAvatar}
         endLabel={t('end')}
         restartLabel={t('restart')}
       />
@@ -46,6 +48,7 @@ interface ScenarioViewProps {
   startNodeId: string
   characterName: string
   avatars: Record<ScenarioEmotion, string>
+  userAvatar?: string
   endLabel: string
   restartLabel: string
 }
@@ -133,6 +136,7 @@ function ChatScenario({
   startNodeId,
   characterName,
   avatars,
+  userAvatar,
   endLabel,
   restartLabel,
 }: ScenarioViewProps) {
@@ -196,12 +200,14 @@ function ChatScenario({
               </p>
             </div>
           ) : (
-            <p
-              key={m.id}
-              className="max-w-[16rem] self-end rounded-2xl rounded-br-sm bg-brand px-3 py-2 text-sm leading-relaxed text-white shadow-sm"
-            >
-              {m.text}
-            </p>
+            <div key={m.id} className="flex items-end gap-2 self-end">
+              <p className="max-w-[16rem] rounded-2xl rounded-br-sm bg-brand px-3 py-2 text-sm leading-relaxed text-white shadow-sm">
+                {m.text}
+              </p>
+              {userAvatar && (
+                <img src={userAvatar} alt="" className="h-6 w-6 shrink-0 rounded-full object-cover" />
+              )}
+            </div>
           ),
         )}
       </div>

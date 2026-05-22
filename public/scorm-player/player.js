@@ -592,7 +592,10 @@
             h('p', { class: 'chat-bubble chat-bubble-bot', text: m.text }),
           ]));
         } else {
-          body.appendChild(h('p', { class: 'chat-bubble chat-bubble-user', text: m.text }));
+          body.appendChild(h('div', { class: 'chat-row chat-row-user' }, [
+            h('p', { class: 'chat-bubble chat-bubble-user', text: m.text }),
+            data.userAvatar ? h('img', { class: 'chat-msg-avatar', src: data.userAvatar, alt: '' }) : null,
+          ]));
         }
       });
       body.scrollTop = body.scrollHeight;
