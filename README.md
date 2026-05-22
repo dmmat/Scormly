@@ -8,6 +8,8 @@ Build interactive, block-based courses right in your browser — no server, no
 cloud. Everything is stored in your own file system, and the finished course is
 exported as a **SCORM 1.2 / 2004** or **cmi5 (xAPI)** package for any LMS.
 
+### 🌐 [scormly.app](https://scormly.app/)
+
 [Features](#-features) ·
 [Quick start](#-quick-start) ·
 [How it works](#-how-it-works) ·
@@ -78,8 +80,8 @@ exported as a **SCORM 1.2 / 2004** or **cmi5 (xAPI)** package for any LMS.
 > the File System Access API.
 
 ```bash
-git clone https://github.com/<your-org>/scormly.git
-cd scormly
+git clone https://github.com/dmmat/Scormly.git
+cd Scormly
 npm install
 npm run dev      # http://localhost:5173
 ```
