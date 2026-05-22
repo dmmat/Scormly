@@ -14,11 +14,17 @@
     en: { prev: 'Previous', next: 'Next', progress: 'Lesson {n} of {total}',
       empty: 'This lesson has no content yet.', submit: 'Submit answer', retry: 'Try again',
       correct: 'Correct', incorrect: 'Incorrect', yourScore: 'Your score: {s}%',
-      passed: 'Passed', failed: 'Not passed', restart: 'Restart', end: 'The end' },
+      passed: 'Passed', failed: 'Not passed', restart: 'Restart', end: 'The end',
+      finish: 'Finish', courseComplete: 'Course complete',
+      courseCompleteText: 'You have reached the end of the course. You can close this window.',
+      review: 'Review the course' },
     uk: { prev: 'Назад', next: 'Далі', progress: 'Урок {n} з {total}',
       empty: 'У цьому уроці ще немає контенту.', submit: 'Відповісти', retry: 'Спробувати ще раз',
       correct: 'Правильно', incorrect: 'Неправильно', yourScore: 'Ваш результат: {s}%',
-      passed: 'Складено', failed: 'Не складено', restart: 'Спочатку', end: 'Кінець' },
+      passed: 'Складено', failed: 'Не складено', restart: 'Спочатку', end: 'Кінець',
+      finish: 'Завершити', courseComplete: 'Курс завершено',
+      courseCompleteText: 'Ви пройшли курс до кінця. Це вікно можна закрити.',
+      review: 'Переглянути курс' },
   };
   var lang = (navigator.language || 'en').toLowerCase().indexOf('uk') === 0 ? 'uk' : 'en';
   function t(key, vars) {
@@ -43,7 +49,7 @@
     return el;
   }
 
-  var state = { course: null, lessonIndex: 0, visited: {}, continued: {}, quizResults: {}, quizzes: [], interactionIndex: 0, sessionStart: 0, complete: false };
+  var state = { course: null, lessonIndex: 0, visited: {}, continued: {}, quizResults: {}, quizzes: [], interactionIndex: 0, sessionStart: 0, complete: false, finished: false, summary: null };
 
   function start(course) {
     state.course = course;
@@ -100,6 +106,19 @@
     if (state.lessonIndex < lessons.length - 1) visit(state.lessonIndex + 1);
   }
 
+  // Learner explicitly ends the course: report final state and terminate the
+  // LMS session, then show the completion screen.
+  function finishCourse() {
+    state.visited[state.lessonIndex] = true;
+    state.finished = true;
+    reportProgress();
+    SCORM.setSessionTime((Date.now() - state.sessionStart) / 1000);
+    SCORM.setExit(state.complete ? '' : 'suspend');
+    SCORM.finish();
+    render();
+    document.querySelector('.player-body').scrollTop = 0;
+  }
+
   function visit(index) {
     state.lessonIndex = index;
     state.visited[index] = true;
@@ -139,13 +158,20 @@
 
     // Scoring / pass-fail — only when enabled and the course has quizzes.
     var success = null;
+    var scoreValue = null;
     if (cfg.scored && hasQuiz && quizzesDone) {
-      var avg = avgOf(state.quizzes.map(function (q) { return state.quizResults[q.id]; }));
-      SCORM.setScore(avg, 0, 100);
-      if (completed) success = avg >= cfg.passingScore ? 'passed' : 'failed';
+      scoreValue = avgOf(state.quizzes.map(function (q) { return state.quizResults[q.id]; }));
+      SCORM.setScore(scoreValue, 0, 100);
+      if (completed) success = scoreValue >= cfg.passingScore ? 'passed' : 'failed';
     }
 
     state.complete = completed;
+    // Snapshot for the completion screen (success may be null until completed).
+    state.summary = {
+      completed: completed,
+      score: scoreValue,
+      success: scoreValue == null ? null : (scoreValue >= cfg.passingScore ? 'passed' : 'failed'),
+    };
     SCORM.report(completed, success);
     SCORM.setSuspend(JSON.stringify({
       l: state.lessonIndex,
@@ -169,8 +195,18 @@
     var i = state.lessonIndex;
     var lesson = lessons[i];
 
+    if (state.finished) { renderComplete(app); return; }
+
     // Restricted "Continue" gates block advancing until every gate is passed.
     var canAdvance = !lesson || lessonGates(lesson).every(function (b) { return state.continued[b.id]; });
+    var isLast = i >= lessons.length - 1;
+
+    // On the last lesson, "Next" becomes "Finish" (primary) to end the course.
+    var advanceBtn = isLast
+      ? h('button', { class: 'btn', text: t('finish'), disabled: canAdvance ? null : 'true',
+          onclick: function () { if (canAdvance) finishCourse(); } })
+      : h('button', { class: 'btn btn-outline', text: t('next'), disabled: canAdvance ? null : 'true',
+          onclick: function () { if (canAdvance) visit(i + 1); } });
 
     var header = h('header', { class: 'player-header' }, [
       h('div', { style: 'display:flex;align-items:center;gap:12px;min-width:0' }, [
@@ -180,9 +216,7 @@
       h('div', { class: 'player-nav' }, [
         h('button', { class: 'btn btn-outline', text: t('prev'), disabled: i === 0 ? 'true' : null,
           onclick: function () { if (i > 0) visit(i - 1); } }),
-        h('button', { class: 'btn btn-outline', text: t('next'),
-          disabled: (i >= lessons.length - 1 || !canAdvance) ? 'true' : null,
-          onclick: function () { if (i < lessons.length - 1 && canAdvance) visit(i + 1); } }),
+        advanceBtn,
       ]),
     ]);
 
@@ -206,6 +240,30 @@
       ]),
     ]);
 
+    app.appendChild(header);
+    app.appendChild(body);
+  }
+
+  // Completion screen shown after the learner clicks Finish.
+  function renderComplete(app) {
+    var s = state.summary || {};
+    var header = h('header', { class: 'player-header' }, [
+      h('div', { style: 'display:flex;align-items:center;gap:12px;min-width:0' }, [
+        h('span', { class: 'player-title', text: state.course.title || '' }),
+      ]),
+      h('div', { class: 'player-nav' }, [
+        h('button', { class: 'btn btn-outline', text: t('review'),
+          onclick: function () { state.finished = false; render(); document.querySelector('.player-body').scrollTop = 0; } }),
+      ]),
+    ]);
+    var card = h('div', { class: 'finish-card' }, [
+      h('div', { class: 'finish-check', text: '✓' }),
+      h('h1', { class: 'finish-title', text: t('courseComplete') }),
+      s.score != null ? h('p', { class: 'finish-score', text: t('yourScore', { s: Math.round(s.score) }) }) : null,
+      s.success ? h('p', { class: 'finish-status ' + s.success, text: s.success === 'passed' ? t('passed') : t('failed') }) : null,
+      h('p', { class: 'finish-text', text: t('courseCompleteText') }),
+    ]);
+    var body = h('div', { class: 'player-body' }, [h('div', { class: 'lesson' }, card)]);
     app.appendChild(header);
     app.appendChild(body);
   }

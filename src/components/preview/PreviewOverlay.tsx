@@ -15,8 +15,10 @@ export default function PreviewOverlay() {
     course.lessons.findIndex((l) => l.id === activeLessonId),
   )
   const [index, setIndex] = useState(startIndex)
+  const [finished, setFinished] = useState(false)
   const lesson = course.lessons[index]
   const total = course.lessons.length
+  const isLast = index >= total - 1
 
   return (
     <div
@@ -33,22 +35,43 @@ export default function PreviewOverlay() {
           </span>
         </div>
         <div className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={() => setIndex((i) => Math.max(0, i - 1))}
-            disabled={index === 0}
-            className="btn-secondary text-sm disabled:opacity-30"
-          >
-            {t('prev')}
-          </button>
-          <button
-            type="button"
-            onClick={() => setIndex((i) => Math.min(total - 1, i + 1))}
-            disabled={index >= total - 1}
-            className="btn-secondary text-sm disabled:opacity-30"
-          >
-            {t('next')}
-          </button>
+          {finished ? (
+            <button
+              type="button"
+              onClick={() => setFinished(false)}
+              className="btn-secondary text-sm"
+            >
+              {t('review')}
+            </button>
+          ) : (
+            <>
+              <button
+                type="button"
+                onClick={() => setIndex((i) => Math.max(0, i - 1))}
+                disabled={index === 0}
+                className="btn-secondary text-sm disabled:opacity-30"
+              >
+                {t('prev')}
+              </button>
+              {isLast ? (
+                <button
+                  type="button"
+                  onClick={() => setFinished(true)}
+                  className="btn-primary text-sm"
+                >
+                  {t('finish')}
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setIndex((i) => Math.min(total - 1, i + 1))}
+                  className="btn-secondary text-sm"
+                >
+                  {t('next')}
+                </button>
+              )}
+            </>
+          )}
           <button
             type="button"
             onClick={() => setPreviewOpen(false)}
@@ -62,7 +85,17 @@ export default function PreviewOverlay() {
 
       <div className="flex-1 overflow-y-auto bg-gray-50">
         <div className="mx-auto max-w-3xl px-4 py-6 sm:px-6 sm:py-10">
-          {lesson ? (
+          {finished ? (
+            <div className="py-8 text-center">
+              <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-brand/15 text-3xl text-brand-dark">
+                ✓
+              </div>
+              <h1 className="text-2xl font-bold text-gray-900">
+                {t('courseComplete')}
+              </h1>
+              <p className="mt-3 text-gray-500">{t('courseCompleteText')}</p>
+            </div>
+          ) : lesson ? (
             <>
               <h1 className="mb-8 text-3xl font-bold text-gray-900">
                 {lesson.title}
