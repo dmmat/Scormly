@@ -170,9 +170,13 @@ tracking layer.
   default classic). Chat mode renders a phone-style messenger — incoming bubbles with the character's
   emotion avatar, the learner's choices as outgoing bubbles, an accumulating conversation, reply
   buttons, and restart at the end. Same branching/node model; toggle in the editor; implemented in the
-  in-app preview and the player (+ CSS). Documented in AGENTS.md. (Branch: claude/scenario-chat-mode.)
-  Chat layout also supports a **learner avatar** (`ScenarioData.userAvatar`) shown on the user's reply
-  bubbles, configurable in the editor when chat layout is on.
+  in-app preview and the player (+ CSS). Documented in AGENTS.md. Chat layout also supports a **learner
+  avatar** (`ScenarioData.userAvatar`) shown on the user's reply bubbles.
+- 2026-05-22 — **Download project (.zip)** for sharing: a project-menu action that zips a clean copy —
+  `project.json` + referenced media (`assets/`) + `AGENTS.md`, **without** the undo/redo history sidecar.
+  Recipient unzips into a folder and opens it in Scormly. Reuses the referenced-assets packager; works
+  in no-folder mode too (media as data URLs in project.json). Also made the project menu an explicit,
+  discoverable button (bordered trigger + folder/chevron icons + "Project" caption).
 - 2026-05-22 — Quiz setting **showAnswers** (default true): when off, submitting shows only the score
   (no correct/incorrect highlighting, per-option or per-question feedback). Wired through the model,
   registry default, editor toggle, in-app preview and the player; documented in AGENTS.md.
