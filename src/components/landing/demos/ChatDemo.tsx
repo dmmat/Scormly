@@ -96,7 +96,6 @@ export default function ChatDemo() {
 
   return (
     <div className="phone">
-      <div className="phone-notch" aria-hidden />
       <div className="phone-screen">
         <header className="chatd-header">
           <span className="chatd-ava">{initial}</span>
