@@ -2,9 +2,10 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 
-// base = '/Scormly/' for GitHub Pages deploys (https://<user>.github.io/Scormly/,
-// the path is case-sensitive and must match the repo name), '/' for local dev.
+// Served from the root of the custom domain (scormly.app, via public/CNAME), so
+// the base path is '/' everywhere. (It was '/Scormly/' when the site lived at
+// <user>.github.io/Scormly/.)
 export default defineConfig({
-  base: process.env.GITHUB_PAGES ? '/Scormly/' : '/',
+  base: '/',
   plugins: [react(), tailwindcss()],
 })

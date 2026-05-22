@@ -5,13 +5,23 @@ import { useT } from '../../i18n/I18nProvider'
 import { useReveal } from '../../hooks/useReveal'
 import { navigate } from '../../hooks/useRoute'
 import { GITHUB_URL, GITHUB_ISSUES_URL } from '../../lib/links'
+import ChatDemo from './demos/ChatDemo'
+import Playground from './demos/Playground'
 
-function Reveal({ children, delay }: { children: ReactNode; delay?: number }) {
+function Reveal({
+  children,
+  delay,
+  className,
+}: {
+  children: ReactNode
+  delay?: number
+  className?: string
+}) {
   const { ref, visible } = useReveal()
   return (
     <div
       ref={ref}
-      className={visible ? 'reveal-visible' : 'reveal'}
+      className={`${visible ? 'reveal-visible' : 'reveal'}${className ? ` ${className}` : ''}`}
       style={delay ? { animationDelay: `${delay}ms` } : undefined}
     >
       {children}
@@ -95,6 +105,9 @@ const ICON_PATHS: Record<string, ReactNode> = {
       <path d="M18 14l.9 2.1L21 17l-2.1.9L18 20l-.9-2.1L15 17l2.1-.9L18 14z" />
     </>
   ),
+  heart: (
+    <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.29 1.51 4.04 3 5.5l7 7Z" />
+  ),
 }
 
 function Icon({ name, className }: { name: string; className?: string }) {
@@ -137,10 +150,12 @@ export default function Landing() {
       <main>
         <Hero />
         <Pillars />
-        <Privacy />
+        <Demo />
         <Features />
+        <Privacy />
         <HowItWorks />
         <Faq />
+        <Contribute />
       </main>
       <Footer />
     </div>
@@ -154,6 +169,9 @@ export default function Landing() {
             <Logo />
           </a>
           <nav className="hidden items-center gap-8 text-sm font-medium text-gray-600 md:flex">
+            <a href="#demo" className="hover:text-brand">
+              {t('navDemo')}
+            </a>
             <a href="#features" className="hover:text-brand">
               {t('navFeatures')}
             </a>
@@ -198,36 +216,41 @@ export default function Landing() {
           <div className="absolute -top-24 left-1/2 h-96 w-96 -translate-x-1/2 rounded-full bg-brand/10 blur-3xl" />
           <div className="absolute right-[-10%] top-40 h-72 w-72 rounded-full bg-brand/5 blur-3xl" />
         </div>
-        <div className="mx-auto max-w-4xl px-6 py-16 text-center sm:py-24 md:py-32">
-          <span className="reveal-visible inline-flex items-center rounded-full border border-brand/30 bg-brand/10 px-4 py-1.5 text-sm font-medium text-brand-dark">
-            {t('heroBadge')}
-          </span>
-          <h1 className="reveal-visible mx-auto mt-6 max-w-3xl text-4xl font-extrabold leading-tight tracking-tight text-gray-900 sm:text-5xl md:text-6xl">
-            {t('heroTitle')}
-          </h1>
-          <p className="reveal-visible mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-gray-600">
-            {t('heroSubtitle')}
-          </p>
-          <div className="reveal-visible mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <button
-              type="button"
-              onClick={() => navigate('app')}
-              className="btn-primary px-7 py-3 text-base"
-            >
-              {t('heroCtaPrimary')}
-            </button>
-            <a
-              href={GITHUB_URL}
-              target="_blank"
-              rel="noreferrer"
-              className="btn-secondary px-7 py-3 text-base"
-            >
-              {t('heroCtaSecondary')}
-            </a>
+        <div className="mx-auto grid max-w-6xl items-center gap-12 px-6 py-16 sm:py-20 lg:grid-cols-[1.1fr_0.9fr] lg:gap-8 lg:py-28">
+          <div className="text-center lg:text-left">
+            <span className="reveal-visible inline-flex items-center gap-2 rounded-full border border-brand/30 bg-brand/10 px-4 py-1.5 text-sm font-medium text-brand-dark">
+              <span className="chatd-dot" /> {t('heroBadge')}
+            </span>
+            <h1 className="reveal-visible mt-6 text-4xl font-extrabold leading-[1.05] tracking-tight text-gray-900 sm:text-5xl md:text-6xl">
+              {t('heroTitle')}
+            </h1>
+            <p className="reveal-visible mx-auto mt-6 max-w-xl text-lg leading-relaxed text-gray-600 lg:mx-0">
+              {t('heroSubtitle')}
+            </p>
+            <div className="reveal-visible mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row lg:justify-start">
+              <button
+                type="button"
+                onClick={() => navigate('app')}
+                className="btn-primary px-7 py-3 text-base"
+              >
+                {t('heroCtaPrimary')}
+              </button>
+              <a
+                href={GITHUB_URL}
+                target="_blank"
+                rel="noreferrer"
+                className="btn-secondary px-7 py-3 text-base"
+              >
+                {t('heroCtaSecondary')}
+              </a>
+            </div>
+            <p className="reveal-visible mt-5 text-sm text-gray-400">{t('heroNote')}</p>
           </div>
-          <p className="reveal-visible mt-5 text-sm text-gray-400">
-            {t('heroNote')}
-          </p>
+
+          {/* Live, self-playing dialogue trainer — a real product block. */}
+          <div className="reveal-visible animate-float">
+            <ChatDemo />
+          </div>
         </div>
       </section>
     )
@@ -240,27 +263,64 @@ export default function Landing() {
       { icon: 'shield', title: t('pillarLocalTitle'), text: t('pillarLocalText') },
     ]
     return (
-      <section className="border-y border-gray-100 bg-gray-50/60 py-20">
+      <section className="border-y border-gray-100 bg-gradient-to-b from-gray-50/80 to-white py-20 sm:py-24">
         <div className="mx-auto max-w-6xl px-6">
           <Reveal>
-            <h2 className="text-center text-3xl font-bold tracking-tight">
+            <h2 className="max-w-2xl text-3xl font-bold leading-tight tracking-tight sm:text-4xl">
               {t('pillarsTitle')}
             </h2>
           </Reveal>
-          <div className="mt-12 grid gap-6 md:grid-cols-3">
+          <div className="mt-12 grid gap-px overflow-hidden rounded-3xl bg-gray-200/70 ring-1 ring-gray-200/70 md:grid-cols-3">
             {pillars.map((p, i) => (
-              <Reveal key={p.title} delay={i * 100}>
-                <div className="group relative h-full overflow-hidden rounded-2xl border border-gray-200 bg-white p-8 shadow-sm transition-shadow hover:shadow-md">
-                  <div className="pointer-events-none absolute -right-8 -top-8 h-24 w-24 rounded-full bg-brand/5 blur-2xl transition-colors group-hover:bg-brand/10" />
-                  <div className="relative flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-brand/15 to-brand/5 text-brand ring-1 ring-brand/15">
+              <Reveal key={p.title} delay={i * 110}>
+                <div className="group relative h-full overflow-hidden bg-white p-8 transition-colors hover:bg-brand/[0.03]">
+                  <span className="block font-mono text-sm font-semibold text-brand/70">
+                    {String(i + 1).padStart(2, '0')}
+                  </span>
+                  <span className="mt-6 flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-brand to-brand-dark text-white shadow-lg shadow-brand/25 transition-transform group-hover:-rotate-6">
                     <Icon name={p.icon} className="h-6 w-6" />
-                  </div>
+                  </span>
                   <h3 className="mt-5 text-xl font-semibold">{p.title}</h3>
                   <p className="mt-2 leading-relaxed text-gray-600">{p.text}</p>
+                  <span className="mt-6 block h-1 w-10 rounded-full bg-brand/20 transition-all duration-300 group-hover:w-20 group-hover:bg-brand" />
                 </div>
               </Reveal>
             ))}
           </div>
+        </div>
+      </section>
+    )
+  }
+
+  // Interactive "play with the real blocks" section.
+  function Demo() {
+    const { t: td } = useT('demo')
+    return (
+      <section
+        id="demo"
+        className="relative scroll-mt-20 overflow-hidden py-24"
+      >
+        <div className="pointer-events-none absolute inset-0 -z-10">
+          <div className="absolute left-[-10%] top-10 h-72 w-72 rounded-full bg-brand/10 blur-3xl" />
+          <div className="absolute bottom-0 right-[-5%] h-72 w-72 rounded-full bg-brand/5 blur-3xl" />
+        </div>
+        <div className="mx-auto max-w-6xl px-6">
+          <Reveal>
+            <div className="mx-auto max-w-2xl text-center">
+              <span className="inline-flex items-center gap-2 rounded-full border border-brand/30 bg-brand/10 px-4 py-1.5 text-sm font-medium text-brand-dark">
+                <span className="chatd-dot" /> {td('badge')}
+              </span>
+              <h2 className="mt-5 text-3xl font-bold tracking-tight sm:text-4xl">
+                {td('title')}
+              </h2>
+              <p className="mt-4 text-lg text-gray-600">{td('subtitle')}</p>
+            </div>
+          </Reveal>
+          <Reveal delay={120}>
+            <div className="mt-12">
+              <Playground />
+            </div>
+          </Reveal>
         </div>
       </section>
     )
@@ -294,12 +354,14 @@ export default function Landing() {
   }
 
   function Features() {
+    // Order tuned for the bento layout: the two "anchor" tiles (index 0 and 3)
+    // span two columns, so [2,1,1,2,1,1,1] tiles cleanly into a 3-col grid.
     const features = [
-      { icon: 'blocks', title: t('f1Title'), text: t('f1Text') },
+      { icon: 'blocks', title: t('f1Title'), text: t('f1Text'), anchor: true },
       { icon: 'book', title: t('f2Title'), text: t('f2Text') },
       { icon: 'quiz', title: t('f3Title'), text: t('f3Text') },
+      { icon: 'package', title: t('f5Title'), text: t('f5Text'), anchor: true },
       { icon: 'theme', title: t('f4Title'), text: t('f4Text') },
-      { icon: 'package', title: t('f5Title'), text: t('f5Text') },
       { icon: 'globe', title: t('f6Title'), text: t('f6Text') },
       { icon: 'sparkles', title: t('f7Title'), text: t('f7Text') },
     ]
@@ -318,16 +380,27 @@ export default function Landing() {
               <p className="mt-4 text-lg text-gray-600">{t('featuresSubtitle')}</p>
             </div>
           </Reveal>
-          <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-14 grid auto-rows-fr gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {features.map((f, i) => (
-              <Reveal key={f.title} delay={(i % 3) * 100}>
-                <div className="group h-full rounded-2xl border border-gray-200 bg-white p-7 shadow-sm transition-shadow hover:shadow-md">
-                  <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-brand/15 to-brand/5 text-brand ring-1 ring-brand/15 transition-transform group-hover:scale-105">
-                    <Icon name={f.icon} className="h-[22px] w-[22px]" />
+              <Reveal key={f.title} delay={(i % 3) * 90} className={f.anchor ? 'sm:col-span-2' : undefined}>
+                {f.anchor ? (
+                  <div className="group relative h-full overflow-hidden rounded-3xl bg-gradient-to-br from-brand to-brand-dark p-8 text-white shadow-lg shadow-brand/25">
+                    <div className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full bg-white/10 blur-2xl" />
+                    <div className="relative flex h-12 w-12 items-center justify-center rounded-2xl bg-white/15 ring-1 ring-white/25 backdrop-blur transition-transform group-hover:scale-105">
+                      <Icon name={f.icon} className="h-6 w-6" />
+                    </div>
+                    <h3 className="mt-5 text-xl font-bold">{f.title}</h3>
+                    <p className="mt-2 max-w-md leading-relaxed text-white/80">{f.text}</p>
                   </div>
-                  <h3 className="mt-5 text-lg font-semibold">{f.title}</h3>
-                  <p className="mt-2 leading-relaxed text-gray-600">{f.text}</p>
-                </div>
+                ) : (
+                  <div className="group h-full rounded-3xl border border-gray-200 bg-white p-7 shadow-sm transition-all hover:-translate-y-0.5 hover:border-brand/30 hover:shadow-md">
+                    <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-brand/15 to-brand/5 text-brand ring-1 ring-brand/15 transition-transform group-hover:scale-105">
+                      <Icon name={f.icon} className="h-[22px] w-[22px]" />
+                    </div>
+                    <h3 className="mt-5 text-lg font-semibold">{f.title}</h3>
+                    <p className="mt-2 leading-relaxed text-gray-600">{f.text}</p>
+                  </div>
+                )}
               </Reveal>
             ))}
           </div>
@@ -406,6 +479,49 @@ export default function Landing() {
             ))}
           </div>
         </div>
+      </section>
+    )
+  }
+
+  function Contribute() {
+    return (
+      <section className="px-6 pb-24 pt-4">
+        <Reveal>
+          <div className="relative mx-auto max-w-5xl overflow-hidden rounded-3xl bg-gradient-to-br from-brand to-brand-dark px-8 py-14 text-center text-white sm:px-16">
+            <DotGrid id="contribute-dots" className="absolute inset-0 text-white/[0.08]" />
+            <div className="pointer-events-none absolute -left-16 -top-16 h-64 w-64 rounded-full bg-white/10 blur-3xl" />
+            <div className="pointer-events-none absolute -bottom-20 -right-10 h-64 w-64 rounded-full bg-black/10 blur-3xl" />
+            <div className="relative">
+              <span className="inline-flex items-center gap-2 rounded-full bg-white/15 px-4 py-1.5 text-sm font-medium ring-1 ring-white/25">
+                <Icon name="heart" className="h-4 w-4" /> {t('contributeBadge')}
+              </span>
+              <h2 className="mx-auto mt-6 max-w-2xl text-3xl font-bold tracking-tight sm:text-4xl">
+                {t('contributeTitle')}
+              </h2>
+              <p className="mx-auto mt-4 max-w-2xl text-lg leading-relaxed text-white/85">
+                {t('contributeText')}
+              </p>
+              <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
+                <a
+                  href={GITHUB_URL}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-2 rounded-xl bg-white px-7 py-3 text-base font-semibold text-brand-dark shadow-sm transition-transform hover:-translate-y-0.5"
+                >
+                  <Icon name="code" className="h-5 w-5" /> {t('contributeCta')}
+                </a>
+                <a
+                  href={GITHUB_ISSUES_URL}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-2 rounded-xl px-7 py-3 text-base font-semibold text-white ring-1 ring-white/40 transition-colors hover:bg-white/10"
+                >
+                  {t('contributeIssues')}
+                </a>
+              </div>
+            </div>
+          </div>
+        </Reveal>
       </section>
     )
   }

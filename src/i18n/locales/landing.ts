@@ -4,6 +4,7 @@ import type { LocaleTable } from '../types'
 const landing: LocaleTable = {
   en: {
     // Nav
+    navDemo: 'Demo',
     navFeatures: 'Features',
     navHow: 'How it works',
     navFaq: 'FAQ',
@@ -80,6 +81,14 @@ const landing: LocaleTable = {
     faqQ7: 'Can I build courses with AI?',
     faqA7: 'Yes. A Scormly project is a single project.json file, so you can let an AI assistant read and edit it to modify or author courses. Every project includes an AGENTS.md file documenting the data model and all block types, so the assistant knows exactly how to build valid content.',
 
+    // Contribute CTA
+    contributeBadge: 'Open source',
+    contributeTitle: "Let's build Scormly together",
+    contributeText:
+      'Scormly is open source and moving fast. Star the repo, open an issue, or send a pull request — new blocks, languages, integrations and ideas are all welcome.',
+    contributeCta: 'Become a contributor',
+    contributeIssues: 'Suggest a feature',
+
     // Footer
     footerTagline: 'Local-first course builder with SCORM export.',
     footerLicense: 'MIT licensed',
@@ -88,6 +97,7 @@ const landing: LocaleTable = {
   },
   uk: {
     // Nav
+    navDemo: 'Демо',
     navFeatures: 'Можливості',
     navHow: 'Як це працює',
     navFaq: 'FAQ',
@@ -163,6 +173,14 @@ const landing: LocaleTable = {
     faqA6: 'Scormly використовує сучасний блочний підхід до авторингу, але є local-first, безкоштовним і відкритим. Чудовий вибір, якщо хочете повний контроль над даними.',
     faqQ7: 'Чи можна створювати курси за допомогою AI?',
     faqA7: 'Так. Проєкт Scormly — це єдиний файл project.json, тож AI-асистент може читати й редагувати його, щоб змінювати чи створювати курси. До кожного проєкту входить файл AGENTS.md з описом моделі даних і всіх типів блоків, тож асистент точно знає, як побудувати коректний контент.',
+
+    // Contribute CTA
+    contributeBadge: 'Відкритий код',
+    contributeTitle: 'Розвиваймо Scormly разом',
+    contributeText:
+      'Scormly — відкритий і швидко розвивається. Поставте зірочку, відкрийте issue або надішліть pull request — нові блоки, мови, інтеграції та ідеї вітаються.',
+    contributeCta: 'Стати контрибʼютором',
+    contributeIssues: 'Запропонувати фічу',
 
     // Footer
     footerTagline: 'Local-first конструктор курсів з експортом у SCORM.',

@@ -46,6 +46,39 @@
     <meta name="robots" content="index, follow" />
     <meta name="application-name" content="Scormly" />
     <link rel="apple-touch-icon" href="/favicon.svg" />
+
+    <!-- Installable web app (Chrome "Install app") -->
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="theme-color" content="#ec4899" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="Scormly" />
+
+    <!-- Structured data: helps search engines and AI assistants understand the project. -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "Scormly",
+        "applicationCategory": "EducationalApplication",
+        "operatingSystem": "Web browser (Chromium-based for disk save)",
+        "url": "https://scormly.app/",
+        "description": "Free, open-source, local-first course builder that runs in the browser and exports SCORM 1.2 / 2004 and cmi5 (xAPI) packages for any LMS. No backend, no account — your data stays on your device.",
+        "license": "https://opensource.org/licenses/MIT",
+        "isAccessibleForFree": true,
+        "inLanguage": ["en", "uk"],
+        "author": { "@type": "Person", "name": "Dmytro Matsiuk" },
+        "codeRepository": "https://github.com/dmmat/Scormly",
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+        "featureList": [
+          "Block-based course editor",
+          "SCORM 1.2 / 2004 export",
+          "cmi5 (xAPI) export",
+          "Quizzes, flashcards, branching dialogue scenarios",
+          "Local-first: no backend, data stays on device"
+        ]
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>

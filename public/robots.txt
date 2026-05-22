@@ -1,0 +1,32 @@
+# Scormly — https://scormly.app
+# Everything is public marketing/app content: crawlers and AI assistants welcome.
+
+User-agent: *
+Allow: /
+
+# AI / LLM crawlers (explicitly allowed)
+User-agent: GPTBot
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+Sitemap: https://scormly.app/sitemap.xml
