@@ -111,8 +111,30 @@ encoding, so these requirements are tracked here as the living list.
 - [x] Generate `imsmanifest.xml` (`src/export/scormManifest.ts`)
 - [x] Pack into a .zip with JSZip incl. media from assets/ (`src/export/exportScorm.ts`) + download; wired to the Header button
 - [x] SCORM 2004 — manifest + runtime support (one player auto-detects `API_1484_11` vs `API`, maps completion/success/score). Export version chooser in the Header; 2004 is the default/primary version, 1.2 still available.
+- [x] **Embed course data instead of fetching it.** The player used to `fetch('project.json')` at runtime, which fails inside an LMS (sandboxed SCO / CDN-served files reject runtime fetch/XHR — seen as "project.json not found" on 1.2 and HTTP 400 on 2004). Course data is now written to `course-data.js` (`window.__SCORMLY_COURSE__`) and loaded via a `<script>` tag; `<` is escaped so block HTML cannot break out of the script tag. Verified booting + driving the SCORM API for both 1.2 and 2004 in jsdom with a mock LMS.
 
-> Note: SCORM runtime needs a real LMS (Moodle/SCORM Cloud) to fully verify; the player no-ops the API gracefully outside an LMS. Neither version has been verified in a live LMS yet — both share the same player and are exercised only outside an LMS.
+### To do — verify & finish SCORM (target LMS: **TalentLMS**)
+
+- [ ] Upload both packages (1.2 and 2004) to TalentLMS and confirm: import succeeds, the SCO launches, course renders.
+- [ ] Confirm tracking lands in TalentLMS: completion status, score, pass/fail, time, and resume (suspend_data) across sessions.
+- [ ] If 2004 import still fails ("bad file"), it's a manifest issue — validate `imsmanifest.xml` against the SCORM 2004 4th Ed schema and align with a known-good template (sequencing/objectives are the riskiest part).
+- [ ] Verify quiz `cmi.interactions` show up in TalentLMS reports; fix the SCORM 1.2 matching-response format (`source.target` pairs, not `key=value`) if the LMS rejects it.
+- [ ] Confirm media (assets/) and embeds load inside the LMS iframe.
+
+> Note: the player no-ops the SCORM API gracefully outside an LMS. Runtime is now exercised in jsdom with a mock LMS (both versions); still needs sign-off on a live TalentLMS instance.
+
+## Phase 5 — xAPI / cmi5 export (planned)
+
+TalentLMS supports xAPI (Tin Can) and cmi5. Add these as additional export
+targets once SCORM is confirmed working. Reuse the same player; swap the
+tracking layer.
+
+- [ ] Decide scope: xAPI (needs an LRS endpoint + auth) vs cmi5 (packaged like SCORM with a `cmi5.xml` manifest; the LMS provides the LRS + launch params).
+- [ ] cmi5 first (closest to current flow): generate `cmi5.xml` instead of `imsmanifest.xml`, package the same player.
+- [ ] Tracking wrapper (`xapi.js`) parallel to `scorm.js`: read launch params (`endpoint`, `auth`, `actor`, `registration`, `activityId`) from the launch URL; send statements (initialized, completed, passed/failed, scored, terminated) to the LRS via `fetch` to the LRS endpoint (allowed — LRS is a normal CORS endpoint, unlike sibling-file fetch).
+- [ ] Map current completion/score logic to xAPI verbs + cmi5-defined statements; keep quiz interactions as xAPI statements.
+- [ ] Add the export target to the Header export menu (SCORM 1.2 / 2004 / cmi5 / xAPI).
+- [ ] Verify on TalentLMS.
 
 ---
 
@@ -138,3 +160,4 @@ encoding, so these requirements are tracked here as the living list.
 - 2026-05-22 — SCORM correctness pass: set `cmi.(core.)exit` = "suspend" on unload so the LMS actually preserves resume data (suspend_data/location); compact suspend_data keys to stay under the 1.2 4096-char limit; enforce restricted "Continue" gating in the player (hides later blocks + locks Next until passed) and fold it into completion; report `cmi.progress_measure` (2004); declare the passing score in the manifest (`adlcp:masteryscore` for 1.2, primary-objective `minNormalizedMeasure` for 2004); log SCORM API errors via GetLastError. Build clean (128 modules).
 - 2026-05-22 — Course-level completion/scoring settings (`Course.settings`): completion rule (view all lessons vs. answer all quizzes), optional scoring (pass/fail) with an overall passing score. Editable in the Project settings modal; legacy projects backfilled on load. Player and manifest now read these settings (mastery score only when scored + quizzes present); passing score is no longer mandatory. Build clean (129 modules).
 - 2026-05-22 — Made SCORM 2004 the default/primary export (listed first; default version arg) and dropped the "untested" label since neither version is LMS-verified yet. Landing page de-emojified: replaced all emoji icons with inline stroke SVG icons (pillars, features, privacy lock, FAQ chevron) and added decorative backgrounds (faint dot-grid with radial mask, gradient blobs, gradient/ring icon tiles, dashed step connector). Build clean. Not visually verified in a browser (headless env).
+- 2026-05-22 — SCORM LMS fix (reported failing on TalentLMS): replaced runtime `fetch('project.json')` with course data embedded as `course-data.js` (`window.__SCORMLY_COURSE__`, loaded via `<script>`), since LMS sandbox/CDN delivery rejects runtime fetch of sibling files (caused "project.json not found" on 1.2 and HTTP 400 on 2004). Escaped `<` to keep block HTML from breaking out of the script tag. Verified boot + SCORM API calls for both 1.2 and 2004 in jsdom with a mock LMS; build clean. Added a "verify SCORM on TalentLMS" checklist and a Phase 5 plan for xAPI/cmi5 export.
