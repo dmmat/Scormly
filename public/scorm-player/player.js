@@ -528,6 +528,7 @@
   }
 
   function renderScenario(b) {
+    if ((b.data.layout || 'classic') === 'chat') return renderScenarioChat(b);
     var data = b.data;
     var wrap = h('div', { class: 'scenario' });
     function go(nodeId, emotion) {
@@ -557,6 +558,81 @@
       wrap.appendChild(row);
     }
     go(data.startNodeId);
+    return wrap;
+  }
+
+  // Messenger-style scenario: an accumulating phone chat with reply bubbles.
+  function renderScenarioChat(b) {
+    var data = b.data;
+    var nodes = data.nodes || [];
+    function findNode(id) { return id ? nodes.find(function (n) { return n.id === id; }) : null; }
+    var start = findNode(data.startNodeId);
+    var imgs = data.characterImages || {};
+
+    var wrap = h('div', { class: 'chat' });
+    var header = h('div', { class: 'chat-header' }, [
+      imgs.neutral ? h('img', { class: 'chat-avatar', src: imgs.neutral, alt: '' })
+        : h('span', { class: 'chat-avatar chat-avatar-fallback', text: (data.characterName || '?').slice(0, 1).toUpperCase() }),
+      h('span', { class: 'chat-name', text: data.characterName || '' }),
+    ]);
+    var body = h('div', { class: 'chat-body' });
+    var replies = h('div', { class: 'chat-replies' });
+
+    var messages = [];
+    var currentId = data.startNodeId;
+
+    function renderBody() {
+      body.innerHTML = '';
+      messages.forEach(function (m) {
+        if (m.from === 'bot') {
+          var av = imgs[m.emotion];
+          body.appendChild(h('div', { class: 'chat-row chat-row-bot' }, [
+            av ? h('img', { class: 'chat-msg-avatar', src: av, alt: '' })
+              : h('span', { class: 'chat-msg-avatar chat-avatar-fallback' }),
+            h('p', { class: 'chat-bubble chat-bubble-bot', text: m.text }),
+          ]));
+        } else {
+          body.appendChild(h('div', { class: 'chat-row chat-row-user' }, [
+            h('p', { class: 'chat-bubble chat-bubble-user', text: m.text }),
+            data.userAvatar ? h('img', { class: 'chat-msg-avatar', src: data.userAvatar, alt: '' }) : null,
+          ]));
+        }
+      });
+      body.scrollTop = body.scrollHeight;
+    }
+
+    function renderReplies() {
+      replies.innerHTML = '';
+      var node = findNode(currentId);
+      if (node) {
+        (node.choices || []).forEach(function (c) {
+          replies.appendChild(h('button', { class: 'chat-reply', text: c.text, onclick: function () { choose(c); } }));
+        });
+      } else {
+        replies.appendChild(h('span', { class: 'empty', text: t('end') }));
+        replies.appendChild(h('button', { class: 'btn btn-outline', text: t('restart'), onclick: reset }));
+      }
+    }
+
+    function choose(c) {
+      var target = findNode(c.nextNodeId);
+      var emotion = c.setEmotion || (target ? target.emotion : 'neutral');
+      messages.push({ from: 'user', text: c.text, emotion: emotion });
+      if (target) messages.push({ from: 'bot', text: target.text, emotion: target.emotion });
+      currentId = c.nextNodeId;
+      renderBody(); renderReplies();
+    }
+
+    function reset() {
+      messages = [];
+      if (start) messages.push({ from: 'bot', text: start.text, emotion: start.emotion });
+      currentId = data.startNodeId;
+      renderBody(); renderReplies();
+    }
+
+    if (start) messages.push({ from: 'bot', text: start.text, emotion: start.emotion });
+    renderBody(); renderReplies();
+    wrap.appendChild(header); wrap.appendChild(body); wrap.appendChild(replies);
     return wrap;
   }
 

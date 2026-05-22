@@ -28,7 +28,7 @@ export default function ScenarioBlock({
 }: BlockComponentProps<BlockOfType<'scenario'>>) {
   const update = useCourseStore((s) => s.updateBlockData)
   const { t } = useT('scenario')
-  const { characterName, characterImages, startNodeId, nodes } = block.data
+  const { characterName, characterImages, startNodeId, nodes, layout = 'classic', userAvatar } = block.data
 
   // Short label for a node by its id (for transition dropdowns).
   function nodeLabel(id: string | null): string {
@@ -69,6 +69,20 @@ export default function ScenarioBlock({
     } catch (err) {
       if (err instanceof UnsupportedFormatError) {
         // Silently ignore unsupported character images in the editor.
+      }
+    }
+  }
+
+  async function setUserAvatar(e: ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    e.target.value = ''
+    if (!file) return
+    try {
+      const src = await saveAsset(file, 'image')
+      update(lessonId, block.id, { userAvatar: src })
+    } catch (err) {
+      if (err instanceof UnsupportedFormatError) {
+        // Silently ignore unsupported avatars in the editor.
       }
     }
   }
@@ -193,6 +207,28 @@ export default function ScenarioBlock({
 
         <div>
           <span className="mb-1 block text-xs font-medium text-gray-500">
+            {t('layout')}
+          </span>
+          <div className="flex flex-wrap gap-2">
+            {(['classic', 'chat'] as const).map((value) => (
+              <button
+                key={value}
+                type="button"
+                onClick={() => update(lessonId, block.id, { layout: value })}
+                className={`rounded-md px-3 py-2 text-sm font-medium ${
+                  layout === value
+                    ? 'bg-brand text-white'
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                }`}
+              >
+                {t(value === 'classic' ? 'layoutClassic' : 'layoutChat')}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <span className="mb-1 block text-xs font-medium text-gray-500">
             {t('characterImages')}
           </span>
           <div className="flex flex-wrap gap-3">
@@ -216,6 +252,23 @@ export default function ScenarioBlock({
             ))}
           </div>
         </div>
+
+        {layout === 'chat' && (
+          <div>
+            <span className="mb-1 block text-xs font-medium text-gray-500">
+              {t('userAvatar')}
+            </span>
+            <label className="flex w-fit items-center gap-2 rounded-md border border-gray-200 px-3 py-2 text-xs text-gray-600">
+              {userAvatar && <CharacterThumb src={userAvatar} />}
+              <input
+                type="file"
+                accept={IMAGE_ACCEPT}
+                onChange={setUserAvatar}
+                className="max-w-[8rem] text-xs"
+              />
+            </label>
+          </div>
+        )}
       </div>
 
       <div className="space-y-4">

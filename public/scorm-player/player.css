@@ -149,6 +149,34 @@ hr.divider { border: 0; border-top: 2px solid #d1d5db; margin: 0.5rem 0; }
 .scenario-text { line-height: 1.6; margin: 0 0 1rem; }
 .scenario-choices { display: flex; flex-direction: column; gap: 0.5rem; }
 
+/* Scenario — chat / messenger layout */
+.chat { max-width: 26rem; margin: 0 auto; display: flex; flex-direction: column;
+  border: 1px solid #d1d5db; border-radius: 1.5rem; overflow: hidden; background: #f9fafb; }
+.chat-header { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem;
+  background: var(--brand); color: #fff; }
+.chat-avatar { width: 2.25rem; height: 2.25rem; border-radius: 9999px; object-fit: cover;
+  box-shadow: 0 0 0 2px rgba(255,255,255,0.4); }
+.chat-avatar-fallback { display: flex; align-items: center; justify-content: center;
+  background: rgba(255,255,255,0.25); font-weight: 600; font-size: 0.875rem; }
+.chat-name { font-weight: 600; }
+.chat-body { display: flex; flex-direction: column; gap: 0.5rem; padding: 1rem 0.75rem;
+  max-height: 24rem; overflow-y: auto; }
+.chat-row { display: flex; align-items: flex-end; gap: 0.5rem; }
+.chat-row-bot { align-self: flex-start; }
+.chat-row-user { align-self: flex-end; }
+.chat-msg-avatar { width: 1.5rem; height: 1.5rem; border-radius: 9999px; object-fit: cover; flex-shrink: 0; }
+span.chat-msg-avatar { background: #d1d5db; }
+.chat-bubble { max-width: 16rem; margin: 0; padding: 0.5rem 0.75rem; font-size: 0.9rem;
+  line-height: 1.5; border-radius: 1rem; box-shadow: 0 1px 1px rgba(0,0,0,0.06); }
+.chat-bubble-bot { background: #fff; color: #1f2937; border-bottom-left-radius: 0.25rem; }
+.chat-bubble-user { align-self: flex-end; background: var(--brand); color: #fff; border-bottom-right-radius: 0.25rem; }
+.chat-replies { display: flex; flex-direction: column; gap: 0.5rem; padding: 0.75rem;
+  border-top: 1px solid #e5e7eb; background: #fff; }
+.chat-reply { border: 1px solid color-mix(in srgb, var(--brand) 40%, transparent);
+  background: transparent; color: var(--brand-dark); cursor: pointer; text-align: left;
+  font: inherit; font-weight: 500; font-size: 0.9rem; padding: 0.5rem 1rem; border-radius: 9999px; }
+.chat-reply:hover { background: color-mix(in srgb, var(--brand) 6%, transparent); }
+
 /* Quiz */
 .quiz-q { border: 1px solid #e5e7eb; border-radius: 0.5rem; padding: 1.25rem; background: #fff; margin-bottom: 1rem; }
 .quiz-q.correct { border-color: #86efac; background: #f0fdf4; }

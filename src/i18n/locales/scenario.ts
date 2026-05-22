@@ -18,6 +18,10 @@ const scenario: LocaleTable = {
     characterDefault: 'Character',
     characterLine: 'Character line…',
     characterImages: 'Character image by emotion',
+    layout: 'Layout',
+    layoutClassic: 'Classic',
+    layoutChat: 'Chat (messenger)',
+    userAvatar: 'Your avatar (chat replies)',
     emptyScenario: 'Scenario is empty',
     choiceDefault: 'Answer option',
 
@@ -55,6 +59,10 @@ const scenario: LocaleTable = {
     characterDefault: 'Персонаж',
     characterLine: 'Репліка персонажа…',
     characterImages: 'Зображення персонажа за емоцією',
+    layout: 'Вигляд',
+    layoutClassic: 'Класичний',
+    layoutChat: 'Чат (месенджер)',
+    userAvatar: 'Ваш аватар (відповіді в чаті)',
     emptyScenario: 'Сценарій порожній',
     choiceDefault: 'Варіант відповіді',
 
