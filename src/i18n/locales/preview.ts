@@ -10,6 +10,10 @@ const preview: LocaleTable = {
     next: 'Next',
     progress: 'Lesson {n} of {total}',
     empty: 'This lesson has no content yet.',
+    finish: 'Finish',
+    courseComplete: 'Course complete',
+    courseCompleteText: 'You have reached the end of the course.',
+    review: 'Review the course',
 
     // Quiz
     submit: 'Submit answer',
@@ -36,6 +40,10 @@ const preview: LocaleTable = {
     next: 'Далі',
     progress: 'Урок {n} з {total}',
     empty: 'У цьому уроці ще немає контенту.',
+    finish: 'Завершити',
+    courseComplete: 'Курс завершено',
+    courseCompleteText: 'Ви пройшли курс до кінця.',
+    review: 'Переглянути курс',
 
     // Quiz
     submit: 'Відповісти',

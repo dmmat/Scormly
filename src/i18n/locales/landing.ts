@@ -51,6 +51,8 @@ const landing: LocaleTable = {
     f5Text: 'Generate a ready-to-upload SCORM package for Moodle and any other LMS — built entirely client-side.',
     f6Title: 'Bilingual interface',
     f6Text: 'Use the builder in English or Ukrainian, with more languages on the way.',
+    f7Title: 'AI-friendly',
+    f7Text: 'A local project is plain JSON, so you can point an AI assistant at it to edit or generate whole courses. Each project ships with an AGENTS.md guide that documents the format and every block type.',
 
     // How it works
     howTitle: 'From idea to SCORM in three steps',
@@ -75,6 +77,8 @@ const landing: LocaleTable = {
     faqA5: 'Absolutely. It is a static site — clone the repository, run the build, and host the output anywhere, or just use it locally.',
     faqQ6: 'Can it replace commercial authoring tools?',
     faqA6: 'Scormly follows a modern block-based authoring approach, but it is local-first, free and open source. It is a great fit if you want full control over your data.',
+    faqQ7: 'Can I build courses with AI?',
+    faqA7: 'Yes. A Scormly project is a single project.json file, so you can let an AI assistant read and edit it to modify or author courses. Every project includes an AGENTS.md file documenting the data model and all block types, so the assistant knows exactly how to build valid content.',
 
     // Footer
     footerTagline: 'Local-first course builder with SCORM export.',
@@ -131,6 +135,8 @@ const landing: LocaleTable = {
     f5Text: 'Готовий до завантаження SCORM-пакет для Moodle та будь-якої LMS — повністю на стороні клієнта.',
     f6Title: 'Двомовний інтерфейс',
     f6Text: 'Користуйтеся конструктором англійською чи українською, інші мови — на підході.',
+    f7Title: 'Дружній до AI',
+    f7Text: 'Локальний проєкт — це звичайний JSON, тож можна спрямувати AI-асистента на нього, щоб редагувати чи генерувати цілі курси. До кожного проєкту додається інструкція AGENTS.md з описом формату й усіх типів блоків.',
 
     // How it works
     howTitle: 'Від ідеї до SCORM за три кроки',
@@ -155,6 +161,8 @@ const landing: LocaleTable = {
     faqA5: 'Звісно. Це статичний сайт — клонуйте репозиторій, зберіть і розмістіть результат будь-де, або просто використовуйте локально.',
     faqQ6: 'Чи може це замінити комерційні інструменти авторингу?',
     faqA6: 'Scormly використовує сучасний блочний підхід до авторингу, але є local-first, безкоштовним і відкритим. Чудовий вибір, якщо хочете повний контроль над даними.',
+    faqQ7: 'Чи можна створювати курси за допомогою AI?',
+    faqA7: 'Так. Проєкт Scormly — це єдиний файл project.json, тож AI-асистент може читати й редагувати його, щоб змінювати чи створювати курси. До кожного проєкту входить файл AGENTS.md з описом моделі даних і всіх типів блоків, тож асистент точно знає, як побудувати коректний контент.',
 
     // Footer
     footerTagline: 'Local-first конструктор курсів з експортом у SCORM.',

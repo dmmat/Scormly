@@ -74,6 +74,20 @@ export async function readJson<T>(
   }
 }
 
+/** Read a text file, or return null if it doesn't exist. */
+export async function readText(
+  dir: FileSystemDirectoryHandle,
+  name: string,
+): Promise<string | null> {
+  try {
+    const fileHandle = await dir.getFileHandle(name)
+    return await (await fileHandle.getFile()).text()
+  } catch (err) {
+    if (err instanceof DOMException && err.name === 'NotFoundError') return null
+    throw err
+  }
+}
+
 /** True if a file with the given name exists in the directory. */
 export async function fileExists(
   dir: FileSystemDirectoryHandle,

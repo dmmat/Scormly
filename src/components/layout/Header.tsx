@@ -3,16 +3,15 @@ import Logo from './Logo'
 import ThemePicker from '../editor/ThemePicker'
 import LanguagePicker from '../editor/LanguagePicker'
 import ProjectMenu from '../editor/ProjectMenu'
-import ProjectSettings from '../editor/ProjectSettings'
 import { useCourseStore } from '../../store/courseStore'
 import { useT, useLang } from '../../i18n/I18nProvider'
 import { saveProject } from '../../lib/projectService'
 import ExportMenu from '../editor/ExportMenu'
 import { exportScorm } from '../../export/exportScorm'
+import { exportCmi5 } from '../../export/exportCmi5'
 import { GITHUB_ISSUES_URL } from '../../lib/links'
 
 export default function Header() {
-  const [settingsOpen, setSettingsOpen] = useState(false)
   const [moreOpen, setMoreOpen] = useState(false)
   const undo = useCourseStore((s) => s.undo)
   const redo = useCourseStore((s) => s.redo)
@@ -26,7 +25,6 @@ export default function Header() {
   const { t } = useT('common')
   const { t: tw } = useT('welcome')
   const { t: tp } = useT('preview')
-  const { t: ts } = useT('settings')
   const { lang, setLang } = useLang()
   const moreRef = useRef<HTMLDivElement>(null)
 
@@ -98,16 +96,6 @@ export default function Header() {
 
         <ThemePicker />
         <LanguagePicker />
-
-        <button
-          type="button"
-          onClick={() => setSettingsOpen(true)}
-          title={ts('open')}
-          aria-label={ts('open')}
-          className="flex h-8 w-8 items-center justify-center rounded-md text-gray-600 hover:bg-gray-100"
-        >
-          ⚙
-        </button>
 
         <a
           href={GITHUB_ISSUES_URL}
@@ -185,6 +173,13 @@ export default function Header() {
                 }}
               />
               <MoreItem
+                label={t('exportCmi5')}
+                onClick={() => {
+                  void exportCmi5()
+                  setMoreOpen(false)
+                }}
+              />
+              <MoreItem
                 label={t('undo')}
                 disabled={!canUndo}
                 onClick={() => {
@@ -197,13 +192,6 @@ export default function Header() {
                 disabled={!canRedo}
                 onClick={() => {
                   redo()
-                  setMoreOpen(false)
-                }}
-              />
-              <MoreItem
-                label={ts('open')}
-                onClick={() => {
-                  setSettingsOpen(true)
                   setMoreOpen(false)
                 }}
               />
@@ -228,7 +216,6 @@ export default function Header() {
         </div>
       </div>
 
-      {settingsOpen && <ProjectSettings onClose={() => setSettingsOpen(false)} />}
     </header>
   )
 }

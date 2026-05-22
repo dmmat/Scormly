@@ -26,6 +26,12 @@ const settings: LocaleTable = {
     passingScore: 'Passing score',
     passingScoreHelp: 'Overall percentage the learner must reach across all quizzes to pass.',
     noQuizNote: 'This course has no quizzes yet, so no score will be reported.',
+    navigationSection: 'Navigation',
+    navigationLabel: 'How learners move between lessons',
+    navFree: 'Free',
+    navFreeHelp: 'Next and Previous are always available.',
+    navLinear: 'Linear',
+    navLinearHelp: 'Next unlocks only when the current lesson is complete (gates, required videos, and its quizzes). Previous stays available.',
   },
   uk: {
     open: 'Налаштування проєкту',
@@ -51,6 +57,12 @@ const settings: LocaleTable = {
     passingScore: 'Прохідний бал',
     passingScoreHelp: 'Загальний відсоток за всіма тестами, який потрібно набрати для складання.',
     noQuizNote: 'У курсі ще немає тестів, тому бал не передаватиметься.',
+    navigationSection: 'Навігація',
+    navigationLabel: 'Як студенти переходять між уроками',
+    navFree: 'Вільна',
+    navFreeHelp: 'Кнопки «Далі» та «Назад» завжди доступні.',
+    navLinear: 'Лінійна',
+    navLinearHelp: '«Далі» розблоковується лише коли поточний урок завершено (гейти, обов’язкові відео та його тести). «Назад» лишається доступною.',
   },
 }
 

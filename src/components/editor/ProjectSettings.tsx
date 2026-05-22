@@ -4,7 +4,11 @@ import { useT } from '../../i18n/I18nProvider'
 import { THEME_LIST } from '../../theme/themes'
 import { saveAsset } from '../../lib/assets'
 import { useAssetUrl } from '../../hooks/useAssetUrl'
-import { DEFAULT_COURSE_SETTINGS, type CompletionRule } from '../../types/course'
+import {
+  DEFAULT_COURSE_SETTINGS,
+  type CompletionRule,
+  type NavigationMode,
+} from '../../types/course'
 
 const IMAGE_ACCEPT = 'image/png,image/jpeg,image/webp,image/gif,image/svg+xml'
 
@@ -208,6 +212,36 @@ export default function ProjectSettings({ onClose }: { onClose: () => void }) {
                 )}
               </div>
             )}
+          </div>
+
+          <div className="border-t border-gray-100 pt-5">
+            <h3 className="mb-3 text-sm font-semibold text-gray-900">
+              {t('navigationSection')}
+            </h3>
+            <Field label={t('navigationLabel')}>
+              <div className="space-y-2">
+                {(
+                  [
+                    ['free', t('navFree'), t('navFreeHelp')],
+                    ['linear', t('navLinear'), t('navLinearHelp')],
+                  ] as [NavigationMode, string, string][]
+                ).map(([value, label, help]) => (
+                  <button
+                    key={value}
+                    type="button"
+                    onClick={() => updateSettings({ navigation: value })}
+                    className={`block w-full rounded-lg border px-3 py-2 text-left text-sm ${
+                      (settings.navigation ?? 'free') === value
+                        ? 'border-brand bg-brand/5 text-gray-900'
+                        : 'border-gray-200 text-gray-600 hover:bg-gray-50'
+                    }`}
+                  >
+                    <span className="font-medium">{label}</span>
+                    <span className="mt-0.5 block text-xs text-gray-500">{help}</span>
+                  </button>
+                ))}
+              </div>
+            </Field>
           </div>
         </div>
       </div>

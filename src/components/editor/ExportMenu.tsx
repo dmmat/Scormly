@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useT } from '../../i18n/I18nProvider'
 import { exportScorm } from '../../export/exportScorm'
+import { exportCmi5 } from '../../export/exportCmi5'
 import type { ScormVersion } from '../../export/scormManifest'
 
 // Export button with a SCORM version menu (1.2 / 2004).
@@ -19,11 +20,21 @@ export default function ExportMenu() {
     return () => document.removeEventListener('pointerdown', onPointerDown)
   }, [open])
 
-  async function run(version: ScormVersion) {
+  async function runScorm(version: ScormVersion) {
     setOpen(false)
     setExporting(true)
     try {
       await exportScorm(version)
+    } finally {
+      setExporting(false)
+    }
+  }
+
+  async function runCmi5() {
+    setOpen(false)
+    setExporting(true)
+    try {
+      await exportCmi5()
     } finally {
       setExporting(false)
     }
@@ -45,17 +56,24 @@ export default function ExportMenu() {
         <div className="absolute right-0 top-full z-30 mt-2 w-52 rounded-xl border border-gray-200 bg-white p-1.5 shadow-lg">
           <button
             type="button"
-            onClick={() => run('2004')}
+            onClick={() => runScorm('2004')}
             className="block w-full rounded-lg px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-50"
           >
             {t('export2004')}
           </button>
           <button
             type="button"
-            onClick={() => run('1.2')}
+            onClick={() => runScorm('1.2')}
             className="block w-full rounded-lg px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-50"
           >
             {t('export12')}
+          </button>
+          <button
+            type="button"
+            onClick={runCmi5}
+            className="block w-full rounded-lg px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-50"
+          >
+            {t('exportCmi5')}
           </button>
         </div>
       )}

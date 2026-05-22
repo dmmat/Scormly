@@ -4,6 +4,8 @@ import type { LocaleTable } from '../types'
 const quiz: LocaleTable = {
   en: {
     passingScore: 'Passing score, %',
+    showAnswers: 'Show correct answers',
+    showAnswersHelp: 'After submitting, reveal which answers were right and any feedback. Off shows only the score.',
     questionN: 'Question {n}',
 
     typeSingle: 'Single answer',
@@ -32,6 +34,8 @@ const quiz: LocaleTable = {
   },
   uk: {
     passingScore: 'Прохідний бал, %',
+    showAnswers: 'Показувати правильні відповіді',
+    showAnswersHelp: 'Після відповіді показувати, що правильно, і фідбек. Вимкнено — лише бал.',
     questionN: 'Питання {n}',
 
     typeSingle: 'Одна відповідь',

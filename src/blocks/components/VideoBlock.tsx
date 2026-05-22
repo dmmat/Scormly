@@ -16,7 +16,7 @@ export default function VideoBlock({
 }: BlockComponentProps<BlockOfType<'video'>>) {
   const update = useCourseStore((s) => s.updateBlockData)
   const { t } = useT('media')
-  const { src, poster } = block.data
+  const { src, poster, requireWatch } = block.data
   const videoUrl = useAssetUrl(src)
   const posterUrl = useAssetUrl(poster ?? '')
   const [error, setError] = useState<string | null>(null)
@@ -51,19 +51,41 @@ export default function VideoBlock({
 
   return (
     <div className="rounded-lg bg-white">
-      <video controls poster={posterUrl || undefined} src={videoUrl} className="w-full rounded-lg" />
+      <video
+        controls
+        controlsList="nodownload"
+        disablePictureInPicture
+        onContextMenu={(e) => e.preventDefault()}
+        poster={posterUrl || undefined}
+        src={videoUrl}
+        className="w-full rounded-lg"
+      />
 
       {selected && (
-        <div className="mt-4 flex flex-wrap gap-2 border-t border-gray-200 pt-4">
-          <label className="btn-secondary inline-flex cursor-pointer items-center gap-1 text-sm">
-            {t('replaceVideo')}
-            <input type="file" accept={VIDEO_ACCEPT} onChange={(e) => pick(e, 'src')} className="hidden" />
+        <div className="mt-4 space-y-3 border-t border-gray-200 pt-4">
+          <div className="flex flex-wrap gap-2">
+            <label className="btn-secondary inline-flex cursor-pointer items-center gap-1 text-sm">
+              {t('replaceVideo')}
+              <input type="file" accept={VIDEO_ACCEPT} onChange={(e) => pick(e, 'src')} className="hidden" />
+            </label>
+            <label className="btn-secondary inline-flex cursor-pointer items-center gap-1 text-sm">
+              {poster ? t('replacePoster') : t('addPoster')}
+              <input type="file" accept={IMAGE_ACCEPT} onChange={(e) => pick(e, 'poster')} className="hidden" />
+            </label>
+          </div>
+          <label className="flex cursor-pointer items-start gap-2.5">
+            <input
+              type="checkbox"
+              checked={!!requireWatch}
+              onChange={(e) => update(lessonId, block.id, { requireWatch: e.target.checked })}
+              className="mt-0.5 h-4 w-4 accent-brand"
+            />
+            <span>
+              <span className="block text-sm font-medium text-gray-900">{t('requireWatch')}</span>
+              <span className="mt-0.5 block text-xs text-gray-500">{t('requireWatchHelp')}</span>
+            </span>
           </label>
-          <label className="btn-secondary inline-flex cursor-pointer items-center gap-1 text-sm">
-            {poster ? t('replacePoster') : t('addPoster')}
-            <input type="file" accept={IMAGE_ACCEPT} onChange={(e) => pick(e, 'poster')} className="hidden" />
-          </label>
-          {error && <p className="w-full text-sm text-red-600">{error}</p>}
+          {error && <p className="text-sm text-red-600">{error}</p>}
         </div>
       )}
     </div>

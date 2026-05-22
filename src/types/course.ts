@@ -19,6 +19,7 @@ export type BlockType =
   | 'quote'
   | 'continue'
   | 'divider'
+  | 'courseOutline'
   | 'tabs'
   | 'accordion'
   | 'flashcards'
@@ -83,6 +84,8 @@ export interface VideoData {
   /** Relative path to the file in assets/videos/. */
   src: string
   poster?: string
+  /** Require the learner to watch the video (~95%) before advancing. */
+  requireWatch?: boolean
 }
 
 export interface AudioData {
@@ -128,6 +131,15 @@ export type DividerStyle = 'solid' | 'dashed' | 'dotted'
 
 export interface DividerData {
   style: DividerStyle
+}
+
+// ── Course outline ──────────────────────────────────────────────────────────
+
+export interface CourseOutlineData {
+  /** Optional heading shown above the list; empty string hides it. */
+  title: string
+  /** Number the lessons (1., 2., …) instead of plain links. */
+  numbered: boolean
 }
 
 // ── Interactive UI elements ─────────────────────────────────────────────────
@@ -239,6 +251,12 @@ export interface QuizData {
   questions: Question[]
   /** Passing score as a percentage (0–100). */
   passingScore: number
+  /**
+   * Reveal which answers are correct after submitting (highlighting + per-option
+   * and per-question feedback). When false, only the score is shown. Defaults to
+   * true when omitted (legacy quizzes).
+   */
+  showAnswers?: boolean
 }
 
 // ── Block: discriminated union ──────────────────────────────────────────────
@@ -258,6 +276,7 @@ export type Block =
   | (BaseBlock & { type: 'quote'; data: QuoteData })
   | (BaseBlock & { type: 'continue'; data: ContinueData })
   | (BaseBlock & { type: 'divider'; data: DividerData })
+  | (BaseBlock & { type: 'courseOutline'; data: CourseOutlineData })
   | (BaseBlock & { type: 'tabs'; data: TabsData })
   | (BaseBlock & { type: 'accordion'; data: AccordionData })
   | (BaseBlock & { type: 'flashcards'; data: FlashcardsData })
@@ -286,6 +305,15 @@ export type CompletionRule =
   /** Additionally requires every quiz to be answered. */
   | 'quiz'
 
+/** How the learner may move between lessons in the player. */
+export type NavigationMode =
+  /** Free movement: Next/Previous always available. */
+  | 'free'
+  /** Linear: Next unlocks only once the current lesson is complete (gates,
+   *  required videos, and — under the 'quiz' rule — its quizzes answered).
+   *  Previous stays available. */
+  | 'linear'
+
 /** Course-level SCORM completion and scoring settings. */
 export interface CourseSettings {
   completion: CompletionRule
@@ -293,12 +321,15 @@ export interface CourseSettings {
   scored: boolean
   /** Overall passing score as a percentage (0–100); used when `scored`. */
   passingScore: number
+  /** Lesson navigation behaviour in the player. */
+  navigation: NavigationMode
 }
 
 export const DEFAULT_COURSE_SETTINGS: CourseSettings = {
   completion: 'quiz',
   scored: true,
   passingScore: 80,
+  navigation: 'free',
 }
 
 export interface Course {

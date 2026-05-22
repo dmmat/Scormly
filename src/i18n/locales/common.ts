@@ -9,6 +9,7 @@ const common: LocaleTable = {
     exporting: 'Exporting…',
     export12: 'SCORM 1.2',
     export2004: 'SCORM 2004',
+    exportCmi5: 'cmi5 (xAPI)',
     undo: 'Undo',
     redo: 'Redo',
     theme: 'Theme',
@@ -23,6 +24,8 @@ const common: LocaleTable = {
     empty: 'Nothing here yet',
     emptyHint: 'Add your first block to start filling the lesson with content.',
     addBlock: 'Add block',
+    searchBlocks: 'Search blocks…',
+    noBlocks: 'No matching blocks',
 
     moveUp: 'Move up',
     moveDown: 'Move down',
@@ -41,6 +44,7 @@ const common: LocaleTable = {
     renameLesson: 'Rename',
     deleteLesson: 'Delete lesson',
     courseTitle: 'Course title',
+    lessonTitle: 'Lesson title',
   },
   uk: {
     save: 'Зберегти',
@@ -48,6 +52,7 @@ const common: LocaleTable = {
     exporting: 'Експортування…',
     export12: 'SCORM 1.2',
     export2004: 'SCORM 2004',
+    exportCmi5: 'cmi5 (xAPI)',
     undo: 'Скасувати',
     redo: 'Повторити',
     theme: 'Тема',
@@ -62,6 +67,8 @@ const common: LocaleTable = {
     empty: 'Поки що порожньо',
     emptyHint: 'Додайте перший блок, щоб почати наповнювати урок контентом.',
     addBlock: 'Додати блок',
+    searchBlocks: 'Пошук блоків…',
+    noBlocks: 'Нічого не знайдено',
 
     moveUp: 'Вгору',
     moveDown: 'Вниз',
@@ -80,6 +87,7 @@ const common: LocaleTable = {
     renameLesson: 'Перейменувати',
     deleteLesson: 'Видалити урок',
     courseTitle: 'Назва курсу',
+    lessonTitle: 'Назва уроку',
   },
 }
 

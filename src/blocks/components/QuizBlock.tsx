@@ -68,7 +68,7 @@ export default function QuizBlock({
 }: BlockComponentProps<BlockOfType<'quiz'>>) {
   const update = useCourseStore((s) => s.updateBlockData)
   const { t } = useT('quiz')
-  const { questions, passingScore } = block.data
+  const { questions, passingScore, showAnswers = true } = block.data
 
   function setQuestions(next: Question[], coalesceKey?: string) {
     update(lessonId, block.id, { questions: next }, coalesceKey)
@@ -209,6 +209,25 @@ export default function QuizBlock({
           }}
           className="w-20 rounded-md border border-gray-300 px-3 py-2 outline-none focus:border-brand"
         />
+      </label>
+
+      <label className="flex items-start gap-2.5 text-sm">
+        <input
+          type="checkbox"
+          checked={showAnswers}
+          onChange={(e) =>
+            update(lessonId, block.id, { showAnswers: e.target.checked })
+          }
+          className="mt-0.5 h-4 w-4 accent-brand"
+        />
+        <span>
+          <span className="block font-medium text-gray-700">
+            {t('showAnswers')}
+          </span>
+          <span className="mt-0.5 block text-xs text-gray-500">
+            {t('showAnswersHelp')}
+          </span>
+        </span>
       </label>
 
       <div className="space-y-4">

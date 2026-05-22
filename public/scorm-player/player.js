@@ -14,11 +14,17 @@
     en: { prev: 'Previous', next: 'Next', progress: 'Lesson {n} of {total}',
       empty: 'This lesson has no content yet.', submit: 'Submit answer', retry: 'Try again',
       correct: 'Correct', incorrect: 'Incorrect', yourScore: 'Your score: {s}%',
-      passed: 'Passed', failed: 'Not passed', restart: 'Restart', end: 'The end' },
+      passed: 'Passed', failed: 'Not passed', restart: 'Restart', end: 'The end',
+      finish: 'Finish', courseComplete: 'Course complete',
+      courseCompleteText: 'You have reached the end of the course. You can close this window.',
+      review: 'Review the course', watchToContinue: 'Watch the video to continue.' },
     uk: { prev: 'Назад', next: 'Далі', progress: 'Урок {n} з {total}',
       empty: 'У цьому уроці ще немає контенту.', submit: 'Відповісти', retry: 'Спробувати ще раз',
       correct: 'Правильно', incorrect: 'Неправильно', yourScore: 'Ваш результат: {s}%',
-      passed: 'Складено', failed: 'Не складено', restart: 'Спочатку', end: 'Кінець' },
+      passed: 'Складено', failed: 'Не складено', restart: 'Спочатку', end: 'Кінець',
+      finish: 'Завершити', courseComplete: 'Курс завершено',
+      courseCompleteText: 'Ви пройшли курс до кінця. Це вікно можна закрити.',
+      review: 'Переглянути курс', watchToContinue: 'Перегляньте відео, щоб продовжити.' },
   };
   var lang = (navigator.language || 'en').toLowerCase().indexOf('uk') === 0 ? 'uk' : 'en';
   function t(key, vars) {
@@ -43,7 +49,7 @@
     return el;
   }
 
-  var state = { course: null, lessonIndex: 0, visited: {}, continued: {}, quizResults: {}, quizzes: [], interactionIndex: 0, sessionStart: 0, complete: false };
+  var state = { course: null, lessonIndex: 0, visited: {}, continued: {}, watched: {}, quizResults: {}, quizzes: [], interactionIndex: 0, sessionStart: 0, complete: false, finished: false, summary: null };
 
   function start(course) {
     state.course = course;
@@ -65,13 +71,15 @@
 
     // Resume from saved progress, if any. Compact keys keep us under the
     // SCORM 1.2 suspend_data limit (4096 chars): l=lesson, v=visited indices,
-    // q=quiz scores by block id, c=passed restricted "Continue" gates.
+    // q=quiz scores by block id, c=passed restricted "Continue" gates,
+    // w=watched required-video block ids.
     var saved = null;
     try { saved = JSON.parse(SCORM.getSuspend() || 'null'); } catch (e) { saved = null; }
     if (saved) {
       (saved.v || []).forEach(function (i) { state.visited[i] = true; });
       state.quizResults = saved.q || {};
       (saved.c || []).forEach(function (id) { state.continued[id] = true; });
+      (saved.w || []).forEach(function (id) { state.watched[id] = true; });
     }
 
     window.addEventListener('beforeunload', function () {
@@ -83,21 +91,82 @@
     visit(saved && typeof saved.l === 'number' ? saved.l : 0);
   }
 
-  // A lesson with restricted "Continue" gates is only complete once each gate
-  // has been passed; otherwise it counts as complete once visited.
+  // Restricted "Continue" gates in a lesson (block subsequent content + advance).
   function lessonGates(lesson) {
     return (lesson.blocks || []).filter(function (b) {
       return b.type === 'continue' && b.data.mode === 'restricted';
     });
   }
+  // Videos in a lesson that must be watched before advancing.
+  function requiredVideos(lesson) {
+    return (lesson.blocks || []).filter(function (b) {
+      return b.type === 'video' && b.data.requireWatch;
+    });
+  }
+  // Quiz blocks in a lesson, and whether they've all been answered.
+  function lessonQuizzesAnswered(lesson) {
+    return (lesson.blocks || []).every(function (b) {
+      return b.type !== 'quiz' || state.quizResults[b.id] != null;
+    });
+  }
+  // Per-block gates that block advancing in any navigation mode: restricted
+  // Continue gates passed AND every required video watched.
+  function gatesSatisfied(lesson) {
+    if (!lesson) return true;
+    return lessonGates(lesson).every(function (b) { return state.continued[b.id]; })
+      && requiredVideos(lesson).every(function (b) { return state.watched[b.id]; });
+  }
   function lessonComplete(index) {
     var lesson = (state.course.lessons || [])[index];
     if (!lesson || !state.visited[index]) return false;
-    return lessonGates(lesson).every(function (b) { return state.continued[b.id]; });
+    return gatesSatisfied(lesson);
+  }
+  // Whether the learner may leave the current lesson via Next/Finish. Always
+  // requires the per-block gates; linear navigation also requires the lesson's
+  // quizzes to be answered (when the completion rule involves quizzes).
+  function canLeaveLesson(index) {
+    var lesson = (state.course.lessons || [])[index];
+    if (!gatesSatisfied(lesson)) return false;
+    if (settings().navigation === 'linear' && settings().completion === 'quiz') {
+      return lessonQuizzesAnswered(lesson);
+    }
+    return true;
   }
   function goNext() {
     var lessons = state.course.lessons || [];
     if (state.lessonIndex < lessons.length - 1) visit(state.lessonIndex + 1);
+  }
+
+  // Learner explicitly ends the course: report final state and terminate the
+  // LMS session, then show the completion screen.
+  function finishCourse() {
+    state.visited[state.lessonIndex] = true;
+    state.finished = true;
+    reportProgress();
+    SCORM.setSessionTime((Date.now() - state.sessionStart) / 1000);
+    SCORM.setExit(state.complete ? '' : 'suspend');
+    SCORM.finish();
+    render();
+    document.querySelector('.player-body').scrollTop = 0;
+  }
+
+  // Mark a required video as watched and update gating without re-rendering
+  // (which would reset the video element).
+  function markWatched(id) {
+    if (state.watched[id]) return;
+    state.watched[id] = true;
+    reportProgress();
+    refreshGating();
+  }
+  // Re-evaluate the advance button and hide any now-satisfied video hints,
+  // in place (no full render).
+  function refreshGating() {
+    var btn = document.getElementById('advance-btn');
+    if (btn) btn.disabled = !canLeaveLesson(state.lessonIndex);
+    Object.keys(state.watched).forEach(function (id) {
+      var hint = document.getElementById('vgate-' + id);
+      if (hint) hint.style.display = 'none';
+    });
   }
 
   function visit(index) {
@@ -108,13 +177,14 @@
     document.querySelector('.player-body').scrollTop = 0;
   }
 
-  var DEFAULT_SETTINGS = { completion: 'quiz', scored: true, passingScore: 80 };
+  var DEFAULT_SETTINGS = { completion: 'quiz', scored: true, passingScore: 80, navigation: 'free' };
   function settings() {
     var s = state.course.settings || {};
     return {
       completion: s.completion || DEFAULT_SETTINGS.completion,
       scored: s.scored !== false,
       passingScore: typeof s.passingScore === 'number' ? s.passingScore : DEFAULT_SETTINGS.passingScore,
+      navigation: s.navigation === 'linear' ? 'linear' : 'free',
     };
   }
 
@@ -139,19 +209,27 @@
 
     // Scoring / pass-fail — only when enabled and the course has quizzes.
     var success = null;
+    var scoreValue = null;
     if (cfg.scored && hasQuiz && quizzesDone) {
-      var avg = avgOf(state.quizzes.map(function (q) { return state.quizResults[q.id]; }));
-      SCORM.setScore(avg, 0, 100);
-      if (completed) success = avg >= cfg.passingScore ? 'passed' : 'failed';
+      scoreValue = avgOf(state.quizzes.map(function (q) { return state.quizResults[q.id]; }));
+      SCORM.setScore(scoreValue, 0, 100);
+      if (completed) success = scoreValue >= cfg.passingScore ? 'passed' : 'failed';
     }
 
     state.complete = completed;
+    // Snapshot for the completion screen (success may be null until completed).
+    state.summary = {
+      completed: completed,
+      score: scoreValue,
+      success: scoreValue == null ? null : (scoreValue >= cfg.passingScore ? 'passed' : 'failed'),
+    };
     SCORM.report(completed, success);
     SCORM.setSuspend(JSON.stringify({
       l: state.lessonIndex,
       v: Object.keys(state.visited).map(Number),
       q: state.quizResults,
       c: Object.keys(state.continued),
+      w: Object.keys(state.watched),
     }));
     SCORM.setLocation(String(state.lessonIndex));
     SCORM.commit();
@@ -169,8 +247,19 @@
     var i = state.lessonIndex;
     var lesson = lessons[i];
 
-    // Restricted "Continue" gates block advancing until every gate is passed.
-    var canAdvance = !lesson || lessonGates(lesson).every(function (b) { return state.continued[b.id]; });
+    if (state.finished) { renderComplete(app); return; }
+
+    // Gates (restricted Continue + required videos), plus linear-mode quiz rule,
+    // decide whether the learner may move on from this lesson.
+    var canAdvance = canLeaveLesson(i);
+    var isLast = i >= lessons.length - 1;
+
+    // On the last lesson, "Next" becomes "Finish" (primary) to end the course.
+    var advanceBtn = isLast
+      ? h('button', { id: 'advance-btn', class: 'btn', text: t('finish'), disabled: canAdvance ? null : 'true',
+          onclick: function () { if (canLeaveLesson(state.lessonIndex)) finishCourse(); } })
+      : h('button', { id: 'advance-btn', class: 'btn btn-outline', text: t('next'), disabled: canAdvance ? null : 'true',
+          onclick: function () { if (canLeaveLesson(state.lessonIndex)) visit(state.lessonIndex + 1); } });
 
     var header = h('header', { class: 'player-header' }, [
       h('div', { style: 'display:flex;align-items:center;gap:12px;min-width:0' }, [
@@ -180,9 +269,7 @@
       h('div', { class: 'player-nav' }, [
         h('button', { class: 'btn btn-outline', text: t('prev'), disabled: i === 0 ? 'true' : null,
           onclick: function () { if (i > 0) visit(i - 1); } }),
-        h('button', { class: 'btn btn-outline', text: t('next'),
-          disabled: (i >= lessons.length - 1 || !canAdvance) ? 'true' : null,
-          onclick: function () { if (i < lessons.length - 1 && canAdvance) visit(i + 1); } }),
+        advanceBtn,
       ]),
     ]);
 
@@ -206,6 +293,30 @@
       ]),
     ]);
 
+    app.appendChild(header);
+    app.appendChild(body);
+  }
+
+  // Completion screen shown after the learner clicks Finish.
+  function renderComplete(app) {
+    var s = state.summary || {};
+    var header = h('header', { class: 'player-header' }, [
+      h('div', { style: 'display:flex;align-items:center;gap:12px;min-width:0' }, [
+        h('span', { class: 'player-title', text: state.course.title || '' }),
+      ]),
+      h('div', { class: 'player-nav' }, [
+        h('button', { class: 'btn btn-outline', text: t('review'),
+          onclick: function () { state.finished = false; render(); document.querySelector('.player-body').scrollTop = 0; } }),
+      ]),
+    ]);
+    var card = h('div', { class: 'finish-card' }, [
+      h('div', { class: 'finish-check', text: '✓' }),
+      h('h1', { class: 'finish-title', text: t('courseComplete') }),
+      s.score != null ? h('p', { class: 'finish-score', text: t('yourScore', { s: Math.round(s.score) }) }) : null,
+      s.success ? h('p', { class: 'finish-status ' + s.success, text: s.success === 'passed' ? t('passed') : t('failed') }) : null,
+      h('p', { class: 'finish-text', text: t('courseCompleteText') }),
+    ]);
+    var body = h('div', { class: 'player-body' }, [h('div', { class: 'lesson' }, card)]);
     app.appendChild(header);
     app.appendChild(body);
   }
@@ -241,8 +352,7 @@
         return g;
       }
       case 'video':
-        if (!b.data.src) return null;
-        return h('video', { controls: 'true', src: b.data.src, poster: b.data.poster || null });
+        return renderVideo(b);
       case 'audio':
         if (!b.data.src) return null;
         return h('audio', { controls: 'true', src: b.data.src, style: 'width:100%' });
@@ -278,6 +388,8 @@
         hr.style.borderTopStyle = b.data.style || 'solid';
         return hr;
       }
+      case 'courseOutline':
+        return renderOutline(b);
       case 'tabs': return renderTabs(b);
       case 'accordion': return renderAccordion(b);
       case 'flashcards': return renderFlashcards(b);
@@ -304,6 +416,53 @@
       }
       return u.protocol === 'https:' ? url : '';
     } catch (e) { return ''; }
+  }
+
+  // Course outline: links to every lesson; a click navigates the learner there.
+  // The lesson list is derived live from the course (not stored in the block).
+  function renderOutline(b) {
+    var lessons = state.course.lessons || [];
+    var wrap = h('div', { class: 'outline' });
+    if (b.data.title) wrap.appendChild(h('p', { class: 'outline-title', text: b.data.title }));
+    var ol = h('ol', { class: 'outline-list' });
+    var n = 0; // sequential number among shown lessons
+    lessons.forEach(function (lesson, i) {
+      if (i === state.lessonIndex) return; // exclude the current lesson
+      n++;
+      var row = h('button', { class: 'outline-item', type: 'button',
+        onclick: (function (idx) { return function () { visit(idx); }; })(i) }, [
+        b.data.numbered ? h('span', { class: 'outline-num', text: String(n) }) : null,
+        h('span', { class: 'outline-label', text: lesson.title || '' }),
+        h('span', { class: 'outline-arrow', text: '→' }),
+      ]);
+      ol.appendChild(h('li', {}, row));
+    });
+    wrap.appendChild(ol);
+    return wrap;
+  }
+
+  // Video block. Download is disabled (controlsList=nodownload + no context
+  // menu / PiP) — a deterrent, not DRM. When requireWatch is set, watching to
+  // ~95% (or to the end) satisfies the lesson's advance gate.
+  function renderVideo(b) {
+    if (!b.data.src) return null;
+    var video = h('video', {
+      controls: 'true', controlslist: 'nodownload', disablepictureinpicture: 'true',
+      src: b.data.src, poster: b.data.poster || null,
+    });
+    video.addEventListener('contextmenu', function (e) { e.preventDefault(); });
+    if (!b.data.requireWatch) return video;
+
+    video.addEventListener('timeupdate', function () {
+      if (video.duration && video.currentTime / video.duration >= 0.95) markWatched(b.id);
+    });
+    video.addEventListener('ended', function () { markWatched(b.id); });
+
+    var wrap = h('div', { class: 'video-required' }, [video]);
+    if (!state.watched[b.id]) {
+      wrap.appendChild(h('p', { id: 'vgate-' + b.id, class: 'video-gate', text: t('watchToContinue') }));
+    }
+    return wrap;
   }
 
   function renderTable(b) {
@@ -405,13 +564,16 @@
     var data = b.data;
     var answers = {};
     var submitted = false;
+    // Reveal correctness after submitting unless the quiz hides answers.
+    var showAnswers = data.showAnswers !== false;
     var wrap = h('div', {});
 
     function build() {
+      var reveal = submitted && showAnswers;
       wrap.innerHTML = '';
       (data.questions || []).forEach(function (q, qi) {
-        var ok = submitted && isCorrect(q);
-        var card = h('div', { class: 'quiz-q' + (submitted ? (ok ? ' correct' : ' incorrect') : '') });
+        var ok = reveal && isCorrect(q);
+        var card = h('div', { class: 'quiz-q' + (reveal ? (ok ? ' correct' : ' incorrect') : '') });
         card.appendChild(h('p', { class: 'quiz-prompt', text: (qi + 1) + '. ' + q.prompt }));
 
         if (q.type === 'single' || q.type === 'multiple') {
@@ -430,7 +592,7 @@
               }
             });
             card.appendChild(h('label', { class: 'quiz-opt' }, [input, h('span', { text: o.text }),
-              submitted && o.feedback && input.checked ? h('span', { class: 'empty', text: '— ' + o.feedback }) : null]));
+              reveal && o.feedback && input.checked ? h('span', { class: 'empty', text: '— ' + o.feedback }) : null]));
           });
         } else if (q.type === 'matching') {
           (q.pairs || []).forEach(function (p) {
@@ -447,7 +609,7 @@
           });
         }
 
-        if (submitted) {
+        if (reveal) {
           card.appendChild(h('p', { class: 'quiz-feedback ' + (ok ? 'passed' : 'failed'),
             text: (ok ? t('correct') : t('incorrect')) + (q.feedback ? ' — ' + q.feedback : '') }));
         }
@@ -509,6 +671,9 @@
         });
       });
       reportProgress();
+      // Answering a quiz can satisfy the linear-navigation gate; update the
+      // advance button in place (the quiz re-renders itself, not the whole page).
+      refreshGating();
     }
 
     build();
