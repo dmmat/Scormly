@@ -54,6 +54,10 @@ export interface CourseState {
   previewOpen: boolean
   setPreviewOpen: (open: boolean) => void
 
+  // Project settings modal
+  settingsOpen: boolean
+  setSettingsOpen: (open: boolean) => void
+
   // Mobile lessons drawer
   sidebarOpen: boolean
   setSidebarOpen: (open: boolean) => void
@@ -160,6 +164,9 @@ export const useCourseStore = create<CourseState>((set, get) => {
 
     previewOpen: false,
     setPreviewOpen: (open) => set({ previewOpen: open }),
+
+    settingsOpen: false,
+    setSettingsOpen: (open) => set({ settingsOpen: open }),
 
     sidebarOpen: false,
     setSidebarOpen: (open) => set({ sidebarOpen: open }),

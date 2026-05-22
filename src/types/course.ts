@@ -84,6 +84,8 @@ export interface VideoData {
   /** Relative path to the file in assets/videos/. */
   src: string
   poster?: string
+  /** Require the learner to watch the video (~95%) before advancing. */
+  requireWatch?: boolean
 }
 
 export interface AudioData {
@@ -297,6 +299,15 @@ export type CompletionRule =
   /** Additionally requires every quiz to be answered. */
   | 'quiz'
 
+/** How the learner may move between lessons in the player. */
+export type NavigationMode =
+  /** Free movement: Next/Previous always available. */
+  | 'free'
+  /** Linear: Next unlocks only once the current lesson is complete (gates,
+   *  required videos, and — under the 'quiz' rule — its quizzes answered).
+   *  Previous stays available. */
+  | 'linear'
+
 /** Course-level SCORM completion and scoring settings. */
 export interface CourseSettings {
   completion: CompletionRule
@@ -304,12 +315,15 @@ export interface CourseSettings {
   scored: boolean
   /** Overall passing score as a percentage (0–100); used when `scored`. */
   passingScore: number
+  /** Lesson navigation behaviour in the player. */
+  navigation: NavigationMode
 }
 
 export const DEFAULT_COURSE_SETTINGS: CourseSettings = {
   completion: 'quiz',
   scored: true,
   passingScore: 80,
+  navigation: 'free',
 }
 
 export interface Course {

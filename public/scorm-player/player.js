@@ -17,14 +17,14 @@
       passed: 'Passed', failed: 'Not passed', restart: 'Restart', end: 'The end',
       finish: 'Finish', courseComplete: 'Course complete',
       courseCompleteText: 'You have reached the end of the course. You can close this window.',
-      review: 'Review the course' },
+      review: 'Review the course', watchToContinue: 'Watch the video to continue.' },
     uk: { prev: 'Назад', next: 'Далі', progress: 'Урок {n} з {total}',
       empty: 'У цьому уроці ще немає контенту.', submit: 'Відповісти', retry: 'Спробувати ще раз',
       correct: 'Правильно', incorrect: 'Неправильно', yourScore: 'Ваш результат: {s}%',
       passed: 'Складено', failed: 'Не складено', restart: 'Спочатку', end: 'Кінець',
       finish: 'Завершити', courseComplete: 'Курс завершено',
       courseCompleteText: 'Ви пройшли курс до кінця. Це вікно можна закрити.',
-      review: 'Переглянути курс' },
+      review: 'Переглянути курс', watchToContinue: 'Перегляньте відео, щоб продовжити.' },
   };
   var lang = (navigator.language || 'en').toLowerCase().indexOf('uk') === 0 ? 'uk' : 'en';
   function t(key, vars) {
@@ -49,7 +49,7 @@
     return el;
   }
 
-  var state = { course: null, lessonIndex: 0, visited: {}, continued: {}, quizResults: {}, quizzes: [], interactionIndex: 0, sessionStart: 0, complete: false, finished: false, summary: null };
+  var state = { course: null, lessonIndex: 0, visited: {}, continued: {}, watched: {}, quizResults: {}, quizzes: [], interactionIndex: 0, sessionStart: 0, complete: false, finished: false, summary: null };
 
   function start(course) {
     state.course = course;
@@ -71,13 +71,15 @@
 
     // Resume from saved progress, if any. Compact keys keep us under the
     // SCORM 1.2 suspend_data limit (4096 chars): l=lesson, v=visited indices,
-    // q=quiz scores by block id, c=passed restricted "Continue" gates.
+    // q=quiz scores by block id, c=passed restricted "Continue" gates,
+    // w=watched required-video block ids.
     var saved = null;
     try { saved = JSON.parse(SCORM.getSuspend() || 'null'); } catch (e) { saved = null; }
     if (saved) {
       (saved.v || []).forEach(function (i) { state.visited[i] = true; });
       state.quizResults = saved.q || {};
       (saved.c || []).forEach(function (id) { state.continued[id] = true; });
+      (saved.w || []).forEach(function (id) { state.watched[id] = true; });
     }
 
     window.addEventListener('beforeunload', function () {
@@ -89,17 +91,46 @@
     visit(saved && typeof saved.l === 'number' ? saved.l : 0);
   }
 
-  // A lesson with restricted "Continue" gates is only complete once each gate
-  // has been passed; otherwise it counts as complete once visited.
+  // Restricted "Continue" gates in a lesson (block subsequent content + advance).
   function lessonGates(lesson) {
     return (lesson.blocks || []).filter(function (b) {
       return b.type === 'continue' && b.data.mode === 'restricted';
     });
   }
+  // Videos in a lesson that must be watched before advancing.
+  function requiredVideos(lesson) {
+    return (lesson.blocks || []).filter(function (b) {
+      return b.type === 'video' && b.data.requireWatch;
+    });
+  }
+  // Quiz blocks in a lesson, and whether they've all been answered.
+  function lessonQuizzesAnswered(lesson) {
+    return (lesson.blocks || []).every(function (b) {
+      return b.type !== 'quiz' || state.quizResults[b.id] != null;
+    });
+  }
+  // Per-block gates that block advancing in any navigation mode: restricted
+  // Continue gates passed AND every required video watched.
+  function gatesSatisfied(lesson) {
+    if (!lesson) return true;
+    return lessonGates(lesson).every(function (b) { return state.continued[b.id]; })
+      && requiredVideos(lesson).every(function (b) { return state.watched[b.id]; });
+  }
   function lessonComplete(index) {
     var lesson = (state.course.lessons || [])[index];
     if (!lesson || !state.visited[index]) return false;
-    return lessonGates(lesson).every(function (b) { return state.continued[b.id]; });
+    return gatesSatisfied(lesson);
+  }
+  // Whether the learner may leave the current lesson via Next/Finish. Always
+  // requires the per-block gates; linear navigation also requires the lesson's
+  // quizzes to be answered (when the completion rule involves quizzes).
+  function canLeaveLesson(index) {
+    var lesson = (state.course.lessons || [])[index];
+    if (!gatesSatisfied(lesson)) return false;
+    if (settings().navigation === 'linear' && settings().completion === 'quiz') {
+      return lessonQuizzesAnswered(lesson);
+    }
+    return true;
   }
   function goNext() {
     var lessons = state.course.lessons || [];
@@ -119,6 +150,25 @@
     document.querySelector('.player-body').scrollTop = 0;
   }
 
+  // Mark a required video as watched and update gating without re-rendering
+  // (which would reset the video element).
+  function markWatched(id) {
+    if (state.watched[id]) return;
+    state.watched[id] = true;
+    reportProgress();
+    refreshGating();
+  }
+  // Re-evaluate the advance button and hide any now-satisfied video hints,
+  // in place (no full render).
+  function refreshGating() {
+    var btn = document.getElementById('advance-btn');
+    if (btn) btn.disabled = !canLeaveLesson(state.lessonIndex);
+    Object.keys(state.watched).forEach(function (id) {
+      var hint = document.getElementById('vgate-' + id);
+      if (hint) hint.style.display = 'none';
+    });
+  }
+
   function visit(index) {
     state.lessonIndex = index;
     state.visited[index] = true;
@@ -127,13 +177,14 @@
     document.querySelector('.player-body').scrollTop = 0;
   }
 
-  var DEFAULT_SETTINGS = { completion: 'quiz', scored: true, passingScore: 80 };
+  var DEFAULT_SETTINGS = { completion: 'quiz', scored: true, passingScore: 80, navigation: 'free' };
   function settings() {
     var s = state.course.settings || {};
     return {
       completion: s.completion || DEFAULT_SETTINGS.completion,
       scored: s.scored !== false,
       passingScore: typeof s.passingScore === 'number' ? s.passingScore : DEFAULT_SETTINGS.passingScore,
+      navigation: s.navigation === 'linear' ? 'linear' : 'free',
     };
   }
 
@@ -178,6 +229,7 @@
       v: Object.keys(state.visited).map(Number),
       q: state.quizResults,
       c: Object.keys(state.continued),
+      w: Object.keys(state.watched),
     }));
     SCORM.setLocation(String(state.lessonIndex));
     SCORM.commit();
@@ -197,16 +249,17 @@
 
     if (state.finished) { renderComplete(app); return; }
 
-    // Restricted "Continue" gates block advancing until every gate is passed.
-    var canAdvance = !lesson || lessonGates(lesson).every(function (b) { return state.continued[b.id]; });
+    // Gates (restricted Continue + required videos), plus linear-mode quiz rule,
+    // decide whether the learner may move on from this lesson.
+    var canAdvance = canLeaveLesson(i);
     var isLast = i >= lessons.length - 1;
 
     // On the last lesson, "Next" becomes "Finish" (primary) to end the course.
     var advanceBtn = isLast
-      ? h('button', { class: 'btn', text: t('finish'), disabled: canAdvance ? null : 'true',
-          onclick: function () { if (canAdvance) finishCourse(); } })
-      : h('button', { class: 'btn btn-outline', text: t('next'), disabled: canAdvance ? null : 'true',
-          onclick: function () { if (canAdvance) visit(i + 1); } });
+      ? h('button', { id: 'advance-btn', class: 'btn', text: t('finish'), disabled: canAdvance ? null : 'true',
+          onclick: function () { if (canLeaveLesson(state.lessonIndex)) finishCourse(); } })
+      : h('button', { id: 'advance-btn', class: 'btn btn-outline', text: t('next'), disabled: canAdvance ? null : 'true',
+          onclick: function () { if (canLeaveLesson(state.lessonIndex)) visit(state.lessonIndex + 1); } });
 
     var header = h('header', { class: 'player-header' }, [
       h('div', { style: 'display:flex;align-items:center;gap:12px;min-width:0' }, [
@@ -299,8 +352,7 @@
         return g;
       }
       case 'video':
-        if (!b.data.src) return null;
-        return h('video', { controls: 'true', src: b.data.src, poster: b.data.poster || null });
+        return renderVideo(b);
       case 'audio':
         if (!b.data.src) return null;
         return h('audio', { controls: 'true', src: b.data.src, style: 'width:100%' });
@@ -386,6 +438,30 @@
       ol.appendChild(h('li', {}, row));
     });
     wrap.appendChild(ol);
+    return wrap;
+  }
+
+  // Video block. Download is disabled (controlsList=nodownload + no context
+  // menu / PiP) — a deterrent, not DRM. When requireWatch is set, watching to
+  // ~95% (or to the end) satisfies the lesson's advance gate.
+  function renderVideo(b) {
+    if (!b.data.src) return null;
+    var video = h('video', {
+      controls: 'true', controlslist: 'nodownload', disablepictureinpicture: 'true',
+      src: b.data.src, poster: b.data.poster || null,
+    });
+    video.addEventListener('contextmenu', function (e) { e.preventDefault(); });
+    if (!b.data.requireWatch) return video;
+
+    video.addEventListener('timeupdate', function () {
+      if (video.duration && video.currentTime / video.duration >= 0.95) markWatched(b.id);
+    });
+    video.addEventListener('ended', function () { markWatched(b.id); });
+
+    var wrap = h('div', { class: 'video-required' }, [video]);
+    if (!state.watched[b.id]) {
+      wrap.appendChild(h('p', { id: 'vgate-' + b.id, class: 'video-gate', text: t('watchToContinue') }));
+    }
     return wrap;
   }
 

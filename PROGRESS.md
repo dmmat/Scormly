@@ -166,6 +166,15 @@ tracking layer.
 - 2026-05-22 — SCORM correctness pass: set `cmi.(core.)exit` = "suspend" on unload so the LMS actually preserves resume data (suspend_data/location); compact suspend_data keys to stay under the 1.2 4096-char limit; enforce restricted "Continue" gating in the player (hides later blocks + locks Next until passed) and fold it into completion; report `cmi.progress_measure` (2004); declare the passing score in the manifest (`adlcp:masteryscore` for 1.2, primary-objective `minNormalizedMeasure` for 2004); log SCORM API errors via GetLastError. Build clean (128 modules).
 - 2026-05-22 — Course-level completion/scoring settings (`Course.settings`): completion rule (view all lessons vs. answer all quizzes), optional scoring (pass/fail) with an overall passing score. Editable in the Project settings modal; legacy projects backfilled on load. Player and manifest now read these settings (mastery score only when scored + quizzes present); passing score is no longer mandatory. Build clean (129 modules).
 - 2026-05-22 — Made SCORM 2004 the default/primary export (listed first; default version arg) and dropped the "untested" label since neither version is LMS-verified yet. Landing page de-emojified: replaced all emoji icons with inline stroke SVG icons (pillars, features, privacy lock, FAQ chevron) and added decorative backgrounds (faint dot-grid with radial mask, gradient blobs, gradient/ring icon tiles, dashed step connector). Build clean. Not visually verified in a browser (headless env).
+- 2026-05-22 — Player navigation + video controls. Course setting **navigation: free | linear**
+  (Project settings): linear unlocks "Next/Finish" only once the current lesson's gates are satisfied
+  (restricted Continue + required videos) and, under the 'quiz' completion rule, its quizzes are
+  answered; Previous stays available. Video blocks: download disabled (controlsList=nodownload, no
+  context menu / PiP — deterrent, not DRM) everywhere (editor/preview/player); new per-video
+  **requireWatch** toggle — watching to ~95% (or end) satisfies the lesson's advance gate (player
+  tracks it, persists in suspend_data 'w', shows a hint, refreshes the Next button in place without
+  resetting the video). Moved Project settings out of the header into a labelled button in the left
+  sidebar (settingsOpen lifted to the store; modal rendered in Builder). Build clean; player.js checked.
 - 2026-05-22 — Added a **Finish** button: on the last lesson "Next" becomes "Finish", which
   reports final state, terminates the LMS session (SCORM.finish), and shows a completion screen
   (check + score + pass/fail + message, with a Review action). Mirrored in the in-app Preview

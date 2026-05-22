@@ -24,7 +24,9 @@ export default function Sidebar() {
   const updateCourseMeta = useCourseStore((s) => s.updateCourseMeta)
   const sidebarOpen = useCourseStore((s) => s.sidebarOpen)
   const setSidebarOpen = useCourseStore((s) => s.setSidebarOpen)
+  const setSettingsOpen = useCourseStore((s) => s.setSettingsOpen)
   const { t } = useT('common')
+  const { t: ts } = useT('settings')
   const [editingId, setEditingId] = useState<string | null>(null)
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
@@ -89,13 +91,24 @@ export default function Sidebar() {
         </DndContext>
       </nav>
 
-      <div className="border-t border-gray-200 p-2">
+      <div className="space-y-1 border-t border-gray-200 p-2">
         <button
           type="button"
           onClick={addLesson}
           className="flex w-full items-center justify-center gap-1.5 rounded-md border border-dashed border-gray-300 px-3 py-2 text-sm font-medium text-gray-500 hover:border-brand hover:text-brand"
         >
           + {t('addLesson')}
+        </button>
+        <button
+          type="button"
+          onClick={() => {
+            setSettingsOpen(true)
+            setSidebarOpen(false)
+          }}
+          className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100"
+        >
+          <span aria-hidden className="text-base leading-none">⚙</span>
+          {ts('open')}
         </button>
       </div>
       </aside>

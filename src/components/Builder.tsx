@@ -4,6 +4,7 @@ import Sidebar from './layout/Sidebar'
 import Workspace from './layout/Workspace'
 import WelcomeScreen from './welcome/WelcomeScreen'
 import PreviewOverlay from './preview/PreviewOverlay'
+import ProjectSettings from './editor/ProjectSettings'
 import ThemeProvider from '../theme/ThemeProvider'
 import { useUndoRedoShortcuts } from '../hooks/useUndoRedoShortcuts'
 import { useEditorShortcuts } from '../hooks/useEditorShortcuts'
@@ -20,6 +21,8 @@ export default function Builder() {
   useAutosave()
   const directoryHandle = useCourseStore((s) => s.directoryHandle)
   const previewOpen = useCourseStore((s) => s.previewOpen)
+  const settingsOpen = useCourseStore((s) => s.settingsOpen)
+  const setSettingsOpen = useCourseStore((s) => s.setSettingsOpen)
   const { projectKey } = useRoute()
   const [skipped, setSkipped] = useState(false)
   // Try to restore the project named in the URL (after a page refresh / shared link).
@@ -55,6 +58,7 @@ export default function Builder() {
         <Workspace />
       </div>
       {previewOpen && <PreviewOverlay />}
+      {settingsOpen && <ProjectSettings onClose={() => setSettingsOpen(false)} />}
     </ThemeProvider>
   )
 }

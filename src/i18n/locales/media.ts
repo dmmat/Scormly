@@ -16,6 +16,8 @@ const media: LocaleTable = {
     replaceVideo: 'Replace video',
     addPoster: 'Add poster',
     replacePoster: 'Replace poster',
+    requireWatch: 'Require watching',
+    requireWatchHelp: 'The learner must watch the video before they can continue.',
 
     unsupportedImage: 'Unsupported image format. Use PNG, JPEG, WebP, GIF or SVG.',
     unsupportedVideo: 'Unsupported video format. Use MP4 (H.264) or WebM.',
@@ -34,6 +36,8 @@ const media: LocaleTable = {
     replaceVideo: 'Замінити відео',
     addPoster: 'Додати постер',
     replacePoster: 'Замінити постер',
+    requireWatch: 'Вимагати перегляд',
+    requireWatchHelp: 'Студент має переглянути відео, перш ніж продовжити.',
 
     unsupportedImage: 'Непідтримуваний формат зображення. Використайте PNG, JPEG, WebP, GIF або SVG.',
     unsupportedVideo: 'Непідтримуваний формат відео. Використайте MP4 (H.264) або WebM.',
