@@ -1,0 +1,32 @@
+# Scormly
+
+> Scormly is a free, open-source, **local-first** course builder that runs entirely in the
+> browser and exports **SCORM 1.2 / 2004** and **cmi5 (xAPI)** packages for any LMS. There is
+> no backend and no account — projects and media live in the user's own file system via the
+> File System Access API, and packaging happens client-side.
+
+## What it does
+
+- **Block-based course editor** with inline editing, drag-and-drop, undo/redo.
+- **Blocks:** headings, rich-text paragraphs, lists, callouts, images, galleries, video
+  (with optional "require watch" gate and disabled download), audio, embeds, code, tables,
+  quotes, a "Continue" gate, a divider, a course outline (links to other lessons), tabs,
+  accordions, flashcards, a branching **dialogue scenario** (classic or **chat/messenger**
+  layout with avatars), and **quizzes** (single / multiple / matching, with feedback, a
+  passing score, and an optional "show answers" toggle).
+- **Exports:** SCORM 1.2, SCORM 2004, and cmi5 (xAPI) — generated in the browser with JSZip.
+  SCORM is verified on SCORM Cloud.
+- **Course settings:** completion rule, pass/fail scoring, and a free/linear navigation mode.
+- **Privacy by architecture:** nothing is uploaded, stored remotely, or transmitted.
+
+## For AI agents
+
+Every Scormly project folder contains an `AGENTS.md` that documents `project.json` (the entire
+course as JSON) and every block type's `data` shape, so an AI assistant can read, edit, or
+author whole courses by editing that single file.
+
+## Links
+
+- App: https://scormly.app/
+- Source code (MIT): https://github.com/dmmat/Scormly
+- Issues: https://github.com/dmmat/Scormly/issues

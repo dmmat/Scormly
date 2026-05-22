@@ -177,6 +177,20 @@ tracking layer.
   Recipient unzips into a folder and opens it in Scormly. Reuses the referenced-assets packager; works
   in no-folder mode too (media as data URLs in project.json). Also made the project menu an explicit,
   discoverable button (bordered trigger + folder/chevron icons + "Project" caption).
+- 2026-05-22 — **Interactive landing redesign**: hero now features a **self-playing dialogue
+  trainer** (phone-style chat that types, shows reply chips, auto-picks, and loops — `ChatDemo`); a new
+  **"Play with the real blocks" section** (`Playground`) with clickable Quiz / Flashcards / Course-outline
+  demos; redesigned the Pillars (editorial numbered grid with gradient icon tiles) and Features (bento
+  grid with two branded anchor tiles) so they're no longer flat card walls. Added a **Contribute CTA**
+  band before the footer ("Let's build Scormly together" → GitHub repo + issues). New `demo` i18n
+  namespace (EN/UK); demo styles + keyframes in `index.css`; honors `prefers-reduced-motion`. No new
+  deps (CSS + timers). Not visually verified (headless env).
+- 2026-05-22 — **Discoverability + installable app**: added `public/robots.txt` (allows web + AI
+  crawlers: GPTBot, ClaudeBot, PerplexityBot, Google-Extended, …; points to the sitemap),
+  `public/sitemap.xml` (with hreflang alternates), `public/llms.txt` (llmstxt.org-style project summary
+  for LLMs, incl. the AGENTS.md note), JSON-LD `SoftwareApplication` structured data in `index.html`, and
+  a PWA `public/manifest.webmanifest` + theme-color/manifest links so Scormly can be installed as a
+  Chrome app (start_url `/#/app`, standalone).
 - 2026-05-22 — Quiz setting **showAnswers** (default true): when off, submitting shows only the score
   (no correct/incorrect highlighting, per-option or per-question feedback). Wired through the model,
   registry default, editor toggle, in-app preview and the player; documented in AGENTS.md.

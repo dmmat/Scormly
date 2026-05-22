@@ -1,0 +1,20 @@
+{
+  "name": "Scormly — course builder",
+  "short_name": "Scormly",
+  "description": "Local-first course builder that exports SCORM 1.2 / 2004 and cmi5 — runs entirely in your browser, no backend.",
+  "id": "/",
+  "start_url": "/#/app",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
+  "orientation": "any",
+  "background_color": "#ffffff",
+  "theme_color": "#ec4899",
+  "lang": "en",
+  "dir": "ltr",
+  "categories": ["education", "productivity"],
+  "icons": [
+    { "src": "/favicon.svg", "type": "image/svg+xml", "sizes": "any", "purpose": "any" },
+    { "src": "/favicon.svg", "type": "image/svg+xml", "sizes": "any", "purpose": "maskable" }
+  ]
+}
