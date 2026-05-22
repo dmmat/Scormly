@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useCourseStore } from '../../store/courseStore'
 import { useT } from '../../i18n/I18nProvider'
 import { createNewProject, openExistingProject } from '../../lib/projectService'
+import { downloadProjectZip } from '../../lib/exportProjectZip'
 
 // Dropdown on the project name: switch to another project or close the current.
 export default function ProjectMenu() {
@@ -48,6 +49,10 @@ export default function ProjectMenu() {
           </MenuItem>
           <MenuItem onClick={() => pick(openExistingProject)}>
             {t('openProject')}
+          </MenuItem>
+          <div className="my-1 h-px bg-gray-100" />
+          <MenuItem onClick={() => pick(downloadProjectZip)}>
+            {t('downloadProject')}
           </MenuItem>
           <div className="my-1 h-px bg-gray-100" />
           <MenuItem
