@@ -7,8 +7,15 @@
   function find(win, name) {
     var tries = 0;
     while (win && tries < 10) {
-      if (win[name]) return win[name];
-      if (win.parent && win.parent !== win) { win = win.parent; tries++; } else break;
+      // Reading a property of a cross-origin ancestor frame throws a
+      // SecurityError; skip that frame and keep walking up rather than
+      // letting the whole player crash.
+      try {
+        if (win[name]) return win[name];
+      } catch (e) { /* cross-origin frame */ }
+      var parent = null;
+      try { parent = win.parent; } catch (e) { parent = null; }
+      if (parent && parent !== win) { win = parent; tries++; } else break;
     }
     return null;
   }
@@ -19,10 +26,12 @@
     if (api) return { api: api, v2004: true };
     api = find(window, 'API');
     if (api) return { api: api, v2004: false };
-    if (window.opener) {
-      api = find(window.opener, 'API_1484_11');
+    var opener = null;
+    try { opener = window.opener; } catch (e) { opener = null; }
+    if (opener) {
+      api = find(opener, 'API_1484_11');
       if (api) return { api: api, v2004: true };
-      api = find(window.opener, 'API');
+      api = find(opener, 'API');
       if (api) return { api: api, v2004: false };
     }
     return null;
