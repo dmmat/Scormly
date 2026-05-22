@@ -11,7 +11,7 @@ export async function exportCmi5(): Promise<void> {
   const zip = new JSZip()
 
   await addPlayer(zip, course, 'xapi.js')
-  await addAssets(zip, directoryHandle)
+  await addAssets(zip, directoryHandle, course)
 
   zip.file('cmi5.xml', buildCmi5Manifest(course))
 

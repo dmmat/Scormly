@@ -36,20 +36,36 @@ type DirEntries = {
   entries(): AsyncIterableIterator<[string, FileSystemHandle]>
 }
 
+// Every assets/ path the course actually references. The course is scanned as
+// JSON so this covers structured fields (image/video/audio/gallery/scenario
+// src, cover) AND inline rich-text images (paths embedded in block HTML), and
+// stays correct as new block types are added. Orphaned files left in assets/
+// (e.g. after replacing a video) are therefore excluded from the package.
+export function collectAssetPaths(course: Course): Set<string> {
+  const paths = new Set<string>()
+  const re = /assets\/[A-Za-z0-9_\-./]+\.[A-Za-z0-9]+/g
+  let m: RegExpExecArray | null
+  const json = JSON.stringify(course)
+  while ((m = re.exec(json)) !== null) paths.add(m[0])
+  return paths
+}
+
 // Recursively add a directory's files to the zip under `prefix`, returning paths.
+// Only files whose path is in `referenced` are included.
 async function addDir(
   zip: JSZip,
   dir: FileSystemDirectoryHandle,
   prefix: string,
+  referenced: Set<string>,
 ): Promise<string[]> {
   const paths: string[] = []
   for await (const [name, child] of (dir as unknown as DirEntries).entries()) {
     const path = prefix + name
     if (child.kind === 'directory') {
       paths.push(
-        ...(await addDir(zip, child as FileSystemDirectoryHandle, path + '/')),
+        ...(await addDir(zip, child as FileSystemDirectoryHandle, path + '/', referenced)),
       )
-    } else {
+    } else if (referenced.has(path)) {
       const file = await (child as FileSystemFileHandle).getFile()
       zip.file(path, file)
       paths.push(path)
@@ -95,17 +111,21 @@ export async function addPlayer(
   return files
 }
 
-// Add media copied from the project's assets/ folder (if a project is open).
+// Add media from the project's assets/ folder — only the files the course
+// references (orphans from replaced/removed media are skipped).
 export async function addAssets(
   zip: JSZip,
   directoryHandle: FileSystemDirectoryHandle | null,
+  course: Course,
 ): Promise<string[]> {
   if (!directoryHandle) return []
+  const referenced = collectAssetPaths(course)
+  if (referenced.size === 0) return []
   try {
     const assets = await directoryHandle.getDirectoryHandle('assets', {
       create: false,
     })
-    return await addDir(zip, assets, 'assets/')
+    return await addDir(zip, assets, 'assets/', referenced)
   } catch {
     // No assets folder — media is either absent or embedded as data URLs.
     return []

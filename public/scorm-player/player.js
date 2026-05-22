@@ -668,6 +668,9 @@
         });
       });
       reportProgress();
+      // Answering a quiz can satisfy the linear-navigation gate; update the
+      // advance button in place (the quiz re-renders itself, not the whole page).
+      refreshGating();
     }
 
     build();

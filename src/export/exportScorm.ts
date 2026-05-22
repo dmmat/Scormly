@@ -15,7 +15,7 @@ export async function exportScorm(version: ScormVersion = '2004'): Promise<void>
   const zip = new JSZip()
 
   const files = await addPlayer(zip, course, 'scorm.js')
-  files.push(...(await addAssets(zip, directoryHandle)))
+  files.push(...(await addAssets(zip, directoryHandle, course)))
 
   zip.file(
     'imsmanifest.xml',
