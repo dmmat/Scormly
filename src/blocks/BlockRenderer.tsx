@@ -15,6 +15,7 @@ import TableBlock from './components/TableBlock'
 import QuoteBlock from './components/QuoteBlock'
 import ContinueBlock from './components/ContinueBlock'
 import DividerBlock from './components/DividerBlock'
+import CourseOutlineBlock from './components/CourseOutlineBlock'
 import TabsBlock from './components/TabsBlock'
 import AccordionBlock from './components/AccordionBlock'
 import FlashcardsBlock from './components/FlashcardsBlock'
@@ -41,6 +42,7 @@ const BLOCK_COMPONENTS: Record<
   quote: QuoteBlock as ComponentType<BlockComponentProps>,
   continue: ContinueBlock as ComponentType<BlockComponentProps>,
   divider: DividerBlock as ComponentType<BlockComponentProps>,
+  courseOutline: CourseOutlineBlock as ComponentType<BlockComponentProps>,
   tabs: TabsBlock as ComponentType<BlockComponentProps>,
   accordion: AccordionBlock as ComponentType<BlockComponentProps>,
   flashcards: FlashcardsBlock as ComponentType<BlockComponentProps>,

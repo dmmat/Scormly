@@ -89,6 +89,12 @@ const ICON_PATHS: Record<string, ReactNode> = {
     </>
   ),
   chevron: <path d="m6 9 6 6 6-6" />,
+  sparkles: (
+    <>
+      <path d="M12 3l1.9 4.6L18.5 9.5 13.9 11.4 12 16l-1.9-4.6L5.5 9.5l4.6-1.9L12 3z" />
+      <path d="M18 14l.9 2.1L21 17l-2.1.9L18 20l-.9-2.1L15 17l2.1-.9L18 14z" />
+    </>
+  ),
 }
 
 function Icon({ name, className }: { name: string; className?: string }) {
@@ -295,6 +301,7 @@ export default function Landing() {
       { icon: 'theme', title: t('f4Title'), text: t('f4Text') },
       { icon: 'package', title: t('f5Title'), text: t('f5Text') },
       { icon: 'globe', title: t('f6Title'), text: t('f6Text') },
+      { icon: 'sparkles', title: t('f7Title'), text: t('f7Text') },
     ]
     return (
       <section
@@ -381,6 +388,7 @@ export default function Landing() {
       { q: t('faqQ4'), a: t('faqA4') },
       { q: t('faqQ5'), a: t('faqA5') },
       { q: t('faqQ6'), a: t('faqA6') },
+      { q: t('faqQ7'), a: t('faqA7') },
     ]
     return (
       <section id="faq" className="scroll-mt-20 border-t border-gray-100 bg-gray-50/60 py-24">

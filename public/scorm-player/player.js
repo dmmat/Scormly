@@ -278,6 +278,8 @@
         hr.style.borderTopStyle = b.data.style || 'solid';
         return hr;
       }
+      case 'courseOutline':
+        return renderOutline(b);
       case 'tabs': return renderTabs(b);
       case 'accordion': return renderAccordion(b);
       case 'flashcards': return renderFlashcards(b);
@@ -304,6 +306,29 @@
       }
       return u.protocol === 'https:' ? url : '';
     } catch (e) { return ''; }
+  }
+
+  // Course outline: links to every lesson; a click navigates the learner there.
+  // The lesson list is derived live from the course (not stored in the block).
+  function renderOutline(b) {
+    var lessons = state.course.lessons || [];
+    var wrap = h('div', { class: 'outline' });
+    if (b.data.title) wrap.appendChild(h('p', { class: 'outline-title', text: b.data.title }));
+    var ol = h('ol', { class: 'outline-list' });
+    var n = 0; // sequential number among shown lessons
+    lessons.forEach(function (lesson, i) {
+      if (i === state.lessonIndex) return; // exclude the current lesson
+      n++;
+      var row = h('button', { class: 'outline-item', type: 'button',
+        onclick: (function (idx) { return function () { visit(idx); }; })(i) }, [
+        b.data.numbered ? h('span', { class: 'outline-num', text: String(n) }) : null,
+        h('span', { class: 'outline-label', text: lesson.title || '' }),
+        h('span', { class: 'outline-arrow', text: '→' }),
+      ]);
+      ol.appendChild(h('li', {}, row));
+    });
+    wrap.appendChild(ol);
+    return wrap;
   }
 
   function renderTable(b) {

@@ -19,6 +19,7 @@ export default function Workspace() {
   const activeLesson = useCourseStore(selectActiveLesson)
   const selectBlock = useCourseStore((s) => s.selectBlock)
   const moveBlock = useCourseStore((s) => s.moveBlock)
+  const renameLesson = useCourseStore((s) => s.renameLesson)
   const { t } = useT('common')
   // Small distance so a click still selects/edits; drag starts only past 5px.
   const sensors = useSensors(
@@ -40,24 +41,21 @@ export default function Workspace() {
       <div className="mx-auto max-w-3xl px-4 py-6 sm:px-6 sm:py-10">
         {activeLesson ? (
           <>
-            <header className="mb-8">
+            <header className="mb-8" onClick={(e) => e.stopPropagation()}>
               <p className="text-xs font-semibold uppercase tracking-wide text-gray-400">
                 {t('lesson')}
               </p>
-              <h1 className="text-3xl font-bold text-gray-900">
-                {activeLesson.title}
-              </h1>
+              <input
+                value={activeLesson.title}
+                aria-label={t('lessonTitle')}
+                onChange={(e) => renameLesson(activeLesson.id, e.target.value)}
+                className="w-full rounded-md bg-transparent text-3xl font-bold text-gray-900 outline-none focus:bg-white focus:ring-1 focus:ring-brand"
+              />
             </header>
 
             {activeLesson.blocks.length === 0 ? (
-              <div className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-gray-300 bg-white py-16 text-center">
-                <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-brand/10 text-2xl text-brand">
-                  +
-                </div>
-                <p className="text-base font-medium text-gray-700">
-                  {t('empty')}
-                </p>
-                <p className="mb-5 mt-1 max-w-xs text-sm text-gray-500">
+              <div className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-gray-300 bg-white px-4 py-9 text-center">
+                <p className="mb-4 max-w-xs text-xs text-gray-500">
                   {t('emptyHint')}
                 </p>
                 <div onClick={(e) => e.stopPropagation()}>

@@ -26,22 +26,46 @@ export default function AddBlockMenu({ lessonId, atIndex }: AddBlockMenuProps) {
   const { t } = useT('common')
   const { t: tb } = useT('blocks')
   const [open, setOpen] = useState(false)
+  const [query, setQuery] = useState('')
   const [placement, setPlacement] = useState<'down' | 'up'>('down')
+  const [maxHeight, setMaxHeight] = useState(448)
   const rootRef = useRef<HTMLDivElement>(null)
   const triggerRef = useRef<HTMLButtonElement>(null)
+  const searchRef = useRef<HTMLInputElement>(null)
 
-  // Open upward when there isn't enough room below the trigger.
+  // Match the search query against each block's translated name + description.
+  const q = query.trim().toLowerCase()
+  const matches = (type: BlockType) =>
+    !q ||
+    tb(type).toLowerCase().includes(q) ||
+    tb(`${type}Desc`).toLowerCase().includes(q)
+
+  // Open toward whichever side has more room, and cap the height to the space
+  // actually available there (minus a margin) so the menu never overflows the
+  // viewport — the list scrolls instead of being clipped behind the header.
   function toggle() {
     if (!open) {
+      setQuery('')
       const rect = triggerRef.current?.getBoundingClientRect()
       if (rect) {
-        const below = window.innerHeight - rect.bottom
-        const above = rect.top
-        setPlacement(below < 420 && above > below ? 'up' : 'down')
+        const margin = 16
+        // Space above is bounded by the fixed app header (h-14 = 56px), not the
+        // viewport top, or an upward menu gets clipped behind it.
+        const headerBottom = 56
+        const below = window.innerHeight - rect.bottom - margin
+        const above = rect.top - headerBottom - margin
+        const up = above > below
+        setPlacement(up ? 'up' : 'down')
+        setMaxHeight(Math.max(220, Math.min(448, up ? above : below)))
       }
     }
     setOpen((v) => !v)
   }
+
+  // Focus the search field when the menu opens (desktop convenience).
+  useEffect(() => {
+    if (open) searchRef.current?.focus()
+  }, [open])
 
   useEffect(() => {
     if (!open) return
@@ -62,6 +86,7 @@ export default function AddBlockMenu({ lessonId, atIndex }: AddBlockMenuProps) {
   function handleAdd(type: BlockType) {
     addBlock(lessonId, type, atIndex)
     setOpen(false)
+    setQuery('')
   }
 
   return (
@@ -77,13 +102,25 @@ export default function AddBlockMenu({ lessonId, atIndex }: AddBlockMenuProps) {
 
       {open && (
         <div
-          className={`absolute z-20 max-h-[28rem] w-[22rem] overflow-y-auto rounded-xl border border-gray-200 bg-white p-3 shadow-lg ${
+          style={{ maxHeight }}
+          className={`absolute left-1/2 z-20 flex w-[22rem] max-w-[calc(100vw-2rem)] -translate-x-1/2 flex-col overflow-hidden rounded-xl border border-gray-200 bg-white shadow-lg ${
             placement === 'up' ? 'bottom-full mb-2' : 'top-full mt-2'
           }`}
         >
+          <div className="border-b border-gray-100 p-2">
+            <input
+              ref={searchRef}
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder={t('searchBlocks')}
+              className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm outline-none focus:border-brand focus:ring-1 focus:ring-brand"
+            />
+          </div>
+
+          <div className="overflow-y-auto p-3">
           {BLOCK_CATEGORIES.map(({ category }) => {
             const items = Object.values(BLOCK_REGISTRY).filter(
-              (m) => m.category === category,
+              (m) => m.category === category && matches(m.type),
             )
             if (items.length === 0) return null
             return (
@@ -116,6 +153,12 @@ export default function AddBlockMenu({ lessonId, atIndex }: AddBlockMenuProps) {
               </div>
             )
           })}
+          {Object.values(BLOCK_REGISTRY).every((m) => !matches(m.type)) && (
+            <p className="px-1 py-6 text-center text-sm text-gray-400">
+              {t('noBlocks')}
+            </p>
+          )}
+          </div>
         </div>
       )}
     </div>

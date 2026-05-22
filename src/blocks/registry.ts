@@ -184,6 +184,17 @@ export const BLOCK_REGISTRY: Record<BlockType, BlockMeta> = {
       data: { style: 'solid' },
     }),
   },
+  courseOutline: {
+    type: 'courseOutline',
+    category: 'navigation',
+    icon: '☰',
+    create: () => ({
+      id: uid('block'),
+      type: 'courseOutline',
+      settings: { ...baseSettings },
+      data: { title: c('outlineTitle'), numbered: true },
+    }),
+  },
   tabs: {
     type: 'tabs',
     category: 'interactive',

@@ -19,6 +19,7 @@ export type BlockType =
   | 'quote'
   | 'continue'
   | 'divider'
+  | 'courseOutline'
   | 'tabs'
   | 'accordion'
   | 'flashcards'
@@ -128,6 +129,15 @@ export type DividerStyle = 'solid' | 'dashed' | 'dotted'
 
 export interface DividerData {
   style: DividerStyle
+}
+
+// ── Course outline ──────────────────────────────────────────────────────────
+
+export interface CourseOutlineData {
+  /** Optional heading shown above the list; empty string hides it. */
+  title: string
+  /** Number the lessons (1., 2., …) instead of plain links. */
+  numbered: boolean
 }
 
 // ── Interactive UI elements ─────────────────────────────────────────────────
@@ -258,6 +268,7 @@ export type Block =
   | (BaseBlock & { type: 'quote'; data: QuoteData })
   | (BaseBlock & { type: 'continue'; data: ContinueData })
   | (BaseBlock & { type: 'divider'; data: DividerData })
+  | (BaseBlock & { type: 'courseOutline'; data: CourseOutlineData })
   | (BaseBlock & { type: 'tabs'; data: TabsData })
   | (BaseBlock & { type: 'accordion'; data: AccordionData })
   | (BaseBlock & { type: 'flashcards'; data: FlashcardsData })

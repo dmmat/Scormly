@@ -9,6 +9,7 @@ import { useT, useLang } from '../../i18n/I18nProvider'
 import { saveProject } from '../../lib/projectService'
 import ExportMenu from '../editor/ExportMenu'
 import { exportScorm } from '../../export/exportScorm'
+import { exportCmi5 } from '../../export/exportCmi5'
 import { GITHUB_ISSUES_URL } from '../../lib/links'
 
 export default function Header() {
@@ -181,6 +182,13 @@ export default function Header() {
                 label={t('export12')}
                 onClick={() => {
                   void exportScorm('1.2')
+                  setMoreOpen(false)
+                }}
+              />
+              <MoreItem
+                label={t('exportCmi5')}
+                onClick={() => {
+                  void exportCmi5()
                   setMoreOpen(false)
                 }}
               />

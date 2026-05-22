@@ -12,8 +12,11 @@ import {
   ensurePermission,
   pickDirectory,
   readJson,
+  readText,
+  writeFile,
   writeJson,
 } from './fileSystem'
+import { AGENT_GUIDE_FILE, buildAgentGuide } from './agentGuide'
 import { rememberRecentProject, listRecentProjects } from './recentProjects'
 import { navigate } from '../hooks/useRoute'
 
@@ -50,6 +53,23 @@ function makeEmptyCourse(title: string): Course {
   }
 }
 
+// Write/refresh the AGENTS.md guide for a project. Rewrites only when missing
+// or out of date (e.g. after a Scormly update that changes the block reference),
+// so it stays current without needless disk writes. Best-effort: the guide is a
+// convenience and must never block create/open.
+async function syncAgentGuide(
+  handle: FileSystemDirectoryHandle,
+  course: Course,
+): Promise<void> {
+  try {
+    const next = buildAgentGuide(course)
+    const current = await readText(handle, AGENT_GUIDE_FILE)
+    if (current !== next) await writeFile(handle, AGENT_GUIDE_FILE, next)
+  } catch {
+    // ignore — convenience only.
+  }
+}
+
 function looksLikeCourse(value: unknown): value is Course {
   return (
     typeof value === 'object' &&
@@ -63,6 +83,9 @@ export async function createNewProject(): Promise<void> {
   const handle = await pickDirectory('readwrite')
   const course = makeEmptyCourse(handle.name)
   await writeJson(handle, PROJECT_FILE, course)
+  // Drop an agent guide alongside the project so AI agents / humans can edit
+  // project.json directly.
+  await syncAgentGuide(handle, course)
   useCourseStore.getState().openProject(handle, handle.name, course)
   await rememberRecentProject(handle)
   navigate('app', handle.name)
@@ -89,6 +112,8 @@ async function loadProjectFromHandle(
 ): Promise<void> {
   const course = await readJson<Course>(handle, PROJECT_FILE)
   if (!looksLikeCourse(course)) throw new NoProjectError()
+  // Refresh the agent guide (created if missing, rewritten if out of date).
+  await syncAgentGuide(handle, course)
   const history =
     (await readJson<ProjectHistory>(handle, HISTORY_FILE)) ?? undefined
   useCourseStore.getState().openProject(handle, handle.name, course, history)

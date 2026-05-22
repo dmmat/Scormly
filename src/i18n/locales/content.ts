@@ -37,6 +37,7 @@ const content: LocaleTable = {
     tableHeader: 'Header',
     tableCell: 'Cell',
     quoteText: 'Your quote goes here.',
+    outlineTitle: 'Course outline',
   },
   uk: {
     newCourse: 'Новий курс',
@@ -71,6 +72,7 @@ const content: LocaleTable = {
     tableHeader: 'Заголовок',
     tableCell: 'Клітинка',
     quoteText: 'Тут ваша цитата.',
+    outlineTitle: 'Зміст курсу',
   },
 }
 

@@ -13,9 +13,20 @@ import AccordionPreview from './components/AccordionPreview'
 import FlashcardsPreview from './components/FlashcardsPreview'
 import ScenarioPreview from './components/ScenarioPreview'
 import QuizPreview from './components/QuizPreview'
+import CourseOutlinePreview from './components/CourseOutlinePreview'
 
 // Read-only learner rendering of a single block (no editing affordances).
-export default function BlockPreview({ block }: { block: Block }) {
+export default function BlockPreview({
+  block,
+  currentLessonId,
+  onNavigate,
+}: {
+  block: Block
+  /** Lesson currently shown (so the outline can exclude it). */
+  currentLessonId?: string
+  /** Navigate to a lesson by index (used by the course outline block). */
+  onNavigate?: (lessonIndex: number) => void
+}) {
   switch (block.type) {
     case 'heading': {
       const { level, text, align = 'left' } = block.data
@@ -96,6 +107,14 @@ export default function BlockPreview({ block }: { block: Block }) {
         <hr
           className="my-2 border-0 border-t-2 border-gray-300"
           style={{ borderTopStyle: block.data.style }}
+        />
+      )
+    case 'courseOutline':
+      return (
+        <CourseOutlinePreview
+          block={block}
+          currentLessonId={currentLessonId}
+          onNavigate={onNavigate}
         />
       )
     case 'tabs':

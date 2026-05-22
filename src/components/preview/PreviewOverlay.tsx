@@ -72,7 +72,12 @@ export default function PreviewOverlay() {
               ) : (
                 <div className="space-y-6">
                   {lesson.blocks.map((block) => (
-                    <BlockPreview key={block.id} block={block} />
+                    <BlockPreview
+                      key={block.id}
+                      block={block}
+                      currentLessonId={lesson.id}
+                      onNavigate={(i) => setIndex(Math.min(total - 1, Math.max(0, i)))}
+                    />
                   ))}
                 </div>
               )}
