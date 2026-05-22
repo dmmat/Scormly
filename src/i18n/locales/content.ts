@@ -8,6 +8,13 @@ const content: LocaleTable = {
     newCourse: 'Untitled course',
     lessonN: 'Lesson {n}',
 
+    // In-memory demo course (the "try without saving" flow)
+    demoCourseTitle: 'New course',
+    demoCourseDescription: 'Scormly demo course',
+    demoLesson1: 'Introduction',
+    demoLesson2: 'Core concepts',
+    demoLesson3: 'Final test',
+
     // Block creation defaults (registry)
     newHeading: 'New heading',
     newParagraph: 'Enter text…',
@@ -42,6 +49,13 @@ const content: LocaleTable = {
   uk: {
     newCourse: 'Новий курс',
     lessonN: 'Урок {n}',
+
+    // In-memory demo course (the "try without saving" flow)
+    demoCourseTitle: 'Новий курс',
+    demoCourseDescription: 'Демонстраційний курс Scormly',
+    demoLesson1: 'Вступ',
+    demoLesson2: 'Основні поняття',
+    demoLesson3: 'Підсумковий тест',
 
     // Block creation defaults (registry)
     newHeading: 'Новий заголовок',

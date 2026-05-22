@@ -47,7 +47,16 @@ export default function Builder() {
   }
 
   if (!directoryHandle && !skipped) {
-    return <WelcomeScreen onSkip={() => setSkipped(true)} />
+    return (
+      <WelcomeScreen
+        onSkip={() => {
+          // Regenerate the demo course in the current UI language (the module-load
+          // default may not match the user's selected language).
+          useCourseStore.getState().newDemoCourse()
+          setSkipped(true)
+        }}
+      />
+    )
   }
 
   return (

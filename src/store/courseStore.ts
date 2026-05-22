@@ -16,18 +16,25 @@ import { translate } from '../i18n/I18nProvider'
 
 const HISTORY_LIMIT = 50
 
-const initialCourse: Course = {
-  id: 'course-1',
-  title: 'Новий курс',
-  description: 'Демонстраційний курс Scormly',
-  theme: DEFAULT_THEME,
-  settings: { ...DEFAULT_COURSE_SETTINGS },
-  lessons: [
-    { id: 'lesson-1', title: 'Вступ', status: 'draft', blocks: [] },
-    { id: 'lesson-2', title: 'Основні поняття', status: 'draft', blocks: [] },
-    { id: 'lesson-3', title: 'Підсумковий тест', status: 'draft', blocks: [] },
-  ],
+// Build the in-memory demo course used by the "try without saving" flow.
+// Localized to the current UI language at call time (not module load), so it
+// must be created when the user actually enters the builder.
+function makeInitialCourse(): Course {
+  return {
+    id: 'course-1',
+    title: translate('content', 'demoCourseTitle'),
+    description: translate('content', 'demoCourseDescription'),
+    theme: DEFAULT_THEME,
+    settings: { ...DEFAULT_COURSE_SETTINGS },
+    lessons: [
+      { id: 'lesson-1', title: translate('content', 'demoLesson1'), status: 'draft', blocks: [] },
+      { id: 'lesson-2', title: translate('content', 'demoLesson2'), status: 'draft', blocks: [] },
+      { id: 'lesson-3', title: translate('content', 'demoLesson3'), status: 'draft', blocks: [] },
+    ],
+  }
 }
+
+const initialCourse: Course = makeInitialCourse()
 
 export type SaveState = 'idle' | 'saving' | 'saved' | 'error'
 
@@ -73,6 +80,8 @@ export interface CourseState {
   setTheme: (theme: ThemeId) => void
   updateSettings: (patch: Partial<CourseSettings>) => void
   loadCourse: (course: Course) => void
+  /** Reset to a fresh in-memory demo course, localized to the current UI language. */
+  newDemoCourse: () => void
 
   // ── Project ──
   openProject: (
@@ -192,6 +201,18 @@ export const useCourseStore = create<CourseState>((set, get) => {
 
     loadCourse: (input) => {
       const course = migrateCourse(input)
+      set({
+        course,
+        activeLessonId: course.lessons[0]?.id ?? null,
+        selectedBlockId: null,
+        past: [],
+        future: [],
+        lastCoalesceKey: null,
+      })
+    },
+
+    newDemoCourse: () => {
+      const course = makeInitialCourse()
       set({
         course,
         activeLessonId: course.lessons[0]?.id ?? null,
