@@ -94,6 +94,7 @@ const BLOCK_DOCS: Record<BlockType, BlockDoc> = {
     data: `{
     characterName: string,
     startNodeId: string,
+    layout?: 'classic' | 'chat',  // 'chat' = phone-messenger style (default 'classic')
     characterImages: { neutral?: string, happy?: string, concerned?: string },
     nodes: {
       id: string,

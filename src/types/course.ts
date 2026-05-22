@@ -194,12 +194,21 @@ export interface ScenarioNode {
   choices: ScenarioChoice[]
 }
 
+/** Visual presentation of a scenario in the player/preview. */
+export type ScenarioLayout =
+  /** Avatar + dialogue line + choice buttons (replaces the line each step). */
+  | 'classic'
+  /** Phone-style messenger: an accumulating chat with reply bubbles. */
+  | 'chat'
+
 export interface ScenarioData {
   /** Character images by emotion (relative paths). */
   characterImages: Partial<Record<ScenarioEmotion, string>>
   characterName: string
   startNodeId: string
   nodes: ScenarioNode[]
+  /** Presentation layout; defaults to 'classic' when omitted (legacy scenarios). */
+  layout?: ScenarioLayout
 }
 
 // ── Quizzes (spec §5.1) ─────────────────────────────────────────────────────

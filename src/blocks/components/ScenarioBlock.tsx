@@ -28,7 +28,7 @@ export default function ScenarioBlock({
 }: BlockComponentProps<BlockOfType<'scenario'>>) {
   const update = useCourseStore((s) => s.updateBlockData)
   const { t } = useT('scenario')
-  const { characterName, characterImages, startNodeId, nodes } = block.data
+  const { characterName, characterImages, startNodeId, nodes, layout = 'classic' } = block.data
 
   // Short label for a node by its id (for transition dropdowns).
   function nodeLabel(id: string | null): string {
@@ -190,6 +190,28 @@ export default function ScenarioBlock({
             className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm outline-none focus:border-brand"
           />
         </label>
+
+        <div>
+          <span className="mb-1 block text-xs font-medium text-gray-500">
+            {t('layout')}
+          </span>
+          <div className="flex flex-wrap gap-2">
+            {(['classic', 'chat'] as const).map((value) => (
+              <button
+                key={value}
+                type="button"
+                onClick={() => update(lessonId, block.id, { layout: value })}
+                className={`rounded-md px-3 py-2 text-sm font-medium ${
+                  layout === value
+                    ? 'bg-brand text-white'
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                }`}
+              >
+                {t(value === 'classic' ? 'layoutClassic' : 'layoutChat')}
+              </button>
+            ))}
+          </div>
+        </div>
 
         <div>
           <span className="mb-1 block text-xs font-medium text-gray-500">
