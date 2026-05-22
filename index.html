@@ -79,6 +79,39 @@
         ]
       }
     </script>
+
+    <!-- Organization + WebSite: helps Google associate the brand name and logo
+         with the result, and links the site to its publisher. -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "Organization",
+            "@id": "https://scormly.app/#organization",
+            "name": "Scormly",
+            "url": "https://scormly.app/",
+            "logo": {
+              "@type": "ImageObject",
+              "url": "https://scormly.app/favicon.svg",
+              "caption": "Scormly"
+            },
+            "image": "https://scormly.app/og-image.png",
+            "founder": { "@type": "Person", "name": "Dmytro Matsiuk" },
+            "sameAs": ["https://github.com/dmmat/Scormly"]
+          },
+          {
+            "@type": "WebSite",
+            "@id": "https://scormly.app/#website",
+            "name": "Scormly",
+            "url": "https://scormly.app/",
+            "description": "Free, open-source, local-first SCORM course builder.",
+            "inLanguage": ["en", "uk"],
+            "publisher": { "@id": "https://scormly.app/#organization" }
+          }
+        ]
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>
