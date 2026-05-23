@@ -49,7 +49,7 @@
     return el;
   }
 
-  var state = { course: null, lessonIndex: 0, visited: {}, continued: {}, watched: {}, quizResults: {}, quizzes: [], interactionIndex: 0, sessionStart: 0, complete: false, finished: false, summary: null };
+  var state = { course: null, lessonIndex: 0, visited: {}, continued: {}, watched: {}, quizResults: {}, quizzes: [], quizIndexById: {}, interactionIndex: 0, sessionStart: 0, complete: false, finished: false, summary: null, learner: null, lmsMode: 'normal' };
 
   function start(course) {
     state.course = course;
@@ -57,17 +57,30 @@
     document.documentElement.style.setProperty('--brand', accent[0]);
     document.documentElement.style.setProperty('--brand-dark', accent[1]);
     document.title = course.title || 'Course';
-    document.documentElement.lang = lang;
 
-    // Index all quiz blocks for scoring.
+    // Index all quiz blocks for scoring and per-quiz objectives.
     (course.lessons || []).forEach(function (lesson) {
       (lesson.blocks || []).forEach(function (b) {
-        if (b.type === 'quiz') state.quizzes.push({ id: b.id });
+        if (b.type === 'quiz') {
+          state.quizIndexById[b.id] = state.quizzes.length;
+          state.quizzes.push({ id: b.id, data: b.data });
+        }
       });
     });
 
     SCORM.init();
     state.sessionStart = Date.now();
+
+    // LMS may push a preferred language (SCORM learner_preference.language /
+    // cmi5 languagePreference). Switch the player UI if it matches a supported
+    // locale; otherwise keep the browser-based default.
+    var lmsLang = (SCORM.getPreferredLanguage && SCORM.getPreferredLanguage()) || '';
+    var twoLetter = lmsLang.toLowerCase().slice(0, 2);
+    if (T[twoLetter]) lang = twoLetter;
+    document.documentElement.lang = lang;
+
+    state.learner = SCORM.getLearner && SCORM.getLearner();
+    state.lmsMode = (SCORM.getMode && SCORM.getMode()) || 'normal';
 
     // Resume from saved progress, if any. Compact keys keep us under the
     // SCORM 1.2 suspend_data limit (4096 chars): l=lesson, v=visited indices,
@@ -85,6 +98,9 @@
     window.addEventListener('beforeunload', function () {
       SCORM.setSessionTime((Date.now() - state.sessionStart) / 1000);
       SCORM.setExit(state.complete ? '' : 'suspend');
+      // Closing without completing → cmi5 expects an `abandoned` statement
+      // (no-op on SCORM). Always send the final terminate too.
+      if (!state.complete && !state.finished) SCORM.reportAbandoned();
       SCORM.finish();
     });
 
@@ -194,7 +210,11 @@
     var completedCount = 0;
     lessons.forEach(function (_, i) { if (lessonComplete(i)) completedCount++; });
     var contentDone = lessons.length > 0 && completedCount === lessons.length;
-    SCORM.setProgress(lessons.length ? completedCount / lessons.length : 0);
+    var progressFraction = lessons.length ? completedCount / lessons.length : 0;
+    SCORM.setProgress(progressFraction);
+    // cmi5: emit a `progressed` statement when crossing a 10% milestone.
+    // No-op on SCORM, where setProgress already covers the progress measure.
+    if (SCORM.setProgressed) SCORM.setProgressed(progressFraction);
 
     var hasQuiz = state.quizzes.length > 0;
     var quizzesDone = hasQuiz && state.quizzes.every(function (q) {
@@ -261,11 +281,20 @@
       : h('button', { id: 'advance-btn', class: 'btn btn-outline', text: t('next'), disabled: canAdvance ? null : 'true',
           onclick: function () { if (canLeaveLesson(state.lessonIndex)) visit(state.lessonIndex + 1); } });
 
+    var titleRow = [
+      h('span', { class: 'player-title', text: state.course.title || '' }),
+      h('span', { class: 'player-progress', text: t('progress', { n: i + 1, total: lessons.length }) }),
+    ];
+    // Show the LMS-reported learner name (greeting) when available.
+    if (state.learner && state.learner.name) {
+      titleRow.push(h('span', { class: 'player-progress', text: '· ' + state.learner.name }));
+    }
+    // Browse / Review mode badge (LMS told us not to track this attempt).
+    if (state.lmsMode && state.lmsMode !== 'normal') {
+      titleRow.push(h('span', { class: 'player-progress', text: '· ' + state.lmsMode }));
+    }
     var header = h('header', { class: 'player-header' }, [
-      h('div', { style: 'display:flex;align-items:center;gap:12px;min-width:0' }, [
-        h('span', { class: 'player-title', text: state.course.title || '' }),
-        h('span', { class: 'player-progress', text: t('progress', { n: i + 1, total: lessons.length }) }),
-      ]),
+      h('div', { style: 'display:flex;align-items:center;gap:12px;min-width:0' }, titleRow),
       h('div', { class: 'player-nav' }, [
         h('button', { class: 'btn btn-outline', text: t('prev'), disabled: i === 0 ? 'true' : null,
           onclick: function () { if (i > 0) visit(i - 1); } }),
@@ -379,8 +408,11 @@
         if (restricted && state.continued[b.id]) return null;
         return h('div', { class: 'continue' }, h('button', { class: 'btn', text: b.data.label,
           onclick: function () {
-            if (restricted) { state.continued[b.id] = true; render(); reportProgress(); }
-            else { goNext(); }
+            // Both modes advance to the next lesson. Restricted additionally
+            // marks the gate as passed so the lesson stays unlocked when the
+            // learner navigates back via Previous.
+            if (restricted) { state.continued[b.id] = true; reportProgress(); }
+            goNext();
           } }));
       }
       case 'divider': {
@@ -640,9 +672,30 @@
     var data = b.data;
     var answers = {};
     var submitted = false;
+    var openedAt = Date.now(); // for latency on each interaction
     // Reveal correctness after submitting unless the quiz hides answers.
     var showAnswers = data.showAnswers !== false;
     var wrap = h('div', {});
+
+    // For each matching question, scramble the right-column choices once so
+    // the correct answer isn't simply the option at the same index. Stable
+    // across re-renders within an attempt; re-rolled on retry.
+    function shuffleArray(arr) {
+      var a = arr.slice();
+      for (var i = a.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var tmp = a[i]; a[i] = a[j]; a[j] = tmp;
+      }
+      return a;
+    }
+    var matchChoices = {};
+    function rollChoices() {
+      matchChoices = {};
+      (data.questions || []).forEach(function (q) {
+        if (q.type === 'matching') matchChoices[q.id] = shuffleArray(q.pairs || []);
+      });
+    }
+    rollChoices();
 
     function build() {
       var reveal = submitted && showAnswers;
@@ -671,11 +724,12 @@
               reveal && o.feedback && input.checked ? h('span', { class: 'empty', text: '— ' + o.feedback }) : null]));
           });
         } else if (q.type === 'matching') {
+          var choices = matchChoices[q.id] || q.pairs || [];
           (q.pairs || []).forEach(function (p) {
             var sel = h('select');
             sel.disabled = submitted;
             sel.appendChild(h('option', { value: '', text: '—' }));
-            (q.pairs || []).forEach(function (opt) { sel.appendChild(h('option', { value: opt.right, text: opt.right })); });
+            choices.forEach(function (opt) { sel.appendChild(h('option', { value: opt.right, text: opt.right })); });
             sel.value = (answers[q.id] || {})[p.id] || '';
             sel.addEventListener('change', function () {
               answers[q.id] = answers[q.id] || {};
@@ -700,7 +754,7 @@
           h('p', { class: (passed ? 'passed' : 'failed'), style: 'font-weight:500;margin:4px 0 0',
             text: passed ? t('passed') : t('failed') }),
           h('button', { class: 'btn btn-outline', style: 'margin-top:12px', text: t('retry'),
-            onclick: function () { submitted = false; answers = {}; build(); } }),
+            onclick: function () { submitted = false; answers = {}; rollChoices(); openedAt = Date.now(); build(); } }),
         ]);
         wrap.appendChild(res);
       } else {
@@ -732,20 +786,65 @@
     }
 
     function recordScore() {
-      state.quizResults[b.id] = computeScore();
-      // Record each question as a SCORM interaction for LMS analytics.
+      var rawScore = computeScore();
+      state.quizResults[b.id] = rawScore;
+      var latency = (Date.now() - openedAt) / 1000;
+
+      // Record each question as a SCORM interaction (LMS analytics).
       (data.questions || []).forEach(function (q) {
         var a = answers[q.id];
-        var resp = q.type === 'matching'
-          ? Object.keys(a || {}).map(function (k) { return k + '=' + a[k]; }).join(',')
-          : (Array.isArray(a) ? a.join(',') : (a || ''));
-        SCORM.recordInteraction(state.interactionIndex++, {
+        // Response format depends on interaction type. For matching, SCORM 2004
+        // wants `source.target` pairs; choice questions use comma-joined IDs.
+        var resp;
+        if (q.type === 'matching') {
+          resp = Object.keys(a || {}).map(function (k) { return k + '.' + a[k]; }).join(',');
+        } else if (Array.isArray(a)) {
+          resp = a.join(',');
+        } else {
+          resp = a || '';
+        }
+        // Correct response pattern, in the same notation as the response.
+        var correct;
+        if (q.type === 'matching') {
+          correct = [(q.pairs || []).map(function (p) { return p.id + '.' + p.right; }).join(',')];
+        } else if (q.type === 'multiple') {
+          correct = [(q.options || []).filter(function (o) { return o.correct; }).map(function (o) { return o.id; }).join(',')];
+        } else {
+          var single = (q.options || []).find(function (o) { return o.correct; });
+          correct = single ? [single.id] : [];
+        }
+        // Build interaction object — extra fields are ignored by SCORM, used by xAPI.
+        var inter = {
           id: q.id,
           type: q.type === 'matching' ? 'matching' : 'choice',
+          interactionType: q.type === 'matching' ? 'matching' : (q.type === 'multiple' ? 'choice' : 'choice'),
           response: String(resp),
           correct: isCorrect(q),
-        });
+          weight: 1,
+          latencySec: latency,
+          description: q.prompt,
+          correctResponses: correct,
+          objectiveId: 'QUIZ_' + b.id,
+        };
+        if (q.type === 'matching') {
+          inter.source = (q.pairs || []).map(function (p) { return { id: p.id, text: p.left }; });
+          inter.target = (q.pairs || []).map(function (p) { return { id: p.right, text: p.right }; });
+        } else {
+          inter.choices = (q.options || []).map(function (o) { return { id: o.id, text: o.text }; });
+        }
+        SCORM.recordInteraction(state.interactionIndex++, inter);
       });
+
+      // One objective per quiz. Passing threshold is the quiz's own passingScore.
+      var passed = rawScore >= (data.passingScore || 0);
+      SCORM.setObjective(state.quizIndexById[b.id] || 0, {
+        id: 'QUIZ_' + b.id,
+        name: 'Quiz ' + b.id,
+        raw: rawScore, min: 0, max: 100,
+        status: 'completed',
+        success: passed ? 'passed' : 'failed',
+      });
+
       reportProgress();
       // Answering a quiz can satisfy the linear-navigation gate; update the
       // advance button in place (the quiz re-renders itself, not the whole page).

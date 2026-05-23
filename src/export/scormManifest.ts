@@ -11,6 +11,19 @@ function escapeXml(s: string): string {
     .replace(/'/g, '&apos;')
 }
 
+// Collect quiz block IDs in order — used to declare one non-primary objective
+// per quiz in the SCORM 2004 manifest, so the LMS recognises the runtime
+// `cmi.objectives.n.id = 'QUIZ_<id>'` writes from the player.
+function quizIds(course: Course): string[] {
+  const ids: string[] = []
+  for (const lesson of course.lessons || []) {
+    for (const block of lesson.blocks || []) {
+      if (block.type === 'quiz') ids.push(block.id)
+    }
+  }
+  return ids
+}
+
 // Build an imsmanifest.xml for a single-SCO package launching index.html.
 // The same player auto-detects the SCORM API version at runtime; only the
 // manifest schema differs between 1.2 and 2004.
@@ -29,17 +42,27 @@ export function buildManifest(
 
   if (version === '2004') {
     // Communicate the passing score to the LMS via the primary objective's
-    // minimum normalized measure (0..1 scale).
-    const sequencing = hasMastery
-      ? `
+    // minimum normalized measure (0..1 scale). Each quiz is declared as a
+    // non-primary objective so per-quiz runtime objective writes link up to
+    // a declared id (improves analytics in LMS that gate rollup on
+    // declared objectives).
+    const quizObjs = quizIds(course)
+      .map(
+        (id) =>
+          `            <imsss:objective objectiveID="${escapeXml('QUIZ_' + id)}" />`,
+      )
+      .join('\n')
+    const sequencing =
+      hasMastery || quizObjs
+        ? `
         <imsss:sequencing>
           <imsss:objectives>
-            <imsss:primaryObjective objectiveID="PRIMARYOBJ" satisfiedByMeasure="true">
-              <imsss:minNormalizedMeasure>${(masteryScore! / 100).toFixed(2)}</imsss:minNormalizedMeasure>
-            </imsss:primaryObjective>
+            <imsss:primaryObjective objectiveID="PRIMARYOBJ"${hasMastery ? ' satisfiedByMeasure="true"' : ''}>
+${hasMastery ? `              <imsss:minNormalizedMeasure>${(masteryScore! / 100).toFixed(2)}</imsss:minNormalizedMeasure>\n` : ''}            </imsss:primaryObjective>
+${quizObjs}
           </imsss:objectives>
         </imsss:sequencing>`
-      : ''
+        : ''
     return `<?xml version="1.0" encoding="UTF-8"?>
 <manifest identifier="${escapeXml(id)}" version="1"
   xmlns="http://www.imsglobal.org/xsd/imscp_v1p1"
