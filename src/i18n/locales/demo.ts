@@ -14,16 +14,9 @@ const demo: LocaleTable = {
     tabFlashcards: 'Flashcards',
     tabOutline: 'Course outline',
 
-    // Chat (auto-playing scenario)
-    chatName: 'Ksiu',
-    chatStatus: 'online',
-    chatM1: "Hi! I'm Ksiu. Ready for a 2-minute onboarding?",
-    chatO1a: "Let's do it",
-    chatO1b: 'What will we cover?',
-    chatM2: 'Great. Where do you log your work hours?',
-    chatO2a: 'In the HR portal',
-    chatO2b: 'By email',
-    chatM3: "Spot on. You're a natural at this — see you inside!",
+    // Chat (auto-playing scenario). The scenarios themselves live in
+    // src/components/landing/demos/chatScenarios.ts as inline { en, uk }
+    // strings; only the replay button label is shared UI.
     chatReplay: 'Replay',
 
     // Quiz
@@ -65,16 +58,7 @@ const demo: LocaleTable = {
     tabFlashcards: 'Картки',
     tabOutline: 'Зміст курсу',
 
-    // Chat
-    chatName: 'Ксюша',
-    chatStatus: 'онлайн',
-    chatM1: 'Привіт! Я Ксюша. Готові до 2-хвилинного онбордингу?',
-    chatO1a: 'Поїхали',
-    chatO1b: 'Що будемо проходити?',
-    chatM2: 'Чудово. Де ви фіксуєте робочі години?',
-    chatO2a: 'У HR-порталі',
-    chatO2b: 'Електронною поштою',
-    chatM3: 'Саме так. У вас чудово виходить — до зустрічі всередині!',
+    // Chat (auto-playing scenario) — see chatScenarios.ts for the content.
     chatReplay: 'Спочатку',
 
     // Quiz
