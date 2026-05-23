@@ -1,15 +1,40 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import type { PreviewProps } from '../types'
 import type { Question } from '../../types/course'
 import { useT } from '../../i18n/I18nProvider'
 
 type Answer = string | string[] | Record<string, string>
 
+// Fisher–Yates shuffle (pure; does not mutate the input array).
+function shuffle<T>(arr: T[]): T[] {
+  const out = arr.slice()
+  for (let i = out.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[out[i], out[j]] = [out[j], out[i]]
+  }
+  return out
+}
+
 export default function QuizPreview({ block }: PreviewProps<'quiz'>) {
   const { t } = useT('preview')
   const { questions, passingScore, showAnswers = true } = block.data
   const [answers, setAnswers] = useState<Record<string, Answer>>({})
   const [submitted, setSubmitted] = useState(false)
+
+  // For every matching question, scramble the right-column choices once so the
+  // correct answer isn't always the first option. Stable across re-renders;
+  // re-rolled on retry (state reset → component remount of values isn't needed,
+  // but the memo dep on `submitted=false` keeps it stable per attempt).
+  const matchingChoices = useMemo(() => {
+    const map: Record<string, Array<{ id: string; right: string }>> = {}
+    for (const q of questions) {
+      if (q.type === 'matching') {
+        map[q.id] = shuffle(q.pairs.map((p) => ({ id: p.id, right: p.right })))
+      }
+    }
+    return map
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [questions, submitted ? 0 : 1])
 
   function setAnswer(qId: string, value: Answer) {
     setAnswers((prev) => ({ ...prev, [qId]: value }))
@@ -127,7 +152,7 @@ export default function QuizPreview({ block }: PreviewProps<'quiz'>) {
                       className="flex-1 rounded-md border border-gray-300 px-3 py-2"
                     >
                       <option value="">—</option>
-                      {q.pairs.map((opt) => (
+                      {(matchingChoices[q.id] ?? q.pairs).map((opt) => (
                         <option key={opt.id} value={opt.right}>
                           {opt.right}
                         </option>

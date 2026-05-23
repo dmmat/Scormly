@@ -408,8 +408,11 @@
         if (restricted && state.continued[b.id]) return null;
         return h('div', { class: 'continue' }, h('button', { class: 'btn', text: b.data.label,
           onclick: function () {
-            if (restricted) { state.continued[b.id] = true; render(); reportProgress(); }
-            else { goNext(); }
+            // Both modes advance to the next lesson. Restricted additionally
+            // marks the gate as passed so the lesson stays unlocked when the
+            // learner navigates back via Previous.
+            if (restricted) { state.continued[b.id] = true; reportProgress(); }
+            goNext();
           } }));
       }
       case 'divider': {
@@ -674,6 +677,26 @@
     var showAnswers = data.showAnswers !== false;
     var wrap = h('div', {});
 
+    // For each matching question, scramble the right-column choices once so
+    // the correct answer isn't simply the option at the same index. Stable
+    // across re-renders within an attempt; re-rolled on retry.
+    function shuffleArray(arr) {
+      var a = arr.slice();
+      for (var i = a.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var tmp = a[i]; a[i] = a[j]; a[j] = tmp;
+      }
+      return a;
+    }
+    var matchChoices = {};
+    function rollChoices() {
+      matchChoices = {};
+      (data.questions || []).forEach(function (q) {
+        if (q.type === 'matching') matchChoices[q.id] = shuffleArray(q.pairs || []);
+      });
+    }
+    rollChoices();
+
     function build() {
       var reveal = submitted && showAnswers;
       wrap.innerHTML = '';
@@ -701,11 +724,12 @@
               reveal && o.feedback && input.checked ? h('span', { class: 'empty', text: '— ' + o.feedback }) : null]));
           });
         } else if (q.type === 'matching') {
+          var choices = matchChoices[q.id] || q.pairs || [];
           (q.pairs || []).forEach(function (p) {
             var sel = h('select');
             sel.disabled = submitted;
             sel.appendChild(h('option', { value: '', text: '—' }));
-            (q.pairs || []).forEach(function (opt) { sel.appendChild(h('option', { value: opt.right, text: opt.right })); });
+            choices.forEach(function (opt) { sel.appendChild(h('option', { value: opt.right, text: opt.right })); });
             sel.value = (answers[q.id] || {})[p.id] || '';
             sel.addEventListener('change', function () {
               answers[q.id] = answers[q.id] || {};
@@ -730,7 +754,7 @@
           h('p', { class: (passed ? 'passed' : 'failed'), style: 'font-weight:500;margin:4px 0 0',
             text: passed ? t('passed') : t('failed') }),
           h('button', { class: 'btn btn-outline', style: 'margin-top:12px', text: t('retry'),
-            onclick: function () { submitted = false; answers = {}; build(); } }),
+            onclick: function () { submitted = false; answers = {}; rollChoices(); openedAt = Date.now(); build(); } }),
         ]);
         wrap.appendChild(res);
       } else {

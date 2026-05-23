@@ -16,9 +16,41 @@ export default function PreviewOverlay() {
   )
   const [index, setIndex] = useState(startIndex)
   const [finished, setFinished] = useState(false)
+  // Passed restricted `continue` gates: blockId → true (cleared on lesson change).
+  const [continued, setContinued] = useState<Record<string, boolean>>({})
   const lesson = course.lessons[index]
   const total = course.lessons.length
   const isLast = index >= total - 1
+
+  // Hide blocks after an unpassed restricted `continue` gate, and drop the
+  // gate itself once passed — mirroring the SCORM player's gating behaviour.
+  const visibleBlocks = (() => {
+    if (!lesson) return []
+    const out: typeof lesson.blocks = []
+    for (const b of lesson.blocks) {
+      const isRestricted = b.type === 'continue' && b.data.mode === 'restricted'
+      if (isRestricted && continued[b.id]) continue
+      out.push(b)
+      if (isRestricted && !continued[b.id]) break
+    }
+    return out
+  })()
+
+  function goNext() {
+    if (isLast) setFinished(true)
+    else {
+      setIndex((i) => Math.min(total - 1, i + 1))
+      setContinued({})
+    }
+  }
+
+  function handleContinue(blockId: string, mode: 'restricted' | 'unrestricted') {
+    // Both modes advance to the next lesson. Restricted additionally marks the
+    // gate as passed so the lesson stays unlocked if the learner navigates
+    // back via Previous.
+    if (mode === 'restricted') setContinued((c) => ({ ...c, [blockId]: true }))
+    goNext()
+  }
 
   return (
     <div
@@ -47,7 +79,10 @@ export default function PreviewOverlay() {
             <>
               <button
                 type="button"
-                onClick={() => setIndex((i) => Math.max(0, i - 1))}
+                onClick={() => {
+                  setIndex((i) => Math.max(0, i - 1))
+                  setContinued({})
+                }}
                 disabled={index === 0}
                 className="btn-secondary text-sm disabled:opacity-30"
               >
@@ -64,7 +99,7 @@ export default function PreviewOverlay() {
               ) : (
                 <button
                   type="button"
-                  onClick={() => setIndex((i) => Math.min(total - 1, i + 1))}
+                  onClick={goNext}
                   className="btn-secondary text-sm"
                 >
                   {t('next')}
@@ -104,12 +139,16 @@ export default function PreviewOverlay() {
                 <p className="text-gray-400">{t('empty')}</p>
               ) : (
                 <div className="space-y-6">
-                  {lesson.blocks.map((block) => (
+                  {visibleBlocks.map((block) => (
                     <BlockPreview
                       key={block.id}
                       block={block}
                       currentLessonId={lesson.id}
-                      onNavigate={(i) => setIndex(Math.min(total - 1, Math.max(0, i)))}
+                      onNavigate={(i) => {
+                        setIndex(Math.min(total - 1, Math.max(0, i)))
+                        setContinued({})
+                      }}
+                      onContinue={handleContinue}
                     />
                   ))}
                 </div>

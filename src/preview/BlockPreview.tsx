@@ -20,12 +20,15 @@ export default function BlockPreview({
   block,
   currentLessonId,
   onNavigate,
+  onContinue,
 }: {
   block: Block
   /** Lesson currently shown (so the outline can exclude it). */
   currentLessonId?: string
   /** Navigate to a lesson by index (used by the course outline block). */
   onNavigate?: (lessonIndex: number) => void
+  /** Continue block click handler — restricted unlocks, unrestricted advances. */
+  onContinue?: (blockId: string, mode: 'restricted' | 'unrestricted') => void
 }) {
   switch (block.type) {
     case 'heading': {
@@ -97,7 +100,11 @@ export default function BlockPreview({
     case 'continue':
       return (
         <div className="flex justify-center py-2">
-          <button type="button" className="btn-primary">
+          <button
+            type="button"
+            className="btn-primary"
+            onClick={() => onContinue?.(block.id, block.data.mode)}
+          >
             {block.data.label}
           </button>
         </div>
