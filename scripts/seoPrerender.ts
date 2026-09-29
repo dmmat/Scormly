@@ -37,13 +37,13 @@ function staticLanding(): string {
 </header>
 <main>
 <section><p>${esc(t.heroBadge)}</p><h1>${esc(t.heroTitle)}</h1><p>${esc(t.heroSubtitle)}</p>
-<p><a href="#/app">${esc(t.heroCtaPrimary)}</a> · <a href="${GITHUB}">${esc(t.heroCtaSecondary)}</a></p><p>${esc(t.heroNote)}</p></section>
+<p><a href="#/app">${esc(t.heroCtaPrimary)}</a> · <a href="#/demo">${esc(t.heroCtaDemo)}</a> · <a href="${GITHUB}">${esc(t.heroCtaSecondary)}</a></p><p>${esc(t.heroNote)}</p></section>
 <section><h2>${esc(t.pillarsTitle)}</h2><ul>${list([
     [t.pillarOpenTitle, t.pillarOpenText],
     [t.pillarFreeTitle, t.pillarFreeText],
     [t.pillarLocalTitle, t.pillarLocalText],
   ])}</ul></section>
-<section id="demo"><h2>${esc(d.title)}</h2><p>${esc(d.badge)}. ${esc(d.subtitle)}</p></section>
+<section id="demo"><h2>${esc(d.title)}</h2><p>${esc(d.badge)}. ${esc(d.subtitle)}</p><p><a href="#/demo">${esc(t.demoCourseCta)}</a></p></section>
 <section><h2>${esc(t.privacyTitle)}</h2><p>${esc(t.privacyText)}</p></section>
 <section id="features"><h2>${esc(t.featuresTitle)}</h2><p>${esc(t.featuresSubtitle)}</p><ul>${list(range('f', 10))}</ul></section>
 <section id="ai"><h2>${esc(t.aiTitle)}</h2><p>${esc(t.aiSubtitle)}</p><ul>${list(range('aiPoint', 3))}</ul></section>

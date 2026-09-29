@@ -57,7 +57,7 @@
     <!-- The landing copy is prerendered into #root at build time (see
          scripts/seoPrerender.ts); on builder routes hide it until React mounts. -->
     <script>
-      if (/^#\/?app/.test(location.hash)) document.documentElement.classList.add('route-app')
+      if (/^#\/?(app|demo)/.test(location.hash)) document.documentElement.classList.add('route-app')
     </script>
 
     <!-- Structured data: helps search engines and AI assistants understand the project. -->

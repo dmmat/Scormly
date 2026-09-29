@@ -17,7 +17,7 @@ import { useAutosave } from '../hooks/useAutosave'
 import { useCourseStore } from '../store/courseStore'
 import { flushSave, hasPendingSave, restoreOpenProject } from '../lib/projectService'
 import { useRoute, navigate } from '../hooks/useRoute'
-import { useT } from '../i18n/I18nProvider'
+import { useT, useLang } from '../i18n/I18nProvider'
 
 // Course builder (editor). Rendered on the #/app route. Shows the welcome screen
 // until a project folder is opened (or the user opts to continue without saving).
@@ -31,10 +31,22 @@ export default function Builder() {
   const setSettingsOpen = useCourseStore((s) => s.setSettingsOpen)
   const shortcutsOpen = useCourseStore((s) => s.shortcutsOpen)
   const exportPending = useExportStore((s) => s.pending !== null)
-  const { projectKey } = useRoute()
+  const { projectKey, demo } = useRoute()
+  const { lang } = useLang()
   const { t } = useT('common')
   const { t: tw } = useT('welcome')
   const [skipped, setSkipped] = useState(false)
+  const openSample = () => {
+    useCourseStore.getState().loadSampleCourse(lang)
+    setSkipped(true)
+  }
+
+  // #/demo (from the landing page) opens the sample course directly, unless a
+  // project folder is already open in this tab.
+  useEffect(() => {
+    if (demo && !useCourseStore.getState().directoryHandle) openSample()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [demo])
   // Try to restore the project named in the URL (after a page refresh / shared link).
   const [restoring, setRestoring] = useState(true)
 
@@ -81,6 +93,10 @@ export default function Builder() {
   if (!directoryHandle && !skipped) {
     return (
       <WelcomeScreen
+        onSample={() => {
+          navigate('demo')
+          openSample()
+        }}
         onSkip={() => {
           // Regenerate the demo course in the current UI language (the module-load
           // default may not match the user's selected language).

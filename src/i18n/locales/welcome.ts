@@ -19,6 +19,8 @@ const welcome: LocaleTable = {
     unsupportedTitle: 'Your browser can’t save to disk',
     unsupportedText: 'Saving projects to a folder needs the File System Access API (Chrome or Edge). You can still try the builder without saving.',
     tryAnyway: 'Try the builder without saving',
+    sampleTitle: 'Explore the demo course',
+    sampleText: 'Open a ready-made interactive course (“Spot the phish”) to see every kind of block in action. Preview it, edit it or export it to SCORM.',
 
     // Save status (Header)
     save: 'Save',
@@ -46,6 +48,8 @@ const welcome: LocaleTable = {
     unsupportedTitle: 'Ваш браузер не може зберігати на диск',
     unsupportedText: 'Для збереження проєктів у папку потрібен File System Access API (Chrome або Edge). Ви можете спробувати конструктор без збереження.',
     tryAnyway: 'Спробувати без збереження',
+    sampleTitle: 'Відкрити демо-курс',
+    sampleText: 'Готовий інтерактивний курс («Розпізнай фішинг»), щоб побачити всі типи блоків у дії. Перегляньте його, змініть або експортуйте в SCORM.',
 
     // Save status (Header)
     save: 'Зберегти',

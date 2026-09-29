@@ -13,6 +13,8 @@ import { createBlock } from '../blocks/registry'
 import { DEFAULT_THEME, THEMES } from '../theme/themes'
 import { uid } from '../lib/id'
 import { translate } from '../i18n/I18nProvider'
+import type { Language } from '../i18n/types'
+import { makeSampleCourse } from '../lib/sampleCourse'
 
 const HISTORY_LIMIT = 50
 
@@ -87,6 +89,8 @@ export interface CourseState {
   loadCourse: (course: Course) => void
   /** Reset to a fresh in-memory demo course, localized to the current UI language. */
   newDemoCourse: () => void
+  /** Load the built-in sample course (in memory) in the given language. */
+  loadSampleCourse: (lang: Language) => void
 
   // ── Project ──
   openProject: (
@@ -211,6 +215,18 @@ export const useCourseStore = create<CourseState>((set, get) => {
 
     loadCourse: (input) => {
       const course = migrateCourse(input)
+      set({
+        course,
+        activeLessonId: course.lessons[0]?.id ?? null,
+        selectedBlockId: null,
+        past: [],
+        future: [],
+        lastCoalesceKey: null,
+      })
+    },
+
+    loadSampleCourse: (lang) => {
+      const course = makeSampleCourse(lang)
       set({
         course,
         activeLessonId: course.lessons[0]?.id ?? null,

@@ -283,7 +283,7 @@ export default function Landing() {
             <p className="reveal-visible mx-auto mt-6 max-w-xl text-lg leading-relaxed text-gray-600 lg:mx-0">
               {t('heroSubtitle')}
             </p>
-            <div className="reveal-visible mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row lg:justify-start">
+            <div className="reveal-visible mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row sm:flex-wrap lg:justify-start">
               <button
                 type="button"
                 onClick={() => navigate('app')}
@@ -291,6 +291,9 @@ export default function Landing() {
               >
                 {t('heroCtaPrimary')}
               </button>
+              <a href="#/demo" className="btn-secondary px-7 py-3 text-base">
+                {t('heroCtaDemo')}
+              </a>
               <a
                 href={GITHUB_URL}
                 target="_blank"
@@ -375,6 +378,11 @@ export default function Landing() {
           <Reveal delay={120}>
             <div className="mt-12">
               <Playground />
+            </div>
+            <div className="mt-10 text-center">
+              <a href="#/demo" className="btn-primary px-7 py-3 text-base">
+                {t('demoCourseCta')}
+              </a>
             </div>
           </Reveal>
         </div>

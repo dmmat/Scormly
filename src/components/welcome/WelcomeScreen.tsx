@@ -18,9 +18,11 @@ import {
 interface WelcomeScreenProps {
   /** Continue into the builder without a folder (in-memory, no saving). */
   onSkip: () => void
+  /** Open the built-in sample course (in memory). */
+  onSample: () => void
 }
 
-export default function WelcomeScreen({ onSkip }: WelcomeScreenProps) {
+export default function WelcomeScreen({ onSkip, onSample }: WelcomeScreenProps) {
   const { t } = useT('welcome')
   const supported = isFileSystemAccessSupported()
   const [error, setError] = useState<string | null>(null)
@@ -97,6 +99,22 @@ export default function WelcomeScreen({ onSkip }: WelcomeScreenProps) {
               onClick={() => run(openExistingProject)}
             />
           </div>
+
+          <button
+            type="button"
+            onClick={onSample}
+            disabled={busy}
+            className="interactive-surface mt-5 flex w-full items-center gap-4 rounded-2xl border border-gray-200 bg-white p-5 text-left shadow-sm hover:border-brand/40 disabled:opacity-50"
+          >
+            <span aria-hidden className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-brand/10 text-2xl">
+              🎓
+            </span>
+            <span className="flex-1">
+              <span className="block font-semibold text-gray-900">{t('sampleTitle')}</span>
+              <span className="mt-1 block text-sm text-gray-600">{t('sampleText')}</span>
+            </span>
+            <span aria-hidden className="text-brand">→</span>
+          </button>
 
           {busy && (
             <p role="status" className="mt-4 flex items-center justify-center gap-2 text-sm text-gray-500">

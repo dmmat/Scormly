@@ -18,6 +18,8 @@ const landing: LocaleTable = {
       'Scormly is a free, open-source SCORM authoring tool that works online in your browser. Build interactive courses from blocks and export a SCORM 1.2, SCORM 2004 or cmi5 package in one click — no backend, no sign-up, and your content never leaves your computer.',
     heroCtaPrimary: 'Start building — free',
     heroCtaSecondary: 'View on GitHub',
+    heroCtaDemo: 'Open the demo course',
+    demoCourseCta: 'Open the full demo course in the builder',
     heroNote: 'Runs entirely in your browser. Nothing to install.',
 
     // Trust pillars
@@ -158,6 +160,8 @@ const landing: LocaleTable = {
       'Scormly — безкоштовний SCORM-редактор з відкритим кодом, що працює онлайн у браузері. Створюйте інтерактивні курси з блоків і експортуйте пакет SCORM 1.2, SCORM 2004 чи cmi5 в один клік — без сервера й реєстрації, а ваш контент ніколи не залишає комп’ютер.',
     heroCtaPrimary: 'Почати безкоштовно',
     heroCtaSecondary: 'Подивитися на GitHub',
+    heroCtaDemo: 'Відкрити демо-курс',
+    demoCourseCta: 'Відкрити повний демо-курс у конструкторі',
     heroNote: 'Працює повністю в браузері. Нічого не треба встановлювати.',
 
     // Trust pillars

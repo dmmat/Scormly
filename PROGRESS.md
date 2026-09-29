@@ -292,3 +292,11 @@ tracking layer.
   - MCP server (`mcp/`, `scormly-mcp`) + builder reload of external project.json edits live on the
     `feature/mcp` branch until the package is published.
 
+- 2026-09-29 — **SEO + demo course**:
+  - Build-time prerender (`scripts/seoPrerender.ts`, Vite plugin): the English landing copy is
+    written into `#root` of `index.html` as semantic HTML, plus `FAQPage` JSON-LD, so crawlers see
+    content without JS. Title/meta/hero/FAQ copy retargeted to "free / open-source / online SCORM
+    editor", "SCORM course builder" and "SCORM demo".
+  - Built-in bilingual sample course "Spot the phish" (`lib/sampleCourse.ts`, EN/UK) using hotspots,
+    tabs, flashcards, a chat scenario, a timeline, a table, ordering, fill-in-the-blanks and a quiz.
+    Opened in memory via `#/demo` (landing hero + demo section) or the welcome screen card.
