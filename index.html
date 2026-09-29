@@ -5,21 +5,21 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <title>Scormly — Free, local-first SCORM course builder</title>
+    <title>Scormly — Free Open-Source SCORM Editor &amp; Course Builder Online</title>
     <meta
       name="description"
-      content="Scormly is a free, open-source, local-first course builder with one-click SCORM 1.2 / 2004 and cmi5 export. Build interactive courses in your browser, or with AI agents via AGENTS.md — no backend, no sign-up, your data never leaves your computer."
+      content="Free, open-source SCORM editor and course builder that works online in your browser. Create interactive e-learning courses and export SCORM 1.2 / 2004 or cmi5 in one click. Try the live demo — no sign-up, no backend, your data stays on your computer."
     />
-    <meta name="keywords" content="SCORM, cmi5, xAPI, course builder, e-learning, open source, local-first, SCORM export, LMS, Moodle, AI" />
+    <meta name="keywords" content="SCORM editor, SCORM builder, SCORM course builder, free SCORM creator, open source SCORM editor, online SCORM editor, SCORM authoring tool, SCORM demo, cmi5, xAPI, e-learning, LMS, Moodle" />
     <meta name="theme-color" content="#ec4899" />
     <link rel="canonical" href="https://scormly.app/" />
 
     <!-- Open Graph -->
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="Scormly — Free, local-first SCORM course builder" />
+    <meta property="og:title" content="Scormly — Free Open-Source SCORM Editor &amp; Course Builder Online" />
     <meta
       property="og:description"
-      content="Build interactive courses and export to SCORM right in your browser. Open source, free, and 100% local — your data never leaves your computer."
+      content="A free, open-source SCORM editor in your browser: build interactive courses and export SCORM 1.2 / 2004 or cmi5. 100% local — your data never leaves your computer."
     />
     <meta property="og:site_name" content="Scormly" />
     <meta property="og:url" content="https://scormly.app/" />
@@ -33,10 +33,10 @@
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Scormly — Free, local-first SCORM course builder" />
+    <meta name="twitter:title" content="Scormly — Free Open-Source SCORM Editor &amp; Course Builder Online" />
     <meta
       name="twitter:description"
-      content="Build interactive courses and export to SCORM right in your browser. Open source, free, and 100% local."
+      content="A free, open-source SCORM editor in your browser: build interactive courses and export SCORM or cmi5. 100% local."
     />
     <meta name="twitter:image" content="https://scormly.app/og-image.png" />
     <meta name="twitter:image:alt" content="Scormly — build interactive courses and export to SCORM" />
@@ -54,16 +54,23 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="Scormly" />
 
+    <!-- The landing copy is prerendered into #root at build time (see
+         scripts/seoPrerender.ts); on builder routes hide it until React mounts. -->
+    <script>
+      if (/^#\/?app/.test(location.hash)) document.documentElement.classList.add('route-app')
+    </script>
+
     <!-- Structured data: helps search engines and AI assistants understand the project. -->
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
         "@type": "SoftwareApplication",
         "name": "Scormly",
+        "alternateName": ["Scormly SCORM editor", "Scormly SCORM builder"],
         "applicationCategory": "EducationalApplication",
         "operatingSystem": "Web browser (Chromium-based for disk save)",
         "url": "https://scormly.app/",
-        "description": "Free, open-source, local-first course builder that runs in the browser and exports SCORM 1.2 / 2004 and cmi5 (xAPI) packages for any LMS. No backend, no account — your data stays on your device.",
+        "description": "Free, open-source SCORM editor and course builder (SCORM authoring tool) that runs online in the browser and exports SCORM 1.2 / 2004 and cmi5 (xAPI) packages for any LMS. No backend, no account — your data stays on your device.",
         "license": "https://opensource.org/licenses/MIT",
         "isAccessibleForFree": true,
         "inLanguage": ["en", "uk"],
@@ -111,7 +118,7 @@
             "@id": "https://scormly.app/#website",
             "name": "Scormly",
             "url": "https://scormly.app/",
-            "description": "Free, open-source, local-first SCORM course builder.",
+            "description": "Free, open-source SCORM editor and course builder that works online in the browser.",
             "inLanguage": ["en", "uk"],
             "publisher": { "@id": "https://scormly.app/#organization" }
           }

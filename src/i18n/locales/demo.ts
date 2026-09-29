@@ -4,7 +4,7 @@ import type { LocaleTable } from '../types'
 // course outline). Kept separate from the marketing `landing` namespace.
 const demo: LocaleTable = {
   en: {
-    badge: 'Live demo',
+    badge: 'Live SCORM demo',
     title: 'Play with the real building blocks',
     subtitle:
       'These are the very same interactive blocks your learners get. No video, no mock-up — try them right here.',
@@ -48,7 +48,7 @@ const demo: LocaleTable = {
     olVisited: 'visited',
   },
   uk: {
-    badge: 'Жива демонстрація',
+    badge: 'Живе SCORM-демо',
     title: 'Пограйте з реальними блоками',
     subtitle:
       'Це ті самі інтерактивні блоки, які отримають ваші студенти. Без відео й макетів — спробуйте просто тут.',

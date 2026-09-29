@@ -684,6 +684,8 @@ export default function Landing() {
       { q: t('faqQ7'), a: t('faqA7') },
       { q: t('faqQ8'), a: t('faqA8') },
       { q: t('faqQ9'), a: t('faqA9') },
+      { q: t('faqQ10'), a: t('faqA10') },
+      { q: t('faqQ11'), a: t('faqA11') },
     ]
     return (
       <section id="faq" className="scroll-mt-20 border-t border-gray-100 bg-gray-50/60 py-24">

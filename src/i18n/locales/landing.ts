@@ -13,9 +13,9 @@ const landing: LocaleTable = {
 
     // Hero
     heroBadge: 'Open source · Free · 100% local',
-    heroTitle: 'Build interactive courses and export to SCORM — right in your browser',
+    heroTitle: 'Free SCORM editor and course builder — right in your browser',
     heroSubtitle:
-      'Scormly is a local-first, block-based course builder. No backend, no sign-up. Your content never leaves your computer, and you export a standards-compliant SCORM or cmi5 package in one click.',
+      'Scormly is a free, open-source SCORM authoring tool that works online in your browser. Build interactive courses from blocks and export a SCORM 1.2, SCORM 2004 or cmi5 package in one click — no backend, no sign-up, and your content never leaves your computer.',
     heroCtaPrimary: 'Start building — free',
     heroCtaSecondary: 'View on GitHub',
     heroNote: 'Runs entirely in your browser. Nothing to install.',
@@ -123,6 +123,10 @@ const landing: LocaleTable = {
     faqA8: 'Yes. Export runs a course check first and lists problems such as empty lessons, missing media or quiz questions without a correct answer, so you can fix them before uploading to your LMS.',
     faqQ9: 'Can I use the builder without a mouse?',
     faqA9: 'Yes. Menus, dialogs and lists work fully from the keyboard, lessons and blocks can be reordered with keys, and pressing ? shows every shortcut.',
+    faqQ10: 'Is there a free, open-source SCORM editor?',
+    faqA10: 'Yes — Scormly is a free SCORM editor and SCORM course creator released under the MIT license. The source code is on GitHub, it works online in the browser without an account, and you can self-host it or use it offline as an installed app.',
+    faqQ11: 'Can I try a SCORM demo before building a course?',
+    faqA11: 'Yes. The live demo on this page runs the same interactive blocks your learners get — dialogue trainer, quiz, flashcards and course outline. When you are ready, open the builder and export your own SCORM package.',
 
     // Contribute CTA
     contributeBadge: 'Open source',
@@ -133,7 +137,7 @@ const landing: LocaleTable = {
     contributeIssues: 'Suggest a feature',
 
     // Footer
-    footerTagline: 'Local-first course builder with SCORM and cmi5 export.',
+    footerTagline: 'Free, open-source SCORM editor and course builder with SCORM and cmi5 export.',
     footerLicense: 'MIT licensed',
     footerIssues: 'Report an issue',
     footerMade: 'Open source, made for educators.',
@@ -149,9 +153,9 @@ const landing: LocaleTable = {
 
     // Hero
     heroBadge: 'Open source · Безкоштовно · 100% локально',
-    heroTitle: 'Створюйте інтерактивні курси й експортуйте в SCORM — прямо в браузері',
+    heroTitle: 'Безкоштовний SCORM-редактор і конструктор курсів — прямо в браузері',
     heroSubtitle:
-      'Scormly — це local-first блочний конструктор курсів. Без сервера й реєстрації. Ваш контент ніколи не залишає комп’ютер, а готовий пакет SCORM чи cmi5 ви отримуєте в один клік.',
+      'Scormly — безкоштовний SCORM-редактор з відкритим кодом, що працює онлайн у браузері. Створюйте інтерактивні курси з блоків і експортуйте пакет SCORM 1.2, SCORM 2004 чи cmi5 в один клік — без сервера й реєстрації, а ваш контент ніколи не залишає комп’ютер.',
     heroCtaPrimary: 'Почати безкоштовно',
     heroCtaSecondary: 'Подивитися на GitHub',
     heroNote: 'Працює повністю в браузері. Нічого не треба встановлювати.',
@@ -259,6 +263,10 @@ const landing: LocaleTable = {
     faqA8: 'Так. Перед експортом курс перевіряється, і ви бачите список проблем — порожні уроки, відсутні медіа чи питання без правильної відповіді, — щоб виправити їх до завантаження в LMS.',
     faqQ9: 'Чи можна працювати без миші?',
     faqA9: 'Так. Меню, діалоги й списки повністю доступні з клавіатури, уроки й блоки можна переставляти клавішами, а натиснувши ?, ви побачите всі гарячі клавіші.',
+    faqQ10: 'Чи існує безкоштовний SCORM-редактор з відкритим кодом?',
+    faqA10: 'Так — Scormly: безкоштовний SCORM-редактор і конструктор SCORM-курсів за ліцензією MIT. Код відкритий на GitHub, редактор працює онлайн у браузері без акаунта, а ще його можна розгорнути в себе чи встановити як застосунок.',
+    faqQ11: 'Чи можна спробувати SCORM-демо до створення курсу?',
+    faqA11: 'Так. Жива демонстрація на цій сторінці запускає ті самі інтерактивні блоки, що й у ваших слухачів: діалоговий тренажер, квіз, картки та зміст курсу. Коли будете готові — відкрийте конструктор і експортуйте власний SCORM-пакет.',
 
     // Contribute CTA
     contributeBadge: 'Відкритий код',
@@ -269,7 +277,7 @@ const landing: LocaleTable = {
     contributeIssues: 'Запропонувати фічу',
 
     // Footer
-    footerTagline: 'Local-first конструктор курсів з експортом у SCORM і cmi5.',
+    footerTagline: 'Безкоштовний SCORM-редактор і конструктор курсів з відкритим кодом та експортом у SCORM і cmi5.',
     footerLicense: 'Ліцензія MIT',
     footerIssues: 'Повідомити про проблему',
     footerMade: 'Open source, для освітян.',
