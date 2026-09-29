@@ -33,6 +33,15 @@ export function overallPassingScore(course: Course): number | undefined {
   return Math.round(course.settings.passingScore)
 }
 
+/** Reads a player runtime file (e.g. `player.js`) as text. */
+export type PlayerFileReader = (name: string) => Promise<string>
+
+/** Browser reader: fetch the player files the app serves from public/. */
+export const fetchPlayerFile: PlayerFileReader = async (name) => {
+  const res = await fetch(`${import.meta.env.BASE_URL}scorm-player/${name}`)
+  return res.text()
+}
+
 type DirEntries = {
   entries(): AsyncIterableIterator<[string, FileSystemHandle]>
 }
@@ -78,17 +87,19 @@ async function addDir(
 // Add the player runtime + embedded course data. The chosen tracking script is
 // bundled and wired into index.html (which ships referencing scorm.js).
 // Returns the list of file paths added (for the manifest's file listing).
+//
+// `readPlayerFile` loads a file from public/scorm-player/: the app fetches it
+// (fetchPlayerFile), the MCP server (mcp/) reads it from disk.
 export async function addPlayer(
   zip: JSZip,
   course: Course,
   tracking: TrackingScript,
+  readPlayerFile: PlayerFileReader,
 ): Promise<string[]> {
-  const base = import.meta.env.BASE_URL
   const files: string[] = []
 
   for (const name of STATIC_FILES) {
-    const res = await fetch(`${base}scorm-player/${name}`)
-    let content = await res.text()
+    let content = await readPlayerFile(name)
     if (name === 'index.html') {
       content = content.replace('{{COURSE_TITLE}}', escapeHtml(course.title || 'Course'))
       if (tracking !== 'scorm.js') content = content.replace('scorm.js', tracking)
@@ -97,8 +108,7 @@ export async function addPlayer(
     files.push(name)
   }
 
-  const trackingRes = await fetch(`${base}scorm-player/${tracking}`)
-  zip.file(tracking, await trackingRes.text())
+  zip.file(tracking, await readPlayerFile(tracking))
   files.push(tracking)
 
   // Course data, embedded as a JS global rather than a fetched JSON file: many

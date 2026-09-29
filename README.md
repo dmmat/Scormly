@@ -113,6 +113,21 @@ no server required:
 
 For more detail, see [docs/architecture.md](docs/architecture.md).
 
+## 🤖 MCP server
+
+[`mcp/`](mcp/README.md) contains a local MCP server so AI clients (Claude
+Desktop, Claude Code, Cursor…) can author a course by working on its project
+folder: add and edit lessons and blocks (validated), copy media, run the
+pre-export checks, and build SCORM / cmi5 packages. The builder picks up these
+external edits to `project.json` while the project is open.
+
+```bash
+cd mcp && npm install && npm run build
+claude mcp add scormly -- node "$PWD/dist/index.js" --project /path/to/my-course
+```
+
+See [mcp/README.md](mcp/README.md) for client configuration and the tool list.
+
 ## 📁 Project structure
 
 ```

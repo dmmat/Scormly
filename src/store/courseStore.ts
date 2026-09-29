@@ -10,7 +10,8 @@ import type {
 } from '../types/course'
 import { DEFAULT_COURSE_SETTINGS } from '../types/course'
 import { createBlock } from '../blocks/registry'
-import { DEFAULT_THEME, THEMES } from '../theme/themes'
+import { DEFAULT_THEME } from '../theme/themes'
+import { migrateCourse } from '../lib/migrateCourse'
 import { uid } from '../lib/id'
 import { translate } from '../i18n/I18nProvider'
 
@@ -96,6 +97,12 @@ export interface CourseState {
     history?: ProjectHistory,
   ) => void
   closeProject: () => void
+  /**
+   * Replace the course with a version changed on disk by another tool (e.g. the
+   * MCP server). Undoable: the current course goes onto the undo stack. Keeps
+   * the active lesson / selected block when they still exist.
+   */
+  applyExternalCourse: (course: Course) => void
   setSaveState: (state: SaveState) => void
   /** Time of the last successful save (ms since epoch). */
   lastSavedAt: number | null
@@ -131,14 +138,6 @@ export interface CourseState {
 
 function findLesson(course: Course, lessonId: string): Lesson | undefined {
   return course.lessons.find((l) => l.id === lessonId)
-}
-
-// Coerce a loaded course to current invariants: migrate a renamed/legacy theme
-// id to the default, and backfill completion/scoring settings for older projects.
-function migrateCourse(course: Course): Course {
-  const theme = THEMES[course.theme] ? course.theme : DEFAULT_THEME
-  const settings = { ...DEFAULT_COURSE_SETTINGS, ...course.settings }
-  return { ...course, theme, settings }
 }
 
 export const useCourseStore = create<CourseState>((set, get) => {
@@ -252,6 +251,26 @@ export const useCourseStore = create<CourseState>((set, get) => {
       // Drop the project key from the URL.
       if (window.location.hash.startsWith('#/app/')) window.location.hash = '/app'
       set({ directoryHandle: null, projectName: null, saveState: 'idle' })
+    },
+
+    applyExternalCourse: (input) => {
+      const state = get()
+      const course = migrateCourse(input)
+      const lessonIds = new Set(course.lessons.map((l) => l.id))
+      const blockExists = course.lessons.some((l) =>
+        l.blocks.some((b) => b.id === state.selectedBlockId),
+      )
+      set({
+        course,
+        activeLessonId:
+          state.activeLessonId && lessonIds.has(state.activeLessonId)
+            ? state.activeLessonId
+            : (course.lessons[0]?.id ?? null),
+        selectedBlockId: blockExists ? state.selectedBlockId : null,
+        past: [...state.past, state.course].slice(-HISTORY_LIMIT),
+        future: [],
+        lastCoalesceKey: null,
+      })
     },
 
     setSaveState: (saveState) =>

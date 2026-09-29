@@ -1,0 +1,32 @@
+{
+  "name": "scormly-mcp",
+  "version": "0.1.0",
+  "private": true,
+  "description": "MCP server that lets AI clients author Scormly course projects (project.json) and export SCORM / cmi5 packages.",
+  "license": "MIT",
+  "author": "Dmytro Matsiuk",
+  "type": "module",
+  "bin": {
+    "scormly-mcp": "dist/index.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "tsc --noEmit && esbuild src/index.ts --bundle --platform=node --format=esm --target=node20 --packages=external --external:jszip --outfile=dist/index.js",
+    "start": "node dist/index.js",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.31.0",
+    "jszip": "^3.10.2",
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.8",
+    "esbuild": "^0.28.2",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.11"
+  }
+}

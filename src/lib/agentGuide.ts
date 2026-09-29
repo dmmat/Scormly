@@ -175,9 +175,10 @@ This folder is a **Scormly** project. The entire course lives in
 directly to author or modify the course. Scormly is a local-first course builder
 that exports to SCORM 1.2 / 2004 and cmi5 (xAPI).
 
-> Edit \`project.json\` while the project is **closed** in the Scormly app (or
-> reopen it afterwards), so your changes aren't overwritten by autosave. Keep the
-> JSON valid and every \`id\` unique.
+> If the project is open in the Scormly app, it reloads \`project.json\` when it
+> changes on disk (when the author has unsaved edits, it asks first). Write the
+> file in one go (e.g. a temp file + rename), keep the JSON valid and every
+> \`id\` unique.
 
 ## Data model
 
@@ -275,8 +276,18 @@ passes them is ready to export:
 2. Make your edits — add lessons/blocks, rewrite text, build quizzes — keeping
    ids unique and the JSON valid.
 3. Walk through the checklist above.
-4. Ask the author to reopen the project in Scormly to review, preview and export
-   (SCORM 2004 / 1.2 or cmi5). Exporting happens in the app, not from the file.
+4. Ask the author to review and preview the course in Scormly, then export
+   (SCORM 2004 / 1.2 or cmi5) from the app — or with the MCP server below.
+
+## MCP server
+
+Scormly ships a local MCP server (\`mcp/\` in the Scormly repository) for AI
+clients such as Claude Desktop, Claude Code or Cursor. Pointed at this folder
+(\`scormly-mcp --project <folder>\`), it offers tools to read the course, add /
+update / move / delete lessons and blocks (validated, ids generated), copy media
+into \`assets/\`, run the pre-export checks (\`check_course\`) and build SCORM /
+cmi5 packages (\`export_package\`). Prefer it over hand-editing \`project.json\`
+when it is available.
 
 ## Minimal example
 

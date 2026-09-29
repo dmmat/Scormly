@@ -14,6 +14,7 @@ import ThemeProvider from '../theme/ThemeProvider'
 import { useUndoRedoShortcuts } from '../hooks/useUndoRedoShortcuts'
 import { useEditorShortcuts } from '../hooks/useEditorShortcuts'
 import { useAutosave } from '../hooks/useAutosave'
+import { useProjectWatcher } from '../hooks/useProjectWatcher'
 import { useCourseStore } from '../store/courseStore'
 import { flushSave, hasPendingSave, restoreOpenProject } from '../lib/projectService'
 import { useRoute, navigate } from '../hooks/useRoute'
@@ -25,6 +26,7 @@ export default function Builder() {
   useUndoRedoShortcuts()
   useEditorShortcuts()
   useAutosave()
+  useProjectWatcher()
   const directoryHandle = useCourseStore((s) => s.directoryHandle)
   const previewOpen = useCourseStore((s) => s.previewOpen)
   const settingsOpen = useCourseStore((s) => s.settingsOpen)

@@ -1,6 +1,11 @@
 import { useEffect, useRef } from 'react'
 import { useCourseStore } from '../store/courseStore'
-import { cancelScheduledSave, saveProject, scheduleSave } from '../lib/projectService'
+import {
+  cancelScheduledSave,
+  isCourseFromDisk,
+  saveProject,
+  scheduleSave,
+} from '../lib/projectService'
 
 const DEBOUNCE_MS = 1000
 
@@ -19,6 +24,8 @@ export function useAutosave() {
       skipNext.current = false
       return
     }
+    // A course just reloaded from disk (external edit) is already saved.
+    if (isCourseFromDisk(course)) return
     scheduleSave(DEBOUNCE_MS)
   }, [course, handle])
 

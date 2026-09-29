@@ -84,6 +84,7 @@ export async function createNewProject(): Promise<void> {
   const handle = await pickDirectory('readwrite')
   const course = makeEmptyCourse(handle.name)
   await writeJson(handle, PROJECT_FILE, course)
+  await rememberDiskState(handle)
   // Drop an agent guide alongside the project so AI agents / humans can edit
   // project.json directly.
   await syncAgentGuide(handle, course)
@@ -118,6 +119,7 @@ async function loadProjectFromHandle(
   const history =
     (await readJson<ProjectHistory>(handle, HISTORY_FILE)) ?? undefined
   useCourseStore.getState().openProject(handle, handle.name, course, history)
+  await rememberDiskState(handle)
   await rememberRecentProject(handle)
   navigate('app', handle.name)
 }
@@ -155,11 +157,12 @@ export function scheduleSave(delayMs: number): void {
 export function cancelScheduledSave(): void {
   if (saveTimer !== undefined) clearTimeout(saveTimer)
   saveTimer = undefined
+  heldForConflict = false
 }
 
-/** An autosave is queued or a write is running. */
+/** An autosave is queued, held back by a disk conflict, or a write is running. */
 export function hasPendingSave(): boolean {
-  return saveTimer !== undefined || inFlight !== null
+  return saveTimer !== undefined || heldForConflict || inFlight !== null
 }
 
 /**
@@ -168,7 +171,7 @@ export function hasPendingSave(): boolean {
  * is saved (or there is no project folder).
  */
 export async function flushSave(): Promise<boolean> {
-  if (saveTimer !== undefined) {
+  if (saveTimer !== undefined || heldForConflict) {
     cancelScheduledSave()
     await saveProject()
   } else if (inFlight) {
@@ -199,7 +202,9 @@ async function writeProject(): Promise<void> {
       saveFailed('savePermission')
       return
     }
-    await writeJson(directoryHandle, PROJECT_FILE, course)
+    const text = JSON.stringify(course, null, 2)
+    await writeFile(directoryHandle, PROJECT_FILE, text)
+    await rememberDiskState(directoryHandle, text)
     await writeJson(directoryHandle, HISTORY_FILE, {
       past: past.slice(-PERSISTED_HISTORY),
       future: future.slice(0, PERSISTED_HISTORY),
@@ -225,4 +230,114 @@ function saveFailed(messageKey: 'saveFailed' | 'savePermission') {
     message: translate('common', messageKey),
     action: { label: translate('common', 'retry'), onClick: () => void saveProject() },
   })
+}
+
+// ── External changes ─────────────────────────────────────────────────────────
+// Another tool (the Scormly MCP server, an AI agent, a text editor) may rewrite
+// project.json while the project is open. useProjectWatcher calls
+// checkExternalChange(): we reload when the builder has nothing unsaved, and
+// otherwise offer to via a toast.
+
+const RELOAD_TOAST = 'external-change'
+
+// The project.json we last wrote or loaded. A new lastModified with the same
+// text is ignored, so our own saves never count as external changes.
+let diskStamp: number | null = null
+let diskText: string | null = null
+// The course object last applied from disk. useAutosave skips it: writing it
+// straight back is pointless and could clobber a newer external write.
+let courseFromDisk: Course | null = null
+// Local edits whose autosave was held back because the file changed on disk.
+let heldForConflict = false
+let checking = false
+
+async function rememberDiskState(
+  handle: FileSystemDirectoryHandle,
+  text?: string,
+): Promise<void> {
+  try {
+    const file = await (await handle.getFileHandle(PROJECT_FILE)).getFile()
+    diskStamp = file.lastModified
+    diskText = text ?? (await file.text())
+  } catch {
+    diskStamp = diskText = null
+  }
+}
+
+/** True for the course object just reloaded from disk (don't autosave it). */
+export function isCourseFromDisk(course: Course): boolean {
+  return course === courseFromDisk
+}
+
+/** Compare project.json on disk with what we know; reload or offer to. */
+export async function checkExternalChange(): Promise<void> {
+  const handle = useCourseStore.getState().directoryHandle
+  // Skip while our own write runs: the file is mid-update and about to be ours.
+  if (!handle || inFlight || checking) return
+  checking = true
+  try {
+    const file = await (await handle.getFileHandle(PROJECT_FILE)).getFile()
+    if (file.lastModified === diskStamp) return
+    const text = await file.text()
+    if (inFlight || useCourseStore.getState().directoryHandle !== handle) return
+    if (text === diskText) {
+      diskStamp = file.lastModified
+      return
+    }
+    // A half-written or hand-broken file: keep the old stamp so we retry.
+    let course: unknown
+    try {
+      course = JSON.parse(text)
+    } catch {
+      return
+    }
+    if (!looksLikeCourse(course)) return
+    diskStamp = file.lastModified
+    diskText = text
+
+    const { saveState } = useCourseStore.getState()
+    if (saveTimer === undefined && !heldForConflict && saveState !== 'error') {
+      applyFromDisk(course)
+      toast({ id: RELOAD_TOAST, message: translate('common', 'externalReloaded') })
+      return
+    }
+    // Unsaved local edits: hold their autosave so it doesn't overwrite the new
+    // file a second later. The next edit (or flushSave) saves ours over it.
+    cancelScheduledSave()
+    heldForConflict = true
+    toast({
+      id: RELOAD_TOAST,
+      message: translate('common', 'externalConflict'),
+      action: {
+        label: translate('common', 'reloadFromDisk'),
+        onClick: () => void reloadFromDisk(),
+      },
+    })
+  } catch {
+    // Folder gone or permission lost — the next save reports that.
+  } finally {
+    checking = false
+  }
+}
+
+function applyFromDisk(course: Course): void {
+  cancelScheduledSave()
+  useCourseStore.getState().applyExternalCourse(course)
+  courseFromDisk = useCourseStore.getState().course
+}
+
+/** Replace the in-app course with project.json from disk (undoable). */
+export async function reloadFromDisk(): Promise<void> {
+  const handle = useCourseStore.getState().directoryHandle
+  if (!handle) return
+  try {
+    const course = await readJson<Course>(handle, PROJECT_FILE)
+    if (!looksLikeCourse(course)) throw new NoProjectError()
+    applyFromDisk(course)
+    await rememberDiskState(handle)
+    dismissToast(RELOAD_TOAST)
+  } catch (err) {
+    console.error('[reload]', err)
+    toast({ tone: 'error', message: translate('common', 'openFailed') })
+  }
 }
