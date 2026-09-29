@@ -32,6 +32,10 @@ Every Scormly project folder contains an `AGENTS.md` that documents `project.jso
 course as JSON) and every block type's `data` shape, so an AI assistant can read, edit, or
 author whole courses by editing that single file.
 
+A local MCP server, `scormly-mcp`, connects Claude Desktop, Claude Code or Cursor to a project
+folder, with tools to add lessons and blocks, check the course, and export SCORM / cmi5 — still
+fully local. Example: `claude mcp add scormly -- npx scormly-mcp --project ./my-course`.
+
 ## Links
 
 - App: https://scormly.app/

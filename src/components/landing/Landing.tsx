@@ -469,7 +469,7 @@ export default function Landing() {
     )
   }
 
-  // AI-ready: AGENTS.md in every project lets assistants author courses.
+  // AI-ready: AGENTS.md in every project + the local scormly-mcp server.
   function AiReady() {
     const points = [
       { icon: 'file', title: t('aiPoint1Title'), text: t('aiPoint1Text') },
@@ -505,8 +505,8 @@ export default function Landing() {
             </ul>
           </Reveal>
 
-          {/* Illustrative visual: an assistant started in the project folder,
-              then working through the course. Static on purpose. */}
+          {/* Illustrative visual: a terminal wiring up the MCP server, then an
+              assistant working through the project. Static on purpose. */}
           <Reveal delay={120}>
             <div role="img" aria-label={t('aiVisualLabel')} className="relative mx-auto w-full max-w-lg">
               <div className="overflow-hidden rounded-2xl bg-gray-900 shadow-2xl shadow-gray-900/25 ring-1 ring-white/10">
@@ -527,9 +527,10 @@ export default function Landing() {
                   </p>
                   <p className="pt-2 text-white/40">{t('aiTermComment')}</p>
                   <p>
-                    <span className="text-brand-light">$</span> claude{' '}
+                    <span className="text-brand-light">$</span> claude mcp add scormly -- npx scormly-mcp
+                    --project{' '}
                     <span className="whitespace-nowrap">
-                      "{t('aiTermPrompt')}"<span className="ai-caret" />
+                      ./my-course<span className="ai-caret" />
                     </span>
                   </p>
                 </div>

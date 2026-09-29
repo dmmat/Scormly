@@ -70,20 +70,19 @@ const landing: LocaleTable = {
     aiPoint1Title: 'AGENTS.md in every project',
     aiPoint1Text:
       'Each project folder ships with a guide to the project.json format and every block type, so any agent knows how to author valid content.',
-    aiPoint2Title: 'Works with the assistant you use',
+    aiPoint2Title: 'Local MCP server',
     aiPoint2Text:
-      'Point Claude Code, Cursor or ChatGPT at the project folder: the agent writes lessons, blocks and quizzes into project.json, and you review, preview and export in Scormly.',
+      'scormly-mcp connects Claude Desktop, Claude Code or Cursor to your project folder, with tools to add lessons and blocks, check the course and export SCORM or cmi5.',
     aiPoint3Title: 'Still 100% local',
     aiPoint3Text:
-      'The agent works on files on your own disk. Scormly uploads nothing — what you share with an assistant is up to you.',
-    aiTermComment: '# ask your assistant',
-    aiTermPrompt: 'read AGENTS.md, then add a phishing lesson',
+      'The agent works on files on your own disk. Scormly and scormly-mcp upload nothing — what you share with an assistant is up to you.',
+    aiTermComment: '# connect your course folder',
     aiChatPrompt: 'Add a lesson on spotting phishing with a timeline and a 3-question quiz, then export it for our LMS.',
     aiStep1: 'Read AGENTS.md',
     aiStep2: 'Added lesson “Spotting phishing”',
     aiStep3: 'Added timeline and quiz blocks',
     aiStep4: 'Course check: no issues',
-    aiStep5: 'Ready to preview and export in Scormly',
+    aiStep5: 'Exported SCORM 2004 package',
     aiVisualLabel: 'Illustrative example of an AI assistant editing a Scormly project',
 
     // What's new
@@ -118,7 +117,7 @@ const landing: LocaleTable = {
     faqQ6: 'Can it replace commercial authoring tools?',
     faqA6: 'Scormly follows a modern block-based authoring approach, but it is local-first, free and open source. It is a great fit if you want full control over your data.',
     faqQ7: 'Can I build courses with AI?',
-    faqA7: 'Yes. Every project folder includes an AGENTS.md file that documents project.json and all block types, so an assistant like Claude, ChatGPT or Cursor can author valid courses.',
+    faqA7: 'Yes. Every project folder includes an AGENTS.md file that documents project.json and all block types, so an assistant like Claude, ChatGPT or Cursor can author valid courses. With the local scormly-mcp server, Claude Desktop, Claude Code or Cursor can add lessons and blocks, check the course and export it directly.',
     faqQ8: 'Can I check my course before publishing?',
     faqA8: 'Yes. Export runs a course check first and lists problems such as empty lessons, missing media or quiz questions without a correct answer, so you can fix them before uploading to your LMS.',
     faqQ9: 'Can I use the builder without a mouse?',
@@ -206,20 +205,19 @@ const landing: LocaleTable = {
     aiPoint1Title: 'AGENTS.md у кожному проєкті',
     aiPoint1Text:
       'У кожній папці проєкту є інструкція з форматом project.json і всіма типами блоків, тож будь-який агент знає, як створити коректний контент.',
-    aiPoint2Title: 'Працює з вашим асистентом',
+    aiPoint2Title: 'Локальний MCP-сервер',
     aiPoint2Text:
-      'Відкрийте папку проєкту в Claude Code, Cursor чи ChatGPT: агент пише уроки, блоки й тести в project.json, а ви переглядаєте й експортуєте курс у Scormly.',
+      'scormly-mcp під’єднує Claude Desktop, Claude Code чи Cursor до папки проєкту й дає інструменти, щоб додавати уроки й блоки, перевіряти курс та експортувати SCORM чи cmi5.',
     aiPoint3Title: 'Так само 100% локально',
     aiPoint3Text:
-      'Агент працює з файлами на вашому диску. Scormly нічого не завантажує — чим ділитися з асистентом, вирішуєте ви.',
-    aiTermComment: '# попросіть асистента',
-    aiTermPrompt: 'прочитай AGENTS.md і додай урок про фішинг',
+      'Агент працює з файлами на вашому диску. Scormly і scormly-mcp нічого не завантажують — чим ділитися з асистентом, вирішуєте ви.',
+    aiTermComment: '# під’єднайте папку курсу',
     aiChatPrompt: 'Додай урок про розпізнавання фішингу з таймлайном і тестом на 3 питання, а потім експортуй для нашої LMS.',
     aiStep1: 'Прочитано AGENTS.md',
     aiStep2: 'Додано урок «Як розпізнати фішинг»',
     aiStep3: 'Додано блоки таймлайну й тесту',
     aiStep4: 'Перевірка курсу: проблем немає',
-    aiStep5: 'Готово до перегляду й експорту в Scormly',
+    aiStep5: 'Експортовано пакет SCORM 2004',
     aiVisualLabel: 'Ілюстративний приклад: AI-асистент редагує проєкт Scormly',
 
     // What's new
@@ -254,7 +252,7 @@ const landing: LocaleTable = {
     faqQ6: 'Чи може це замінити комерційні інструменти авторингу?',
     faqA6: 'Scormly використовує сучасний блочний підхід до авторингу, але є local-first, безкоштовним і відкритим. Чудовий вибір, якщо хочете повний контроль над даними.',
     faqQ7: 'Чи можна створювати курси за допомогою AI?',
-    faqA7: 'Так. У кожній папці проєкту є файл AGENTS.md з описом project.json і всіх типів блоків, тож асистент на кшталт Claude, ChatGPT чи Cursor може створювати коректні курси.',
+    faqA7: 'Так. У кожній папці проєкту є файл AGENTS.md з описом project.json і всіх типів блоків, тож асистент на кшталт Claude, ChatGPT чи Cursor може створювати коректні курси. А з локальним сервером scormly-mcp Claude Desktop, Claude Code чи Cursor можуть напряму додавати уроки й блоки, перевіряти курс і експортувати його.',
     faqQ8: 'Чи можна перевірити курс перед публікацією?',
     faqA8: 'Так. Перед експортом курс перевіряється, і ви бачите список проблем — порожні уроки, відсутні медіа чи питання без правильної відповіді, — щоб виправити їх до завантаження в LMS.',
     faqQ9: 'Чи можна працювати без миші?',
