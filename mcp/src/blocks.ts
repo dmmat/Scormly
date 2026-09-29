@@ -137,6 +137,53 @@ export const DATA_SCHEMAS: Record<BlockType, z.ZodType> = {
     passingScore: z.number().min(0).max(100).default(80),
     showAnswers: z.boolean().default(true),
   }),
+  hotspot: z.strictObject({
+    src: z.string().default(''),
+    alt: z.string().default(''),
+    hotspots: z
+      .array(
+        z.strictObject({
+          id: id('spot'),
+          x: z.number().min(0).max(100).default(50), // % of image width
+          y: z.number().min(0).max(100).default(50), // % of image height
+          title: z.string().default(''),
+          text: z.string().default(''),
+        }),
+      )
+      .default([]),
+  }),
+  timeline: z.strictObject({
+    layout: z.enum(['vertical', 'stepper']).default('vertical'),
+    items: z
+      .array(
+        z.strictObject({
+          id: id('step'),
+          label: z.string().default(''),
+          title: z.string().default(''),
+          text: z.string().default(''),
+        }),
+      )
+      .default([]),
+  }),
+  ordering: z.strictObject({
+    mode: z.enum(['sequence', 'categories']).default('sequence'),
+    prompt: z.string().default(''),
+    // sequence: items in the CORRECT order; categories: categoryId = correct category
+    items: z
+      .array(z.strictObject({ id: id('item'), text: z.string().default(''), categoryId: z.string().optional() }))
+      .default([]),
+    categories: z.array(z.strictObject({ id: id('cat'), title: z.string().default('') })).default([]),
+    passingScore: z.number().min(0).max(100).default(80),
+    showAnswers: z.boolean().default(true),
+  }),
+  fillBlanks: z.strictObject({
+    // Blanks in square brackets, alternatives separated by '|': "Paris is in [France|FR]."
+    text: z.string().default(''),
+    mode: z.enum(['type', 'select']).default('type'),
+    passingScore: z.number().min(0).max(100).default(80),
+    showAnswers: z.boolean().default(true),
+    caseSensitive: z.boolean().default(false),
+  }),
 }
 
 export const BLOCK_TYPES = Object.keys(DATA_SCHEMAS) as [BlockType, ...BlockType[]]

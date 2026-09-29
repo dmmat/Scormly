@@ -106,6 +106,22 @@ describe('blocks', () => {
     expect((await disk()).course.lessons[0].blocks[0].id).toBe(block.id)
   })
 
+  test('new interactive blocks: hotspot, timeline, ordering, fillBlanks', async () => {
+    const { block: h } = await call('add_block', {
+      lessonId, type: 'hotspot', data: { src: 'assets/images/map.png', hotspots: [{ x: 20, y: 30, title: 'A' }] },
+    })
+    expect(h.data.hotspots[0].id).toMatch(/^spot-/)
+    const { block: tl } = await call('add_block', { lessonId, type: 'timeline', data: { items: [{ title: 'Kick-off' }] } })
+    expect(tl.data.layout).toBe('vertical')
+    const { block: o } = await call('add_block', {
+      lessonId, type: 'ordering', data: { items: [{ text: 'First' }, { text: 'Second' }] },
+    })
+    expect(o.data).toMatchObject({ mode: 'sequence', passingScore: 80 })
+    const { block: f } = await call('add_block', { lessonId, type: 'fillBlanks', data: { text: 'Paris is in [France].' } })
+    expect(f.data).toMatchObject({ mode: 'type', caseSensitive: false })
+    await expect(call('add_block', { lessonId, type: 'hotspot', data: { hotspots: [{ x: 150 }] } })).rejects.toThrow()
+  })
+
   test('scenario start node defaults to the first node; tables are padded', async () => {
     const { block: s } = await call('add_block', {
       lessonId,
