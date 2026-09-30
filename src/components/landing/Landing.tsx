@@ -154,6 +154,26 @@ const ICON_PATHS: Record<string, ReactNode> = {
       <path d="M18 8v5a4 4 0 0 1-4 4h-4a4 4 0 0 1-4-4V8Z" />
     </>
   ),
+  a11y: (
+    <>
+      <circle cx="12" cy="12" r="10" />
+      <circle cx="12" cy="7" r="1" />
+      <path d="M8 10h8M12 10v4M10 18l2-4 2 4" />
+    </>
+  ),
+  captions: (
+    <>
+      <rect x="2" y="5" width="20" height="14" rx="2" />
+      <path d="M7 15h4M15 15h2M7 11h2M13 11h4" />
+    </>
+  ),
+  speaker: (
+    <>
+      <path d="M11 5 6 9H2v6h4l5 4V5z" />
+      <path d="M15.5 8.5a5 5 0 0 1 0 7M19 5a10 10 0 0 1 0 14" />
+    </>
+  ),
+  sliders: <path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6" />,
   check: <path d="M20 6 9 17l-5-5" />,
   arrow: <path d="M5 12h14M13 6l6 6-6 6" />,
 }
@@ -200,6 +220,7 @@ export default function Landing() {
         <Pillars />
         <Demo />
         <Features />
+        <Accessibility />
         <AiReady />
         <Privacy />
         <HowItWorks />
@@ -224,6 +245,9 @@ export default function Landing() {
             </a>
             <a href="#features" className="hover:text-brand">
               {t('navFeatures')}
+            </a>
+            <a href="#accessibility" className="hover:text-brand">
+              {t('navA11y')}
             </a>
             <a href="#ai" className="hover:text-brand">
               {t('navAi')}
@@ -477,6 +501,111 @@ export default function Landing() {
     )
   }
 
+  // Accessibility: what the exported player and the course check do for learners.
+  function Accessibility() {
+    const points = [
+      { icon: 'keyboard', title: t('a11yPoint1Title'), text: t('a11yPoint1Text') },
+      { icon: 'speaker', title: t('a11yPoint2Title'), text: t('a11yPoint2Text') },
+      { icon: 'captions', title: t('a11yPoint3Title'), text: t('a11yPoint3Text') },
+      { icon: 'sliders', title: t('a11yPoint4Title'), text: t('a11yPoint4Text') },
+      { icon: 'quiz', title: t('a11yPoint5Title'), text: t('a11yPoint5Text') },
+      { icon: 'package', title: t('a11yPoint6Title'), text: t('a11yPoint6Text') },
+    ]
+    const toggles = [
+      { label: t('a11yMockContrast'), on: false },
+      { label: t('a11yMockSpacing'), on: true },
+      { label: t('a11yMockMotion'), on: true },
+      { label: t('a11yMockCaptions'), on: true },
+    ]
+    const sizes = [t('a11yMockSizeNormal'), t('a11yMockSizeLarge'), t('a11yMockSizeXl')]
+    return (
+      <section id="accessibility" className="relative scroll-mt-20 overflow-hidden py-24">
+        <div className="pointer-events-none absolute inset-0 -z-10">
+          <div className="absolute left-[-8%] top-16 h-80 w-80 rounded-full bg-brand/10 blur-3xl" />
+        </div>
+        <div className="mx-auto max-w-6xl px-4 sm:px-6">
+          <Reveal>
+            <div className="mx-auto max-w-2xl text-center">
+              <span className="inline-flex items-center gap-2 rounded-full border border-brand/30 bg-brand/10 px-4 py-1.5 text-sm font-medium text-brand-dark">
+                <Icon name="a11y" className="h-4 w-4" /> {t('a11yBadge')}
+              </span>
+              <h2 className="mt-5 text-3xl font-bold tracking-tight sm:text-4xl">{t('a11yTitle')}</h2>
+              <p className="mt-4 text-lg leading-relaxed text-gray-600">{t('a11ySubtitle')}</p>
+            </div>
+          </Reveal>
+          <div className="mt-14 grid items-center gap-12 lg:grid-cols-[5fr_7fr]">
+            {/* Illustrative visual of the learner menu. Static on purpose. */}
+            <Reveal>
+              <div role="img" aria-label={t('a11yVisualLabel')} className="relative mx-auto w-full max-w-sm">
+                <div className="rounded-3xl border border-gray-200 bg-white p-5 shadow-xl shadow-gray-900/10">
+                  <div className="flex items-center gap-3 border-b border-gray-100 pb-4">
+                    <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand text-sm font-bold text-white">
+                      Aa
+                    </span>
+                    <span className="font-semibold">{t('a11yMockTitle')}</span>
+                  </div>
+                  <p className="mt-4 text-sm font-medium text-gray-700">{t('a11yMockTextSize')}</p>
+                  <div className="mt-2 grid grid-cols-3 gap-1 rounded-xl bg-gray-100 p-1 text-center text-xs font-medium">
+                    {sizes.map((size, i) => (
+                      <span
+                        key={size}
+                        className={`rounded-lg px-1 py-1.5 ${i === 1 ? 'bg-brand-dark text-white shadow-sm' : 'text-gray-600'}`}
+                      >
+                        {size}
+                      </span>
+                    ))}
+                  </div>
+                  <ul className="mt-4 space-y-3">
+                    {toggles.map((tg) => (
+                      <li key={tg.label} className="flex items-center justify-between gap-3 text-sm text-gray-700">
+                        {tg.label}
+                        <span
+                          className={`relative h-5 w-9 shrink-0 rounded-full transition-colors ${tg.on ? 'bg-brand-dark' : 'bg-gray-300'}`}
+                        >
+                          <span
+                            className={`absolute top-0.5 h-4 w-4 rounded-full bg-white shadow ${tg.on ? 'left-[1.125rem]' : 'left-0.5'}`}
+                          />
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div className="relative -mt-3 ml-6 flex items-center gap-2.5 rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-700 shadow-lg shadow-gray-900/10 sm:ml-10">
+                  <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-brand/10 text-brand-dark">
+                    <Icon name="check" className="h-3 w-3" />
+                  </span>
+                  {t('a11yMockLms')}
+                </div>
+              </div>
+            </Reveal>
+            <div>
+              <ul className="grid gap-x-8 gap-y-7 sm:grid-cols-2">
+                {points.map((p, i) => (
+                  <li key={p.title}>
+                    <Reveal delay={(i % 2) * 90} className="flex gap-4">
+                      <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-brand/15 to-brand/5 text-brand ring-1 ring-brand/15">
+                        <Icon name={p.icon} className="h-[22px] w-[22px]" />
+                      </span>
+                      <span className="min-w-0">
+                        <span className="block font-semibold">{p.title}</span>
+                        <span className="mt-1 block leading-relaxed text-gray-600">{p.text}</span>
+                      </span>
+                    </Reveal>
+                  </li>
+                ))}
+              </ul>
+              <Reveal>
+                <p className="mt-8 rounded-2xl border border-brand/20 bg-brand/5 px-5 py-4 text-sm leading-relaxed text-gray-700">
+                  {t('a11yNote')}
+                </p>
+              </Reveal>
+            </div>
+          </div>
+        </div>
+      </section>
+    )
+  }
+
   // AI-ready: AGENTS.md in every project lets assistants author courses.
   function AiReady() {
     const points = [
@@ -694,6 +823,8 @@ export default function Landing() {
       { q: t('faqQ9'), a: t('faqA9') },
       { q: t('faqQ10'), a: t('faqA10') },
       { q: t('faqQ11'), a: t('faqA11') },
+      { q: t('faqQ12'), a: t('faqA12') },
+      { q: t('faqQ13'), a: t('faqA13') },
     ]
     return (
       <section id="faq" className="scroll-mt-20 border-t border-gray-100 bg-gray-50/60 py-24">

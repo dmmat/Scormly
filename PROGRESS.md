@@ -26,7 +26,7 @@ Legend: `[ ]` planned · `[~]` in progress · `[x]` done
 
 ## Phase 1.5 — Global project themes (done)
 
-- [x] `Course.theme` field (`ThemeId`), 4 themes: Rose / Ocean / Forest / Sunset
+- [x] `Course.theme` field (`ThemeId`), 10 themes: Rose / Ocean / Forest / Sunset / Mono / Indigo / Crimson / Mint / Grape / Terminal
 - [x] Applied via `data-theme` + CSS variables (accent, button/interactive radius)
 - [x] `.btn-primary` / `.btn-secondary` / `.interactive-surface` classes for blocks
 - [x] Theme switcher in the Header (`ThemePicker`)
@@ -141,6 +141,32 @@ tracking layer.
 - [ ] Verify on a real LRS/LMS (SCORM Cloud cmi5, TalentLMS): import, launch, statements land, pass/fail + score recorded.
 - [x] cmi5 resume via the State API (`stateId=suspendData`); the player waits for the launch handshake (`SCORM.whenReady`) before reading it.
 - [ ] (Later) Plain xAPI target (own LRS endpoint/auth).
+
+## Accessibility (WCAG 2.1 AA)
+
+Goal: courses built with Scormly are usable with a keyboard, a screen reader,
+captions and larger text, in the builder preview and in the exported player alike.
+
+- [x] Theme contrast: every theme's accent passes 4.5:1 for white text on
+  `--color-brand` and `--color-brand-dark` text on white (Rose/Ocean/Forest/Sunset/Terminal
+  accents darkened one step; values mirrored in `index.css`, `themes.ts` and the player's
+  `THEME_ACCENT`). Focus outlines use the accent (≥ 3:1).
+- [x] Data model: `ImageRef.decorative`, `VideoData.captions` (WebVTT asset in
+  `assets/captions/`) and `transcript`, `AudioData.transcript`, `CourseSettings.contentLanguage`.
+- [x] Editor UI: "Decorative image" checkbox (image + per-image in galleries, which also got
+  per-image alt inputs), captions `.vtt` picker and transcript textarea on video, transcript on
+  audio, content language (BCP 47 with suggestions + validation) in Settings → General.
+- [x] Export: `.vtt` files are packaged by the generic `assets/` reference scan.
+- [x] Pre-export check: accessibility warnings (image/gallery/hotspot alt text, video
+  captions/transcript, audio transcript, embed title) and an info-level hint for a missing
+  content language (info alone does not open the dialog).
+- [x] AI agent guide (`agentGuide.ts`) documents the new fields and checks.
+- [x] Learner side (player + preview): accessibility menu (text size, high contrast, readable
+  spacing, reduced motion, captions default), skip link, focus + live announcement on lesson
+  change, live feedback, keyboard support for interactive blocks, captions/transcripts, embed
+  titles, `prefers-reduced-motion`, LMS caption/language preferences (SCORM 1.2/2004).
+- [ ] Screen-reader pass (NVDA + VoiceOver) on an exported package in a real LMS.
+- [x] Alt text for inline rich-text images: image context menu + alt field in the image toolbar; the course check flags inline images with no alt attribute.
 
 ---
 
@@ -302,3 +328,8 @@ tracking layer.
     Opened in memory via `#/demo` (landing hero + demo section) or the welcome screen card.
 - 2026-09-30 — Landing playground: added image hotspots, sorting, fill-in-the-blanks and timeline
   tabs. They render the real learner blocks (`BlockPreview`) with content from the demo course.
+- 2026-09-30 — **Accessibility batch**: theme contrast fixed to WCAG AA across all themes;
+  authoring UI for decorative images, video captions (.vtt) and transcripts, audio transcripts
+  and the course content language; accessibility warnings in the pre-export check; agent guide
+  and docs updated. Learner-side a11y (menu, skip link, focus management, live regions,
+  keyboard patterns, LMS preferences) in the player and preview.

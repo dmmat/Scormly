@@ -46,6 +46,7 @@ function staticLanding(): string {
 <section id="demo"><h2>${esc(d.title)}</h2><p>${esc(d.badge)}. ${esc(d.subtitle)}</p><p><a href="#/demo">${esc(t.demoCourseCta)}</a></p></section>
 <section><h2>${esc(t.privacyTitle)}</h2><p>${esc(t.privacyText)}</p></section>
 <section id="features"><h2>${esc(t.featuresTitle)}</h2><p>${esc(t.featuresSubtitle)}</p><ul>${list(range('f', 10))}</ul></section>
+<section id="accessibility"><h2>${esc(t.a11yTitle)}</h2><p>${esc(t.a11ySubtitle)}</p><ul>${list(range('a11yPoint', 6))}</ul><p>${esc(t.a11yNote)}</p></section>
 <section id="ai"><h2>${esc(t.aiTitle)}</h2><p>${esc(t.aiSubtitle)}</p><ul>${list(range('aiPoint', 3))}</ul></section>
 <section id="how"><h2>${esc(t.howTitle)}</h2><ol>${list(range('how', 3))}</ol></section>
 <section id="faq"><h2>${esc(t.faqTitle)}</h2>${faqKeys(t)

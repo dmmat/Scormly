@@ -46,8 +46,15 @@ exported as a **SCORM 1.2 / 2004** or **cmi5 (xAPI)** package for any LMS.
   quizzes), optional pass/fail scoring with a passing score, and a **navigation
   mode** (free, or **linear** where *Next* unlocks only once the lesson is done).
 - **Learner preview** — a full-screen, in-app run-through with a *Finish* screen.
-- **Global project themes** — Rose, Ocean, Forest, Sunset — change the accent and
+- **Global project themes** — Rose, Ocean, Forest, Sunset, Mono, Indigo, Crimson, Mint, Grape, Terminal — change the accent and
   the look of buttons/interactions with one click.
+- **Accessible courses** — designed to help you meet **WCAG 2.1 AA**: full
+  keyboard navigation, screen-reader friendly markup and announcements, WebVTT
+  captions and transcripts, decorative-image flag, AA contrast in every theme,
+  and a learner accessibility menu (text size, high contrast, readable spacing,
+  reduced motion). The pre-export check flags missing alt text, captions,
+  transcripts, embed titles and content language, and the exported player
+  respects the LMS learner's caption and language preferences.
 - **Bilingual UI** (English / Ukrainian) and an SEO landing page.
 - **Undo / Redo** with history and keyboard shortcuts (Ctrl/Cmd + Z / Y),
   persisted alongside the project.

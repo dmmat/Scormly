@@ -59,8 +59,11 @@ src/
 
 ## Brand
 
-The name is **Scormly**. The default accent is pink `#EC4899` (Tailwind
-utilities `text-brand` / `bg-brand`, shades `brand-light`, `brand-dark`). The accent is driven by a CSS variable and overridden per
+The name is **Scormly**. The logo/brand mark is pink `#EC4899`; the default UI
+accent (Rose theme) is the darker pink `#DB2777` so white text on it and
+`brand-dark` (`#BE185D`) text on white meet WCAG AA 4.5:1 (Tailwind utilities
+`text-brand` / `bg-brand`, shades `brand-light`, `brand-dark`). Every theme must
+keep that contrast. The accent is driven by a CSS variable and overridden per
 theme — never hardcode the pink hex in components; use the `*-brand` utilities or
 the global button/interactive classes.
 
@@ -87,9 +90,9 @@ Keyboard shortcuts (Ctrl/Cmd+Z / Y) are wired by `useUndoRedoShortcuts`. See
 
 ## Themes
 
-There is one global theme per course (Rose / Ocean / Forest / Sunset). The theme
-is applied via a `data-theme` attribute on the builder root (`ThemeProvider`),
-which overrides CSS variables in `index.css`: the accent color (`--color-brand`,
+There is one global theme per course (Rose / Ocean / Forest / Sunset / Mono /
+Indigo / Crimson / Mint / Grape / Terminal). The theme is applied via a `data-theme`
+attribute on the builder root (`ThemeProvider`), which overrides CSS variables in `index.css`: the accent color (`--color-brand`,
 which all `*-brand` utilities read) and the button/interactive radius. Components
 must use the `.btn-primary` / `.btn-secondary` / `.interactive-surface` classes
 and the `*-brand` utilities so themes apply automatically.

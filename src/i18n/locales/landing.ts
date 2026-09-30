@@ -56,12 +56,50 @@ const landing: LocaleTable = {
     f6Text: 'Shortcuts for common actions (press ?) and full keyboard access to menus, dialogs and reordering.',
     f7Title: 'Help built in',
     f7Text: 'A guided tour, answers to common questions and a “What’s new” page — right inside the builder.',
-    f8Title: 'Global themes',
-    f8Text: 'Switch the look of buttons and interactions across the whole project with one click.',
+    f8Title: '10 global themes',
+    f8Text: 'From Rose and Ocean to Mono and Terminal: switch the colors and the look of buttons and interactions across the whole project with one click — every theme tuned for WCAG AA contrast.',
     f9Title: 'Install as an app',
     f9Text: 'Install Scormly from Chrome or Edge and launch it from your desktop like any other app.',
     f10Title: 'Bilingual interface',
     f10Text: 'Use the builder in English or Ukrainian, with more languages on the way.',
+
+    // Accessibility section
+    navA11y: 'Accessibility',
+    a11yBadge: 'Accessible by design',
+    a11yTitle: 'Courses every learner can use',
+    a11ySubtitle:
+      'Scormly courses are designed to help you meet WCAG 2.1 AA out of the box — the exported player handles the accessible markup, so you can focus on the content.',
+    a11yPoint1Title: 'Keyboard navigation',
+    a11yPoint1Text:
+      'Every block — tabs, flashcards, hotspots, quizzes, exercises — works from the keyboard, with a visible focus ring and a “Skip to content” link.',
+    a11yPoint2Title: 'Screen-reader friendly',
+    a11yPoint2Text:
+      'Semantic headings and labelled controls; lesson changes and quiz feedback are announced, and correct or wrong is never shown by color alone.',
+    a11yPoint3Title: 'Captions & transcripts',
+    a11yPoint3Text:
+      'Add WebVTT captions to videos and transcripts to video and audio, and mark purely decorative images so screen readers skip them.',
+    a11yPoint4Title: 'Learner accessibility menu',
+    a11yPoint4Text:
+      'Learners pick a larger text size, high contrast, readable spacing or reduced motion — remembered on their device. Every theme meets AA contrast.',
+    a11yPoint5Title: 'Checked before export',
+    a11yPoint5Text:
+      'The course check flags missing alt text, captions, transcripts, embed titles and content language before you publish.',
+    a11yPoint6Title: 'Respects LMS preferences',
+    a11yPoint6Text:
+      'The exported SCORM / cmi5 player reads the learner’s caption and language preferences from the LMS and applies them.',
+    a11yNote:
+      'Accessibility also depends on your content: write meaningful alt text, accurate captions and clear language. Scormly gives you the tools and the checks.',
+    a11yVisualLabel: 'Illustrative example of the learner accessibility menu in an exported course',
+    a11yMockTitle: 'Accessibility settings',
+    a11yMockTextSize: 'Text size',
+    a11yMockSizeNormal: 'Normal',
+    a11yMockSizeLarge: 'Large',
+    a11yMockSizeXl: 'Extra large',
+    a11yMockContrast: 'High contrast',
+    a11yMockSpacing: 'Readable spacing',
+    a11yMockMotion: 'Reduce motion',
+    a11yMockCaptions: 'Captions on by default',
+    a11yMockLms: 'Captions preference from LMS applied',
 
     // AI-ready section
     navAi: 'AI',
@@ -129,6 +167,10 @@ const landing: LocaleTable = {
     faqA10: 'Yes — Scormly is a free SCORM editor and SCORM course creator released under the MIT license. The source code is on GitHub, it works online in the browser without an account, and you can self-host it or use it offline as an installed app.',
     faqQ11: 'Can I try a SCORM demo before building a course?',
     faqA11: 'Yes. The live demo on this page runs the same interactive blocks your learners get — dialogue trainer, quiz, flashcards and course outline. When you are ready, open the builder and export your own SCORM package.',
+    faqQ12: 'Are Scormly courses accessible?',
+    faqA12: 'Scormly is designed to help you meet WCAG 2.1 AA. The exported player provides keyboard navigation, screen-reader friendly markup and announcements, captions and transcripts, AA-contrast themes and a learner accessibility menu (text size, high contrast, readable spacing, reduced motion). The course check flags missing alt text, captions, transcripts and more before export. Final conformance still depends on your content, so review it with your own accessibility process.',
+    faqQ13: 'Does SCORM or cmi5 support accessibility?',
+    faqA13: 'SCORM and cmi5 are packaging and tracking standards — they do not make a course accessible by themselves. Accessibility depends on the HTML content inside the package, which Scormly’s player builds with accessibility in mind. SCORM does carry learner preferences such as captioning and language (and cmi5 carries language), and the Scormly player respects them.',
 
     // Contribute CTA
     contributeBadge: 'Open source',
@@ -198,12 +240,50 @@ const landing: LocaleTable = {
     f6Text: 'Гарячі клавіші для частих дій (натисніть ?) і повний доступ з клавіатури до меню, діалогів і зміни порядку.',
     f7Title: 'Вбудована довідка',
     f7Text: 'Тур конструктором, відповіді на часті питання та сторінка «Що нового» — просто в редакторі.',
-    f8Title: 'Глобальні теми',
-    f8Text: 'Змінюйте вигляд кнопок та інтерактиву по всьому проєкту одним кліком.',
+    f8Title: '10 глобальних тем',
+    f8Text: 'Від Rose та Ocean до Mono й Terminal: змінюйте кольори й вигляд кнопок та інтерактиву по всьому проєкту одним кліком — кожна тема з контрастом рівня WCAG AA.',
     f9Title: 'Встановлюється як застосунок',
     f9Text: 'Встановіть Scormly з Chrome чи Edge і запускайте з робочого столу, як звичайну програму.',
     f10Title: 'Двомовний інтерфейс',
     f10Text: 'Користуйтеся конструктором англійською чи українською, інші мови — на підході.',
+
+    // Accessibility section
+    navA11y: 'Доступність',
+    a11yBadge: 'Доступність за замовчуванням',
+    a11yTitle: 'Курси, якими може користуватися кожен',
+    a11ySubtitle:
+      'Курси Scormly створені так, щоб допомогти вам відповідати WCAG 2.1 AA одразу — доступну розмітку бере на себе експортований плеєр, а ви зосереджуєтеся на змісті.',
+    a11yPoint1Title: 'Навігація з клавіатури',
+    a11yPoint1Text:
+      'Кожен блок — вкладки, картки, гарячі точки, тести, вправи — працює з клавіатури, з помітною рамкою фокуса й посиланням «Перейти до вмісту».',
+    a11yPoint2Title: 'Зручно для програм зчитування екрана',
+    a11yPoint2Text:
+      'Семантичні заголовки й підписані елементи керування; зміна уроку та фідбек тестів озвучуються, а правильність відповіді ніколи не передається лише кольором.',
+    a11yPoint3Title: 'Субтитри й розшифровки',
+    a11yPoint3Text:
+      'Додавайте субтитри WebVTT до відео й текстові розшифровки до відео та аудіо, а суто декоративні зображення позначайте, щоб програми зчитування їх пропускали.',
+    a11yPoint4Title: 'Меню доступності для слухача',
+    a11yPoint4Text:
+      'Слухач обирає більший текст, високу контрастність, зручні інтервали чи менше анімації — налаштування зберігаються на його пристрої. Кожна тема має контраст рівня AA.',
+    a11yPoint5Title: 'Перевірка перед експортом',
+    a11yPoint5Text:
+      'Перевірка курсу знаходить відсутні alt-тексти, субтитри, розшифровки, назви вбудованого контенту й мову контенту ще до публікації.',
+    a11yPoint6Title: 'Враховує налаштування з LMS',
+    a11yPoint6Text:
+      'Експортований плеєр SCORM / cmi5 зчитує налаштування субтитрів і мови слухача з LMS і застосовує їх.',
+    a11yNote:
+      'Доступність залежить і від вашого контенту: пишіть змістовні alt-тексти, точні субтитри й зрозумілі тексти. Scormly дає інструменти й перевірки.',
+    a11yVisualLabel: 'Ілюстративний приклад меню доступності для слухача в експортованому курсі',
+    a11yMockTitle: 'Налаштування доступності',
+    a11yMockTextSize: 'Розмір тексту',
+    a11yMockSizeNormal: 'Звичайний',
+    a11yMockSizeLarge: 'Великий',
+    a11yMockSizeXl: 'Дуже великий',
+    a11yMockContrast: 'Висока контрастність',
+    a11yMockSpacing: 'Зручні інтервали',
+    a11yMockMotion: 'Менше анімації',
+    a11yMockCaptions: 'Субтитри за замовчуванням',
+    a11yMockLms: 'Застосовано налаштування субтитрів з LMS',
 
     // AI-ready section
     navAi: 'AI',
@@ -271,6 +351,10 @@ const landing: LocaleTable = {
     faqA10: 'Так — Scormly: безкоштовний SCORM-редактор і конструктор SCORM-курсів за ліцензією MIT. Код відкритий на GitHub, редактор працює онлайн у браузері без акаунта, а ще його можна розгорнути в себе чи встановити як застосунок.',
     faqQ11: 'Чи можна спробувати SCORM-демо до створення курсу?',
     faqA11: 'Так. Жива демонстрація на цій сторінці запускає ті самі інтерактивні блоки, що й у ваших слухачів: діалоговий тренажер, квіз, картки та зміст курсу. Коли будете готові — відкрийте конструктор і експортуйте власний SCORM-пакет.',
+    faqQ12: 'Чи доступні курси Scormly?',
+    faqA12: 'Scormly створений, щоб допомогти вам відповідати WCAG 2.1 AA. Експортований плеєр забезпечує навігацію з клавіатури, розмітку й оголошення для програм зчитування екрана, субтитри та розшифровки, теми з контрастом рівня AA і меню доступності для слухача (розмір тексту, висока контрастність, зручні інтервали, менше анімації). Перевірка курсу перед експортом знаходить відсутні alt-тексти, субтитри, розшифровки тощо. Остаточна відповідність усе ж залежить від вашого контенту, тож перевіряйте його у своєму процесі.',
+    faqQ13: 'Чи підтримують SCORM і cmi5 доступність?',
+    faqA13: 'SCORM і cmi5 — це стандарти пакування й відстеження, самі по собі вони не роблять курс доступним. Доступність залежить від HTML-контенту всередині пакета, і плеєр Scormly будує його з урахуванням доступності. Водночас SCORM передає налаштування слухача, як-от субтитри й мову (cmi5 — мову), і плеєр Scormly їх враховує.',
 
     // Contribute CTA
     contributeBadge: 'Відкритий код',

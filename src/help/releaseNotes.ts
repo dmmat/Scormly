@@ -11,6 +11,30 @@ export interface Release {
 
 export const RELEASES: Release[] = [
   {
+    id: '2026-09-30',
+    date: '2026-09-30',
+    items: {
+      en: [
+        'Five new project themes: Mono, Indigo and Crimson with sharp square corners, soft rounded Mint and pill-shaped Grape.',
+        'Terminal theme for hackers: monospace font and phosphor-green terminal buttons.',
+        'Exported courses now match the theme’s button and card shapes, not just its color.',
+        'Accessible courses: a learner accessibility menu (text size, high contrast, readable spacing, reduced motion), full keyboard and screen-reader support, and AA contrast in every theme.',
+        'Captions (WebVTT) and transcripts for video and audio, a “decorative” flag for images, and a course content language.',
+        'The course check now flags accessibility gaps before export: missing alt text, captions, transcripts, embed titles and content language.',
+        'More reliable LMS tracking for SCORM and cmi5 exports; the player also respects the learner’s caption and language preferences from the LMS.',
+      ],
+      uk: [
+        'П’ять нових тем проєкту: Mono, Indigo і Crimson з гострими прямими кутами, м’яка заокруглена Mint і Grape з кнопками-пігулками.',
+        'Хакерська тема Terminal: моноширинний шрифт і зелені термінальні кнопки.',
+        'Експортовані курси тепер повторюють форму кнопок і карток теми, а не лише її колір.',
+        'Доступні курси: меню доступності для слухача (розмір тексту, висока контрастність, зручні інтервали, менше анімації), повна підтримка клавіатури й програм зчитування екрана та контраст рівня AA в усіх темах.',
+        'Субтитри (WebVTT) і текстові розшифровки для відео й аудіо, позначка «декоративне» для зображень і мова контенту курсу.',
+        'Перевірка курсу перед експортом тепер знаходить прогалини доступності: відсутні alt-тексти, субтитри, розшифровки, назви вбудованого контенту й мову контенту.',
+        'Надійніше відстеження в LMS для експорту SCORM і cmi5; плеєр також враховує налаштування субтитрів і мови слухача з LMS.',
+      ],
+    },
+  },
+  {
     id: '2026-09-29',
     date: '2026-09-29',
     items: {
