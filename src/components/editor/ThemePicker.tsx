@@ -40,7 +40,7 @@ export default function ThemePicker() {
       </button>
 
       {open && (
-        <div className="absolute right-0 top-full z-30 mt-2 w-60 rounded-xl border border-gray-200 bg-white p-1.5 shadow-lg">
+        <div className="absolute right-0 top-full z-30 mt-2 max-h-[70vh] w-60 overflow-y-auto rounded-xl border border-gray-200 bg-white p-1.5 shadow-lg">
           <p className="px-2 py-1 text-xs font-semibold uppercase tracking-wide text-gray-400">
             {t('projectTheme')}
           </p>

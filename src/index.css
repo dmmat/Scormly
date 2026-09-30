@@ -1,10 +1,12 @@
 @import "tailwindcss";
 
-/* Default brand tokens (Rose theme). Overridden per-theme below. */
+/* Default brand tokens (Rose theme). Overridden per-theme below.
+ * Every theme keeps white text on --color-brand and --color-brand-dark text on
+ * white at >= 4.5:1 (WCAG AA). */
 @theme {
-  --color-brand: #ec4899;
+  --color-brand: #db2777;
   --color-brand-light: #f9a8d4;
-  --color-brand-dark: #db2777;
+  --color-brand-dark: #be185d;
 }
 
 /*
@@ -18,35 +20,87 @@
 }
 
 [data-theme="rose"] {
-  --color-brand: #ec4899;
+  --color-brand: #db2777;
   --color-brand-light: #f9a8d4;
-  --color-brand-dark: #db2777;
+  --color-brand-dark: #be185d;
   --radius-btn: 0.5rem;
   --radius-interactive: 0.5rem;
 }
 
 [data-theme="ocean"] {
-  --color-brand: #0ea5e9;
+  --color-brand: #0369a1;
   --color-brand-light: #7dd3fc;
-  --color-brand-dark: #0284c7;
+  --color-brand-dark: #075985;
   --radius-btn: 9999px;
   --radius-interactive: 1rem;
 }
 
 [data-theme="forest"] {
-  --color-brand: #16a34a;
+  --color-brand: #15803d;
   --color-brand-light: #86efac;
-  --color-brand-dark: #15803d;
+  --color-brand-dark: #166534;
   --radius-btn: 0.25rem;
   --radius-interactive: 0.25rem;
 }
 
 [data-theme="sunset"] {
-  --color-brand: #f97316;
+  --color-brand: #c2410c;
   --color-brand-light: #fdba74;
-  --color-brand-dark: #ea580c;
+  --color-brand-dark: #9a3412;
   --radius-btn: 0.75rem;
   --radius-interactive: 0.75rem;
+}
+
+/* Sharp-cornered themes. */
+[data-theme="mono"] {
+  --color-brand: #334155;
+  --color-brand-light: #94a3b8;
+  --color-brand-dark: #1e293b;
+  --radius-btn: 0;
+  --radius-interactive: 0;
+}
+
+[data-theme="indigo"] {
+  --color-brand: #4f46e5;
+  --color-brand-light: #a5b4fc;
+  --color-brand-dark: #4338ca;
+  --radius-btn: 2px;
+  --radius-interactive: 2px;
+}
+
+[data-theme="crimson"] {
+  --color-brand: #dc2626;
+  --color-brand-light: #fca5a5;
+  --color-brand-dark: #b91c1c;
+  --radius-btn: 0;
+  --radius-interactive: 2px;
+}
+
+[data-theme="mint"] {
+  --color-brand: #0f766e;
+  --color-brand-light: #5eead4;
+  --color-brand-dark: #115e59;
+  --radius-btn: 1.25rem;
+  --radius-interactive: 1.5rem;
+}
+
+[data-theme="grape"] {
+  --color-brand: #9333ea;
+  --color-brand-light: #d8b4fe;
+  --color-brand-dark: #7e22ce;
+  --radius-btn: 9999px;
+  --radius-interactive: 0.375rem;
+}
+
+/* Hacker terminal: monospace everywhere, black buttons with phosphor text. */
+[data-theme="terminal"] {
+  --color-brand: #15803d;
+  --color-brand-light: #86efac;
+  --color-brand-dark: #166534;
+  --radius-btn: 0;
+  --radius-interactive: 0;
+  font-family: ui-monospace, "JetBrains Mono", "Fira Code", SFMono-Regular,
+    Menlo, Consolas, monospace;
 }
 
 html,
@@ -83,6 +137,14 @@ body {
     opacity: 0.5;
     cursor: not-allowed;
   }
+  [data-theme="terminal"] .btn-primary {
+    background-color: #0a0f0a;
+    color: #4ade80;
+    box-shadow: inset 0 0 0 1px #16a34a;
+  }
+  [data-theme="terminal"] .btn-primary:hover:not(:disabled) {
+    background-color: #052e16;
+  }
 
   .btn-secondary {
     border-radius: var(--radius-btn);
@@ -95,6 +157,10 @@ body {
   }
   .btn-secondary:hover:not(:disabled) {
     background-color: color-mix(in srgb, var(--color-brand) 12%, transparent);
+  }
+  .btn-secondary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
   }
   .btn-primary:focus-visible,
   .btn-secondary:focus-visible {

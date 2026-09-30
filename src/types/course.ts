@@ -404,7 +404,17 @@ export interface Lesson {
 }
 
 /** Global project theme ID (button and interactive styles). See src/theme. */
-export type ThemeId = 'rose' | 'ocean' | 'forest' | 'sunset'
+export type ThemeId =
+  | 'rose'
+  | 'ocean'
+  | 'forest'
+  | 'sunset'
+  | 'mono'
+  | 'indigo'
+  | 'crimson'
+  | 'mint'
+  | 'grape'
+  | 'terminal'
 
 /** What marks the course complete in the LMS. */
 export type CompletionRule =

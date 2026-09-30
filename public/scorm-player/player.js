@@ -3,11 +3,19 @@
 (function () {
   'use strict';
 
+  // [brand, brand-dark, button radius, surface radius] — mirrors the builder
+  // themes in src/index.css so exports look like the preview.
   var THEME_ACCENT = {
-    rose: ['#ec4899', '#db2777'],
-    ocean: ['#0ea5e9', '#0284c7'],
-    forest: ['#16a34a', '#15803d'],
-    sunset: ['#f97316', '#ea580c'],
+    rose: ['#db2777', '#be185d', '0.5rem', '0.5rem'],
+    ocean: ['#0369a1', '#075985', '9999px', '1rem'],
+    forest: ['#15803d', '#166534', '0.25rem', '0.25rem'],
+    sunset: ['#c2410c', '#9a3412', '0.75rem', '0.75rem'],
+    mono: ['#334155', '#1e293b', '0', '0'],
+    indigo: ['#4f46e5', '#4338ca', '2px', '2px'],
+    crimson: ['#dc2626', '#b91c1c', '0', '2px'],
+    mint: ['#0f766e', '#115e59', '1.25rem', '1.5rem'],
+    grape: ['#9333ea', '#7e22ce', '9999px', '0.375rem'],
+    terminal: ['#15803d', '#166534', '0', '0'],
   };
 
   var T = {
@@ -74,6 +82,10 @@
     var accent = THEME_ACCENT[course.theme] || THEME_ACCENT.rose;
     document.documentElement.style.setProperty('--brand', accent[0]);
     document.documentElement.style.setProperty('--brand-dark', accent[1]);
+    document.documentElement.style.setProperty('--radius-btn', accent[2]);
+    document.documentElement.style.setProperty('--radius-surface', accent[3]);
+    // Theme-specific extras beyond color/radius (e.g. terminal font) live in player.css.
+    document.documentElement.setAttribute('data-theme', THEME_ACCENT[course.theme] ? course.theme : 'rose');
     document.title = course.title || 'Course';
 
     // Index all scored blocks for scoring and per-block objectives.

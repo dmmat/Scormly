@@ -195,7 +195,7 @@ Course
   title: string,
   description: string,
   coverImage?: string,
-  theme: 'rose' | 'ocean' | 'forest' | 'sunset',
+  theme: 'rose' | 'ocean' | 'forest' | 'sunset' | 'mono' | 'indigo' | 'crimson' | 'mint' | 'grape' | 'terminal',
   settings: {
     completion: 'view' | 'quiz',   // 'quiz' also requires every scored block (quiz, ordering, fillBlanks) answered
     scored: boolean,               // report a pass/fail result
