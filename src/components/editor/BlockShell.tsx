@@ -7,7 +7,7 @@ import type { Block } from '../../types/course'
 import BlockRenderer from '../../blocks/BlockRenderer'
 import { useT } from '../../i18n/I18nProvider'
 import ContextMenu, { type ContextMenuItem } from './ContextMenu'
-import { KEYS } from '../../lib/keyboard'
+import { KEYS, isEditableTarget } from '../../lib/keyboard'
 
 interface BlockShellProps {
   block: Block
@@ -64,6 +64,10 @@ export default function BlockShell({
       style={style}
       onClick={() => selectBlock(block.id)}
       onContextMenu={(e) => {
+        // Text fields keep the browser menu (cut/copy/paste, spellcheck);
+        // children with their own menu (hotspot markers, inline images)
+        // prevent the event first.
+        if (e.defaultPrevented || isEditableTarget(e.target)) return
         e.preventDefault()
         selectBlock(block.id)
         setMenu({ x: e.clientX, y: e.clientY })

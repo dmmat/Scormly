@@ -14,6 +14,10 @@ const richtext: LocaleTable = {
     insertImage: 'Insert image',
     clearFormat: 'Clear formatting',
     width: 'Width',
+    widthPct: 'Width {n}%',
+    altText: 'Alt text',
+    altPlaceholder: 'Describe the image (empty = decorative)',
+    removeImage: 'Remove image',
   },
   uk: {
     bold: 'Жирний',
@@ -27,6 +31,10 @@ const richtext: LocaleTable = {
     insertImage: 'Вставити зображення',
     clearFormat: 'Очистити форматування',
     width: 'Ширина',
+    widthPct: 'Ширина {n}%',
+    altText: 'Альтернативний текст',
+    altPlaceholder: 'Опишіть зображення (порожньо = декоративне)',
+    removeImage: 'Видалити зображення',
   },
 }
 

@@ -6,6 +6,8 @@ import { useT, translate } from '../../i18n/I18nProvider'
 import { uid } from '../../lib/id'
 import { saveAsset, UnsupportedFormatError, toastUploadError } from '../../lib/assets'
 import { useAssetUrl } from '../../hooks/useAssetUrl'
+import ContextMenu from '../../components/editor/ContextMenu'
+import { KEYS } from '../../lib/keyboard'
 
 const IMAGE_ACCEPT = 'image/png,image/jpeg,image/webp,image/gif,image/svg+xml'
 
@@ -23,6 +25,8 @@ export default function HotspotBlock({
   const displayUrl = useAssetUrl(src)
   const [error, setError] = useState<string | null>(null)
   const [activeId, setActiveId] = useState<string | null>(null)
+  // Marker right-click menu; replaces the block menu while over a marker.
+  const [markerMenu, setMarkerMenu] = useState<{ id: string; x: number; y: number } | null>(null)
   const boxRef = useRef<HTMLDivElement>(null)
   // Marker being dragged (pointer captured); `gesture` makes each drag its own undo step.
   const drag = useRef<{ id: string; gesture: number } | null>(null)
@@ -81,7 +85,8 @@ export default function HotspotBlock({
   }
 
   function onMarkerDown(e: PointerEvent<HTMLButtonElement>, id: string) {
-    if (!selected) return
+    // Only the primary button drags; a right-click opens the marker menu.
+    if (!selected || e.button !== 0) return
     e.preventDefault()
     e.stopPropagation()
     e.currentTarget.setPointerCapture(e.pointerId)
@@ -139,6 +144,21 @@ export default function HotspotBlock({
             onClick={(e) => {
               if (selected) e.stopPropagation()
             }}
+            onContextMenu={(e) => {
+              if (!selected) return
+              e.preventDefault()
+              e.stopPropagation()
+              setActiveId(h.id)
+              setMarkerMenu({ id: h.id, x: e.clientX, y: e.clientY })
+            }}
+            onKeyDown={(e) => {
+              // Remove just this marker; stop the editor's delete-block shortcut.
+              if (selected && (e.key === 'Delete' || e.key === 'Backspace')) {
+                e.preventDefault()
+                e.stopPropagation()
+                removeHotspot(h.id)
+              }
+            }}
             aria-label={t('hotspotMarker', { n: i + 1, title: h.title })}
             className={`absolute flex h-8 w-8 -translate-x-1/2 -translate-y-1/2 touch-none items-center justify-center rounded-full border-2 text-sm font-bold shadow-md ${
               selected ? 'cursor-grab active:cursor-grabbing' : ''
@@ -153,6 +173,23 @@ export default function HotspotBlock({
           </button>
         ))}
       </div>
+
+      {markerMenu && (
+        <ContextMenu
+          x={markerMenu.x}
+          y={markerMenu.y}
+          onClose={() => setMarkerMenu(null)}
+          items={[
+            {
+              label: t('removeHotspot'),
+              icon: '✕',
+              shortcut: KEYS.delete,
+              danger: true,
+              onClick: () => removeHotspot(markerMenu.id),
+            },
+          ]}
+        />
+      )}
 
       {selected && (
         <div className="mt-4 space-y-3 border-t border-gray-200 pt-4">

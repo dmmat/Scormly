@@ -4,7 +4,7 @@ import type { LocaleTable } from '../types'
 const hotspotTimeline: LocaleTable = {
   en: {
     // Image hotspots — editor
-    hotspotAddHint: 'Click the image to add a marker. Drag a marker to move it.',
+    hotspotAddHint: 'Click the image to add a marker. Drag a marker to move it; right-click it (or press Delete) to remove it.',
     hotspotEmptyHint: 'No markers yet — click the image to add one.',
     hotspotTitlePlaceholder: 'Marker title',
     hotspotTextPlaceholder: 'Text shown when the marker is opened',
@@ -36,7 +36,7 @@ const hotspotTimeline: LocaleTable = {
   },
   uk: {
     // Image hotspots — editor
-    hotspotAddHint: 'Клацніть по зображенню, щоб додати мітку. Перетягніть мітку, щоб перемістити.',
+    hotspotAddHint: 'Клацніть по зображенню, щоб додати мітку. Перетягніть мітку, щоб перемістити; клацніть правою кнопкою (або Delete), щоб видалити.',
     hotspotEmptyHint: 'Міток ще немає — клацніть по зображенню, щоб додати.',
     hotspotTitlePlaceholder: 'Назва мітки',
     hotspotTextPlaceholder: 'Текст, що з’являється при відкритті мітки',

@@ -8,6 +8,7 @@ import {
 } from 'react'
 import { useT } from '../../i18n/I18nProvider'
 import { saveAsset, resolveAssetUrl } from '../../lib/assets'
+import ContextMenu from './ContextMenu'
 
 function isDirectUrl(src: string): boolean {
   return /^(data:|blob:|https?:)/.test(src)
@@ -39,6 +40,9 @@ export default function RichTextEditor({
   // Currently selected image + its position relative to the root, for the
   // floating resize control (contentEditable has no native image handles).
   const [imgSel, setImgSel] = useState<{ el: HTMLImageElement; left: number; top: number } | null>(null)
+  // Right-click menu for an inline image (the block menu would delete the block).
+  const [imgMenu, setImgMenu] = useState<{ x: number; y: number } | null>(null)
+  const altRef = useRef<HTMLInputElement>(null)
 
   function clearImageSelection() {
     setImgSel((prev) => {
@@ -54,16 +58,38 @@ export default function RichTextEditor({
     return { el, left: r.left - rr.left, top: r.top - rr.top }
   }
 
+  function selectImage(el: HTMLImageElement) {
+    imgSel?.el.classList.remove('rte-selected-img')
+    el.classList.add('rte-selected-img')
+    setImgSel(boxFor(el))
+  }
+
   function onEditorClick(e: ReactMouseEvent) {
     const target = e.target as HTMLElement
-    if (target.tagName === 'IMG' && rootRef.current) {
-      imgSel?.el.classList.remove('rte-selected-img')
-      const el = target as HTMLImageElement
-      el.classList.add('rte-selected-img')
-      setImgSel(boxFor(el))
-    } else {
-      clearImageSelection()
-    }
+    if (target.tagName === 'IMG' && rootRef.current) selectImage(target as HTMLImageElement)
+    else clearImageSelection()
+  }
+
+  // Images get their own menu; text keeps the browser's native one.
+  function onEditorContextMenu(e: ReactMouseEvent) {
+    const target = e.target as HTMLElement
+    if (target.tagName !== 'IMG' || !rootRef.current) return
+    e.preventDefault()
+    selectImage(target as HTMLImageElement)
+    setImgMenu({ x: e.clientX, y: e.clientY })
+  }
+
+  function removeImage() {
+    if (!imgSel) return
+    imgSel.el.remove()
+    clearImageSelection()
+    emit()
+  }
+
+  function setImageAlt(alt: string) {
+    if (!imgSel) return
+    imgSel.el.setAttribute('alt', alt)
+    emit()
   }
 
   function setImageWidth(pct: number) {
@@ -210,7 +236,36 @@ export default function RichTextEditor({
             className="accent-brand"
           />
           <span className="w-8 text-xs text-gray-500">{currentWidth}%</span>
+          <input
+            ref={altRef}
+            type="text"
+            value={imgSel.el.getAttribute('alt') ?? ''}
+            onChange={(e) => {
+              setImageAlt(e.target.value)
+              setImgSel(boxFor(imgSel.el))
+            }}
+            aria-label={t('altText')}
+            placeholder={t('altPlaceholder')}
+            className="w-56 rounded border border-gray-200 px-2 py-0.5 text-xs outline-none focus:border-brand"
+          />
         </div>
+      )}
+      {imgMenu && imgSel && (
+        <ContextMenu
+          x={imgMenu.x}
+          y={imgMenu.y}
+          onClose={() => setImgMenu(null)}
+          items={[
+            ...[25, 50, 75, 100].map((n) => ({
+              label: t('widthPct', { n }),
+              disabled: currentWidth === n,
+              onClick: () => setImageWidth(n),
+            })),
+            // After the menu closes, so its focus handling doesn't steal it back.
+            { label: t('altText'), onClick: () => setTimeout(() => altRef.current?.focus()) },
+            { label: t('removeImage'), icon: '✕', danger: true, onClick: removeImage },
+          ]}
+        />
       )}
       {focused && (
         <div className="mb-2 flex flex-wrap items-center gap-0.5 rounded-md border border-gray-200 bg-white p-1 shadow-sm">
@@ -274,6 +329,7 @@ export default function RichTextEditor({
         data-placeholder={placeholder}
         onInput={emit}
         onClick={onEditorClick}
+        onContextMenu={onEditorContextMenu}
         onMouseUp={saveSelection}
         onKeyUp={saveSelection}
         onFocus={() => setFocused(true)}
