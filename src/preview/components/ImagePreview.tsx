@@ -6,7 +6,11 @@ export default function ImagePreview({ block }: PreviewProps<'image'>) {
   if (!block.data.src) return null
   return (
     <figure>
-      <img src={url} alt={block.data.alt} className="w-full rounded-lg" />
+      <img
+        src={url}
+        alt={block.data.decorative ? '' : block.data.alt}
+        className="w-full rounded-lg"
+      />
       {block.data.caption && (
         <figcaption className="mt-2 text-center text-sm italic text-gray-500">
           {block.data.caption}

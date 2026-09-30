@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import type { PreviewProps } from '../types'
 import type { Question } from '../../types/course'
 import { useT } from '../../i18n/I18nProvider'
+import ScoreResult from './ScoreResult'
 
 type Answer = string | string[] | Record<string, string>
 
@@ -61,7 +62,6 @@ export default function QuizPreview({ block }: PreviewProps<'quiz'>) {
   const score = questions.length
     ? Math.round((correctCount / questions.length) * 100)
     : 0
-  const passed = score >= passingScore
 
   function reset() {
     setAnswers({})
@@ -87,12 +87,16 @@ export default function QuizPreview({ block }: PreviewProps<'quiz'>) {
                   : 'border-gray-200 bg-white'
             }`}
           >
-            <p className="mb-3 font-medium text-gray-900">
+            <p id={`${block.id}-${q.id}-prompt`} className="mb-3 font-medium text-gray-900">
               {qi + 1}. {q.prompt}
             </p>
 
             {(q.type === 'single' || q.type === 'multiple') && (
-              <div className="space-y-2">
+              <div
+                role={q.type === 'single' ? 'radiogroup' : 'group'}
+                aria-labelledby={`${block.id}-${q.id}-prompt`}
+                className="space-y-2"
+              >
                 {q.options.map((o) => {
                   const selected =
                     q.type === 'single'
@@ -140,6 +144,7 @@ export default function QuizPreview({ block }: PreviewProps<'quiz'>) {
                   <div key={p.id} className="flex items-center gap-3">
                     <span className="flex-1 text-gray-800">{p.left}</span>
                     <select
+                      aria-label={p.left}
                       disabled={submitted}
                       value={((answers[q.id] as Record<string, string>) ?? {})[p.id] ?? ''}
                       onChange={(e) => {
@@ -167,6 +172,7 @@ export default function QuizPreview({ block }: PreviewProps<'quiz'>) {
               <p
                 className={`mt-3 text-sm font-medium ${ok ? 'text-green-700' : 'text-red-700'}`}
               >
+                <span aria-hidden>{ok ? '✓ ' : '✗ '}</span>
                 {ok ? t('correct') : t('incorrect')}
                 {q.feedback ? ` — ${q.feedback}` : ''}
               </p>
@@ -175,29 +181,13 @@ export default function QuizPreview({ block }: PreviewProps<'quiz'>) {
         )
       })}
 
-      {submitted ? (
-        <div className="rounded-lg border border-gray-200 bg-gray-50 p-5">
-          <p className="text-lg font-semibold text-gray-900">
-            {t('yourScore', { score })}
-          </p>
-          <p
-            className={`mt-1 font-medium ${passed ? 'text-green-700' : 'text-red-700'}`}
-          >
-            {passed ? t('passed') : t('failed')}
-          </p>
-          <button type="button" onClick={reset} className="btn-secondary mt-4 text-sm">
-            {t('retry')}
-          </button>
-        </div>
-      ) : (
-        <button
-          type="button"
-          onClick={() => setSubmitted(true)}
-          className="btn-primary text-sm"
-        >
-          {t('submit')}
-        </button>
-      )}
+      <ScoreResult
+        submitted={submitted}
+        score={score}
+        passingScore={passingScore}
+        onSubmit={() => setSubmitted(true)}
+        onRetry={reset}
+      />
     </div>
   )
 }

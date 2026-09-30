@@ -23,6 +23,7 @@ import type { OrderingItem } from '../../types/course'
 import { useT } from '../../i18n/I18nProvider'
 import { scoreCategories, scoreSequence, shuffledOrder } from '../../blocks/ordering'
 import ScoreResult from './ScoreResult'
+import ResultMark from './ResultMark'
 
 // Droppable id of the "not sorted yet" pool in categories mode.
 const POOL = '__pool__'
@@ -104,6 +105,7 @@ export default function OrderingPreview({ block }: PreviewProps<'ordering'>) {
                 const correctIndex = ids.indexOf(id)
                 return (
                   <SortableRow key={id} id={id} disabled={submitted} className={rowTone(correctIndex === i)}>
+                    {reveal && <ResultMark ok={correctIndex === i} />}
                     <span className="flex-1 text-gray-800">{it.text}</span>
                     {reveal && correctIndex !== i && (
                       <span className="text-xs text-gray-500">
@@ -154,6 +156,7 @@ export default function OrderingPreview({ block }: PreviewProps<'ordering'>) {
                       value={undefined}
                       disabled={submitted}
                       tone={rowTone(false)}
+                      ok={reveal ? false : undefined}
                       note={reveal ? correctNote(it) : undefined}
                       onChange={(c) => setAssigned((a) => ({ ...a, [id]: c }))}
                     />
@@ -176,6 +179,7 @@ export default function OrderingPreview({ block }: PreviewProps<'ordering'>) {
                           value={cat.id}
                           disabled={submitted}
                           tone={rowTone(ok)}
+                          ok={reveal ? ok : undefined}
                           note={reveal && !ok ? correctNote(it) : undefined}
                           onChange={(c) => setAssigned((a) => ({ ...a, [id]: c }))}
                         />
@@ -252,6 +256,8 @@ function Bin({
   return (
     <div
       ref={setNodeRef}
+      role="group"
+      aria-label={title}
       className={`min-h-16 rounded-lg border-2 border-dashed p-3 ${
         isOver ? 'border-brand bg-brand/5' : 'border-gray-200'
       }`}
@@ -268,6 +274,7 @@ function ItemChip({
   value,
   disabled,
   tone,
+  ok,
   note,
   onChange,
 }: {
@@ -276,6 +283,8 @@ function ItemChip({
   value: string | undefined
   disabled: boolean
   tone: string
+  /** Revealed correctness (undefined = not revealed). */
+  ok?: boolean
   note?: string
   onChange: (categoryId: string | undefined) => void
 }) {
@@ -306,6 +315,7 @@ function ItemChip({
           ⠿
         </button>
       )}
+      {ok !== undefined && <ResultMark ok={ok} />}
       <span className="min-w-0 flex-1 text-gray-800">{item.text}</span>
       {note && <span className="text-xs text-gray-500">{note}</span>}
       <select

@@ -4,6 +4,7 @@ import { useT } from '../../i18n/I18nProvider'
 import { isBlankCorrect, parseBlanks, scoreBlanks, selectOptions } from '../../blocks/fillBlanks'
 import { shuffledOrder } from '../../blocks/ordering'
 import ScoreResult from './ScoreResult'
+import ResultMark from './ResultMark'
 
 export default function FillBlanksPreview({ block }: PreviewProps<'fillBlanks'>) {
   const { t } = useT('assessment')
@@ -82,6 +83,7 @@ export default function FillBlanksPreview({ block }: PreviewProps<'fillBlanks'>)
                   className={`rounded-md border px-2 py-0.5 text-gray-800 outline-none ${tone}`}
                 />
               )}
+              {reveal && <ResultMark ok={ok} />}
               {reveal && !ok && (
                 <span className="text-xs text-green-700">{t('correctAnswer', { a: s.answers[0] })}</span>
               )}

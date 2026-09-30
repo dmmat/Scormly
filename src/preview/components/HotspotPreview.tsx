@@ -17,6 +17,7 @@ function popoverPosition(h: Hotspot): CSSProperties {
 
 export default function HotspotPreview({ block }: PreviewProps<'hotspot'>) {
   const { t } = useT('hotspotTimeline')
+  const { t: ta } = useT('a11y')
   const { src, alt, hotspots } = block.data
   const url = useAssetUrl(src)
   const [openId, setOpenId] = useState<string | null>(null)
@@ -61,12 +62,18 @@ export default function HotspotPreview({ block }: PreviewProps<'hotspot'>) {
               type="button"
               onClick={() => toggle(h.id)}
               aria-expanded={active}
-              aria-label={t('hotspotMarker', { n: i + 1, title: h.title })}
+              aria-label={
+                t('hotspotMarker', { n: i + 1, title: h.title }) +
+                (seen ? ` (${ta('visited')})` : '')
+              }
               className="absolute flex h-8 w-8 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full"
               style={{ left: `${h.x}%`, top: `${h.y}%` }}
             >
               {!seen && (
-                <span className="absolute inset-0 animate-ping rounded-full bg-brand opacity-60" />
+                <span
+                  aria-hidden
+                  className="absolute inset-0 animate-ping rounded-full bg-brand opacity-60"
+                />
               )}
               <span
                 className={`relative flex h-8 w-8 items-center justify-center rounded-full border-2 text-sm font-bold shadow-md transition ${
@@ -107,7 +114,7 @@ export default function HotspotPreview({ block }: PreviewProps<'hotspot'>) {
         )}
       </div>
       {hotspots.length > 0 && (
-        <p className="mt-2 text-center text-sm text-gray-500">
+        <p aria-live="polite" className="mt-2 text-center text-sm text-gray-500">
           {t('hotspotProgress', { n: visited.size, total: hotspots.length })}
         </p>
       )}

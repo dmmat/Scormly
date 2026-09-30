@@ -43,6 +43,21 @@ export default function ScenarioPreview({ block }: PreviewProps<'scenario'>) {
   )
 }
 
+// After a choice the clicked button is replaced, which would drop keyboard
+// focus to the page; move it to the first new choice (or Restart) instead.
+function useFocusAfterChoice(nodeId: string | null) {
+  const ref = useRef<HTMLDivElement>(null)
+  const first = useRef(true)
+  useEffect(() => {
+    if (first.current) {
+      first.current = false
+      return
+    }
+    ref.current?.querySelector<HTMLElement>('button')?.focus()
+  }, [nodeId])
+  return ref
+}
+
 interface ScenarioViewProps {
   nodes: PreviewProps<'scenario'>['block']['data']['nodes']
   startNodeId: string
@@ -67,6 +82,7 @@ function ClassicScenario({
   )
   const node = nodeId ? nodes.find((n) => n.id === nodeId) : undefined
   const image = avatars[emotion]
+  const actionsRef = useFocusAfterChoice(nodeId)
 
   function choose(c: ScenarioChoice) {
     if (c.setEmotion) setEmotion(c.setEmotion)
@@ -96,8 +112,10 @@ function ClassicScenario({
           <p className="mb-2 text-sm font-semibold text-brand-dark">{characterName}</p>
           {node ? (
             <>
-              <p className="mb-4 leading-relaxed text-gray-800">{node.text}</p>
-              <div className="flex flex-col gap-2">
+              <p aria-live="polite" className="mb-4 leading-relaxed text-gray-800">
+                {node.text}
+              </p>
+              <div ref={actionsRef} className="flex flex-col gap-2">
                 {node.choices.map((c) => (
                   <button
                     key={c.id}
@@ -111,8 +129,10 @@ function ClassicScenario({
               </div>
             </>
           ) : (
-            <div className="space-y-3">
-              <p className="font-medium text-gray-500">{endLabel}</p>
+            <div ref={actionsRef} className="space-y-3">
+              <p aria-live="polite" className="font-medium text-gray-500">
+                {endLabel}
+              </p>
               <button type="button" onClick={restart} className="btn-secondary text-sm">
                 {restartLabel}
               </button>
@@ -150,6 +170,7 @@ function ChatScenario({
   const [nodeId, setNodeId] = useState<string | null>(startNodeId)
   const node = nodeId ? nodes.find((n) => n.id === nodeId) : undefined
   const bodyRef = useRef<HTMLDivElement>(null)
+  const actionsRef = useFocusAfterChoice(nodeId)
 
   // Keep the latest message in view as the conversation grows.
   useEffect(() => {
@@ -186,14 +207,14 @@ function ChatScenario({
         <span className="font-semibold">{characterName}</span>
       </div>
 
-      <div ref={bodyRef} className="flex max-h-96 flex-col gap-2 overflow-y-auto px-3 py-4">
+      <div ref={bodyRef} role="log" aria-live="polite" className="flex max-h-96 flex-col gap-2 overflow-y-auto px-3 py-4">
         {messages.map((m) =>
           m.from === 'bot' ? (
             <div key={m.id} className="flex items-end gap-2 self-start">
               {avatars[m.emotion] ? (
                 <img src={avatars[m.emotion]} alt="" className="h-6 w-6 shrink-0 rounded-full object-cover" />
               ) : (
-                <span className="h-6 w-6 shrink-0 rounded-full bg-gray-300" />
+                <span aria-hidden className="h-6 w-6 shrink-0 rounded-full bg-gray-300" />
               )}
               <p className="max-w-[16rem] rounded-2xl rounded-bl-sm bg-white px-3 py-2 text-sm leading-relaxed text-gray-800 shadow-sm">
                 {m.text}
@@ -212,7 +233,7 @@ function ChatScenario({
         )}
       </div>
 
-      <div className="flex flex-col gap-2 border-t border-gray-200 bg-white p-3">
+      <div ref={actionsRef} className="flex flex-col gap-2 border-t border-gray-200 bg-white p-3">
         {node ? (
           node.choices.map((c) => (
             <button

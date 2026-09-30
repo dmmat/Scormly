@@ -1,0 +1,52 @@
+import type { LocaleTable } from '../types'
+
+// Learner-facing accessibility strings (preview a11y menu, skip link,
+// announcements, media captions/transcripts).
+const a11y: LocaleTable = {
+  en: {
+    menu: 'Accessibility settings',
+    textSize: 'Text size',
+    sizeNormal: 'Normal',
+    sizeLarge: 'Large',
+    sizeXLarge: 'Extra large',
+    highContrast: 'High contrast',
+    spacing: 'Readable spacing',
+    reduceMotion: 'Reduce motion',
+    captions: 'Captions on by default',
+    close: 'Close',
+    skip: 'Skip to content',
+    lessonAnnounce: 'Lesson {n} of {total}: {title}',
+    captionsLabel: 'Captions',
+    transcript: 'Transcript',
+    embedTitle: 'Embedded content',
+    cardFront: 'Front: {text}',
+    cardBack: 'Back: {text}',
+    correct: 'Correct',
+    incorrect: 'Incorrect',
+    visited: 'viewed',
+  },
+  uk: {
+    menu: 'Налаштування доступності',
+    textSize: 'Розмір тексту',
+    sizeNormal: 'Звичайний',
+    sizeLarge: 'Великий',
+    sizeXLarge: 'Дуже великий',
+    highContrast: 'Висока контрастність',
+    spacing: 'Зручні інтервали',
+    reduceMotion: 'Менше анімації',
+    captions: 'Субтитри увімкнені за замовчуванням',
+    close: 'Закрити',
+    skip: 'Перейти до вмісту',
+    lessonAnnounce: 'Урок {n} з {total}: {title}',
+    captionsLabel: 'Субтитри',
+    transcript: 'Текстова версія',
+    embedTitle: 'Вбудований вміст',
+    cardFront: 'Лицьовий бік: {text}',
+    cardBack: 'Зворотний бік: {text}',
+    correct: 'Правильно',
+    incorrect: 'Неправильно',
+    visited: 'переглянуто',
+  },
+}
+
+export default a11y

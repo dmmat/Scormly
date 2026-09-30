@@ -1,10 +1,11 @@
-import { useState } from 'react'
+import { useId, useState } from 'react'
 import type { PreviewProps } from '../types'
 import RichHtml from '../RichHtml'
 
 export default function AccordionPreview({ block }: PreviewProps<'accordion'>) {
   const { items } = block.data
   const [open, setOpen] = useState<Set<string>>(new Set())
+  const baseId = useId()
 
   function toggle(id: string) {
     setOpen((prev) => {
@@ -19,6 +20,7 @@ export default function AccordionPreview({ block }: PreviewProps<'accordion'>) {
     <div className="space-y-2">
       {items.map((item) => {
         const isOpen = open.has(item.id)
+        const panelId = `${baseId}-${item.id}`
         return (
           <div
             key={item.id}
@@ -28,17 +30,21 @@ export default function AccordionPreview({ block }: PreviewProps<'accordion'>) {
               type="button"
               onClick={() => toggle(item.id)}
               aria-expanded={isOpen}
+              aria-controls={panelId}
               className="flex w-full items-center gap-3 px-4 py-3 text-left font-medium text-gray-800"
             >
-              <span className="text-brand">{isOpen ? '▾' : '▸'}</span>
+              <span aria-hidden className="text-brand">
+                {isOpen ? '▾' : '▸'}
+              </span>
               {item.title}
             </button>
-            {isOpen && (
+            {/* Always rendered (hidden when closed) so aria-controls resolves. */}
+            <div id={panelId} hidden={!isOpen}>
               <RichHtml
                 html={item.html}
                 className="rich-text border-t border-gray-200 px-4 py-3 leading-relaxed text-gray-800"
               />
-            )}
+            </div>
           </div>
         )
       })}

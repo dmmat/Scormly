@@ -372,3 +372,116 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .ai-caret { animation: none; }
 }
+
+/* ==========================================================================
+ * Learner accessibility settings (builder preview only).
+ * Classes are set on the PreviewOverlay root by src/preview/a11y.ts, so none
+ * of this reaches the editor UI. Rules are intentionally unlayered so they
+ * win over Tailwind utilities (which live in @layer utilities).
+ * ========================================================================== */
+
+/* Visible keyboard focus (brand-dark keeps >= 3:1 on white in all themes).
+ * Programmatic focus targets (h1, main, dialog root) use tabindex=-1. */
+.a11y-root :focus-visible:not([tabindex="-1"]) {
+  outline: 2px solid var(--color-brand-dark);
+  outline-offset: 2px;
+}
+
+/* Text size: zoom scales rem-based Tailwind sizes and layout together. */
+.a11y-text-large .a11y-content {
+  zoom: 1.15;
+}
+.a11y-text-xlarge .a11y-content {
+  zoom: 1.3;
+}
+
+/* Readable spacing (WCAG 1.4.12 text-spacing values, no extra fonts). */
+.a11y-spacing .a11y-content,
+.a11y-spacing .a11y-content * {
+  line-height: 1.8;
+  letter-spacing: 0.03em;
+  word-spacing: 0.1em;
+}
+.a11y-spacing .a11y-content .rich-text p:not(:last-child) {
+  margin-bottom: 1.2em;
+}
+
+/* High contrast. The accent is darkened on the root's children (not the root
+ * itself, which holds data-theme, to avoid a custom-property cycle) so white
+ * text on brand buttons reaches ~7:1 in every theme. */
+.a11y-contrast > * {
+  --color-brand: color-mix(in srgb, var(--color-brand-dark) 60%, #000);
+}
+.a11y-contrast .text-gray-300,
+.a11y-contrast .text-gray-400,
+.a11y-contrast .text-gray-500,
+.a11y-contrast .text-gray-600 {
+  color: #1f2937;
+}
+.a11y-contrast .text-gray-700,
+.a11y-contrast .text-gray-800 {
+  color: #111827;
+}
+.a11y-contrast [class*="border-gray-"],
+.a11y-contrast [class*="divide-gray-"] > * + *,
+.a11y-contrast input,
+.a11y-contrast select,
+.a11y-contrast details {
+  border-color: #4b5563;
+}
+.a11y-contrast .border-green-300,
+.a11y-contrast .border-green-400 {
+  border-color: #15803d;
+}
+.a11y-contrast .border-red-300,
+.a11y-contrast .border-red-400 {
+  border-color: #b91c1c;
+}
+.a11y-contrast ::placeholder {
+  color: #4b5563;
+}
+.a11y-contrast a,
+.a11y-contrast .rich-text a {
+  text-decoration: underline;
+}
+.a11y-contrast .btn-secondary {
+  border-width: 2px;
+  color: var(--color-brand);
+}
+.a11y-contrast .btn-primary:hover:not(:disabled) {
+  background-color: #000;
+}
+.a11y-contrast :focus-visible:not([tabindex="-1"]) {
+  outline: 3px solid #000;
+}
+/* Terminal keeps its black/phosphor buttons (already high contrast); only
+ * brighten the secondary text so it isn't dim green on white. */
+[data-theme="terminal"].a11y-contrast .btn-secondary {
+  color: #14532d;
+  border-color: #14532d;
+}
+
+/* Reduced motion: the learner toggle (defaults to the OS setting) ... */
+.a11y-reduce-motion *,
+.a11y-reduce-motion *::before,
+.a11y-reduce-motion *::after {
+  animation: none !important;
+  transition: none !important;
+  scroll-behavior: auto !important;
+}
+.a11y-reduce-motion .animate-ping {
+  display: none;
+}
+/* ... and the OS preference itself, unless the learner explicitly opted out. */
+@media (prefers-reduced-motion: reduce) {
+  .a11y-root:not(.a11y-motion-ok) *,
+  .a11y-root:not(.a11y-motion-ok) *::before,
+  .a11y-root:not(.a11y-motion-ok) *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+  .a11y-root:not(.a11y-motion-ok) .animate-ping {
+    display: none;
+  }
+}

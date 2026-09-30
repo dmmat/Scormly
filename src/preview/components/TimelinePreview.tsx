@@ -22,7 +22,7 @@ function VerticalTimeline({ items }: { items: TimelineItem[] }) {
     <ol className="relative ml-2 border-l-2 border-gray-200">
       {items.map((item) => (
         <li key={item.id} className="relative pb-6 pl-6 last:pb-0">
-          <span className="absolute -left-[9px] top-1 h-4 w-4 rounded-full border-2 border-white bg-brand shadow" />
+          <span aria-hidden className="absolute -left-[9px] top-1 h-4 w-4 rounded-full border-2 border-white bg-brand shadow" />
           <ItemBody item={item} />
         </li>
       ))}

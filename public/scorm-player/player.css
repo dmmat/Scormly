@@ -280,3 +280,114 @@ span.chat-msg-avatar { background: #d1d5db; }
 .passed { color: #15803d; }
 .failed { color: #b91c1c; }
 .empty { color: #9ca3af; }
+
+/* ── Accessibility ─────────────────────────────────────────────────────── */
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden;
+  clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+.skip-link { position: absolute; left: 0.5rem; top: -4rem; z-index: 100; padding: 0.5rem 1rem;
+  background: var(--brand-dark); color: #fff; font-weight: 600; text-decoration: none; border-radius: var(--radius-btn); }
+.skip-link:focus { top: 0.5rem; }
+
+/* Visible keyboard focus everywhere (brand-dark reaches ≥3:1 on white). */
+:focus-visible { outline: 3px solid var(--brand-dark); outline-offset: 2px; }
+.btn:focus-visible { outline-offset: 3px; }
+/* Headings / regions focused programmatically need no ring. */
+[tabindex="-1"]:focus { outline: none; }
+.quiz-result[tabindex="-1"]:focus-visible { outline: 2px solid var(--brand-dark); outline-offset: 2px; }
+
+/* Header: a11y menu + lesson navigation */
+.player-actions { display: flex; align-items: center; gap: 0.5rem; flex-shrink: 0; }
+.a11y-menu { position: relative; }
+.a11y-btn { display: flex; align-items: center; justify-content: center; min-width: 2.5rem; height: 2.25rem; padding: 0 0.5rem;
+  border: 1px solid #d1d5db; border-radius: var(--radius-btn); background: #fff; color: #374151; cursor: pointer;
+  font: inherit; font-weight: 700; font-size: 0.95rem; }
+.a11y-btn:hover, .a11y-btn[aria-expanded="true"] { border-color: var(--brand); color: var(--brand-dark); }
+.a11y-panel { position: absolute; right: 0; top: calc(100% + 0.5rem); z-index: 20; width: 16rem; max-width: calc(100vw - 2rem);
+  padding: 0.75rem 1rem 1rem; background: #fff; border: 1px solid #e5e7eb; border-radius: var(--radius-surface);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15); font-size: 0.9rem; color: #1f2937; }
+.a11y-panel[hidden] { display: none; }
+.a11y-panel-title { margin: 0 0 0.5rem; font-weight: 700; color: #111827; }
+.a11y-panel fieldset { border: 0; margin: 0 0 0.5rem; padding: 0; }
+.a11y-panel legend { padding: 0; margin-bottom: 0.25rem; font-weight: 600; color: #374151; }
+.a11y-opt { display: flex; align-items: center; gap: 0.5rem; padding: 0.3rem 0; cursor: pointer; }
+.a11y-opt input { accent-color: var(--brand); width: 1rem; height: 1rem; margin: 0; }
+.a11y-toggle { border-top: 1px solid #f3f4f6; padding-top: 0.5rem; margin-top: 0.25rem; }
+@media (max-width: 480px) {
+  .player-header { height: auto; min-height: 56px; flex-wrap: wrap; padding: 0.5rem 1rem; }
+}
+
+/* Transcripts */
+.media-with-transcript { display: flex; flex-direction: column; gap: 0.5rem; }
+details.transcript { border: 1px solid #e5e7eb; border-radius: var(--radius-surface); background: #fff; }
+details.transcript summary { cursor: pointer; padding: 0.5rem 0.75rem; font-weight: 600; font-size: 0.875rem; color: #374151; }
+.transcript-text { padding: 0 0.75rem 0.75rem; line-height: 1.7; white-space: pre-line; color: #1f2937; }
+
+/* Correctness marks (never color alone) */
+.result-icon { font-weight: 700; margin-right: 0.35em; }
+.result-mark { display: inline-flex; align-items: center; }
+.result-mark .result-icon { margin: 0 0.25rem; }
+.flashcard:focus-visible { outline-offset: 3px; border-radius: var(--radius-surface); }
+
+/* Text size: rem-based layout scales with the root font size. */
+html[data-a11y-text="large"] { font-size: 115%; }
+html[data-a11y-text="xlarge"] { font-size: 130%; }
+
+/* Readable spacing (WCAG 1.4.12-style text spacing). */
+html[data-a11y-spacing] .lesson, html[data-a11y-spacing] .lesson *:not(.fib-text) {
+  line-height: 1.8 !important; letter-spacing: 0.03em !important; word-spacing: 0.1em !important; }
+html[data-a11y-spacing] .lesson .fib-text { letter-spacing: 0.03em; word-spacing: 0.1em; line-height: 2.6; }
+html[data-a11y-spacing] .rich-text p, html[data-a11y-spacing] .timeline-text,
+html[data-a11y-spacing] .scenario-text, html[data-a11y-spacing] .transcript-text p { margin-bottom: 1.5em; }
+
+/* Reduce motion: explicit toggle, or the OS setting unless the learner opted out. */
+html[data-a11y-motion="reduce"] *, html[data-a11y-motion="reduce"] *::before, html[data-a11y-motion="reduce"] *::after {
+  animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+@media (prefers-reduced-motion: reduce) {
+  html:not([data-a11y-motion="full"]) *, html:not([data-a11y-motion="full"]) *::before, html:not([data-a11y-motion="full"]) *::after {
+    animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+}
+
+/* High contrast. The accent is swapped for a darkened shade of the theme
+   (--brand-hc, set by player.js) so it works with every theme; inline theme
+   vars need !important to be overridden. */
+html[data-a11y-contrast] { --brand: var(--brand-hc, #831843) !important; --brand-dark: var(--brand-hc-dark, #500724) !important; }
+html[data-a11y-contrast] body { background: #fff; color: #000; }
+html[data-a11y-contrast] .player-header { border-bottom: 2px solid #000; }
+html[data-a11y-contrast] h1, html[data-a11y-contrast] h2, html[data-a11y-contrast] h3,
+html[data-a11y-contrast] .player-title, html[data-a11y-contrast] .lesson-title { color: #000; }
+html[data-a11y-contrast] .player-progress, html[data-a11y-contrast] .finish-text, html[data-a11y-contrast] figcaption,
+html[data-a11y-contrast] .quote-author, html[data-a11y-contrast] blockquote.quote, html[data-a11y-contrast] .outline-arrow,
+html[data-a11y-contrast] .outline-item, html[data-a11y-contrast] .outline-title, html[data-a11y-contrast] .hotspot-close,
+html[data-a11y-contrast] .hotspot-progress, html[data-a11y-contrast] .hotspot-pop-text, html[data-a11y-contrast] .stepper-count,
+html[data-a11y-contrast] .timeline-text, html[data-a11y-contrast] .ord-hint, html[data-a11y-contrast] .ord-note,
+html[data-a11y-contrast] .ord-handle, html[data-a11y-contrast] .ord-bin-title, html[data-a11y-contrast] .ord-arrow,
+html[data-a11y-contrast] .empty, html[data-a11y-contrast] .tab-btn:not(.active), html[data-a11y-contrast] .stepper-dot:not(.active):not(.seen),
+html[data-a11y-contrast] .accordion-head, html[data-a11y-contrast] .chat-bubble-bot, html[data-a11y-contrast] .a11y-btn,
+html[data-a11y-contrast] .a11y-panel, html[data-a11y-contrast] .a11y-panel legend, html[data-a11y-contrast] details.transcript summary,
+html[data-a11y-contrast] .transcript-text, html[data-a11y-contrast] .note.info, html[data-a11y-contrast] .note.warning { color: #000; }
+html[data-a11y-contrast] .outline, html[data-a11y-contrast] .outline-title, html[data-a11y-contrast] .outline-item,
+html[data-a11y-contrast] .tabs, html[data-a11y-contrast] .tab-bar, html[data-a11y-contrast] .accordion-item,
+html[data-a11y-contrast] .accordion-body, html[data-a11y-contrast] .flashcard-back, html[data-a11y-contrast] .hotspot-pop,
+html[data-a11y-contrast] .stepper, html[data-a11y-contrast] .timeline, html[data-a11y-contrast] .scenario,
+html[data-a11y-contrast] .chat, html[data-a11y-contrast] .chat-replies, html[data-a11y-contrast] .quiz-q,
+html[data-a11y-contrast] .quiz-opt, html[data-a11y-contrast] .quiz-result, html[data-a11y-contrast] .ord-item,
+html[data-a11y-contrast] .ord-arrow, html[data-a11y-contrast] .ord-bin, html[data-a11y-contrast] .fib-blank,
+html[data-a11y-contrast] table.data-table th, html[data-a11y-contrast] table.data-table td, html[data-a11y-contrast] select,
+html[data-a11y-contrast] input[type="text"], html[data-a11y-contrast] .a11y-btn, html[data-a11y-contrast] .a11y-panel,
+html[data-a11y-contrast] details.transcript, html[data-a11y-contrast] .note, html[data-a11y-contrast] .chat-bubble-bot { border-color: #000 !important; }
+html[data-a11y-contrast] .chat-bubble-bot { border: 1px solid #000; }
+html[data-a11y-contrast] .tab-btn:not(.active), html[data-a11y-contrast] .stepper-dot:not(.active):not(.seen) { background: #fff; box-shadow: inset 0 0 0 1px #000; }
+html[data-a11y-contrast] hr.divider { border-top-color: #000; }
+html[data-a11y-contrast] .timeline { border-left-color: #000; }
+html[data-a11y-contrast] .btn-outline { border-width: 2px; border-color: var(--brand-dark); }
+html[data-a11y-contrast] .btn:disabled { opacity: 0.55; }
+html[data-a11y-contrast] a, html[data-a11y-contrast] .rich-text a { color: var(--brand-dark); text-decoration: underline; }
+html[data-a11y-contrast] .skip-link { color: #fff; }
+html[data-a11y-contrast] .passed, html[data-a11y-contrast] .finish-status.passed, html[data-a11y-contrast] .fib-answer { color: #14532d; }
+html[data-a11y-contrast] .failed, html[data-a11y-contrast] .finish-status.failed { color: #7f1d1d; }
+html[data-a11y-contrast] .quiz-q.correct, html[data-a11y-contrast] .ord-item.correct, html[data-a11y-contrast] .fib-blank.correct { border-color: #14532d !important; border-width: 2px; }
+html[data-a11y-contrast] .quiz-q.incorrect, html[data-a11y-contrast] .ord-item.incorrect, html[data-a11y-contrast] .fib-blank.incorrect { border-color: #7f1d1d !important; border-width: 2px; }
+html[data-a11y-contrast] :focus-visible { outline: 3px solid #000; outline-offset: 2px; box-shadow: 0 0 0 5px #fff; }
+html[data-a11y-contrast] .hotspot-dot { border-color: #000; }
+/* Terminal theme keeps its black buttons; phosphor text on black is already >7:1. */
+html[data-a11y-contrast][data-theme="terminal"] .btn:not(.btn-outline) { box-shadow: inset 0 0 0 2px #4ade80; }

@@ -5,7 +5,7 @@ export default function GalleryPreview({ block }: PreviewProps<'gallery'>) {
   return (
     <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
       {block.data.images.map((img, i) => (
-        <GalleryImage key={i} src={img.src} alt={img.alt} />
+        <GalleryImage key={i} src={img.src} alt={img.decorative ? '' : img.alt} />
       ))}
     </div>
   )
