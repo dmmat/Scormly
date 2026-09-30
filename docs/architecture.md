@@ -42,6 +42,26 @@ Block types are grouped by purpose: text (`heading`, `paragraph`, `list`,
 `note`), media (`image`, `gallery`, `video`), navigation (`continue`), and
 interactive (`tabs`, `accordion`, `flashcards`, `scenario`, `quiz`).
 
+### Accessibility fields
+
+The model carries the author-supplied data that learners with disabilities need;
+the player and the preview render it the same way:
+
+- `ImageRef.alt` + `ImageRef.decorative` (image block and gallery images) —
+  decorative images are rendered with `alt=""`; `HotspotData.alt` for hotspot images.
+- `VideoData.captions` — relative path to a WebVTT file (`assets/captions/*.vtt`,
+  uploaded via `saveAsset(file, 'captions')`), rendered as `<track kind="captions">`.
+- `VideoData.transcript` / `AudioData.transcript` — plain text shown in a
+  collapsible "Transcript" section under the media.
+- `EmbedData.title` — the iframe's accessible name.
+- `CourseSettings.contentLanguage` — BCP 47 tag of the course content, set as
+  `lang` on the lesson content root (edited in Settings → General).
+
+The pre-export check ([`courseCheck.ts`](../src/export/courseCheck.ts)) warns
+about missing alt text, captions/transcripts and embed titles (`a11y: true`
+issues), and lists a missing content language as an info-level hint that does
+not open the dialog on its own.
+
 ## State management
 
 File: [`src/store/courseStore.ts`](../src/store/courseStore.ts) — a Zustand store.
@@ -110,6 +130,11 @@ color and the shape of buttons/interactive surfaces. Implementation:
   `--radius-btn`, `--radius-interactive`.
 - The global classes `.btn-primary`, `.btn-secondary`, `.interactive-surface`
   read these variables, so blocks that use them automatically follow the theme.
+- **Contrast rule:** every theme's `--color-brand` must give ≥ 4.5:1 with white
+  text (primary buttons, links) and `--color-brand-dark` ≥ 4.5:1 on white
+  (secondary buttons, labels) — WCAG 2.1 AA. The same pair is mirrored in the
+  exported player (`THEME_ACCENT` in `public/scorm-player/player.js`) and the
+  theme swatches in `themes.ts`; keep all three in sync.
 
 The theme registry is in [`themes.ts`](../src/theme/themes.ts); the switcher is
 [`ThemePicker`](../src/components/editor/ThemePicker.tsx).

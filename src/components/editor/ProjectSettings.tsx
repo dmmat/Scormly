@@ -8,7 +8,7 @@ import {
 } from 'react'
 import { useDialog } from '../../hooks/useDialog'
 import { useCourseStore } from '../../store/courseStore'
-import { useT } from '../../i18n/I18nProvider'
+import { useLang, useT } from '../../i18n/I18nProvider'
 import { THEME_LIST } from '../../theme/themes'
 import { saveAsset, toastUploadError } from '../../lib/assets'
 import { useAssetUrl } from '../../hooks/useAssetUrl'
@@ -29,6 +29,21 @@ const TAB_LABEL_KEY: Record<TabId, string> = {
   appearance: 'tabAppearance',
   learner: 'tabLearner',
   completion: 'tabCompletion',
+}
+
+// Suggestions for the content language field (any BCP 47 tag is accepted).
+const COMMON_LANGUAGES = [
+  'en', 'uk', 'de', 'fr', 'es', 'it', 'pl', 'pt', 'pt-BR', 'nl', 'cs', 'sk',
+  'ro', 'hu', 'bg', 'hr', 'sl', 'lt', 'lv', 'et', 'fi', 'sv', 'da', 'no',
+  'el', 'tr', 'ka', 'kk', 'ar', 'he', 'hi', 'ja', 'ko', 'zh-Hans', 'zh-Hant',
+]
+
+function isValidLanguageTag(tag: string): boolean {
+  try {
+    return Intl.getCanonicalLocales(tag).length === 1
+  } catch {
+    return false
+  }
 }
 
 // Module-level so the last opened tab survives closing/reopening the dialog
@@ -174,7 +189,17 @@ export default function ProjectSettings({ onClose }: { onClose: () => void }) {
 function GeneralPanel() {
   const course = useCourseStore((s) => s.course)
   const updateCourseMeta = useCourseStore((s) => s.updateCourseMeta)
+  const updateSettings = useCourseStore((s) => s.updateSettings)
   const { t } = useT('settings')
+  const { lang } = useLang()
+  const contentLanguage = course.settings?.contentLanguage ?? ''
+  const languageInvalid = contentLanguage.trim() !== '' && !isValidLanguageTag(contentLanguage.trim())
+  let languageNames: Intl.DisplayNames | null = null
+  try {
+    languageNames = new Intl.DisplayNames([lang], { type: 'language' })
+  } catch {
+    // Older engines: suggestions fall back to the bare codes.
+  }
   const coverUrl = useAssetUrl(course.coverImage ?? '')
 
   async function pickCover(e: ChangeEvent<HTMLInputElement>) {
@@ -211,6 +236,38 @@ function GeneralPanel() {
           onChange={(e) => updateCourseMeta({ description: e.target.value })}
           className={`${inputClass} resize-y`}
         />
+      </Field>
+
+      <Field
+        label={t('contentLanguage')}
+        htmlFor="settings-content-language"
+        help={t('contentLanguageHelp')}
+      >
+        <input
+          id="settings-content-language"
+          type="text"
+          list="settings-content-language-list"
+          value={contentLanguage}
+          placeholder="en"
+          autoComplete="off"
+          spellCheck={false}
+          aria-invalid={languageInvalid || undefined}
+          aria-describedby={languageInvalid ? 'settings-content-language-error' : undefined}
+          onChange={(e) => updateSettings({ contentLanguage: e.target.value.trim() }, 'content-language')}
+          className={`${inputClass} sm:w-auto sm:min-w-80`}
+        />
+        <datalist id="settings-content-language-list">
+          {COMMON_LANGUAGES.map((code) => (
+            <option key={code} value={code}>
+              {languageNames?.of(code) ?? code}
+            </option>
+          ))}
+        </datalist>
+        {languageInvalid && (
+          <span id="settings-content-language-error" className="mt-1.5 block text-sm text-red-600">
+            {t('contentLanguageInvalid')}
+          </span>
+        )}
       </Field>
 
       <Group label={t('cover')} help={t('coverHelp')}>

@@ -50,9 +50,22 @@ export default function ExportCheckDialog() {
                 }}
                 className="flex w-full items-start gap-3 rounded-lg px-2 py-2 text-left text-sm outline-none hover:bg-gray-50 focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand disabled:hover:bg-transparent"
               >
-                <span aria-hidden className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-amber-400" />
+                <span
+                  aria-hidden
+                  className={`mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full ${
+                    issue.severity === 'info' ? 'bg-sky-500' : 'bg-amber-400'
+                  }`}
+                />
                 <span className="min-w-0 flex-1">
-                  <span className="block text-gray-800">{t(issue.key, issue.vars)}</span>
+                  <span className="block text-gray-800">
+                    {(issue.a11y || issue.severity === 'info') && (
+                      <span className="mr-1.5 inline-block rounded bg-gray-100 px-1.5 py-px align-[1px] text-[11px] font-semibold uppercase tracking-wide text-gray-700">
+                        {t(issue.a11y ? 'chkA11yTag' : 'chkInfoTag')}
+                        {issue.a11y && issue.severity === 'info' && ` · ${t('chkInfoTag')}`}
+                      </span>
+                    )}
+                    {t(issue.key, issue.vars)}
+                  </span>
                   {issue.lessonTitle !== undefined && (
                     <span className="block truncate text-xs text-gray-400">{issue.lessonTitle}</span>
                   )}

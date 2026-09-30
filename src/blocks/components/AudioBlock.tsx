@@ -15,7 +15,8 @@ export default function AudioBlock({
 }: BlockComponentProps<BlockOfType<'audio'>>) {
   const update = useCourseStore((s) => s.updateBlockData)
   const { t } = useT('newblocks')
-  const { src } = block.data
+  const { t: tm } = useT('media')
+  const { src, transcript } = block.data
   const audioUrl = useAssetUrl(src)
   const [error, setError] = useState<string | null>(null)
 
@@ -51,12 +52,24 @@ export default function AudioBlock({
       <audio controls className="w-full" src={audioUrl} />
 
       {selected && (
-        <div className="mt-4 flex flex-wrap gap-2 border-t border-gray-200 pt-4">
+        <div className="mt-4 space-y-3 border-t border-gray-200 pt-4">
           <label className="btn-secondary inline-flex cursor-pointer items-center gap-1 text-sm">
             {t('replaceAudio')}
             <input type="file" accept={AUDIO_ACCEPT} onChange={handlePick} className="hidden" />
           </label>
-          {error && <p className="w-full text-sm text-red-600">{error}</p>}
+          <label className="block">
+            <span className="mb-1 block text-xs font-medium text-gray-500">{tm('transcriptLabel')}</span>
+            <textarea
+              value={transcript ?? ''}
+              rows={3}
+              placeholder={tm('transcriptPlaceholder')}
+              onChange={(e) =>
+                update(lessonId, block.id, { transcript: e.target.value }, `audio-transcript-${block.id}`)
+              }
+              className="w-full resize-y rounded-md border border-gray-300 px-3 py-2 text-sm outline-none focus:border-brand"
+            />
+          </label>
+          {error && <p className="text-sm text-red-600">{error}</p>}
         </div>
       )}
     </div>

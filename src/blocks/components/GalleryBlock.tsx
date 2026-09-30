@@ -36,6 +36,15 @@ export default function GalleryBlock({
     if (added.length) update(lessonId, block.id, { images: [...images, ...added] })
   }
 
+  function patchAt(index: number, patch: Partial<ImageRef>, coalesceKey?: string) {
+    update(
+      lessonId,
+      block.id,
+      { images: images.map((img, i) => (i === index ? { ...img, ...patch } : img)) },
+      coalesceKey,
+    )
+  }
+
   function removeAt(index: number) {
     update(lessonId, block.id, { images: images.filter((_, i) => i !== index) })
   }
@@ -60,17 +69,43 @@ export default function GalleryBlock({
     <div className="rounded-lg bg-white">
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
         {images.map((img, i) => (
-          <div key={i} className="group relative">
-            <GalleryThumb src={img.src} alt={img.alt} />
+          <div key={i}>
+            <div className="group relative">
+              <GalleryThumb src={img.src} alt={img.decorative ? '' : img.alt} />
+              {selected && (
+                <button
+                  type="button"
+                  onClick={() => removeAt(i)}
+                  aria-label={t('removeImage')}
+                  className="absolute right-2 top-2 flex h-7 w-7 items-center justify-center rounded-full bg-black/60 text-sm text-white opacity-0 transition hover:bg-black/80 focus-visible:opacity-100 group-hover:opacity-100"
+                >
+                  ✕
+                </button>
+              )}
+            </div>
             {selected && (
-              <button
-                type="button"
-                onClick={() => removeAt(i)}
-                aria-label={t('removeImage')}
-                className="absolute right-2 top-2 flex h-7 w-7 items-center justify-center rounded-full bg-black/60 text-sm text-white opacity-0 transition hover:bg-black/80 group-hover:opacity-100"
-              >
-                ✕
-              </button>
+              <div className="mt-1.5 space-y-1">
+                <input
+                  type="text"
+                  value={img.alt}
+                  disabled={!!img.decorative}
+                  aria-label={t('imageAlt', { n: i + 1 })}
+                  placeholder={t('altLabel')}
+                  onChange={(e) =>
+                    patchAt(i, { alt: e.target.value }, `gallery-alt-${block.id}-${i}`)
+                  }
+                  className="w-full rounded-md border border-gray-300 px-2 py-1 text-xs outline-none focus:border-brand disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-400"
+                />
+                <label className="flex cursor-pointer items-center gap-1.5 text-xs text-gray-600">
+                  <input
+                    type="checkbox"
+                    checked={!!img.decorative}
+                    onChange={(e) => patchAt(i, { decorative: e.target.checked })}
+                    className="h-3.5 w-3.5 accent-brand"
+                  />
+                  {t('decorative')}
+                </label>
+              </div>
             )}
           </div>
         ))}

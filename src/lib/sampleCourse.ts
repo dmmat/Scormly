@@ -364,6 +364,7 @@ export function makeSampleCourse(lang: Language): Course {
     theme: 'ocean',
     settings: {
       ...DEFAULT_COURSE_SETTINGS,
+      contentLanguage: lang,
       finishMessage: tr(
         L(
           'Great job! You now know how to spot and handle phishing. Stay alert — and share what you learned with your team.',

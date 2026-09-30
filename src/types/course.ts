@@ -76,6 +76,8 @@ export interface ImageRef {
   src: string
   alt: string
   caption?: string
+  /** Purely decorative: rendered with empty alt so screen readers skip it. */
+  decorative?: boolean
 }
 
 export interface ImageData extends ImageRef {}
@@ -90,11 +92,17 @@ export interface VideoData {
   poster?: string
   /** Require the learner to watch the video (~95%) before advancing. */
   requireWatch?: boolean
+  /** Relative path to a WebVTT captions file in assets/ (accessibility). */
+  captions?: string
+  /** Text transcript shown under the video (accessibility). */
+  transcript?: string
 }
 
 export interface AudioData {
   /** Relative path to the file in assets/audio/. */
   src: string
+  /** Text transcript shown under the player (accessibility). */
+  transcript?: string
 }
 
 export interface EmbedData {
@@ -447,6 +455,8 @@ export interface CourseSettings {
   showProgress?: boolean
   /** Custom text on the completion screen; empty = the built-in message. */
   finishMessage?: string
+  /** BCP 47 language of the course content (e.g. 'en', 'uk'); sets `lang`. */
+  contentLanguage?: string
 }
 
 export type PlayerLanguage = 'auto' | 'en' | 'uk'

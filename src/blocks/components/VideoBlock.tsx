@@ -8,6 +8,7 @@ import { useAssetUrl } from '../../hooks/useAssetUrl'
 
 const VIDEO_ACCEPT = 'video/mp4,video/webm'
 const IMAGE_ACCEPT = 'image/png,image/jpeg,image/webp,image/gif,image/svg+xml'
+const CAPTIONS_ACCEPT = '.vtt,text/vtt'
 
 export default function VideoBlock({
   block,
@@ -16,22 +17,29 @@ export default function VideoBlock({
 }: BlockComponentProps<BlockOfType<'video'>>) {
   const update = useCourseStore((s) => s.updateBlockData)
   const { t } = useT('media')
-  const { src, poster, requireWatch } = block.data
+  const { src, poster, requireWatch, captions, transcript } = block.data
   const videoUrl = useAssetUrl(src)
   const posterUrl = useAssetUrl(poster ?? '')
   const [error, setError] = useState<string | null>(null)
 
-  async function pick(e: ChangeEvent<HTMLInputElement>, key: 'src' | 'poster') {
+  const kindByKey = { src: 'video', poster: 'image', captions: 'captions' } as const
+  const unsupportedByKey = {
+    src: 'unsupportedVideo',
+    poster: 'unsupportedImage',
+    captions: 'unsupportedCaptions',
+  } as const
+
+  async function pick(e: ChangeEvent<HTMLInputElement>, key: 'src' | 'poster' | 'captions') {
     const file = e.target.files?.[0]
     e.target.value = ''
     if (!file) return
     setError(null)
     try {
-      const path = await saveAsset(file, key === 'src' ? 'video' : 'image')
+      const path = await saveAsset(file, kindByKey[key])
       update(lessonId, block.id, { [key]: path })
     } catch (err) {
       if (err instanceof UnsupportedFormatError) {
-        setError(t(key === 'src' ? 'unsupportedVideo' : 'unsupportedImage'))
+        setError(t(unsupportedByKey[key]))
       } else {
         toastUploadError(err)
       }
@@ -74,7 +82,41 @@ export default function VideoBlock({
               {poster ? t('replacePoster') : t('addPoster')}
               <input type="file" accept={IMAGE_ACCEPT} onChange={(e) => pick(e, 'poster')} className="hidden" />
             </label>
+            <label className="btn-secondary inline-flex cursor-pointer items-center gap-1 text-sm">
+              {captions ? t('replaceCaptions') : t('addCaptions')}
+              <input type="file" accept={CAPTIONS_ACCEPT} onChange={(e) => pick(e, 'captions')} className="hidden" />
+            </label>
           </div>
+          {captions ? (
+            <p className="flex flex-wrap items-center gap-2 text-xs text-gray-600">
+              <span className="break-all">
+                {t('captionsAttached', {
+                  name: captions.startsWith('data:') ? '.vtt' : captions.split('/').pop() ?? '',
+                })}
+              </span>
+              <button
+                type="button"
+                onClick={() => update(lessonId, block.id, { captions: '' })}
+                className="font-medium text-red-600 hover:underline"
+              >
+                {t('removeCaptions')}
+              </button>
+            </p>
+          ) : (
+            <p className="text-xs text-gray-500">{t('captionsHelp')}</p>
+          )}
+          <label className="block">
+            <span className="mb-1 block text-xs font-medium text-gray-500">{t('transcriptLabel')}</span>
+            <textarea
+              value={transcript ?? ''}
+              rows={3}
+              placeholder={t('transcriptPlaceholder')}
+              onChange={(e) =>
+                update(lessonId, block.id, { transcript: e.target.value }, `video-transcript-${block.id}`)
+              }
+              className="w-full resize-y rounded-md border border-gray-300 px-3 py-2 text-sm outline-none focus:border-brand"
+            />
+          </label>
           <label className="flex cursor-pointer items-start gap-2.5">
             <input
               type="checkbox"

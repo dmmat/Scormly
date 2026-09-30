@@ -9,7 +9,7 @@ import { uid } from './id'
 import { toast } from '../store/toastStore'
 import { translate } from '../i18n/I18nProvider'
 
-export type AssetKind = 'image' | 'video' | 'audio'
+export type AssetKind = 'image' | 'video' | 'audio' | 'captions'
 
 // SCORM-safe formats. These render as plain HTML in any LMS.
 const IMAGE_MIME: Record<string, string> = {
@@ -31,15 +31,30 @@ const AUDIO_MIME: Record<string, string> = {
   'audio/mp4': 'm4a',
 }
 
+// WebVTT captions for <track>. Browsers/OSes often report an empty or generic
+// MIME type for .vtt, so the extension is also accepted (see fileExtension).
+const CAPTIONS_MIME: Record<string, string> = {
+  'text/vtt': 'vtt',
+}
+
 const MIME_BY_KIND: Record<AssetKind, Record<string, string>> = {
   image: IMAGE_MIME,
   video: VIDEO_MIME,
   audio: AUDIO_MIME,
+  captions: CAPTIONS_MIME,
 }
 const SUBDIR_BY_KIND: Record<AssetKind, string> = {
   image: 'images',
   video: 'videos',
   audio: 'audio',
+  captions: 'captions',
+}
+
+function fileExtension(file: File, kind: AssetKind): string | undefined {
+  const byMime = MIME_BY_KIND[kind][file.type]
+  if (byMime) return byMime
+  if (kind === 'captions' && /\.vtt$/i.test(file.name)) return 'vtt'
+  return undefined
 }
 
 const MAX_DIMENSION = 1920
@@ -108,10 +123,12 @@ function blobToDataUrl(blob: Blob): Promise<string> {
  * working in-memory. Throws UnsupportedFormatError for disallowed formats.
  */
 export async function saveAsset(file: File, kind: AssetKind): Promise<string> {
-  const ext = MIME_BY_KIND[kind][file.type]
+  const ext = fileExtension(file, kind)
   if (!ext) throw new UnsupportedFormatError(kind)
 
-  const blob = kind === 'image' ? await optimizeImage(file) : file
+  let blob: Blob = kind === 'image' ? await optimizeImage(file) : file
+  // Normalize the type so a data-URL fallback is served as WebVTT.
+  if (kind === 'captions' && blob.type !== 'text/vtt') blob = new Blob([blob], { type: 'text/vtt' })
   const handle = useCourseStore.getState().directoryHandle
   if (!handle) return blobToDataUrl(blob) // no project: keep it self-contained
 

@@ -15,7 +15,7 @@ export default function ImageBlock({
 }: BlockComponentProps<BlockOfType<'image'>>) {
   const update = useCourseStore((s) => s.updateBlockData)
   const { t } = useT('media')
-  const { src, alt, caption } = block.data
+  const { src, alt, caption, decorative } = block.data
   const displayUrl = useAssetUrl(src)
   const [error, setError] = useState<string | null>(null)
 
@@ -48,7 +48,7 @@ export default function ImageBlock({
 
   return (
     <div className="rounded-lg bg-white">
-      <img src={displayUrl} alt={alt} className="max-w-full rounded-lg" />
+      <img src={displayUrl} alt={decorative ? '' : alt} className="max-w-full rounded-lg" />
 
       <input
         type="text"
@@ -69,12 +69,25 @@ export default function ImageBlock({
             <input
               type="text"
               value={alt}
+              disabled={!!decorative}
               placeholder={t('altPlaceholder')}
               onChange={(e) =>
                 update(lessonId, block.id, { alt: e.target.value }, `img-alt-${block.id}`)
               }
-              className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm outline-none focus:border-brand"
+              className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm outline-none focus:border-brand disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-400"
             />
+          </label>
+          <label className="flex cursor-pointer items-start gap-2.5">
+            <input
+              type="checkbox"
+              checked={!!decorative}
+              onChange={(e) => update(lessonId, block.id, { decorative: e.target.checked })}
+              className="mt-0.5 h-4 w-4 accent-brand"
+            />
+            <span>
+              <span className="block text-sm font-medium text-gray-900">{t('decorative')}</span>
+              <span className="mt-0.5 block text-xs text-gray-500">{t('decorativeHelp')}</span>
+            </span>
           </label>
 
           <label className="btn-secondary inline-flex cursor-pointer items-center gap-1 text-sm">

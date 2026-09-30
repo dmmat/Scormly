@@ -1,12 +1,13 @@
 // Pre-export course lint (src/export/courseCheck.ts).
 
 import { describe, test, expect } from 'vitest'
-import { checkCourse } from '../src/export/courseCheck'
+import { checkCourse, hasBlockingIssues } from '../src/export/courseCheck'
 import type { Block, Course } from '../src/types/course'
 
-function course(blocks: Block[][]): Course {
+function course(blocks: Block[][], settings: Record<string, unknown> = { contentLanguage: 'en' }): Course {
   return {
     title: 'C',
+    settings,
     lessons: blocks.map((b, i) => ({ id: `l${i}`, title: `L${i}`, status: 'draft', blocks: b })),
   } as unknown as Course
 }
@@ -90,9 +91,9 @@ describe('checkCourse', () => {
     const spot = { id: 'h1', x: 10, y: 20, title: 'T', text: '' }
     expect(keys(course([[block('hotspot', { src: '', alt: '', hotspots: [] })]])))
       .toEqual(['chkHotspotNoImage', 'chkHotspotEmpty'])
-    expect(keys(course([[block('hotspot', { src: 'assets/images/a.png', alt: '', hotspots: [] })]])))
+    expect(keys(course([[block('hotspot', { src: 'assets/images/a.png', alt: 'Email', hotspots: [] })]])))
       .toEqual(['chkHotspotEmpty'])
-    expect(keys(course([[block('hotspot', { src: 'assets/images/a.png', alt: '', hotspots: [spot] })]])))
+    expect(keys(course([[block('hotspot', { src: 'assets/images/a.png', alt: 'Email', hotspots: [spot] })]])))
       .toEqual([])
   })
 
@@ -100,5 +101,44 @@ describe('checkCourse', () => {
     expect(keys(course([[block('timeline', { layout: 'vertical', items: [] })]]))).toEqual(['chkTimelineEmpty'])
     const item = { id: 's1', label: '2024', title: 'T', text: '' }
     expect(keys(course([[block('timeline', { layout: 'stepper', items: [item] })]]))).toEqual([])
+  })
+
+  test('accessibility: alt text, captions/transcripts, embed titles', () => {
+    const img = { src: 'assets/images/a.png', alt: '' }
+    const issues = checkCourse(course([[
+      block('image', img, 'i1'),
+      block('image', { ...img, decorative: true }),
+      block('image', { ...img, alt: 'A chart' }),
+      block('gallery', { images: [img, { ...img, decorative: true }, { ...img, alt: 'x' }, img] }),
+      block('hotspot', { src: 'assets/images/h.png', alt: ' ', hotspots: [{ id: 'h', x: 1, y: 1, title: 't', text: 't' }] }),
+      block('video', { src: 'assets/videos/v.mp4' }),
+      block('video', { src: 'assets/videos/v.mp4', captions: 'assets/captions/v.vtt' }),
+      block('video', { src: 'assets/videos/v.mp4', transcript: 'Hello' }),
+      block('audio', { src: 'assets/audio/a.mp3' }),
+      block('audio', { src: 'assets/audio/a.mp3', transcript: 'Hi' }),
+      block('embed', { url: 'https://example.com' }),
+      block('embed', { url: 'https://example.com', title: 'Example' }),
+      block('paragraph', { html: '<p><img src="a.png"><img src="b.png" alt=""><IMG SRC="c.png" ALT="C"></p>' }),
+      block('tabs', { tabs: [{ id: 't', title: 'T', html: '<img src="x.png"><img src="y.png">' }] }),
+    ]]))
+    expect(issues.map((i) => [i.key, i.vars?.n])).toEqual([
+      ['chkA11yImageAlt', undefined],
+      ['chkA11yGalleryAlt', 2],
+      ['chkA11yHotspotAlt', undefined],
+      ['chkA11yVideoCaptions', undefined],
+      ['chkA11yAudioTranscript', undefined],
+      ['chkA11yEmbedTitle', undefined],
+      ['chkA11yInlineImageAlt', 1],
+      ['chkA11yInlineImageAlt', 2],
+    ])
+    expect(issues.every((i) => i.a11y && i.severity !== 'info')).toBe(true)
+    expect(issues[0].blockId).toBe('i1')
+  })
+
+  test('missing content language is an info-level hint that does not block', () => {
+    const issues = checkCourse(course([[block('heading', { level: 1, text: 'Hi' })]], {}))
+    expect(issues).toEqual([{ key: 'chkA11yContentLanguage', severity: 'info', a11y: true }])
+    expect(hasBlockingIssues(issues)).toBe(false)
+    expect(hasBlockingIssues([...issues, { key: 'chkEmptyLesson' }])).toBe(true)
   })
 })

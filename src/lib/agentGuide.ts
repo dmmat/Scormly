@@ -35,23 +35,23 @@ const BLOCK_DOCS: Record<BlockType, BlockDoc> = {
   },
   image: {
     summary: 'Single image with optional caption.',
-    data: `{ src: string, alt: string, caption?: string }  // src: relative path under assets/images/ (or a data: URL)`,
+    data: `{ src: string, alt: string, caption?: string, decorative?: boolean }  // src: relative path under assets/images/ (or a data: URL); decorative: true = purely visual, rendered with empty alt (alt is then ignored)`,
   },
   gallery: {
     summary: 'Grid of images.',
-    data: `{ images: { src: string, alt: string, caption?: string }[] }`,
+    data: `{ images: { src: string, alt: string, caption?: string, decorative?: boolean }[] }`,
   },
   video: {
     summary: 'HTML5 video from a local file.',
-    data: `{ src: string, poster?: string, requireWatch?: boolean }  // src: relative path under assets/videos/; requireWatch: learner must watch ~95% before moving on`,
+    data: `{ src: string, poster?: string, requireWatch?: boolean, captions?: string, transcript?: string }  // src: relative path under assets/videos/; requireWatch: learner must watch ~95% before moving on; captions: WebVTT file under assets/captions/ (shown as closed captions); transcript: plain text shown under the video`,
   },
   audio: {
     summary: 'HTML5 audio from a local file.',
-    data: `{ src: string }  // relative path under assets/audio/`,
+    data: `{ src: string, transcript?: string }  // src: relative path under assets/audio/; transcript: plain text shown under the player`,
   },
   embed: {
     summary: 'Embedded iframe (YouTube, Vimeo, or any https page).',
-    data: `{ url: string, title?: string }`,
+    data: `{ url: string, title?: string }  // title: accessible name of the iframe (screen readers announce it)`,
   },
   code: {
     summary: 'Monospaced code snippet.',
@@ -203,7 +203,8 @@ Course
     navigation: 'free' | 'linear', // linear: Next unlocks once the lesson's gates/quizzes are done
     playerLanguage?: 'auto' | 'en' | 'uk', // player UI language; 'auto' (default) = LMS/browser language
     showProgress?: boolean,        // show "Lesson n of N" in the player header (default true)
-    finishMessage?: string         // completion-screen text; empty/omitted = built-in message
+    finishMessage?: string,        // completion-screen text; empty/omitted = built-in message
+    contentLanguage?: string       // BCP 47 language of the course content (e.g. 'en', 'uk', 'pt-BR'); sets lang for screen readers
   },
   lessons: Lesson[]
 }
@@ -234,10 +235,14 @@ ${blockReference()}
 - **Rich text** (\`paragraph\`, \`tabs\`, \`accordion\`): \`html\` is a small subset
   of HTML. Inline images use relative \`assets/\` paths.
 - **Media**: reference files by relative path under \`assets/images/\`,
-  \`assets/videos/\`, or \`assets/audio/\`. Put the files there too. A \`data:\` URL
+  \`assets/videos/\`, \`assets/audio/\`, or \`assets/captions/\` (WebVTT). Put the files there too. A \`data:\` URL
   also works but bloats the file.
 - **Media formats**: images PNG/JPEG/WebP/GIF/SVG, video MP4/WebM, audio
-  MP3/OGG/WAV/M4A. Other formats are rejected by the app.
+  MP3/OGG/WAV/M4A, captions WebVTT (.vtt). Other formats are rejected by the app.
+- **Accessibility**: give every informative image a meaningful \`alt\` (or set
+  \`decorative: true\` when it adds no information); give videos \`captions\`
+  and/or a \`transcript\`, audio a \`transcript\`, embeds a \`title\`; set
+  \`settings.contentLanguage\` to the language the course is written in.
 - **Quizzes**: for \`single\`/\`multiple\`, mark correct options with
   \`correct: true\` (at least one; give at least 2 options). For \`matching\`,
   the correct match for each pair is its own \`right\` value — keep every
@@ -267,7 +272,10 @@ passes them is ready to export:
 - ordering blocks have at least 2 items with text; in categories mode at least
   2 categories and every item assigned to one;
 - fill-in-the-blanks blocks contain at least one \`[blank]\`;
-- scenarios start at an existing node and have no links to missing nodes.
+- scenarios start at an existing node and have no links to missing nodes;
+- accessibility: non-decorative images (image, gallery, hotspot) have alt
+  text, videos have captions or a transcript, audio has a transcript, embeds
+  have a title, and the course content language is set.
 
 ## Typical agent workflow
 
