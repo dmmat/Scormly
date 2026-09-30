@@ -8,6 +8,7 @@ import {
 import { useCourseStore } from '../../store/courseStore'
 import { useMenu } from '../../hooks/useMenu'
 import { useT } from '../../i18n/I18nProvider'
+import BlockIcon from '../../blocks/BlockIcon'
 
 interface AddBlockMenuProps {
   lessonId: string
@@ -180,8 +181,8 @@ export default function AddBlockMenu({
                       className="flex flex-col gap-1 rounded-lg border border-gray-100 p-2.5 text-left transition-colors hover:border-brand/40 hover:bg-brand/5 focus:border-brand/40 focus:bg-brand/5 focus:outline-none"
                     >
                       <span className="flex items-center gap-2">
-                        <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-brand/10 text-sm text-brand">
-                          {meta.icon}
+                        <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-brand/10 text-brand">
+                          <BlockIcon type={meta.type} />
                         </span>
                         <span className="text-sm font-medium text-gray-800">
                           {tb(meta.type)}

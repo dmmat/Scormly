@@ -12,8 +12,6 @@ export type BlockCategory = 'text' | 'media' | 'interactive' | 'navigation'
 export interface BlockMeta {
   type: BlockType
   category: BlockCategory
-  /** Icon name (emoji placeholder until an icon set is wired up). */
-  icon: string
   /** Factory for a default block of this type. */
   create: () => Block
 }
@@ -27,7 +25,6 @@ export const BLOCK_REGISTRY: Record<BlockType, BlockMeta> = {
   heading: {
     type: 'heading',
     category: 'text',
-    icon: 'H',
     create: () => ({
       id: uid('block'),
       type: 'heading',
@@ -38,7 +35,6 @@ export const BLOCK_REGISTRY: Record<BlockType, BlockMeta> = {
   paragraph: {
     type: 'paragraph',
     category: 'text',
-    icon: '¶',
     create: () => ({
       id: uid('block'),
       type: 'paragraph',
@@ -49,7 +45,6 @@ export const BLOCK_REGISTRY: Record<BlockType, BlockMeta> = {
   list: {
     type: 'list',
     category: 'text',
-    icon: '•',
     create: () => ({
       id: uid('block'),
       type: 'list',
@@ -60,7 +55,6 @@ export const BLOCK_REGISTRY: Record<BlockType, BlockMeta> = {
   note: {
     type: 'note',
     category: 'text',
-    icon: '!',
     create: () => ({
       id: uid('block'),
       type: 'note',
@@ -71,7 +65,6 @@ export const BLOCK_REGISTRY: Record<BlockType, BlockMeta> = {
   image: {
     type: 'image',
     category: 'media',
-    icon: '🖼',
     create: () => ({
       id: uid('block'),
       type: 'image',
@@ -82,7 +75,6 @@ export const BLOCK_REGISTRY: Record<BlockType, BlockMeta> = {
   gallery: {
     type: 'gallery',
     category: 'media',
-    icon: '🖼🖼',
     create: () => ({
       id: uid('block'),
       type: 'gallery',
@@ -93,7 +85,6 @@ export const BLOCK_REGISTRY: Record<BlockType, BlockMeta> = {
   video: {
     type: 'video',
     category: 'media',
-    icon: '▶',
     create: () => ({
       id: uid('block'),
       type: 'video',
@@ -104,7 +95,6 @@ export const BLOCK_REGISTRY: Record<BlockType, BlockMeta> = {
   audio: {
     type: 'audio',
     category: 'media',
-    icon: '♪',
     create: () => ({
       id: uid('block'),
       type: 'audio',
@@ -115,7 +105,6 @@ export const BLOCK_REGISTRY: Record<BlockType, BlockMeta> = {
   embed: {
     type: 'embed',
     category: 'media',
-    icon: '⧉',
     create: () => ({
       id: uid('block'),
       type: 'embed',
@@ -126,7 +115,6 @@ export const BLOCK_REGISTRY: Record<BlockType, BlockMeta> = {
   code: {
     type: 'code',
     category: 'text',
-    icon: '</>',
     create: () => ({
       id: uid('block'),
       type: 'code',
@@ -137,7 +125,6 @@ export const BLOCK_REGISTRY: Record<BlockType, BlockMeta> = {
   table: {
     type: 'table',
     category: 'text',
-    icon: '▦',
     create: () => ({
       id: uid('block'),
       type: 'table',
@@ -154,7 +141,6 @@ export const BLOCK_REGISTRY: Record<BlockType, BlockMeta> = {
   quote: {
     type: 'quote',
     category: 'text',
-    icon: '❝',
     create: () => ({
       id: uid('block'),
       type: 'quote',
@@ -165,7 +151,6 @@ export const BLOCK_REGISTRY: Record<BlockType, BlockMeta> = {
   continue: {
     type: 'continue',
     category: 'navigation',
-    icon: '⏭',
     create: () => ({
       id: uid('block'),
       type: 'continue',
@@ -176,7 +161,6 @@ export const BLOCK_REGISTRY: Record<BlockType, BlockMeta> = {
   divider: {
     type: 'divider',
     category: 'navigation',
-    icon: '─',
     create: () => ({
       id: uid('block'),
       type: 'divider',
@@ -187,7 +171,6 @@ export const BLOCK_REGISTRY: Record<BlockType, BlockMeta> = {
   courseOutline: {
     type: 'courseOutline',
     category: 'navigation',
-    icon: '☰',
     create: () => ({
       id: uid('block'),
       type: 'courseOutline',
@@ -198,7 +181,6 @@ export const BLOCK_REGISTRY: Record<BlockType, BlockMeta> = {
   tabs: {
     type: 'tabs',
     category: 'interactive',
-    icon: '▭',
     create: () => ({
       id: uid('block'),
       type: 'tabs',
@@ -222,7 +204,6 @@ export const BLOCK_REGISTRY: Record<BlockType, BlockMeta> = {
   accordion: {
     type: 'accordion',
     category: 'interactive',
-    icon: '≡',
     create: () => ({
       id: uid('block'),
       type: 'accordion',
@@ -246,7 +227,6 @@ export const BLOCK_REGISTRY: Record<BlockType, BlockMeta> = {
   flashcards: {
     type: 'flashcards',
     category: 'interactive',
-    icon: '🂠',
     create: () => ({
       id: uid('block'),
       type: 'flashcards',
@@ -259,7 +239,6 @@ export const BLOCK_REGISTRY: Record<BlockType, BlockMeta> = {
   scenario: {
     type: 'scenario',
     category: 'interactive',
-    icon: '💬',
     create: () => {
       const startId = uid('node')
       return {
@@ -287,7 +266,6 @@ export const BLOCK_REGISTRY: Record<BlockType, BlockMeta> = {
   quiz: {
     type: 'quiz',
     category: 'interactive',
-    icon: '✔',
     create: () => ({
       id: uid('block'),
       type: 'quiz',
@@ -312,7 +290,6 @@ export const BLOCK_REGISTRY: Record<BlockType, BlockMeta> = {
   hotspot: {
     type: 'hotspot',
     category: 'interactive',
-    icon: '◎',
     create: () => ({
       id: uid('block'),
       type: 'hotspot',
@@ -323,7 +300,6 @@ export const BLOCK_REGISTRY: Record<BlockType, BlockMeta> = {
   timeline: {
     type: 'timeline',
     category: 'interactive',
-    icon: '⋮',
     create: () => ({
       id: uid('block'),
       type: 'timeline',
@@ -342,7 +318,6 @@ export const BLOCK_REGISTRY: Record<BlockType, BlockMeta> = {
   ordering: {
     type: 'ordering',
     category: 'interactive',
-    icon: '⇅',
     create: () => ({
       id: uid('block'),
       type: 'ordering',
@@ -360,7 +335,6 @@ export const BLOCK_REGISTRY: Record<BlockType, BlockMeta> = {
   fillBlanks: {
     type: 'fillBlanks',
     category: 'interactive',
-    icon: '[…]',
     create: () => ({
       id: uid('block'),
       type: 'fillBlanks',

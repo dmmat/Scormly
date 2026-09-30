@@ -39,7 +39,6 @@ divider: {
   label: 'Divider',
   description: 'Horizontal line',
   category: 'navigation',
-  icon: '—',
   create: () => ({
     id: uid('block'),
     type: 'divider',
@@ -50,7 +49,9 @@ divider: {
 ```
 
 The registry entry automatically appears in the "+ Add block" menu under the
-corresponding category.
+corresponding category. Also add a line icon for the type to `PATHS` in
+[`src/blocks/BlockIcon.tsx`](../src/blocks/BlockIcon.tsx) (24×24, stroked) —
+the `Record<BlockType, …>` type makes the build fail until you do.
 
 ## 3. Create the editor component
 
