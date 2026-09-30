@@ -72,13 +72,17 @@ function faqJsonLd(): string {
   return `<script type="application/ld+json">${JSON.stringify(data).replace(/</g, '\\u003c')}</script>`
 }
 
-// Minimal readable styling for the moment before the app bundle mounts.
+// Minimal readable styling for no-JS readers. With JS on, the copy stays
+// hidden until React replaces it (avoids a flash of unstyled text before the
+// real landing mounts); if the bundle never mounts, it fades in after 3s.
 const STYLE = `<style>
 #seo-static{max-width:48rem;margin:0 auto;padding:2rem 1rem;font-family:system-ui,sans-serif;line-height:1.6;color:#1f2937}
 #seo-static h1{font-size:2.25rem;line-height:1.15}
 #seo-static ul,#seo-static ol{padding-left:1.25rem}
 #seo-static a{color:#db2777}
 .route-app #seo-static{display:none}
+.js #seo-static{opacity:0;animation:seo-reveal .3s 3s forwards}
+@keyframes seo-reveal{to{opacity:1}}
 </style>`
 
 export function seoPrerender(): Plugin {

@@ -55,8 +55,9 @@
     <meta name="apple-mobile-web-app-title" content="Scormly" />
 
     <!-- The landing copy is prerendered into #root at build time (see
-         scripts/seoPrerender.ts); on builder routes hide it until React mounts. -->
+         scripts/seoPrerender.ts); with JS it stays hidden until React mounts. -->
     <script>
+      document.documentElement.classList.add('js')
       if (/^#\/?(app|demo)/.test(location.hash)) document.documentElement.classList.add('route-app')
     </script>
 
