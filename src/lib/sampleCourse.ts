@@ -120,8 +120,8 @@ export function makeSampleCourse(lang: Language): Course {
           },
           {
             id: id('hs'),
-            x: 91,
-            y: 29,
+            x: 77,
+            y: 30,
             title: tr(L('Pressure and urgency', 'Тиск і терміновість')),
             text: tr(L('Deadlines and threats are designed to make you act before you think.', 'Дедлайни й погрози мають змусити вас діяти, не подумавши.')),
           },

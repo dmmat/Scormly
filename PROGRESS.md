@@ -300,3 +300,5 @@ tracking layer.
   - Built-in bilingual sample course "Spot the phish" (`lib/sampleCourse.ts`, EN/UK) using hotspots,
     tabs, flashcards, a chat scenario, a timeline, a table, ordering, fill-in-the-blanks and a quiz.
     Opened in memory via `#/demo` (landing hero + demo section) or the welcome screen card.
+- 2026-09-30 — Landing playground: added image hotspots, sorting, fill-in-the-blanks and timeline
+  tabs. They render the real learner blocks (`BlockPreview`) with content from the demo course.

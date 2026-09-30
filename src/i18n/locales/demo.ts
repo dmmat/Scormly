@@ -13,6 +13,10 @@ const demo: LocaleTable = {
     tabQuiz: 'Quiz',
     tabFlashcards: 'Flashcards',
     tabOutline: 'Course outline',
+    tabHotspot: 'Image hotspots',
+    tabOrdering: 'Sorting',
+    tabFillBlanks: 'Fill in the blanks',
+    tabTimeline: 'Timeline',
 
     // Chat (auto-playing scenario). The scenarios themselves live in
     // src/components/landing/demos/chatScenarios.ts as inline { en, uk }
@@ -57,6 +61,10 @@ const demo: LocaleTable = {
     tabQuiz: 'Квіз',
     tabFlashcards: 'Картки',
     tabOutline: 'Зміст курсу',
+    tabHotspot: 'Гарячі точки',
+    tabOrdering: 'Сортування',
+    tabFillBlanks: 'Пропуски',
+    tabTimeline: 'Таймлайн',
 
     // Chat (auto-playing scenario) — see chatScenarios.ts for the content.
     chatReplay: 'Спочатку',
