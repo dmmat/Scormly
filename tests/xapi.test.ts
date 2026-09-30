@@ -167,9 +167,9 @@ describe('xAPI — full session statement order', () => {
     expect(progressed.length).toBe(2)
     expect(progressed[0].result?.extensions?.[PROGRESS_EXT]).toBe(10)
     expect(progressed[1].result?.extensions?.[PROGRESS_EXT]).toBe(50)
-    // progressed is cmi5-defined, so it must carry the cmi5 category…
-    expect(hasCategory(progressed[0], CMI5_CAT)).toBe(true)
-    // …but not the moveOn category (it isn't a moveOn-criterion verb).
+    // progressed is only "cmi5 allowed" (not a cmi5-defined verb), so it must
+    // not carry the cmi5 category — nor the moveOn one.
+    expect(hasCategory(progressed[0], CMI5_CAT)).toBe(false)
     expect(hasCategory(progressed[0], MOVEON_CAT)).toBe(false)
   })
 
@@ -424,7 +424,8 @@ describe('xAPI — launchMode Browse/Review locks out tracking', () => {
 })
 
 describe('xAPI — abandon', () => {
-  test('reportAbandoned emits the ADL abandoned verb once', async () => {
+  // abandoned is LMS-issued only (cmi5 §9.3.9); the AU never sends it.
+  test('reportAbandoned never emits abandoned from the AU', async () => {
     const { SCORM, statements, wait } = loadXapi({
       params: defaultLaunch(),
       launchData: { launchMode: 'Normal' },
@@ -434,8 +435,7 @@ describe('xAPI — abandon', () => {
     SCORM.reportAbandoned() // dedupe
     await wait()
     const abandoned = statements().filter((s) => s.verb.id === V.abandoned)
-    expect(abandoned.length).toBe(1)
-    expect(hasCategory(abandoned[0], CMI5_CAT)).toBe(true)
+    expect(abandoned.length).toBe(0)
   })
 
   test('abandon after a successful terminate is also suppressed', async () => {

@@ -9,9 +9,12 @@
    - progress:  progress_measure (2004 only)
    - resume:    suspend_data, location, exit=suspend
    - time:      session_time
-   - objectives: cmi.objectives.n.* (one per scored block: quiz / ordering / fill-in)
-   - interactions: cmi.interactions.n.* incl. weighting / latency / description /
-                   correct_responses.0.pattern / timestamp
+   - objectives: cmi.objectives.n.* (one per scored block: quiz / ordering / fill-in),
+                 indexed by id — records the LMS already holds (e.g. manifest-declared
+                 2004 objectives) are reused, new ones are appended at _count
+   - interactions: cmi.interactions.n.* appended after the LMS's _count, incl.
+                   weighting / latency / description (2004) /
+                   correct_responses.n.pattern / timestamp
    - LMS context (read-only): learner id/name, mode, entry (resume), launch_data,
                               student_data.mastery_score, preference.language
    - learner comments: cmi.comments_from_learner (2004) / cmi.comments (1.2)
@@ -54,6 +57,9 @@
 
   var API = null, v2004 = false, ready = false;
   var commentCount = 0; // 2004: index for cmi.comments_from_learner.n
+  var interactionCount = 0; // next free cmi.interactions.n (starts at the LMS _count)
+  var objectiveCount = 0;   // next free cmi.objectives.n
+  var objectiveIndexById = {}; // objective id -> existing cmi.objectives.n index
   var pendingComment = ''; // 1.2: cmi.comments is append-only on some LMS
 
   function lastError() { return API ? API[v2004 ? 'GetLastError' : 'LMSGetLastError']() : '0'; }
@@ -87,6 +93,38 @@
     if (v2004) return 'PT' + hh + 'H' + mm + 'M' + ss + 'S';
     function pad(n, w) { return ('0000' + n).slice(-w); }
     return pad(hh, 4) + ':' + pad(mm, 2) + ':' + pad(ss, 2) + '.00';
+  }
+
+  // SCORM 2004 time(second,10,0): at most 2 fractional-second digits, so the
+  // millisecond precision of toISOString() is rejected by strict LMSes.
+  function isoTimestamp() {
+    return new Date().toISOString().replace(/\.(\d{2})\d*Z$/, '.$1Z');
+  }
+
+  function readCount(key) {
+    var n = parseInt(get(key), 10);
+    return isFinite(n) && n > 0 ? n : 0;
+  }
+
+  // Index the records the LMS already holds, so we append after them (a new
+  // launch must not overwrite the previous session's interactions) and write
+  // objectives to the slot that already carries their id — 2004 LMSes preload
+  // the manifest's objectives (PRIMARYOBJ, QUIZ_*) in declaration order, and
+  // writing a different id to an existing slot is an error.
+  function readIndexes() {
+    interactionCount = readCount('cmi.interactions._count');
+    objectiveCount = readCount('cmi.objectives._count');
+    objectiveIndexById = {};
+    for (var i = 0; i < objectiveCount; i++) {
+      var id = get('cmi.objectives.' + i + '.id');
+      if (id && !(id in objectiveIndexById)) objectiveIndexById[id] = i;
+    }
+    if (v2004) commentCount = readCount('cmi.comments_from_learner._count');
+  }
+
+  function objectiveIndex(id) {
+    if (!(id in objectiveIndexById)) objectiveIndexById[id] = objectiveCount++;
+    return objectiveIndexById[id];
   }
 
   // Interaction responses/patterns may be passed pre-formatted (string) or as
@@ -153,6 +191,7 @@
       ready = API[v2004 ? 'Initialize' : 'LMSInitialize']('') === 'true';
       if (ready) {
         readContext();
+        readIndexes();
         if (!v2004) {
           var status = API.LMSGetValue('cmi.core.lesson_status');
           if (trackingAllowed() && (!status || status === 'not attempted')) {
@@ -212,10 +251,11 @@
     // Record an objective (typically one per quiz). data: { id, raw, min, max,
     // status, success }. status: 'completed'|'incomplete' (2004 only).
     // success: 'passed'|'failed'|null. Mirrors the SCORM data model so analytics
-    // can break results down per objective.
-    setObjective: function (i, data) {
+    // can break results down per objective. The first argument (the caller's
+    // index) is ignored: the slot is resolved by objective id, see readIndexes.
+    setObjective: function (_i, data) {
       if (!trackingAllowed() || !data || !data.id) return;
-      var p = (v2004 ? 'cmi.objectives.' : 'cmi.objectives.') + i + '.';
+      var p = 'cmi.objectives.' + objectiveIndex(data.id) + '.';
       set(p + 'id', data.id);
       if (typeof data.raw === 'number') {
         set(p + 'score.raw', Math.round(data.raw));
@@ -239,10 +279,11 @@
 
     // Record a quiz answer as a SCORM interaction. data extends the minimal
     // shape with optional weighting, latencySec, description and an array of
-    // correct response patterns.
-    recordInteraction: function (i, data) {
+    // correct response patterns. The first argument (the caller's index) is
+    // ignored: interactions are appended after the ones the LMS already holds.
+    recordInteraction: function (_i, data) {
       if (!trackingAllowed() || !data || !data.id) return;
-      var p = 'cmi.interactions.' + i + '.';
+      var p = 'cmi.interactions.' + (interactionCount++) + '.';
       set(p + 'id', data.id);
       set(p + 'type', data.type);
       // 1.2 student_response is CMIFeedback (max 255 chars).
@@ -252,9 +293,10 @@
       // Optional fields.
       if (typeof data.weight === 'number') set(p + 'weighting', data.weight);
       if (typeof data.latencySec === 'number') set(p + 'latency', formatTime(data.latencySec));
-      if (data.description) set(p + 'description', String(data.description).slice(0, 250));
+      // description exists only in the 2004 data model.
+      if (v2004 && data.description) set(p + 'description', String(data.description).slice(0, 250));
       // Timestamp: 2004 wants ISO-8601, 1.2 wants HH:MM:SS.
-      if (v2004) set(p + 'timestamp', new Date().toISOString());
+      if (v2004) set(p + 'timestamp', isoTimestamp());
       else {
         var d = new Date();
         function pad(n) { return n < 10 ? '0' + n : '' + n; }
@@ -281,7 +323,7 @@
       if (v2004) {
         var p = 'cmi.comments_from_learner.' + commentCount + '.';
         set(p + 'comment', t.slice(0, 4000));
-        set(p + 'timestamp', new Date().toISOString());
+        set(p + 'timestamp', isoTimestamp());
         commentCount++;
       } else {
         pendingComment += (pendingComment ? '\n' : '') + t;
@@ -301,6 +343,21 @@
     getLaunchData: function () { return ctx.launchData; },
     getLmsMastery: function () { return ctx.lmsMastery; },
     getPreferredLanguage: function () { return ctx.language; },
+    // Learner preferences, read live. captions: 1 = on, 0 = no change,
+    // -1 = off (1.2 cmi.student_preference.text / 2004
+    // learner_preference.audio_captioning). Unsupported/errored → 0 / ''.
+    getLearnerPreferences: function () {
+      var prefs = { captions: 0, language: '' };
+      try {
+        var c = parseInt(get(v2004 ? 'cmi.learner_preference.audio_captioning' : 'cmi.student_preference.text'), 10);
+        if (c === 1 || c === -1) prefs.captions = c;
+        prefs.language = String(get(v2004 ? 'cmi.learner_preference.language' : 'cmi.student_preference.language') || '');
+      } catch (e) { /* LMS API threw: keep defaults */ }
+      return prefs;
+    },
+    // Max suspend_data length the data model guarantees (1.2 CMIString4096,
+    // 2004 characterstring SPM 64000). 0 = no known limit.
+    suspendLimit: function () { return API ? (v2004 ? 64000 : 4096) : 0; },
 
     commit: function () { if (ready && API) API[v2004 ? 'Commit' : 'LMSCommit'](''); },
     finish: function () {

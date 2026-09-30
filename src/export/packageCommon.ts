@@ -11,7 +11,11 @@ export type TrackingScript = 'scorm.js' | 'xapi.js'
 const STATIC_FILES = ['index.html', 'player.css', 'player.js']
 
 export function escapeHtml(s: string): string {
-  return s.replace(/</g, '&lt;').replace(/>/g, '&gt;')
+  return s
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
 }
 
 export function sanitize(name: string): string {
@@ -44,10 +48,28 @@ type DirEntries = {
 // (e.g. after replacing a video) are therefore excluded from the package.
 export function collectAssetPaths(course: Course): Set<string> {
   const paths = new Set<string>()
-  const re = /assets\/[A-Za-z0-9_\-./]+\.[A-Za-z0-9]+/g
+  // A path runs until a character that can't be part of a file name inside a
+  // JSON string / HTML attribute / CSS url() (quote, backslash escape, angle
+  // bracket, query/fragment, line break). Spaces, Unicode, parentheses and
+  // %-escapes are allowed, so the match is lazy and must end in `.ext`
+  // followed by a terminator — "see assets/a.png for details" stops at `.png`,
+  // while "assets/my file (1).png" is matched whole. Candidates are only ever
+  // compared against real files in assets/, so an over-match is harmless.
+  const re = /assets\/[^"'<>\\`?#\r\n]+?\.[A-Za-z0-9]+(?=["'<>\\`?#)\s,;]|$)/gu
   let m: RegExpExecArray | null
   const json = JSON.stringify(course)
-  while ((m = re.exec(json)) !== null) paths.add(m[0])
+  while ((m = re.exec(json)) !== null) {
+    paths.add(m[0])
+    // URLs in HTML may be %-encoded and/or entity-escaped; the zip needs the
+    // on-disk name.
+    const unescaped = m[0].replace(/&amp;/g, '&')
+    paths.add(unescaped)
+    try {
+      paths.add(decodeURIComponent(unescaped))
+    } catch {
+      // Malformed %-sequence: keep the literal path only.
+    }
+  }
   return paths
 }
 
@@ -75,6 +97,17 @@ async function addDir(
   return paths
 }
 
+// Fetch one of the bundled player files. Fail loudly: silently zipping an
+// HTML 404 page as player.js would produce a package that just shows a blank
+// screen in the LMS.
+async function fetchPlayerFile(base: string, name: string): Promise<string> {
+  const res = await fetch(`${base}scorm-player/${name}`)
+  if (!res.ok) {
+    throw new Error(`Could not load player file "${name}" (HTTP ${res.status})`)
+  }
+  return res.text()
+}
+
 // Add the player runtime + embedded course data. The chosen tracking script is
 // bundled and wired into index.html (which ships referencing scorm.js).
 // Returns the list of file paths added (for the manifest's file listing).
@@ -87,18 +120,19 @@ export async function addPlayer(
   const files: string[] = []
 
   for (const name of STATIC_FILES) {
-    const res = await fetch(`${base}scorm-player/${name}`)
-    let content = await res.text()
+    let content = await fetchPlayerFile(base, name)
     if (name === 'index.html') {
-      content = content.replace('{{COURSE_TITLE}}', escapeHtml(course.title || 'Course'))
-      if (tracking !== 'scorm.js') content = content.replace('scorm.js', tracking)
+      // Replacer function: a string replacement would interpret `$&`, `$1`, …
+      // sequences in the course title.
+      const title = escapeHtml(course.title || 'Course')
+      content = content.replace('{{COURSE_TITLE}}', () => title)
+      if (tracking !== 'scorm.js') content = content.replace('scorm.js', () => tracking)
     }
     zip.file(name, content)
     files.push(name)
   }
 
-  const trackingRes = await fetch(`${base}scorm-player/${tracking}`)
-  zip.file(tracking, await trackingRes.text())
+  zip.file(tracking, await fetchPlayerFile(base, tracking))
   files.push(tracking)
 
   // Course data, embedded as a JS global rather than a fetched JSON file: many
@@ -135,7 +169,11 @@ export async function addAssets(
 
 /** Generate the zip and trigger a browser download; resolves to the filename. */
 export async function downloadZip(zip: JSZip, filename: string): Promise<string> {
-  const blob = await zip.generateAsync({ type: 'blob' })
+  const blob = await zip.generateAsync({
+    type: 'blob',
+    compression: 'DEFLATE',
+    compressionOptions: { level: 6 },
+  })
   const url = URL.createObjectURL(blob)
   const a = document.createElement('a')
   a.href = url
@@ -143,6 +181,8 @@ export async function downloadZip(zip: JSZip, filename: string): Promise<string>
   document.body.appendChild(a)
   a.click()
   a.remove()
-  URL.revokeObjectURL(url)
+  // Revoking synchronously can cancel the download in some browsers before it
+  // has started reading the blob.
+  setTimeout(() => URL.revokeObjectURL(url), 60_000)
   return filename
 }

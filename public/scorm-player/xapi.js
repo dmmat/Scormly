@@ -8,15 +8,19 @@
      1. POST to the one-time `fetch` URL to obtain the auth token.
      2. GET the LMS.LaunchData state (auMode, masteryScore, contextTemplate,
         launchParameters, returnURL, …).
-     3. Send `initialized` first; then during the session — `progressed`,
-        `completed`, `passed`/`failed`, `answered`; and `terminated` last (or
-        `abandoned` if the AU closes without a terminate).
-   Statements that report cmi5 "moveOn" criteria carry the cmi5 category context
-   activity; interaction (`answered`) statements deliberately do not.
+     3. Send `initialized` first; then during the session — `completed`,
+        `passed`/`failed`, plus the non-cmi5-defined `progressed` / `answered`;
+        and `terminated` last. `abandoned` is issued by the LMS, never the AU.
+   cmi5-defined statements carry the cmi5 category context activity; the
+   others (`progressed`, `answered`, objective results) deliberately do not.
+   `completed` and `passed` are sent at most once per registration (the flags
+   survive relaunches inside the resume state); `failed` at most once per
+   session and never after `passed`.
 
    Resume: cmi5 has no suspend_data field — we persist the player's resume blob
    via the xAPI State API under stateId `suspendData` so getSuspend/setSuspend
-   keep working across launches. */
+   keep working across launches. The sent-statement flags ride along in the
+   same JSON document under the `x5` key, invisible to the player. */
 (function () {
   'use strict';
 
@@ -53,7 +57,6 @@
     failed: { id: 'http://adlnet.gov/expapi/verbs/failed', display: { 'en-US': 'failed' } },
     progressed: { id: 'http://adlnet.gov/expapi/verbs/progressed', display: { 'en-US': 'progressed' } },
     answered: { id: 'http://adlnet.gov/expapi/verbs/answered', display: { 'en-US': 'answered' } },
-    abandoned: { id: 'https://w3id.org/xapi/adl/verbs/abandoned', display: { 'en-US': 'abandoned' } },
     commented: { id: 'http://adlnet.gov/expapi/verbs/commented', display: { 'en-US': 'commented' } },
   };
 
@@ -71,7 +74,9 @@
   var sessionId = uuid();
   var startTime = 0;
   var score = null;          // { scaled, raw?, min?, max? } from setScore
-  var sent = {};             // dedupe per-session statements
+  var sent = {};             // dedupe per-session statements (initialized, terminated, failed)
+  // Result statements already sent in this registration (persisted, see x5).
+  var regSent = { completed: false, passed: false, failed: false };
   var lastProgress = -1;     // last reported progress, 0..100
   var queue = Promise.resolve();
 
@@ -85,6 +90,12 @@
       'Authorization': auth,
       'X-Experience-API-Version': '1.0.3',
     };
+  }
+
+  // cmi5 §8.2: the fetch URL returns a Basic credential without the scheme.
+  function authHeader(token) {
+    token = String(token);
+    return /^basic\s/i.test(token) ? token : 'Basic ' + token;
   }
 
   // cmi5 context: derived from LaunchData.contextTemplate (LMS-required) plus
@@ -122,9 +133,14 @@
   }
   function trackingAllowed() { return auMode() === 'Normal'; }
 
+  // Passed: once per registration. Failed: once per session and never after a
+  // pass — a later successful retry in the same session may still send passed.
   function sendResult(passed) {
-    if (!active || sent.result || !score || !trackingAllowed()) return;
-    sent.result = true;
+    if (!active || !score || !trackingAllowed() || regSent.passed) return;
+    if (passed) regSent.passed = true;
+    else if (sent.failed) return;
+    else { sent.failed = true; regSent.failed = true; }
+    persistFlags();
     enqueue(function () {
       var res = { success: !!passed, duration: elapsed(), score: { scaled: score.scaled } };
       if (typeof score.raw === 'number') { res.score.raw = score.raw; res.score.min = score.min; res.score.max = score.max; }
@@ -179,6 +195,43 @@
   var pendingSuspend = null;
   var flushingSuspend = false;
   var suspendDirty = false;
+  var playerSuspend = null;  // last blob handed to setSuspend (without x5)
+
+  // Merge the sent flags into the player's JSON blob (key x5); non-JSON blobs
+  // are stored as-is.
+  function withFlags(str) {
+    if (!regSent.completed && !regSent.passed && !regSent.failed) return str;
+    try {
+      var o = JSON.parse(str);
+      if (o && typeof o === 'object' && !Array.isArray(o)) {
+        o.x5 = { c: regSent.completed ? 1 : 0, p: regSent.passed ? 1 : 0, f: regSent.failed ? 1 : 0 };
+        return JSON.stringify(o);
+      }
+    } catch (e) { /* not JSON */ }
+    return str;
+  }
+  // Split a stored document into the player's blob and our flags.
+  function extractFlags(str) {
+    try {
+      var o = JSON.parse(str);
+      if (o && typeof o === 'object' && o.x5) {
+        regSent.completed = !!o.x5.c;
+        regSent.passed = !!o.x5.p;
+        regSent.failed = !!o.x5.f;
+        delete o.x5;
+        return JSON.stringify(o);
+      }
+    } catch (e) { /* not JSON */ }
+    return str;
+  }
+  // Re-save the resume state so a flag change is durable even if the player
+  // doesn't write progress again before the window closes.
+  function persistFlags() {
+    if (playerSuspend == null) return;
+    pendingSuspend = withFlags(playerSuspend);
+    suspendDirty = true;
+    flushSuspend();
+  }
   function flushSuspend() {
     if (!active || !auth || flushingSuspend) return;
     if (pendingSuspend == null) return;
@@ -211,8 +264,9 @@
     return fetch(P.fetch, { method: 'POST' })
       .then(function (r) { return r.json(); })
       .then(function (j) {
-        auth = j['auth-token'] || j.authToken || null;
-        if (!auth) throw new Error('no auth-token returned from fetch URL');
+        var token = j['auth-token'] || j.authToken || null;
+        if (!token) throw new Error('no auth-token returned from fetch URL');
+        auth = authHeader(token);
         var url = endpoint + 'activities/state?stateId=LMS.LaunchData'
           + '&activityId=' + encodeURIComponent(activityId)
           + '&agent=' + encodeURIComponent(JSON.stringify(actor))
@@ -229,7 +283,7 @@
           .catch(function () { return ''; });
       })
       .then(function (sd) {
-        resumedSuspend = sd || '';
+        resumedSuspend = extractFlags(sd || '');
         // cmi5 §11: the LMS keeps the learner's language in an agent profile,
         // not in LaunchData.
         var url = endpoint + 'agents/profile?profileId=cmi5LearnerPreferences'
@@ -309,16 +363,17 @@
     // completed: boolean; success: 'passed' | 'failed' | null
     report: function (completed, success) {
       if (!active || !trackingAllowed()) return;
-      if (completed && !sent.completed) {
-        sent.completed = true;
+      if (completed && !regSent.completed) {
+        regSent.completed = true;
+        persistFlags();
         enqueue(function () {
           var res = { completion: true, duration: elapsed() };
           return post(statement(V.completed, res, { cmi5: true, moveOn: true }));
         });
       }
       // The player only passes `success` once the whole course is complete;
-      // sendResult() (driven by setScore) usually fires earlier. Either way the
-      // result is sent at most once.
+      // sendResult() (driven by setScore) usually fires earlier. Its guards
+      // make repeated calls no-ops.
       if (success) sendResult(success === 'passed');
     },
 
@@ -340,7 +395,8 @@
     getSuspend: function () { return resumedSuspend; },
     setSuspend: function (str) {
       if (!active || !trackingAllowed()) return;
-      pendingSuspend = String(str || '');
+      playerSuspend = String(str || '');
+      pendingSuspend = withFlags(playerSuspend);
       suspendDirty = true;
       flushSuspend();
     },
@@ -358,7 +414,9 @@
       void fraction;
     },
 
-    // Emit a cmi5 `progressed` statement when crossing a 10% milestone.
+    // Emit a `progressed` statement when crossing a 10% milestone. Not a
+    // cmi5-defined verb, so it must not carry the cmi5 category (an LMS
+    // rejects cmi5-categorised statements with other verbs).
     setProgressed: function (fraction) {
       if (!active || !trackingAllowed()) return;
       var pct = Math.max(0, Math.min(100, Math.round(fraction * 100)));
@@ -368,7 +426,7 @@
       enqueue(function () {
         var res = { duration: elapsed(), extensions: {} };
         res.extensions[PROGRESS_EXT] = bucket;
-        return post(statement(V.progressed, res, { cmi5: true }));
+        return post(statement(V.progressed, res, { cmi5: false }));
       });
     },
 
@@ -420,15 +478,10 @@
       });
     },
 
-    // Abandon: cmi5 / xAPI verb. Use when the AU closes without a terminate
-    // (player.js fires this from beforeunload when the course isn't complete).
-    reportAbandoned: function () {
-      if (!active || sent.abandoned || sent.terminated) return;
-      sent.abandoned = true;
-      enqueue(function () {
-        return post(statement(V.abandoned, { duration: elapsed() }, { cmi5: true }));
-      });
-    },
+    // `abandoned` is an LMS-issued verb in cmi5 (when an AU session ends
+    // without `terminated`); the AU must never send it. Kept as a no-op for
+    // API parity.
+    reportAbandoned: function () {},
 
     // LMS-context readers, surfaced from cmi5 launch params + LaunchData.
     getLearner: function () {
@@ -457,14 +510,27 @@
         || (launchData && launchData.languagePreference) || '';
       return String(p).split(',')[0].trim();
     },
+    // Same shape as the SCORM runtime. cmi5LearnerPreferences has no caption
+    // preference, so captions is always 0 (no change).
+    getLearnerPreferences: function () {
+      return { captions: 0, language: SCORM.getPreferredLanguage() };
+    },
+    suspendLimit: function () { return 0; },
 
     commit: function () {}, // statements are sent immediately
-    finish: function () {
+    // unloading: the page is going away, so anything still waiting in the
+    // queue may never be sent — post `terminated` right now (keepalive) so the
+    // LMS doesn't mark the session abandoned.
+    finish: function (unloading) {
       if (!active || sent.terminated) return;
       sent.terminated = true;
-      enqueue(function () {
-        return post(statement(V.terminated, { duration: elapsed() }, { cmi5: true }));
-      });
+      var stmt = statement(V.terminated, { duration: elapsed() }, { cmi5: true });
+      if (unloading) {
+        flushSuspend();
+        post(stmt);
+      } else {
+        enqueue(function () { return post(stmt); });
+      }
     },
     available: function () { return active; },
   };
