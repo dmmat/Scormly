@@ -1,4 +1,4 @@
-import type { LocaleTable } from '../types'
+import type { LocaleTable } from '../types.ts'
 
 // SEO landing page copy (bilingual). The site's default language is English.
 const landing: LocaleTable = {

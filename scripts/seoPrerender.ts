@@ -1,6 +1,6 @@
 import type { Plugin } from 'vite'
-import landing from '../src/i18n/locales/landing'
-import demo from '../src/i18n/locales/demo'
+import landing from '../src/i18n/locales/landing.ts'
+import demo from '../src/i18n/locales/demo.ts'
 
 // The site is a client-rendered SPA, so the served index.html used to contain an
 // empty <div id="root">. This build-only plugin writes the landing's English copy

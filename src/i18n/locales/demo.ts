@@ -1,4 +1,4 @@
-import type { LocaleTable } from '../types'
+import type { LocaleTable } from '../types.ts'
 
 // Copy for the interactive landing demos (auto-playing chat, quiz, flashcards,
 // course outline). Kept separate from the marketing `landing` namespace.
