@@ -256,7 +256,7 @@ Course
     scored: boolean,               // report a pass/fail result
     passingScore: number,          // 0–100, used when scored
     navigation: 'free' | 'linear', // linear: Next unlocks once the lesson's gates/quizzes are done
-    playerLanguage?: 'auto' | 'en' | 'uk', // player UI language; 'auto' (default) = contentLanguage if en/uk, else LMS/browser language
+    playerLanguage?: 'auto' | 'en' | 'uk' | 'es' | 'fr' | 'de' | 'it' | 'nl' | 'pt', // player UI language; 'auto' (default) = contentLanguage if the player has it, else LMS/browser language
     showProgress?: boolean,        // show "Lesson n of N" in the player header (default true)
     finishMessage?: string,        // completion-screen text; empty/omitted = built-in message
     contentLanguage?: string,      // BCP 47 language of the course content (e.g. 'en', 'uk', 'pt-BR'); sets lang for screen readers

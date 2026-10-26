@@ -18,6 +18,7 @@ import {
   DEFAULT_CONTENT_WIDTH,
   DEFAULT_COURSE_SETTINGS,
   isScoredBlock,
+  PLAYER_LANGUAGES,
   type BlockAnimation,
   type CompletionRule,
   type ContentWidth,
@@ -452,8 +453,9 @@ function LearnerPanel() {
           className={`${inputClass} sm:w-auto sm:min-w-80`}
         >
           <option value="auto">{t('playerLangAuto')}</option>
-          <option value="en">{t('playerLangEn')}</option>
-          <option value="uk">{t('playerLangUk')}</option>
+          {PLAYER_LANGUAGES.map((id) => (
+            <option key={id} value={id}>{t(`playerLang_${id}`)}</option>
+          ))}
         </select>
       </Field>
 
