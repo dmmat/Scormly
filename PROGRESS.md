@@ -512,4 +512,29 @@ captions and larger text, in the builder preview and in the exported player alik
     clamps inside the canvas); keys pressed in popovers no longer reach the
     block shortcuts. Add-block menu has a fixed size (640×620, capped to the
     canvas) so it no longer jumps between groups or searches.
+- 2026-10-26 — **Projects without a folder: .zip and browser storage**:
+  - Open / save a project as a .zip (project.json + assets/ + AGENTS.md), in
+    any browser (Firefox included). Base64 media is pulled out into files on
+    save; on open project.json may sit in a zipped folder, archive litter is
+    ignored, and broken JSON gets a clear error. AGENTS.md explains the
+    unzip → edit → re-zip round trip for AI assistants.
+  - Projects kept in this browser (OPFS, `src/lib/browserProjects.ts`): a real
+    directory handle per project, so autosave, media, history and export run
+    unchanged; listed on the welcome screen (open / delete), restored after a
+    reload (`#/app/browser:<id>`); an opened .zip becomes one. Where OPFS
+    isn't writable, the project lives in the tab with media in memory
+    (`putMemoryAsset`) and Save / Ctrl+S download the .zip.
+  - The course `id` identifies a project across .zips: opening a .zip whose id
+    matches the open project or one in this browser asks "Update" (one undo
+    step, `replaceCourse`; media added next to the old files) or "Open as new"
+    (a fresh id), showing both dates (zip times read as local wall-clock time,
+    and written that way). Browser projects get an explicit "Download .zip"
+    button in the header.
+  - Hand- or AI-edited project.json is repaired on load (`repairCourse`: ids,
+    types, missing fields, unknown block types kept but skipped) and the fixes
+    reported once (a repaired folder project is written back).
+  - `user-instructions.md` in every project and .zip: the author's notes for AI
+    assistants (audience, tone, terms, rules), created from a template once and
+    never overwritten; edited in Project settings → AI assistant; AGENTS.md
+    tells assistants to read it first.
 

@@ -171,6 +171,18 @@ In the LMS, the player implements the SCORM API: for 1.2 — `LMSInitialize`,
   straight to the saved lesson). It is not a lesson: no progress, no tracking.
   `intro.blocks` (content types only, `INTRO_BLOCK_TYPES`) sit under the title in
   the lesson column; block actions address them with `lessonId === INTRO_ID`.
+- **Where a project lives** — a folder on disk (File System Access API,
+  Chrome / Edge), a folder in the browser's own storage (OPFS,
+  `src/lib/browserProjects.ts`; Chrome, Edge, Firefox — survives reloads, no
+  prompts), or, as a last resort, only the current tab (media in memory via
+  `putMemoryAsset`). The first two give the store a `directoryHandle`, so
+  saving, media, history and export share one code path. Any of them can be
+  saved as / opened from a project `.zip` (`exportProjectZip.ts`,
+  `importProjectZip.ts`); loaded courses pass `repairCourse` first. The course
+  `id` recognizes a returning `.zip`: the author chooses to update the matching
+  project (an undoable `replaceCourse`) or open it as a new one (fresh id).
+  Next to the generated `AGENTS.md`, each project has the author's
+  `user-instructions.md` (`src/lib/userInstructions.ts`) — never overwritten.
 - **Continue gates** — mid-lesson, a Continue block (either mode) hides the
   blocks after it until clicked, then disappears; the reveal scrolls to and
   focuses the new content. Clicks persist (`state.continued`, suspend data
