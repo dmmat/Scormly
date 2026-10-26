@@ -538,3 +538,10 @@ captions and larger text, in the builder preview and in the exported player alik
     never overwritten; edited in Project settings → AI assistant; AGENTS.md
     tells assistants to read it first.
 
+- 2026-10-26 — Player UI in 8 languages: Spanish, French, German, Italian, Dutch and
+  Portuguese added to the exported player's string table (`T` in player.js) next to
+  English / Ukrainian. `PLAYER_LANGUAGES` (types/course.ts) drives the Project
+  settings → Learner "Player language" dropdown (localized name + endonym); 'auto'
+  and the browser default now pick any of them. `tests/playerLanguages.test.ts`
+  keeps the table in sync (same keys and placeholders). The editor UI itself is
+  still EN / UK.
