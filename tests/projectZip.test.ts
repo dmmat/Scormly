@@ -159,3 +159,12 @@ test('user-instructions.md travels in the .zip: the template first, then the aut
   expect(await readUserInstructions(null)).toBe('# Notes\n- Learners are nurses.')
 })
 
+
+test('review.md goes into the .zip when given, and is ignored on open', async () => {
+  expect((await buildProjectZip(course([]), null)).file('review.md')).toBeNull()
+  const zip = await buildProjectZip(course([]), null, '# Scormly review\n')
+  expect(await zip.file('review.md')!.async('string')).toBe('# Scormly review\n')
+  const file = new File([await zip.generateAsync({ type: 'arraybuffer' })], 'review.zip')
+  await openProjectZip(file, { ask: async () => 'new' })
+  expect(useCourseStore.getState().course.title).toBe(course([]).title)
+})

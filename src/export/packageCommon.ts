@@ -108,7 +108,7 @@ export class PlayerFilesError extends Error {}
 // Fetch one of the bundled player files. Fail loudly: silently zipping an
 // HTML 404 page as player.js would produce a package that just shows a blank
 // screen in the LMS.
-async function fetchPlayerFile(base: string, name: string): Promise<string> {
+export async function fetchPlayerFile(base: string, name: string): Promise<string> {
   let res: Response
   try {
     res = await fetch(`${base}scorm-player/${name}`)

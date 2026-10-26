@@ -45,7 +45,9 @@ src/
 │   ├── projectService.ts     # create / open / save (folder or browser), autosave
 │   ├── browserProjects.ts    # projects kept in OPFS (list / open / delete)
 │   ├── assets.ts             # media: disk, or in memory without a folder
-│   ├── exportProjectZip.ts   # project .zip (project.json + assets + AGENTS.md + user-instructions.md)
+│   ├── exportProjectZip.ts   # project .zip (project.json + assets + AGENTS.md + user-instructions.md + review.md)
+│   ├── layoutReview.ts       # render the course in the player (hidden frames) and measure overflow
+│   ├── reviewReport.ts       # review.md: layout problems + the pre-export check, for AI assistants
 │   ├── importProjectZip.ts   # open a .zip; update an existing project or open as new
 │   ├── repairCourse.ts       # fix hand / AI-edited project.json on load
 │   ├── agentGuide.ts         # AGENTS.md written into every project
@@ -135,9 +137,14 @@ Keyboard shortcuts (Ctrl/Cmd+Z / Y) are wired by `useUndoRedoShortcuts`. See
   store a `directoryHandle`, so saving, media, history and export share one
   path. Without one, media lives in memory (`putMemoryAsset`) and Save /
   Ctrl+S download the .zip.
-- **Project .zip:** `project.json`, `assets/`, `AGENTS.md` (generated) and
+- **Project .zip:** `project.json`, `assets/`, `AGENTS.md` (generated),
   `user-instructions.md` (the author's notes for AI — created from a template
-  once, never overwritten, editable in Project settings → AI assistant).
+  once, never overwritten, editable in Project settings → AI assistant) and
+  `review.md` (generated on download: `layoutReview` loads the real player in
+  hidden phone / desktop frames — `window.__SCORMLY_REVIEW__.show(i)` renders a
+  lesson whole — and lists text that runs off screen, spills or is cut off,
+  plus `checkCourse`). It lets any AI chat fix layout without running code;
+  AGENTS.md links the public repo as reference.
 - **The course `id` identifies a project:** opening a .zip whose id matches the
   open project or one in the browser asks to update it (one undoable
   `replaceCourse`) or open it as new (a fresh id).

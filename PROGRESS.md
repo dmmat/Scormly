@@ -545,3 +545,14 @@ captions and larger text, in the builder preview and in the exported player alik
   and the browser default now pick any of them. `tests/playerLanguages.test.ts`
   keeps the table in sync (same keys and placeholders). The editor UI itself is
   still EN / UK.
+- 2026-10-26 — `review.md` in every downloaded project .zip, so any AI chat (Claude,
+  ChatGPT, …) can "see" the course without running anything. On download Scormly loads
+  the real player in hidden 375px and 1280px frames (`layoutReview.ts`; the player's
+  `__SCORMLY_REVIEW__` hook renders each lesson whole, gates open, no animations) and
+  lists by lesson and block id: text past the screen edge, text spilling out of its
+  block, text cut off by a fixed-size box, sideways-scrolling boxes, images that fail to
+  load — plus the pre-export content check (English). A failed layout pass is noted in
+  the file and never blocks the save. AGENTS.md tells assistants to read review.md and
+  links the public repository as reference. Verified: no findings on any block variant
+  or template (EN / UK); on the demo course it flags the phishing table that is wider
+  than a phone.
