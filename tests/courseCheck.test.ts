@@ -115,6 +115,22 @@ describe('checkCourse', () => {
     expect(keys(course([[block('timeline', { layout: 'stepper', items: [item] })]]))).toEqual([])
   })
 
+  test('process, steps, comparison, before / after and reflection', () => {
+    const step = { id: 's', title: 'T', text: '' }
+    expect(keys(course([[block('process', { layout: 'flow', steps: [step] })]]))).toEqual(['chkProcessFewSteps'])
+    expect(keys(course([[block('process', { layout: 'cycle', steps: [step, { ...step, id: 't' }] })]]))).toEqual([])
+    expect(keys(course([[block('steps', { layout: 'list', steps: [] })]]))).toEqual(['chkStepsEmpty'])
+    expect(keys(course([[block('steps', { layout: 'slides', steps: [{ id: 'g', title: 'T', html: '<p>x</p>', src: 'assets/images/a.png', alt: '' }] })]])))
+      .toEqual(['chkA11yStepsAlt'])
+    const col = (items: string[]) => ({ id: 'c', title: 'Pros', tone: 'pro', items })
+    expect(keys(course([[block('comparison', { columns: [col(['A']), col([' '])] })]]))).toEqual(['chkComparisonEmpty'])
+    expect(keys(course([[block('comparison', { columns: [col(['A']), col(['B'])] })]]))).toEqual([])
+    const ba = { before: 'assets/images/a.png', beforeAlt: 'Old', beforeLabel: 'Before', after: '', afterAlt: '', afterLabel: 'After' }
+    expect(keys(course([[block('beforeAfter', ba)]]))).toEqual(['chkBeforeAfterImages'])
+    expect(keys(course([[block('beforeAfter', { ...ba, after: 'assets/images/b.png' })]]))).toEqual(['chkA11yBeforeAfterAlt'])
+    expect(keys(course([[block('reflection', { prompt: ' ', sample: '' })]]))).toEqual(['chkReflectionNoPrompt'])
+  })
+
   test('accessibility: alt text, captions/transcripts, embed titles', () => {
     const img = { src: 'assets/images/a.png', alt: '' }
     const issues = checkCourse(course([[

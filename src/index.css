@@ -505,11 +505,11 @@ body {
 /* Accent and gradient panels start at the brand color: brand surfaces
  * (flashcard faces, primary buttons) on the panel itself turn white; inside
  * light cards they stay. */
-.blk:is([data-bg="accent"], [data-bg="gradient"]) :is(.interactive-surface.bg-brand, .btn-primary):not(.blk :is(.bg-white, .bg-gray-50) *) {
+.blk:is([data-bg="accent"], [data-bg="gradient"]) :is(.interactive-surface.bg-brand, .btn-primary):not(.blk :is(.bg-white, .bg-gray-50, .sc-steps-slides, .sc-reflect) *) {
   background-color: #fff;
   color: var(--color-brand-dark);
 }
-.blk:is([data-bg="accent"], [data-bg="gradient"]) .btn-primary:not(.blk :is(.bg-white, .bg-gray-50) *):hover:not(:disabled) {
+.blk:is([data-bg="accent"], [data-bg="gradient"]) .btn-primary:not(.blk :is(.bg-white, .bg-gray-50, .sc-steps-slides, .sc-reflect) *):hover:not(:disabled) {
   background-color: rgb(255 255 255 / 0.85);
 }
 /* Light surfaces (editor cards, quiz cards) get dark text back, so fields and
@@ -518,12 +518,12 @@ body {
 @layer components {
   .blk-on-dark :is(.bg-white, .bg-gray-50) { color: #1f2937; }
 }
-.blk-on-dark :is(.bg-white, [class*="bg-white/"], [class*="bg-gray-"], [class*="bg-amber-"], [class*="bg-blue-"], .sc-quote-card, .sc-attach-item, .sc-columns-cards .sc-column)
+.blk-on-dark :is(.bg-white, [class*="bg-white/"], [class*="bg-gray-"], [class*="bg-amber-"], [class*="bg-blue-"], .sc-quote-card, .sc-attach-item, .sc-columns-cards .sc-column, .sc-compare-col, .sc-steps-slides, .sc-reflect)
   :is(.text-gray-900, .text-gray-800, .text-gray-700, .text-gray-600, .text-gray-500, .text-gray-400),
 .blk-on-dark :is(.bg-white, [class*="bg-white/"], [class*="bg-gray-"]):is(.text-gray-900, .text-gray-800, .text-gray-700, .text-gray-600, .text-gray-500, .text-gray-400) {
   color: revert-layer;
 }
-.blk-on-dark :is(.bg-white, [class*="bg-white/"], [class*="bg-gray-"]) .placeholder-gray-300::placeholder { color: revert-layer; }
+.blk-on-dark :is(.bg-white, [class*="bg-white/"], [class*="bg-gray-"], .sc-compare-col, .sc-reflect) .placeholder-gray-300::placeholder { color: revert-layer; }
 
 /* Background swatches in the block style popover. */
 .swatch[data-bg="image"] {

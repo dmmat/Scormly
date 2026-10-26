@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type ReactNode } from 'react'
+import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 import { useDialog } from '../../hooks/useDialog'
 import { useCourseStore, INTRO_ID } from '../../store/courseStore'
 import { useT } from '../../i18n/I18nProvider'
@@ -6,9 +6,11 @@ import BlockPreview from '../../preview/BlockPreview'
 import IntroView from '../../preview/IntroView'
 import A11yMenu from '../../preview/A11yMenu'
 import { A11yContext, a11yClasses, useA11yPrefs } from '../../preview/a11y'
+import { PreviewProgress } from '../../preview/progress'
 import { useBlockWrapper } from '../../blocks/useBlockWrapper'
 import { usePageWidthVar } from '../../hooks/usePageWidthVar'
-import { CONTENT_WIDTH_PX, DEFAULT_CONTENT_WIDTH, type BlockAnimation, type Block } from '../../types/course'
+import { themeStyle } from '../../theme/customTheme'
+import { CONTENT_WIDTH_PX, DEFAULT_CONTENT_WIDTH, isTaskBlock, type BlockAnimation, type Block } from '../../types/course'
 
 // Full-screen, learner-facing preview of the course with lesson navigation.
 // Mirrors the SCORM player: optional cover page, lesson menu with progress,
@@ -42,8 +44,13 @@ export default function PreviewOverlay() {
   const [visited, setVisited] = useState<Record<number, boolean>>({})
   // Direction of the last lesson change, for the slide transition.
   const [direction, setDirection] = useState<'next' | 'prev'>('next')
-  // Passed restricted `continue` gates: blockId → true (cleared on lesson change).
+  // Clicked `continue` gates: blockId → true (cleared on lesson change).
   const [continued, setContinued] = useState<Record<string, boolean>>({})
+  // Finished tasks (answered quizzes, reflections…), for restricted gates.
+  const [done, setDone] = useState<Record<string, boolean>>({})
+  const markDone = useCallback((id: string) => setDone((d) => (d[id] ? d : { ...d, [id]: true })), [])
+  // First block a Continue just revealed, brought into view after render.
+  const [revealed, setRevealed] = useState<string | null>(null)
   const lesson = course.lessons[index]
   const rootRef = useRef<HTMLDivElement>(null)
   const bodyRef = useRef<HTMLDivElement>(null)
@@ -91,20 +98,21 @@ export default function PreviewOverlay() {
   const isLast = index >= total - 1
   const progress = total ? Math.round((Object.keys(visited).length / total) * 100) : 0
 
-  // Hide blocks after an unpassed restricted `continue` gate, and drop the
-  // gate itself once passed — mirroring the SCORM player's gating behaviour.
-  const visibleBlocks = (() => {
-    if (!lesson) return []
+  // Hide blocks after a `continue` gate until it is clicked, then drop the gate
+  // itself — mirroring the SCORM player. A Continue at the very end is no gate:
+  // it leads on.
+  const { visibleBlocks, gated } = (() => {
     const out: Block[] = []
-    for (const b of lesson.blocks) {
-      const isRestricted = b.type === 'continue' && b.data.mode === 'restricted'
-      if (isRestricted && continued[b.id]) continue
+    const blocks = lesson?.blocks ?? []
+    for (let i = 0; i < blocks.length; i++) {
+      const b = blocks[i]
+      const isGate = b.type === 'continue' && i < blocks.length - 1
+      if (isGate && continued[b.id]) continue
       out.push(b)
-      if (isRestricted && !continued[b.id]) break
+      if (isGate) return { visibleBlocks: out, gated: true }
     }
-    return out
+    return { visibleBlocks: out, gated: false }
   })()
-  const gated = lesson ? visibleBlocks.length < lesson.blocks.filter((b) => !continued[b.id]).length : false
   // A Continue button at the very end already leads on; the card would repeat it.
   const lastShown = visibleBlocks[visibleBlocks.length - 1]
   const endsWithContinue = lastShown?.type === 'continue' && !lastShown.data.nextCard
@@ -116,6 +124,7 @@ export default function PreviewOverlay() {
     setMenuOpen(false)
     setIndex(Math.min(total - 1, Math.max(0, i)))
     setContinued({})
+    setDone({})
   }
 
   function goIntro() {
@@ -139,15 +148,35 @@ export default function PreviewOverlay() {
     setDirection('prev')
     setIndex((i) => Math.max(0, i - 1))
     setContinued({})
+    setDone({})
   }
 
-  function handleContinue(blockId: string, mode: 'restricted' | 'unrestricted') {
-    // Both modes advance to the next lesson. Restricted additionally marks the
-    // gate as passed so the lesson stays unlocked if the learner navigates
-    // back via Previous.
-    if (mode === 'restricted') setContinued((c) => ({ ...c, [blockId]: true }))
-    goNext()
+  // A restricted Continue stays locked until every task above it is done.
+  function continueLocked(block: Block): boolean {
+    if (block.type !== 'continue' || block.data.mode !== 'restricted' || !lesson) return false
+    const above = lesson.blocks.slice(0, lesson.blocks.indexOf(block))
+    return above.some((b) => isTaskBlock(b) && !done[b.id])
   }
+
+  function handleContinue(blockId: string) {
+    const blocks = lesson?.blocks ?? []
+    const at = blocks.findIndex((b) => b.id === blockId)
+    if (at < 0 || at === blocks.length - 1) return goNext()
+    setContinued((c) => ({ ...c, [blockId]: true }))
+    setRevealed(blocks[at + 1].id)
+  }
+
+  // Scroll to the content a Continue revealed and move focus there (the
+  // clicked button is gone).
+  useEffect(() => {
+    if (!revealed) return
+    setRevealed(null)
+    const el = bodyRef.current?.querySelector<HTMLElement>(`[data-block="${revealed}"]`)
+    if (!el) return
+    el.tabIndex = -1
+    el.focus({ preventScroll: true })
+    el.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' })
+  }, [revealed, reduceMotion])
 
   const transitionClass =
     transition === 'none'
@@ -165,6 +194,7 @@ export default function PreviewOverlay() {
       aria-label={course.title}
       tabIndex={-1}
       data-theme={course.theme}
+      style={themeStyle(course)}
       className={`fixed inset-0 z-50 flex flex-col bg-white outline-none ${a11yClasses(prefs, reduceMotion)}`}
     >
       <a
@@ -282,6 +312,7 @@ export default function PreviewOverlay() {
             style={{ maxWidth: contentWidth + 48 }}
           >
             <A11yContext.Provider value={{ captions: prefs.captions }}>
+            <PreviewProgress.Provider value={markDone}>
               <div key={screenKey} className={transitionClass}>
                 {finished ? (
                   <div className="py-10 text-center">
@@ -340,6 +371,7 @@ export default function PreviewOverlay() {
                               currentLessonId={lesson.id}
                               onNavigate={goTo}
                               onContinue={handleContinue}
+                              continueLocked={continueLocked(block)}
                             />
                           </Reveal>
                         ))}
@@ -355,6 +387,7 @@ export default function PreviewOverlay() {
                   </>
                 ) : null}
               </div>
+            </PreviewProgress.Provider>
             </A11yContext.Provider>
           </main>
         </div>
@@ -396,7 +429,7 @@ function Reveal({ block, animation, children }: { block: Block; animation: Block
   const wrapper = useBlockWrapper(block.settings)
   const anim = animation === 'none' ? '' : ` anim-${animation}${shown ? ' is-in' : ''}`
   return (
-    <div ref={ref} {...wrapper} className={wrapper.className + anim}>
+    <div ref={ref} {...wrapper} data-block={block.id} className={`${wrapper.className}${anim} outline-none`}>
       {children}
     </div>
   )

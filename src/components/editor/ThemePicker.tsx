@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
 import { useCourseStore } from '../../store/courseStore'
-import { THEME_LIST, THEMES, DEFAULT_THEME } from '../../theme/themes'
+import { THEME_LIST, THEMES, DEFAULT_THEME, themeAccent } from '../../theme/themes'
 import { useT } from '../../i18n/I18nProvider'
 
 // Switcher for the project's global theme.
 export default function ThemePicker() {
   const theme = useCourseStore((s) => s.course.theme)
+  const customTheme = useCourseStore((s) => s.course.customTheme)
   const setTheme = useCourseStore((s) => s.setTheme)
   const { t } = useT('common')
   const { t: tt } = useT('themes')
@@ -22,7 +23,8 @@ export default function ThemePicker() {
   }, [open])
 
   // Fall back for legacy/unknown theme ids saved in older projects.
-  const current = THEMES[theme] ?? THEMES[DEFAULT_THEME]
+  const label = theme === 'custom' ? tt('custom') : (THEMES[theme] ?? THEMES[DEFAULT_THEME]).label
+  const accent = themeAccent({ theme, customTheme })
 
   return (
     <div ref={rootRef} className="relative">
@@ -34,9 +36,9 @@ export default function ThemePicker() {
       >
         <span
           className="h-4 w-4 rounded-full ring-1 ring-black/10"
-          style={{ backgroundColor: current.accent }}
+          style={{ backgroundColor: accent }}
         />
-        <span className="hidden sm:inline">{current.label}</span>
+        <span className="hidden sm:inline">{label}</span>
       </button>
 
       {open && (
@@ -71,6 +73,32 @@ export default function ThemePicker() {
               </span>
             </button>
           ))}
+          <button
+            type="button"
+            onClick={() => {
+              setTheme('custom')
+              setOpen(false)
+            }}
+            className={`flex w-full items-center gap-3 rounded-lg px-2 py-2 text-left hover:bg-gray-50 ${
+              theme === 'custom' ? 'bg-gray-50' : ''
+            }`}
+          >
+            <span
+              className="h-6 w-6 shrink-0 rounded-full ring-1 ring-black/10"
+              style={
+                customTheme
+                  ? { backgroundColor: themeAccent({ theme: 'custom', customTheme }) }
+                  : { background: 'conic-gradient(#ef4444, #f59e0b, #22c55e, #06b6d4, #6366f1, #d946ef, #ef4444)' }
+              }
+            />
+            <span className="min-w-0">
+              <span className="block text-sm font-medium text-gray-800">
+                {tt('custom')}
+                {theme === 'custom' && <span className="ml-1.5 text-brand">✓</span>}
+              </span>
+              <span className="block truncate text-xs text-gray-500">{tt('customDesc')}</span>
+            </span>
+          </button>
         </div>
       )}
     </div>

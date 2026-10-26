@@ -171,6 +171,21 @@ In the LMS, the player implements the SCORM API: for 1.2 — `LMSInitialize`,
   straight to the saved lesson). It is not a lesson: no progress, no tracking.
   `intro.blocks` (content types only, `INTRO_BLOCK_TYPES`) sit under the title in
   the lesson column; block actions address them with `lessonId === INTRO_ID`.
+- **Continue gates** — mid-lesson, a Continue block (either mode) hides the
+  blocks after it until clicked, then disappears; the reveal scrolls to and
+  focuses the new content. Clicks persist (`state.continued`, suspend data
+  `c`); only restricted gates count toward lesson completion. A restricted
+  button stays locked until every task block above it is done
+  (`isTaskBlock`: scored blocks answered, reflections submitted, required
+  videos watched) — the player's `continueLocked`, the preview's
+  `PreviewProgress` context (`src/preview/progress.ts`). Reflection answers
+  live for the session only (they could overflow suspend_data).
+- **Explainer blocks** — `process`, `steps`, `comparison`, `beforeAfter`,
+  `reflection` (shared CSS `sc-process*`, `sc-steps*`, `sc-compare*`,
+  `sc-ba*`, `sc-reflect*`). Process and comparison lay out with container
+  queries, so they follow the block's own width in the editor, preview and
+  player; pyramid / ring geometry lives in `src/blocks/process.ts` (mirrored in
+  the player).
 - **Next lesson card** — shown at the end of each lesson unless the last visible
   block is a Continue button (which already leads on); `ContinueData.nextCard`
   keeps both.

@@ -5,6 +5,7 @@ import { useT } from '../../i18n/I18nProvider'
 import { blankAnswers, isBlankCorrect } from '../../blocks/fillBlanks'
 import { shuffledOrder } from '../../blocks/ordering'
 import ScoreResult from './ScoreResult'
+import { useMarkDone } from '../progress'
 import SequenceList, { currentOrder } from './SequenceList'
 import BlanksText from './BlanksText'
 
@@ -27,6 +28,7 @@ export default function QuizPreview({ block }: PreviewProps<'quiz'>) {
   const [answers, setAnswers] = useState<Record<string, Answer>>({})
   const [submitted, setSubmitted] = useState(false)
   const [attempt, setAttempt] = useState(0)
+  const markDone = useMarkDone()
 
   // Per attempt: scramble each matching question's right-column choices (one
   // per distinct answer, so several items can share a category) and each
@@ -237,7 +239,10 @@ export default function QuizPreview({ block }: PreviewProps<'quiz'>) {
         score={score}
         passingScore={passingScore}
         submitLabel={questions.length > 1 ? t('submitAll') : undefined}
-        onSubmit={() => setSubmitted(true)}
+        onSubmit={() => {
+          setSubmitted(true)
+          markDone(block.id)
+        }}
         onRetry={reset}
       />
     </div>

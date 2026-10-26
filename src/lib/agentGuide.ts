@@ -23,7 +23,7 @@ const BLOCK_DOCS: Record<BlockType, BlockDoc> = {
   },
   paragraph: {
     summary: 'Rich text paragraph.',
-    data: `{ html: string, variant?: 'normal' | 'lead' | 'dropcap' | 'columns' }  // sanitized rich-text HTML (<p>, <strong>, <em>, <a>, <ul>/<ol>, <img>); variant: lead = larger intro text, dropcap = big first letter, columns = two columns on wide screens`,
+    data: `{ html: string, variant?: 'normal' | 'lead' | 'dropcap' | 'columns' }  // rich-text HTML (<p>, <strong>, <em>, <u>, <a href target="_blank" rel="noopener noreferrer">, <ul>/<ol>, <img>, and tables: <table class="rt-table rt-table-grid|rt-table-stripes|rt-table-lines [rt-table-fit]"> with an optional <thead><tr><th scope="col"> header row and a <tbody>; no merged cells); variant: lead = larger intro text, dropcap = big first letter, columns = two columns on wide screens`,
   },
   list: {
     summary: 'Bulleted or numbered list.',
@@ -67,7 +67,7 @@ const BLOCK_DOCS: Record<BlockType, BlockDoc> = {
   },
   continue: {
     summary: 'Continue button / page gate.',
-    data: `{ mode: 'unrestricted' | 'restricted', label: string, nextCard?: boolean }  // restricted hides later blocks until clicked; as the lesson's last block it replaces the "Next lesson" card unless nextCard is true`,
+    data: `{ mode: 'unrestricted' | 'restricted', label: string, nextCard?: boolean }  // hides later blocks until clicked (restricted: locked until the quizzes, exercises, reflections and required videos above are done, and required to leave the lesson); as the lesson's last block it replaces the "Next lesson" card unless nextCard is true`,
   },
   divider: {
     summary: 'Horizontal separator.',
@@ -170,6 +170,36 @@ const BLOCK_DOCS: Record<BlockType, BlockDoc> = {
     summary: 'Downloadable files (PDF, documents, spreadsheets, slides, archives…).',
     data: `{ title?: string, files: { id: string, src: string, name: string, size?: number }[] }  // src: relative path under assets/files/; name: file name offered for download (keep the extension); size in bytes (display only). HTML/JS/SVG/XML files are not allowed`,
   },
+  process: {
+    summary: 'Process diagram: numbered steps drawn as circles joined by arrows, chevrons, a cycle or a pyramid (not scored).',
+    data: `{
+    layout: 'flow' | 'chevrons' | 'cycle' | 'pyramid',
+    variant?: 'solid' | 'soft' | 'outline',  // default 'solid'; 'soft' = tinted shapes (flow: tinted cards); 'outline' = outlined number circles (flow only — other layouts show solid)
+    steps: { id: string, title: string, text: string, html?: string }[]  // html: the description as inline rich text (<strong>, <em>, <u>, <a href target="_blank" rel="noopener noreferrer">, <br>); when set it wins over text (keep text as its plain version)
+  }  // 2–8 steps; flow shows at most 4 per row (rows balanced); keep titles short (1–3 words) and text to a sentence. flow = numbered circles joined by arrows (soft = each step on a tinted card); chevrons = arrow band with text under each; cycle = steps on a ring the learner opens one by one (text shown in the middle, so keep it short); pyramid = stacked levels, the first step on top`,
+  },
+  steps: {
+    summary: 'Step-by-step guide: numbered how-to steps with rich text and an optional picture each (not scored).',
+    data: `{
+    layout: 'list' | 'slides',  // list = all steps in a numbered column; slides = one step at a time with Back/Next
+    steps: { id: string, title: string, html: string, src?: string, alt?: string }[]
+  }  // html: rich text like paragraph; src: optional picture under the text (assets/images/ path) with its alt text`,
+  },
+  comparison: {
+    summary: 'Comparison cards: pros and cons, or options side by side.',
+    data: `{
+    columns: { id: string, title: string, tone: 'pro' | 'con' | 'neutral', items: string[] }[],  // 2–4 columns; tone sets the item marker: pro = green check, con = red cross, neutral = dot
+    versus?: boolean  // a "VS" badge between exactly two columns
+  }`,
+  },
+  beforeAfter: {
+    summary: 'Before / after slider: the learner drags a handle to compare two images (not scored).',
+    data: `{ before: string, beforeAlt: string, beforeLabel: string, after: string, afterAlt: string, afterLabel: string }  // before/after: assets/images/ paths, ideally the same size and framing (the after image sets the size); labels are the corner chips, e.g. "Before" / "After"`,
+  },
+  reflection: {
+    summary: 'Reflection: the learner writes a free-text answer, then sees the sample answer (not scored).',
+    data: `{ prompt: string, sample: string }  // sample: shown after the learner submits; empty = none. The answer is reported to the LMS as a neutral long-fill-in interaction and counts as a task for a restricted Continue below it`,
+  },
 }
 
 function blockReference(): string {
@@ -211,7 +241,8 @@ Course
   title: string,
   description: string,
   coverImage?: string,
-  theme: 'rose' | 'ocean' | 'forest' | 'sunset' | 'mono' | 'indigo' | 'crimson' | 'mint' | 'grape' | 'terminal',
+  theme: 'rose' | 'ocean' | 'forest' | 'sunset' | 'mono' | 'indigo' | 'crimson' | 'mint' | 'grape' | 'terminal' | 'custom',
+  customTheme?: { accent: string, shape: 'sharp' | 'soft' | 'rounded' | 'pill' },  // used by theme 'custom'; accent '#rrggbb' (darkened automatically if white text on it would be hard to read)
   settings: {
     completion: 'view' | 'quiz',   // 'quiz' also requires every scored block (quiz, ordering, fillBlanks) answered
     scored: boolean,               // report a pass/fail result
@@ -234,7 +265,8 @@ Course
     showOutline?: boolean,         // list the lessons under the button (default true)
     blocks?: Block[]               // extra content under the title: text and media blocks only
                                    // (heading, paragraph, list, note, quote, columns, table, code, image,
-                                   // gallery, imageText, video, audio, embed, attachment, divider)
+                                   // gallery, imageText, video, audio, embed, attachment, divider,
+                                   // process, steps, comparison, beforeAfter)
   },                               // the cover page shows the course title, description and coverImage
   lessons: Lesson[]
 }
@@ -272,8 +304,13 @@ ${blockReference()}
   string works; the app uses a short prefix + random suffix (e.g. \`block-x7f3a9\`).
 - **Adding content**: append a block object to a lesson's \`blocks\` array, or a
   whole lesson to \`lessons\`. Order in the array = order shown to the learner.
-- **Rich text** (\`paragraph\`, \`tabs\`, \`accordion\`): \`html\` is a small subset
-  of HTML. Inline images use relative \`assets/\` paths.
+- **Rich text** (the \`html\` of \`paragraph\`, \`tabs\`, \`accordion\`, \`columns\`,
+  \`imageText\` and \`steps\`) is a small subset of HTML: paragraphs, bold /
+  italic / underline, lists, links (\`<a href … target="_blank" rel="noopener
+  noreferrer">\`; web, mailto: or tel: addresses only) and inline images with
+  relative \`assets/\` paths, plus tables as described under \`paragraph\`.
+  A process step's \`html\` is inline only (bold, italic, underline, links,
+  line breaks) — no lists, tables or images inside diagram shapes.
 - **Media**: reference files by relative path under \`assets/images/\`,
   \`assets/videos/\`, \`assets/audio/\`, \`assets/captions/\` (WebVTT) or \`assets/files/\`
   (attachments). Put the files there too. A \`data:\` URL
@@ -296,7 +333,13 @@ ${blockReference()}
   least 2 categories and set every item's \`categoryId\` to one of them.
 - **Fill in the blanks**: the \`text\` must contain at least one \`[answer]\`.
 - **Scored blocks** (\`quiz\`, \`ordering\`, \`fillBlanks\`) each produce a
-  0–100 score; the course score is their average.
+  0–100 score; the course score is their average, rounded to a whole number
+  (the pass / fail verdict uses the rounded value).
+- **Continue gates**: a \`continue\` block in the middle of a lesson hides the
+  blocks after it until the learner clicks it; split long lessons into parts
+  with it. A \`restricted\` one also waits for the quizzes, exercises,
+  reflections and required videos above it. One at the very end of a lesson
+  leads to the next lesson.
 - **Scenarios**: \`startNodeId\` and every non-null \`nextNodeId\` must be the
   \`id\` of a node in the same scenario.
 - **Don't** invent block \`type\`s or \`data\` fields beyond those listed above —
@@ -316,9 +359,13 @@ passes them is ready to export:
   2 categories and every item assigned to one;
 - fill-in-the-blanks blocks contain at least one \`[blank]\`;
 - scenarios start at an existing node and have no links to missing nodes;
-- accessibility: non-decorative images (image, gallery, hotspot) have alt
-  text, videos have captions or a transcript, audio has a transcript, embeds
-  have a title, and the course content language is set.
+- process diagrams have at least 2 steps, step-by-step guides at least one
+  step, every comparison column at least one point, before / after blocks
+  both images, and reflections a question;
+- accessibility: non-decorative images (image, gallery, hotspot, before /
+  after, step-by-step pictures, images in rich text) have alt text, videos
+  have captions or a transcript, audio has a transcript, embeds have a title,
+  and the course content language is set.
 
 ## Typical agent workflow
 

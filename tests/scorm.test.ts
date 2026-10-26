@@ -3,7 +3,7 @@
 // SCORM API conform to the SCORM data model.
 
 import { describe, test, expect, vi } from 'vitest'
-import { loadScorm } from './lms-mock'
+import { makeScormApi, loadScorm } from './lms-mock'
 
 describe('SCORM wrapper — discovery + lifecycle', () => {
   test('finds API_1484_11 first and reports 2004 mode', () => {
@@ -157,10 +157,15 @@ describe('SCORM 1.2 — data model writes', () => {
     expect(b.data['cmi.core.lesson_status']).toBe('completed')
   })
 
-  test('setScore writes core.score.raw/min/max (no scaled in 1.2)', () => {
+  test('setScore writes core.score.raw/min/max (no scaled in 1.2) once the attempt is complete', () => {
     const { SCORM, data } = loadScorm('1.2')
     SCORM.init()
     SCORM.setScore(70, 0, 100)
+    // With a mastery score the LMS may turn any raw score into passed/failed.
+    expect(data['cmi.core.score.raw']).toBeUndefined()
+    SCORM.report(false, null)
+    expect(data['cmi.core.score.raw']).toBeUndefined()
+    SCORM.report(true, 'failed')
     expect(data['cmi.core.score.raw']).toBe('70')
     expect(data['cmi.core.score.min']).toBe('0')
     expect(data['cmi.core.score.max']).toBe('100')
@@ -638,3 +643,35 @@ describe('SCORM — field findings (TalentLMS 1.2 log)', () => {
     expect(m.data['cmi.core.lesson_status']).toBe('incomplete')
   })
 })
+
+describe('SCORM — API discovery and LMS rejections', () => {
+  test('a 1.2 package uses the 1.2 API even when the LMS also exposes 2004', () => {
+    const v2004 = makeScormApi('2004')
+    const { SCORM, calls } = loadScorm('1.2', {}, { API_1484_11: v2004.api, __SCORMLY_SCORM__: '1.2' })
+    SCORM.init()
+    expect(calls.init).toBe(1)
+    expect(v2004.calls.init).toBe(0)
+  })
+
+  test('without a version hint 2004 is preferred', () => {
+    const v12 = makeScormApi('1.2')
+    const { SCORM, calls } = loadScorm('2004', {}, { API: v12.api })
+    SCORM.init()
+    expect(calls.init).toBe(1)
+    expect(v12.calls.init).toBe(0)
+  })
+
+  test('a rejected interaction id does not skip an index', () => {
+    const { SCORM, data, api } = loadScorm('2004', { 'cmi.interactions._count': '0' })
+    SCORM.init()
+    const setValue = api.SetValue
+    api.SetValue = (key, value) => (String(value) === 'bad id' ? 'false' : setValue(key, value))
+    api.GetLastError = () => '406'
+    SCORM.recordInteraction(0, { id: 'bad id', type: 'choice', response: 'a', correct: true })
+    api.SetValue = setValue
+    SCORM.recordInteraction(0, { id: 'q2', type: 'choice', response: 'a', correct: true })
+    expect(data['cmi.interactions.0.id']).toBe('q2')
+    expect(data['cmi.interactions.1.id']).toBeUndefined()
+  })
+})
+

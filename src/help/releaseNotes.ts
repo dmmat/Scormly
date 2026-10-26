@@ -12,6 +12,28 @@ export interface Release {
 
 export const RELEASES: Release[] = [
   {
+    // In progress: dated when it ships.
+    id: 'custom-themes',
+    items: {
+      en: [
+        'Custom theme: your own accent color and corner shape, kept readable automatically (WCAG AA).',
+        'A more compact theme picker in Project settings.',
+        'New blocks: process diagram (arrows, chevrons, cycle or pyramid, in three styles), step-by-step guide, comparison (pros and cons), before / after slider and reflection.',
+        'Continue reveals the rest of the lesson; in Blocking mode it unlocks once the tasks above are done.',
+        'Text: tables (grid, stripes or lines), links and keyboard shortcuts such as Ctrl+B, Ctrl+K and Tab between cells.',
+        'More reliable LMS results: cmi5 pass / fail and the last statements are no longer lost when the window closes.',
+      ],
+      uk: [
+        'Власна тема: ваш колір акценту й форма кутів, а читабельність (WCAG AA) — автоматично.',
+        'Компактніший вибір теми в налаштуваннях проєкту.',
+        'Нові блоки: схема процесу (стрілки, шеврони, цикл чи піраміда, у трьох стилях), покрокова інструкція, порівняння (переваги й недоліки), слайдер «до / після» та рефлексія.',
+        '«Продовжити» відкриває решту уроку, а в блокуючому режимі — розблоковується після виконання завдань вище.',
+        'Текст: таблиці (сітка, смуги чи лінії), посилання та гарячі клавіші — Ctrl+B, Ctrl+K, Tab між клітинками тощо.',
+        'Надійніші результати в LMS: «складено / не складено» в cmi5 і останні записи більше не губляться при закритті вікна.',
+      ],
+    },
+  },
+  {
     id: '2026-10-07',
     date: '2026-10-07',
     items: {

@@ -16,6 +16,7 @@ import type { OrderingItem } from '../../types/course'
 import { useT } from '../../i18n/I18nProvider'
 import { scoreCategories, scoreSequence, shuffledOrder } from '../../blocks/ordering'
 import ScoreResult from './ScoreResult'
+import { useMarkDone } from '../progress'
 import ResultMark from './ResultMark'
 import SequenceList, { currentOrder } from './SequenceList'
 
@@ -29,6 +30,7 @@ export default function OrderingPreview({ block }: PreviewProps<'ordering'>) {
   const [order, setOrder] = useState<string[]>(() => shuffledOrder(ids))
   const [assigned, setAssigned] = useState<Record<string, string | undefined>>({})
   const [submitted, setSubmitted] = useState(false)
+  const markDone = useMarkDone()
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
@@ -128,7 +130,10 @@ export default function OrderingPreview({ block }: PreviewProps<'ordering'>) {
         submitted={submitted}
         score={score}
         passingScore={passingScore}
-        onSubmit={() => setSubmitted(true)}
+        onSubmit={() => {
+          setSubmitted(true)
+          markDone(block.id)
+        }}
         onRetry={retry}
       />
     </div>

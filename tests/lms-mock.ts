@@ -59,7 +59,7 @@ export function makeScormApi(version: ScormVersion, preload: Record<string, stri
 // runtime — tests assert via this surface.
 export interface ScormWrapper {
   init(): boolean
-  whenReady(cb: () => void): void
+  whenReady(cb: () => void, onLate?: () => void): void
   report(completed: boolean, success: 'passed' | 'failed' | null): void
   setScore(raw: number, min?: number, max?: number): void
   setProgress(fraction: number): void
@@ -93,9 +93,13 @@ export interface LoadedScorm extends ScormMock {
 }
 
 // Load scorm.js with the given mock API attached to `window`.
-export function loadScorm(version: ScormVersion, preload: Record<string, string> = {}): LoadedScorm {
+export function loadScorm(
+  version: ScormVersion,
+  preload: Record<string, string> = {},
+  extraWindow: Record<string, unknown> = {},
+): LoadedScorm {
   const mock = makeScormApi(version, preload)
-  const win: Record<string, unknown> = mock.v2004 ? { API_1484_11: mock.api } : { API: mock.api }
+  const win: Record<string, unknown> = { ...extraWindow, ...(mock.v2004 ? { API_1484_11: mock.api } : { API: mock.api }) }
   const ctx: Record<string, unknown> = { window: win, console, location: { search: '' } }
   ;(win as { window?: unknown }).window = win
   vm.createContext(ctx)
@@ -122,7 +126,7 @@ export interface XapiFetchMock {
   calls: XapiCall[]
 }
 
-export function makeXapiFetch(opts: { launchData?: Record<string, unknown>; resumeBlob?: string; learnerPrefs?: Record<string, unknown>; statementResponse?: string } = {}): XapiFetchMock {
+export function makeXapiFetch(opts: { launchData?: Record<string, unknown>; resumeBlob?: string; learnerPrefs?: Record<string, unknown>; statementResponse?: string; suspendDelayMs?: number } = {}): XapiFetchMock {
   const launchData = opts.launchData || {}
   const resumeBlob = opts.resumeBlob || ''
   const calls: XapiCall[] = []
@@ -140,7 +144,11 @@ export function makeXapiFetch(opts: { launchData?: Record<string, unknown>; resu
       return Promise.resolve({ ok: !!prefs, json: () => Promise.resolve(prefs || {}) })
     }
     if (url.indexOf('stateId=suspendData') >= 0 && method !== 'PUT') {
-      return Promise.resolve({ ok: !!resumeBlob, text: () => Promise.resolve(resumeBlob) })
+      const res = { ok: !!resumeBlob, text: () => Promise.resolve(resumeBlob) }
+      // A slow LRS: the resume state arrives after the player stopped waiting.
+      return opts.suspendDelayMs
+        ? new Promise<typeof res>((r) => setTimeout(() => r(res), opts.suspendDelayMs))
+        : Promise.resolve(res)
     }
     if (url.indexOf('/statements') >= 0 && method === 'POST' && opts.statementResponse != null) {
       const text = opts.statementResponse
@@ -206,8 +214,13 @@ export function loadXapi(opts: {
   params?: XapiLaunchParams
   course?: Record<string, unknown>
   statementResponse?: string
+  suspendDelayMs?: number
+  /** Shorten the player's 8 s wait for the launch handshake to this. */
+  readyTimeoutMs?: number
 } = {}): LoadedXapi {
-  const { fetch, calls } = makeXapiFetch({ launchData: opts.launchData, resumeBlob: opts.resumeBlob, learnerPrefs: opts.learnerPrefs, statementResponse: opts.statementResponse })
+  const { fetch, calls } = makeXapiFetch({ launchData: opts.launchData, resumeBlob: opts.resumeBlob, learnerPrefs: opts.learnerPrefs, statementResponse: opts.statementResponse, suspendDelayMs: opts.suspendDelayMs })
+  const readyTimeout = opts.readyTimeoutMs
+  const timer = (fn: () => void, ms?: number) => setTimeout(fn, readyTimeout != null && ms === 8000 ? readyTimeout : ms)
   const win: Record<string, unknown> = {
     __SCORMLY_COURSE__: opts.course || { settings: { passingScore: 80 } },
   }
@@ -217,7 +230,7 @@ export function loadXapi(opts: {
     console,
     location: { search },
     fetch,
-    setTimeout,
+    setTimeout: timer,
     clearTimeout,
   }
   ;(win as { window?: unknown }).window = win
@@ -236,10 +249,14 @@ export function loadXapi(opts: {
     }
   }
 
+  // A POST may carry one statement or a batch (the unload flush).
   function statements(): XapiStatement[] {
     return calls
       .filter((c) => c.url.indexOf('/statements') >= 0 && c.method === 'POST')
-      .map((c) => JSON.parse(String(c.body)) as XapiStatement)
+      .flatMap((c) => {
+        const body = JSON.parse(String(c.body)) as XapiStatement | XapiStatement[]
+        return Array.isArray(body) ? body : [body]
+      })
   }
 
   function stateCalls() {

@@ -34,6 +34,9 @@ export function useEditorShortcuts() {
         return
       }
       if (isEditableTarget(e.target)) return
+      // Keys pressed inside a popover or menu (e.g. on a style swatch) belong
+      // to it, not to the block behind it.
+      if ((e.target as Element | null)?.closest?.('[role="dialog"], [role="menu"]')) return
       // Macs have no Delete key on laptops, so Backspace deletes too.
       if (e.key === 'Delete' || e.key === 'Backspace') {
         e.preventDefault()

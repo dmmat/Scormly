@@ -40,12 +40,9 @@ export default function BlockShell({
   const selected = block.id === selectedBlockId
   const [menu, setMenu] = useState<{ x: number; y: number } | null>(null)
   const [styleOpen, setStyleOpen] = useState(false)
-  // The style popover opens above the block (or below it when there's no room
-  // above), never over the block being styled.
-  const [stylePlace, setStylePlace] = useState<'up' | 'down'>('up')
+  // The style popover floats over the block, anchored to this button.
+  const styleButtonRef = useRef<HTMLButtonElement>(null)
   function toggleStyle() {
-    const rect = elRef.current?.getBoundingClientRect()
-    if (rect) setStylePlace(rect.top > 120 + 340 ? 'up' : 'down')
     setStyleOpen((v) => !v)
   }
   const hasBackground = (block.settings.background ?? 'none') !== 'none'
@@ -113,6 +110,8 @@ export default function BlockShell({
           <ToolbarButton
             label={td('blockStyle')}
             active={styleOpen}
+            buttonRef={styleButtonRef}
+            popup
             onClick={toggleStyle}
           >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className="h-4 w-4" aria-hidden>
@@ -160,7 +159,7 @@ export default function BlockShell({
         <BlockStylePopover
           block={block}
           lessonId={lessonId}
-          placement={stylePlace}
+          anchorRef={styleButtonRef}
           onClose={() => setStyleOpen(false)}
         />
       )}
@@ -190,6 +189,9 @@ interface ToolbarButtonProps {
   danger?: boolean
   active?: boolean
   shortcut?: string
+  buttonRef?: React.Ref<HTMLButtonElement>
+  /** Opens a popover: announced as expanded / collapsed instead of pressed. */
+  popup?: boolean
   children: React.ReactNode
 }
 
@@ -200,14 +202,19 @@ function ToolbarButton({
   danger,
   active,
   shortcut,
+  buttonRef,
+  popup,
   children,
 }: ToolbarButtonProps) {
   return (
     <button
+      ref={buttonRef}
       type="button"
       title={shortcut ? `${label} (${shortcut})` : label}
       aria-label={label}
-      aria-pressed={active}
+      aria-pressed={popup ? undefined : active}
+      aria-haspopup={popup ? 'dialog' : undefined}
+      aria-expanded={popup ? !!active : undefined}
       disabled={disabled}
       onClick={(e) => {
         e.stopPropagation()

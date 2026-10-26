@@ -6,12 +6,14 @@ const scenario: LocaleTable = {
     // ── ContinueBlock ──
     continueDefault: 'Continue',
     continueLocked: 'Locked until tasks are completed',
+    continueLockedHint: 'Complete the tasks above to continue.',
     buttonLabel: 'Button label',
     mode: 'Mode',
     modeUnrestricted: 'Free',
     modeRestricted: 'Blocking',
     restrictedHelp:
-      'The button is locked until the learner completes all interactive tasks above.',
+      'The button is locked until the learner answers the quizzes, exercises and reflections above and watches the required videos. They must click it before moving on.',
+    gateHelp: 'The blocks below stay hidden until the learner clicks the button.',
     nextCard: 'Also show the “Next lesson” card',
     nextCardHelp: 'This button already takes the learner on, so the card under it is hidden.',
 
@@ -49,12 +51,14 @@ const scenario: LocaleTable = {
     // ── ContinueBlock ──
     continueDefault: 'Продовжити',
     continueLocked: 'Заблоковано до виконання завдань',
+    continueLockedHint: 'Виконайте завдання вище, щоб продовжити.',
     buttonLabel: 'Напис на кнопці',
     mode: 'Режим',
     modeUnrestricted: 'Вільний',
     modeRestricted: 'Блокуючий',
     restrictedHelp:
-      'Кнопка заблокована, доки студент не виконає всі інтерактивні завдання вище.',
+      'Кнопка заблокована, доки студент не відповість на квізи, вправи й рефлексії вище та не перегляне обовʼязкові відео. Натиснути її треба, щоб перейти далі.',
+    gateHelp: 'Блоки нижче приховані, доки студент не натисне кнопку.',
     nextCard: 'Також показувати картку «Наступний урок»',
     nextCardHelp: 'Ця кнопка вже веде студента далі, тому картку під нею приховано.',
 

@@ -26,6 +26,10 @@ function withSampleMedia(block: Block): Block {
     case 'hotspot':
       if (!b.data.src) b.data.src = landscapeArt(30)
       break
+    case 'beforeAfter':
+      if (!b.data.before) b.data.before = landscapeArt(220)
+      if (!b.data.after) b.data.after = landscapeArt(30)
+      break
     case 'attachment':
       if (b.data.files.length === 0) {
         b.data.files = [

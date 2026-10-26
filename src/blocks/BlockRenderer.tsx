@@ -28,6 +28,11 @@ import FillBlanksBlock from './components/FillBlanksBlock'
 import ImageTextBlock from './components/ImageTextBlock'
 import AttachmentBlock from './components/AttachmentBlock'
 import ColumnsBlock from './components/ColumnsBlock'
+import ProcessBlock from './components/ProcessBlock'
+import StepsBlock from './components/StepsBlock'
+import ComparisonBlock from './components/ComparisonBlock'
+import BeforeAfterBlock from './components/BeforeAfterBlock'
+import ReflectionBlock from './components/ReflectionBlock'
 
 // Dispatcher: block type → editor component. Each component lives in its own
 // file under ./components/ and implements the BlockComponentProps contract.
@@ -62,6 +67,11 @@ const BLOCK_COMPONENTS: Record<
   imageText: ImageTextBlock as ComponentType<BlockComponentProps>,
   attachment: AttachmentBlock as ComponentType<BlockComponentProps>,
   columns: ColumnsBlock as ComponentType<BlockComponentProps>,
+  process: ProcessBlock as ComponentType<BlockComponentProps>,
+  steps: StepsBlock as ComponentType<BlockComponentProps>,
+  comparison: ComparisonBlock as ComponentType<BlockComponentProps>,
+  beforeAfter: BeforeAfterBlock as ComponentType<BlockComponentProps>,
+  reflection: ReflectionBlock as ComponentType<BlockComponentProps>,
 }
 
 export default function BlockRenderer(props: BlockComponentProps) {

@@ -114,6 +114,12 @@ which all `*-brand` utilities read) and the button/interactive radius. Component
 must use the `.btn-primary` / `.btn-secondary` / `.interactive-surface` classes
 and the `*-brand` utilities so themes apply automatically.
 
+`theme: 'custom'` uses `Course.customTheme` (accent color + corner shape).
+`src/theme/customTheme.ts` derives the shades, darkening the accent when
+needed to keep the AA contrast rule above; the editor applies them as inline
+CSS variables (`themeStyle`), and exports embed the resolved palette as
+`themeTokens` in `course-data.js` for the player.
+
 ## Internationalization (i18n)
 
 The app UI is bilingual **English / Ukrainian** (default English; auto-selects

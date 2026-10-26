@@ -26,6 +26,20 @@ const GROUPS: { title: string; items: { label: string; keys: string }[] }[] = [
     ],
   },
   {
+    title: 'scText',
+    items: [
+      { label: 'scBold', keys: KEYS.bold },
+      { label: 'scItalic', keys: KEYS.italic },
+      { label: 'scUnderline', keys: KEYS.underline },
+      { label: 'scLink', keys: KEYS.link },
+      { label: 'scNumbered', keys: KEYS.numberedList },
+      { label: 'scBullets', keys: KEYS.bulletList },
+      { label: 'scAlign', keys: `${KEYS.alignLeft} / E / R` },
+      { label: 'scClear', keys: KEYS.clearFormat },
+      { label: 'scNextCell', keys: KEYS.nextCell },
+    ],
+  },
+  {
     title: 'scFocusedLesson',
     items: [
       { label: 'renameLesson', keys: 'F2' },

@@ -34,8 +34,9 @@ exported as a **SCORM 1.2 / 2004** or **cmi5 (xAPI)** package for any LMS.
     code, tables, quotes.
   - *Media:* images, galleries, video, audio, and embeds (YouTube / Vimeo /
     any https page).
-  - *Navigation:* a "Continue" button (optionally **restricted** — gates the
-    rest of the lesson), a divider, and a **course outline** that links to the
+  - *Navigation:* a "Continue" button that reveals the rest of the lesson in
+    parts (optionally **restricted** — locked until the tasks above are done),
+    a divider, and a **course outline** that links to the
     other lessons.
   - *Interactive:* tabs, accordions, flashcards, a branching **dialogue
     scenario**, and **quizzes** (single / multiple / matching with per-answer

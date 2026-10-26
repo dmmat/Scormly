@@ -1,4 +1,6 @@
+import { useId } from 'react'
 import type { Block } from '../types/course'
+import { useT } from '../i18n/I18nProvider'
 import RichHtml from './RichHtml'
 import ImagePreview from './components/ImagePreview'
 import GalleryPreview from './components/GalleryPreview'
@@ -23,6 +25,11 @@ import NoteView from './components/NoteView'
 import ImageTextPreview from './components/ImageTextPreview'
 import AttachmentPreview from './components/AttachmentPreview'
 import ColumnsPreview from './components/ColumnsPreview'
+import ProcessPreview from './components/ProcessPreview'
+import StepsPreview from './components/StepsPreview'
+import ComparisonPreview from './components/ComparisonPreview'
+import BeforeAfterPreview from './components/BeforeAfterPreview'
+import ReflectionPreview from './components/ReflectionPreview'
 
 // Read-only learner rendering of a single block (no editing affordances).
 export default function BlockPreview({
@@ -30,14 +37,17 @@ export default function BlockPreview({
   currentLessonId,
   onNavigate,
   onContinue,
+  continueLocked,
 }: {
   block: Block
   /** Lesson currently shown (so the outline can exclude it). */
   currentLessonId?: string
   /** Navigate to a lesson by index (used by the course outline block). */
   onNavigate?: (lessonIndex: number) => void
-  /** Continue block click handler — restricted unlocks, unrestricted advances. */
-  onContinue?: (blockId: string, mode: 'restricted' | 'unrestricted') => void
+  /** Continue block click handler: reveals what follows, or leads on at the end. */
+  onContinue?: (blockId: string) => void
+  /** Restricted Continue whose tasks above aren't done yet. */
+  continueLocked?: boolean
 }) {
   switch (block.type) {
     case 'heading': {
@@ -95,15 +105,11 @@ export default function BlockPreview({
       return <QuotePreview block={block} />
     case 'continue':
       return (
-        <div className="flex justify-center py-2">
-          <button
-            type="button"
-            className="btn-primary"
-            onClick={() => onContinue?.(block.id, block.data.mode)}
-          >
-            {block.data.label}
-          </button>
-        </div>
+        <ContinueButton
+          label={block.data.label}
+          locked={!!continueLocked}
+          onClick={() => onContinue?.(block.id)}
+        />
       )
     case 'divider':
       return <DividerView {...block.data} />
@@ -139,5 +145,40 @@ export default function BlockPreview({
       return <AttachmentPreview block={block} />
     case 'columns':
       return <ColumnsPreview block={block} />
+    case 'process':
+      return <ProcessPreview block={block} />
+    case 'steps':
+      return <StepsPreview block={block} />
+    case 'comparison':
+      return <ComparisonPreview block={block} />
+    case 'beforeAfter':
+      return <BeforeAfterPreview block={block} />
+    case 'reflection':
+      return <ReflectionPreview block={block} />
   }
+}
+
+// A locked (restricted) button says why, like the player's.
+function ContinueButton({ label, locked, onClick }: { label: string; locked: boolean; onClick: () => void }) {
+  const { t } = useT('scenario')
+  const hintId = useId()
+  return (
+    <div className="flex flex-col items-center gap-2 py-2">
+      <button
+        type="button"
+        className="btn-primary"
+        disabled={locked}
+        aria-describedby={locked ? hintId : undefined}
+        onClick={onClick}
+      >
+        {locked && <span aria-hidden>🔒 </span>}
+        {label}
+      </button>
+      {locked && (
+        <p id={hintId} className="text-sm text-gray-500">
+          {t('continueLockedHint')}
+        </p>
+      )}
+    </div>
+  )
 }

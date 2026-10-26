@@ -57,6 +57,18 @@ function checkBlockA11y(block: Block): BlockIssue[] {
       const d = block.data
       return d.url.trim() && !d.title?.trim() ? a11y('chkA11yEmbedTitle') : []
     }
+    case 'beforeAfter': {
+      const d = block.data
+      return (d.before && !d.beforeAlt.trim()) || (d.after && !d.afterAlt.trim()) ? a11y('chkA11yBeforeAfterAlt') : []
+    }
+    case 'steps': {
+      const n = block.data.steps.filter((s) => s.src && !s.alt?.trim()).length
+      const inline = inlineImagesWithoutAlt(block.data.steps.map((s) => s.html).join(''))
+      return [
+        ...(n ? a11y('chkA11yStepsAlt', { n }) : []),
+        ...(inline ? a11y('chkA11yInlineImageAlt', { n: inline }) : []),
+      ]
+    }
     case 'paragraph':
     case 'tabs':
     case 'accordion': {
@@ -148,6 +160,16 @@ function checkBlock(block: Block): BlockIssue[] {
     }
     case 'fillBlanks':
       return blankAnswers(block.data.text).length ? [] : [{ key: 'chkFillBlanksEmpty' }]
+    case 'process':
+      return block.data.steps.length < 2 ? [{ key: 'chkProcessFewSteps' }] : []
+    case 'steps':
+      return block.data.steps.length ? [] : [{ key: 'chkStepsEmpty' }]
+    case 'comparison':
+      return block.data.columns.some((c) => !c.items.some((it) => it.trim())) ? [{ key: 'chkComparisonEmpty' }] : []
+    case 'beforeAfter':
+      return block.data.before && block.data.after ? [] : [{ key: 'chkBeforeAfterImages' }]
+    case 'reflection':
+      return block.data.prompt.trim() ? [] : [{ key: 'chkReflectionNoPrompt' }]
     default:
       return []
   }

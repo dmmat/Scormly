@@ -1,5 +1,6 @@
 import type JSZip from 'jszip'
 import { isScoredBlock, type Course } from '../types/course'
+import { customThemeTokens, DEFAULT_CUSTOM_THEME } from '../theme/customTheme'
 
 // Shared helpers for building the export .zip (SCORM and cmi5). Both targets
 // ship the same vanilla player; only the tracking script and the manifest
@@ -126,6 +127,9 @@ export async function addPlayer(
   zip: JSZip,
   course: Course,
   tracking: TrackingScript,
+  /** SCORM packages: the version the manifest declares, so the runtime looks
+   *  for that LMS API first. */
+  scormVersion?: '1.2' | '2004',
 ): Promise<string[]> {
   const base = import.meta.env.BASE_URL
   const files: string[] = []
@@ -150,11 +154,19 @@ export async function addPlayer(
   // LMS sandbox the SCO or serve it from a CDN that rejects runtime fetch()/XHR
   // for sibling files, whereas a <script src> always loads. Escape '<' so block
   // HTML can't break out of the <script> tag.
-  const dataJs = `window.__SCORMLY_COURSE__ = ${JSON.stringify(course).replace(/</g, '\\u003c')};`
+  const dataJs = `window.__SCORMLY_COURSE__ = ${JSON.stringify(withThemeTokens(course)).replace(/</g, '\\u003c')};`
+    + (scormVersion ? `\nwindow.__SCORMLY_SCORM__ = '${scormVersion}';` : '')
   zip.file('course-data.js', dataJs)
   files.push('course-data.js')
 
   return files
+}
+
+// A custom theme travels as its resolved palette, so the player applies the
+// exact colors the editor shows without repeating the color math.
+export function withThemeTokens(course: Course): Course & { themeTokens?: ReturnType<typeof customThemeTokens> } {
+  if (course.theme !== 'custom') return course
+  return { ...course, themeTokens: customThemeTokens(course.customTheme ?? DEFAULT_CUSTOM_THEME) }
 }
 
 // ADL/IMS control documents (XSD/DTD) referenced by imsmanifest.xml's

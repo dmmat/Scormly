@@ -138,6 +138,21 @@ const PATHS: Record<BlockType, ReactNode> = {
   attachment: (
     <path d="m20.5 11.5-8.2 8.2a5 5 0 0 1-7.1-7.1l8.5-8.5a3.3 3.3 0 0 1 4.7 4.7l-8.5 8.5a1.7 1.7 0 0 1-2.4-2.4l7.8-7.8" />
   ),
+  process: <path d="M2.5 6H9l3 6-3 6H2.5l3-6zM13 6h5.5l3 6-3 6H13l3-6z" />,
+  steps: <path d="M3 20h5v-5h5v-5h5V5h3" />,
+  comparison: (
+    <>
+      <rect x="3" y="4" width="18" height="16" rx="2" />
+      <path d="M12 4v16M6 12l1.5 1.5L10 10M15 10l3 3M18 10l-3 3" />
+    </>
+  ),
+  beforeAfter: (
+    <>
+      <rect x="3" y="5" width="18" height="14" rx="2" />
+      <path d="M12 3v18M8.5 10 6.5 12l2 2M15.5 10l2 2-2 2" />
+    </>
+  ),
+  reflection: <path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z" />,
 }
 
 export default function BlockIcon({

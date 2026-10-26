@@ -4,6 +4,7 @@ import type {
   BlockType,
   Course,
   CourseIntro,
+  CustomTheme,
   CourseSettings,
   Lesson,
   LessonStatus,
@@ -11,7 +12,7 @@ import type {
 } from '../types/course'
 import { DEFAULT_COURSE_SETTINGS, DEFAULT_INTRO, INTRO_ID } from '../types/course'
 import { createBlock } from '../blocks/registry'
-import { DEFAULT_THEME, THEMES } from '../theme/themes'
+import { DEFAULT_THEME, THEMES, isThemeId } from '../theme/themes'
 import { uid } from '../lib/id'
 import { translate } from '../i18n/I18nProvider'
 import type { Language } from '../i18n/types'
@@ -90,6 +91,8 @@ export interface CourseState {
     patch: Partial<Pick<Course, 'title' | 'description' | 'coverImage'>>,
   ) => void
   setTheme: (theme: ThemeId) => void
+  /** Edits the custom theme and switches the course to it. */
+  updateCustomTheme: (patch: Partial<CustomTheme>, coalesceKey?: string) => void
   /** `coalesceKey` merges consecutive edits (typing, slider drags) into one undo step. */
   updateSettings: (patch: Partial<CourseSettings>, coalesceKey?: string) => void
   /** Patch the cover page (created with defaults on first edit). */
@@ -143,6 +146,12 @@ export interface CourseState {
   redo: () => void
 }
 
+// A first custom theme starts from the current preset's color and shape.
+function seedCustomTheme(course: Course): CustomTheme {
+  const preset = course.theme === 'custom' ? THEMES[DEFAULT_THEME] : THEMES[course.theme] ?? THEMES[DEFAULT_THEME]
+  return { accent: preset.accent, shape: preset.shape }
+}
+
 function findLesson(course: Course, lessonId: string): Lesson | undefined {
   return course.lessons.find((l) => l.id === lessonId)
 }
@@ -165,7 +174,7 @@ function findContainer(course: Course, lessonId: string): { blocks: Block[] } | 
 // Coerce a loaded course to current invariants: migrate a renamed/legacy theme
 // id to the default, and backfill completion/scoring settings for older projects.
 function migrateCourse(course: Course): Course {
-  const theme = THEMES[course.theme] ? course.theme : DEFAULT_THEME
+  const theme = isThemeId(course.theme) ? course.theme : DEFAULT_THEME
   const settings = { ...DEFAULT_COURSE_SETTINGS, ...course.settings }
   return { ...course, theme, settings }
 }
@@ -230,8 +239,15 @@ export const useCourseStore = create<CourseState>((set, get) => {
 
     setTheme: (theme) =>
       mutate((c) => {
+        if (theme === 'custom') c.customTheme ??= seedCustomTheme(c)
         c.theme = theme
       }),
+
+    updateCustomTheme: (patch, coalesceKey) =>
+      mutate((c) => {
+        c.customTheme = { ...(c.customTheme ?? seedCustomTheme(c)), ...patch }
+        c.theme = 'custom'
+      }, coalesceKey),
 
     updateSettings: (patch, coalesceKey) =>
       mutate((c) => {

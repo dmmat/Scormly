@@ -32,6 +32,11 @@ export type BlockType =
   | 'imageText'
   | 'attachment'
   | 'columns'
+  | 'process'
+  | 'steps'
+  | 'comparison'
+  | 'beforeAfter'
+  | 'reflection'
 
 /** Block background, drawn from the course theme (soft/accent/gradient follow
  *  the theme accent), so recoloring the theme recolors every block. */
@@ -246,6 +251,8 @@ export interface AttachmentData {
 
 export type ContinueMode = 'unrestricted' | 'restricted'
 
+/** Mid-lesson, the blocks after a Continue stay hidden until it is clicked
+ *  (any mode); 'restricted' also must be clicked before the lesson is left. */
 export interface ContinueData {
   mode: ContinueMode
   label: string
@@ -515,6 +522,101 @@ export interface FillBlanksData {
   caseSensitive?: boolean
 }
 
+// ── Process diagram ─────────────────────────────────────────────────────────
+
+export type ProcessLayout =
+  /** Numbered cards joined by arrows (a column on narrow screens). */
+  | 'flow'
+  /** A row of arrow-shaped segments with the text under each. */
+  | 'chevrons'
+  /** Steps around a ring; the learner opens each one to read it. */
+  | 'cycle'
+  /** Stacked levels, narrowest on top, with the text beside each. */
+  | 'pyramid'
+
+export interface ProcessStep {
+  id: string
+  title: string
+  /** Plain description (older steps; kept in sync as the plain version of html). */
+  text: string
+  /** Description as inline rich text (bold, italic, underline, links); wins over text. */
+  html?: string
+}
+
+/** Look of the shapes: solid fills (default), soft tints (flow: tinted
+ *  cards) or outlines (flow only). See PROCESS_VARIANTS. */
+export type ProcessVariant = 'solid' | 'soft' | 'outline'
+
+export interface ProcessData {
+  layout: ProcessLayout
+  /** Absent = 'solid'. */
+  variant?: ProcessVariant
+  steps: ProcessStep[]
+}
+
+// ── Step-by-step guide ──────────────────────────────────────────────────────
+
+export type StepsLayout =
+  /** Every step in a numbered column. */
+  | 'list'
+  /** One step at a time with Back/Next and a progress bar. */
+  | 'slides'
+
+export interface GuideStep {
+  id: string
+  title: string
+  /** Rich text, like a paragraph. */
+  html: string
+  /** Optional picture: relative path under assets/images/. */
+  src?: string
+  alt?: string
+}
+
+export interface StepsData {
+  layout: StepsLayout
+  steps: GuideStep[]
+}
+
+// ── Comparison (pros & cons, A vs B) ────────────────────────────────────────
+
+/** Item marker: pro = check, con = cross, neutral = dot. */
+export type ComparisonTone = 'pro' | 'con' | 'neutral'
+
+export interface ComparisonColumn {
+  id: string
+  title: string
+  tone: ComparisonTone
+  items: string[]
+}
+
+export interface ComparisonData {
+  /** 2–4 columns. */
+  columns: ComparisonColumn[]
+  /** A "VS" badge between two columns. */
+  versus?: boolean
+}
+
+// ── Before / after slider ───────────────────────────────────────────────────
+
+export interface BeforeAfterData {
+  /** Relative paths under assets/images/. The "after" picture sets the size;
+   *  the "before" one is cropped to it. */
+  before: string
+  beforeAlt: string
+  beforeLabel: string
+  after: string
+  afterAlt: string
+  afterLabel: string
+}
+
+// ── Reflection (free-text answer, not scored) ───────────────────────────────
+
+export interface ReflectionData {
+  prompt: string
+  /** Shown once the learner submits; empty = none. */
+  sample: string
+}
+
 // ── Block: discriminated union ──────────────────────────────────────────────
 
 export type Block =
@@ -545,6 +647,11 @@ export type Block =
   | (BaseBlock & { type: 'imageText'; data: ImageTextData })
   | (BaseBlock & { type: 'attachment'; data: AttachmentData })
   | (BaseBlock & { type: 'columns'; data: ColumnsData })
+  | (BaseBlock & { type: 'process'; data: ProcessData })
+  | (BaseBlock & { type: 'steps'; data: StepsData })
+  | (BaseBlock & { type: 'comparison'; data: ComparisonData })
+  | (BaseBlock & { type: 'beforeAfter'; data: BeforeAfterData })
+  | (BaseBlock & { type: 'reflection'; data: ReflectionData })
 
 /** Narrow Block to a specific type (for renderers/editors). */
 export type BlockOfType<T extends BlockType> = Extract<Block, { type: T }>
@@ -557,11 +664,22 @@ export function isScoredBlock(block: Block): boolean {
   return SCORED_BLOCK_TYPES.includes(block.type)
 }
 
+/** Blocks the learner has to finish before a restricted Continue below them
+ *  unlocks: scored blocks, reflections and videos that require watching. */
+export function isTaskBlock(block: Block): boolean {
+  return (
+    isScoredBlock(block) ||
+    block.type === 'reflection' ||
+    (block.type === 'video' && !!block.data.requireWatch)
+  )
+}
+
 /** Block types allowed on the cover page: content only. Questions, gates and
  *  lesson lists belong to lessons (scoring, progress, navigation). */
 export const INTRO_BLOCK_TYPES: readonly BlockType[] = [
   'heading', 'paragraph', 'list', 'note', 'quote', 'columns', 'table', 'code',
   'image', 'gallery', 'imageText', 'video', 'audio', 'embed', 'attachment', 'divider',
+  'process', 'steps', 'comparison', 'beforeAfter',
 ]
 
 /** `activeLessonId` (and block actions' lesson id) that addresses the course
@@ -577,8 +695,8 @@ export interface Lesson {
   blocks: Block[]
 }
 
-/** Global project theme ID (button and interactive styles). See src/theme. */
-export type ThemeId =
+/** Built-in theme IDs (see src/theme). */
+export type PresetThemeId =
   | 'rose'
   | 'ocean'
   | 'forest'
@@ -589,6 +707,21 @@ export type ThemeId =
   | 'mint'
   | 'grape'
   | 'terminal'
+
+/** Global project theme ID (button and interactive styles): a preset, or
+ *  'custom' for the course's own CustomTheme. */
+export type ThemeId = PresetThemeId | 'custom'
+
+/** Corner style of buttons and cards. */
+export type ThemeShape = 'sharp' | 'soft' | 'rounded' | 'pill'
+
+/** The author's own theme (Course.theme === 'custom'). Shades derive from the
+ *  accent, darkened when needed so text on it stays readable (WCAG AA). */
+export interface CustomTheme {
+  /** #rrggbb */
+  accent: string
+  shape: ThemeShape
+}
 
 /** What marks the course complete in the LMS. */
 export type CompletionRule =
@@ -691,6 +824,8 @@ export interface Course {
   coverImage?: string
   /** Global project theme. Affects the accent, buttons, and interactive blocks. */
   theme: ThemeId
+  /** Used when theme === 'custom'. */
+  customTheme?: CustomTheme
   /** Completion/scoring settings. Optional in legacy projects (see migration). */
   settings?: CourseSettings
   /** Optional cover page before the first lesson (not a lesson itself). */

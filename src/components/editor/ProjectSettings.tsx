@@ -9,7 +9,7 @@ import {
 import { useDialog } from '../../hooks/useDialog'
 import { useCourseStore } from '../../store/courseStore'
 import { useLang, useT } from '../../i18n/I18nProvider'
-import { THEME_LIST } from '../../theme/themes'
+import ThemeChooser from './ThemeChooser'
 import { saveAsset, toastUploadError } from '../../lib/assets'
 import { useAssetUrl } from '../../hooks/useAssetUrl'
 import {
@@ -315,8 +315,6 @@ function GeneralPanel() {
 }
 
 function AppearancePanel() {
-  const theme = useCourseStore((s) => s.course.theme)
-  const setTheme = useCourseStore((s) => s.setTheme)
   const stored = useCourseStore((s) => s.course.settings)
   const updateSettings = useCourseStore((s) => s.updateSettings)
   const { t } = useT('settings')
@@ -326,46 +324,8 @@ function AppearancePanel() {
 
   return (
     <Panel intro={t('appearanceIntro')}>
-      <Group label={t('theme')} radio>
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          {THEME_LIST.map((th) => {
-            const checked = theme === th.id
-            return (
-              <label
-                key={th.id}
-                // data-theme scopes the theme's accent and radius tokens to
-                // this card, so the sample button renders in that theme.
-                data-theme={th.id}
-                className={`relative flex cursor-pointer flex-col gap-4 rounded-xl border-2 p-4 transition focus-within:ring-2 focus-within:ring-brand/40 ${
-                  checked ? 'border-brand bg-brand/5' : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
-                }`}
-              >
-                <input
-                  type="radio"
-                  name="settings-theme"
-                  value={th.id}
-                  checked={checked}
-                  onChange={() => setTheme(th.id)}
-                  className="sr-only"
-                />
-                <div className="flex items-center gap-3">
-                  <span className="h-10 w-10 shrink-0 rounded-full bg-brand shadow-inner ring-4 ring-brand-light/50" />
-                  <span className="min-w-0 flex-1">
-                    <span className="block text-[15px] font-semibold text-gray-900">{th.label}</span>
-                    {checked && (
-                      <span className="block text-xs font-medium text-brand-dark">{t('themeCurrent')}</span>
-                    )}
-                  </span>
-                  <RadioDot checked={checked} />
-                </div>
-                <div className="flex items-center gap-2" aria-hidden="true">
-                  <span className="btn-primary pointer-events-none text-sm">{t('themeSample')}</span>
-                  <span className="btn-secondary pointer-events-none text-sm">{t('themeSample')}</span>
-                </div>
-              </label>
-            )
-          })}
-        </div>
+      <Group label={t('theme')}>
+        <ThemeChooser />
       </Group>
 
       <Group label={td('contentWidth')} help={td('contentWidthHelp')} radio>

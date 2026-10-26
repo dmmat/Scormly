@@ -39,19 +39,20 @@
     return null;
   }
 
+  // The package's own version first (course-data.js sets __SCORMLY_SCORM__),
+  // so an LMS that exposes both APIs gets the data model its manifest
+  // declared; then the other one. Frames up from this window, then from the
+  // opener of this window and of the top window (a SCO framed in an LMS popup).
   function discover() {
-    // Prefer 2004, then 1.2.
-    var api = find(window, 'API_1484_11');
-    if (api) return { api: api, v2004: true };
-    api = find(window, 'API');
-    if (api) return { api: api, v2004: false };
-    var opener = null;
-    try { opener = window.opener; } catch (e) { opener = null; }
-    if (opener) {
-      api = find(opener, 'API_1484_11');
-      if (api) return { api: api, v2004: true };
-      api = find(opener, 'API');
-      if (api) return { api: api, v2004: false };
+    var names = window.__SCORMLY_SCORM__ === '1.2' ? ['API', 'API_1484_11'] : ['API_1484_11', 'API'];
+    var roots = [window];
+    try { if (window.opener) roots.push(window.opener); } catch (e) { /* cross-origin */ }
+    try { if (window.top && window.top.opener && window.top !== window) roots.push(window.top.opener); } catch (e) { /* cross-origin */ }
+    for (var r = 0; r < roots.length; r++) {
+      for (var n = 0; n < names.length; n++) {
+        var api = find(roots[r], names[n]);
+        if (api) return { api: api, v2004: names[n] === 'API_1484_11' };
+      }
     }
     return null;
   }
@@ -71,6 +72,14 @@
   // incomplete. Learners may retake quizzes — also from "Review the course"
   // after finishing — and LMSes keep the last value written, not the best.
   var sticky = { completed: false, passed: false, status12: '', raw: null };
+  var held12 = null; // 1.2 score waiting for completion (see setScore)
+  function writeScore12() {
+    if (!held12) return;
+    set('cmi.core.score.raw', held12.raw);
+    set('cmi.core.score.min', held12.min);
+    set('cmi.core.score.max', held12.max);
+    held12 = null;
+  }
 
   // Some LMS APIs return booleans instead of the spec's 'true' / 'false' strings.
   function isTrue(result) { return String(result) === 'true'; }
@@ -146,10 +155,6 @@
     if (v2004) commentCount = readCount('cmi.comments_from_learner._count');
   }
 
-  function objectiveIndex(id) {
-    if (!(id in objectiveIndexById)) objectiveIndexById[id] = objectiveCount++;
-    return objectiveIndexById[id];
-  }
 
   // Interaction responses/patterns may be passed pre-formatted (string) or as
   // an array: a list of ids/strings (sequencing, multi-part fill-in) or of
@@ -282,6 +287,7 @@
         set('cmi.completion_status', completed ? 'completed' : 'incomplete');
         if (success) set('cmi.success_status', success);
       } else {
+        if (completed) writeScore12();
         var status = success || (completed ? 'completed' : 'incomplete');
         // No verdict in this call: keep a "failed" the LMS already holds.
         if (!success && sticky.status12 === 'failed') status = 'failed';
@@ -304,9 +310,11 @@
         var range = hi - lo || 1;
         set('cmi.score.scaled', Math.max(0, Math.min(1, (raw - lo) / range)).toFixed(4));
       } else {
-        set('cmi.core.score.raw', Math.round(raw));
-        set('cmi.core.score.min', lo);
-        set('cmi.core.score.max', hi);
+        // 1.2: with a mastery score in the manifest the LMS may turn any raw
+        // score into passed / failed (RTE cmi.core.lesson_status) — which
+        // many LMSes count as finished. So the score waits for completion.
+        held12 = { raw: Math.round(raw), min: lo, max: hi };
+        if (sticky.completed) writeScore12();
       }
     },
 
@@ -340,8 +348,16 @@
     // index) is ignored: the slot is resolved by objective id, see readIndexes.
     setObjective: function (_i, data) {
       if (!trackingAllowed() || unsupported.objectives || !data || !data.id) return;
-      var p = 'cmi.objectives.' + objectiveIndex(data.id) + '.';
-      if (!set(p + 'id', data.id) && notImplemented()) { unsupported.objectives = true; return; }
+      // A new id takes the next slot only once the LMS accepts it, so a
+      // rejected write doesn't leave a gap the next objective would land past.
+      var known = data.id in objectiveIndexById;
+      var n = known ? objectiveIndexById[data.id] : objectiveCount;
+      var p = 'cmi.objectives.' + n + '.';
+      if (!set(p + 'id', data.id)) {
+        if (notImplemented()) unsupported.objectives = true;
+        return;
+      }
+      if (!known) { objectiveIndexById[data.id] = n; objectiveCount = n + 1; }
       if (typeof data.raw === 'number') {
         set(p + 'score.raw', Math.round(data.raw));
         set(p + 'score.min', data.min == null ? 0 : data.min);
@@ -368,13 +384,24 @@
     // ignored: interactions are appended after the ones the LMS already holds.
     recordInteraction: function (_i, data) {
       if (!trackingAllowed() || unsupported.interactions || !data || !data.id) return;
-      var p = 'cmi.interactions.' + (interactionCount++) + '.';
-      if (!set(p + 'id', data.id) && notImplemented()) { unsupported.interactions = true; return; }
-      set(p + 'type', data.type);
-      // 1.2 student_response is CMIFeedback (max 255 chars).
+      // The index advances only once the LMS accepts the id (it must stay
+      // sequential; a rejected one would leave every later write past _count).
+      var p = 'cmi.interactions.' + interactionCount + '.';
+      if (!set(p + 'id', data.id)) {
+        if (notImplemented()) unsupported.interactions = true;
+        return;
+      }
+      interactionCount++;
+      // 1.2 has no long-fill-in; free text goes in as fill-in.
+      set(p + 'type', !v2004 && data.type === 'long-fill-in' ? 'fill-in' : data.type);
+      // 1.2 student_response is CMIFeedback (max 255 chars); 2004 long-fill-in
+      // holds up to 4000.
       var resp = formatResponse(v2004 ? data.response : compact12(data.response, data));
-      set(p + (v2004 ? 'learner_response' : 'student_response'), v2004 ? resp : resp.slice(0, 255));
-      set(p + 'result', v2004 ? (data.correct ? 'correct' : 'incorrect') : (data.correct ? 'correct' : 'wrong'));
+      set(p + (v2004 ? 'learner_response' : 'student_response'),
+        v2004 ? (data.type === 'long-fill-in' ? resp.slice(0, 4000) : resp) : resp.slice(0, 255));
+      // Unscored answers (reflections) are 'neutral' in both vocabularies.
+      set(p + 'result', data.neutral ? 'neutral'
+        : v2004 ? (data.correct ? 'correct' : 'incorrect') : (data.correct ? 'correct' : 'wrong'));
       // Optional fields.
       if (typeof data.weight === 'number') set(p + 'weighting', data.weight);
       if (typeof data.latencySec === 'number') set(p + 'latency', formatTime(data.latencySec));

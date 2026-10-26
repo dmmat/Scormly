@@ -48,8 +48,35 @@ divider: {
 },
 ```
 
-The registry entry automatically appears in the "+ Add block" menu under the
-corresponding category. Also add a line icon for the type to `PATHS` in
+The registry entry automatically appears in the "+ Add block" menu under its
+`category`, one of `'text'`, `'media'`, `'structure'` (structure & explanation:
+process, steps, timeline, comparison, tabs, accordion), `'interactive'`,
+`'assessment'` (knowledge check: scored blocks) or `'navigation'`. Within a
+category, blocks are listed in registry order. The name and description come
+from the `blocks` i18n namespace (`divider`, `dividerDesc`).
+
+Optionally, offer ready-made **styles** of the block with `variants`. The
+first one is the default and has no overrides; the others patch the default
+block's `data` (an object, or a function of the default data when they need
+fresh ids or derived values) and/or `settings`:
+
+```ts
+divider: {
+  // …
+  variants: [
+    { id: 'solid' },
+    { id: 'dashed', data: { style: 'dashed' } },
+    { id: 'label', data: { style: 'label', label: c('tplChapterLabel') } },
+  ],
+},
+```
+
+The add menu shows them as chips on the block's item, with a live preview,
+and inserts the chosen one; `createBlock(type, variantId)` builds one
+anywhere else. Label each in both languages as `variant_<type>_<id>` in the
+`blocks` namespace (search matches these labels too); `tests/registry.test.ts`
+checks the labels and that no variant creates a broken block. Also add a line
+icon for the type to `PATHS` in
 [`src/blocks/BlockIcon.tsx`](../src/blocks/BlockIcon.tsx) (24×24, stroked) —
 the `Record<BlockType, …>` type makes the build fail until you do.
 

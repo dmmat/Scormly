@@ -1,9 +1,10 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, type FocusEvent, type MouseEvent } from 'react'
 import { createPortal } from 'react-dom'
 import { INTRO_BLOCK_TYPES, INTRO_ID, type BlockType } from '../../types/course'
 import {
   BLOCK_CATEGORIES,
   BLOCK_REGISTRY,
+  blockVariants,
   type BlockCategory,
 } from '../../blocks/registry'
 import { useCourseStore } from '../../store/courseStore'
@@ -27,6 +28,13 @@ interface AddBlockMenuProps {
 
 /** Menu width in rem. */
 const MENU_REM = 40
+/** Menu height in px: the largest group (basic Interactive blocks) fits
+ *  without scrolling. The menu keeps this size whatever group or search
+ *  results it shows (the list scrolls), capped to the window. */
+const MENU_HEIGHT = 620
+/** Fixed app header (h-14), for when the menu isn't inside the canvas. */
+const HEADER_BOTTOM = 56
+const MARGIN = 16
 
 interface MenuItem {
   key: string
@@ -35,6 +43,11 @@ interface MenuItem {
   description: string
   make: () => Block[]
   add: () => void
+  /** Basic blocks: the block type and its styles (first = default). */
+  type?: BlockType
+  variants?: { id: string; label: string }[]
+  /** Search matched only this style: the item inserts it. */
+  matched?: string
 }
 
 interface MenuGroup {
@@ -60,7 +73,9 @@ const TEMPLATE_GROUP_ICON: Record<TemplateGroup, BlockType> = {
 const CATEGORY_ICON: Record<BlockCategory, BlockType> = {
   text: 'heading',
   media: 'gallery',
-  interactive: 'quiz',
+  structure: 'process',
+  interactive: 'hotspot',
+  assessment: 'quiz',
   navigation: 'continue',
 }
 
@@ -81,7 +96,9 @@ function introTemplateIds(): Set<string> {
 const CATEGORY_KEY: Record<BlockCategory, string> = {
   text: 'catText',
   media: 'catMedia',
+  structure: 'catStructure',
   interactive: 'catInteractive',
+  assessment: 'catAssessment',
   navigation: 'catNavigation',
 }
 
@@ -98,14 +115,21 @@ export default function AddBlockMenu({
   const { t: td } = useT('design')
   const [open, setOpen] = useState(false)
   const [query, setQuery] = useState('')
-  const [placement, setPlacement] = useState<'down' | 'up'>('down')
-  const [maxHeight, setMaxHeight] = useState(520)
+  // Fixed size and offset from the trigger's wrapper, set when the menu opens.
+  const [box, setBox] = useState({ top: 0, left: 0, width: MENU_REM * 16, height: MENU_HEIGHT })
   // Hover preview: shown after a short pause on an item, beside the menu.
   // Positioned (fixed) next to the menu from its rect when it appears; null
   // when there's no room on either side.
   const [hover, setHover] = useState<
     { key: string; title: string; description: string; blocks: Block[]; left: number; top: number } | null
   >(null)
+  // Key of the preview on screen, so moving to another item or style swaps it
+  // at once instead of waiting again.
+  const hoverShown = useRef<string | null>(null)
+  // The item whose style chips are open (hover / focus), and on which side.
+  const [chips, setChips] = useState<{ key: string; up: boolean } | null>(null)
+  const chipsTimer = useRef<number | undefined>(undefined)
+  const listRef = useRef<HTMLDivElement>(null)
   const menuRef = useRef<HTMLDivElement>(null)
   const hoverTimer = useRef<number | undefined>(undefined)
   const rootRef = useRef<HTMLDivElement>(null)
@@ -156,15 +180,28 @@ export default function AddBlockMenu({
         icon: CATEGORY_ICON[category],
         total: all.length,
         items: all
-          .map((m) => ({
-            key: m.type,
-            icon: m.type,
-            title: tb(m.type),
-            description: tb(`${m.type}Desc`),
-            make: () => [createBlock(m.type)],
-            add: () => handleAdd(m.type),
-          }))
-          .filter((it) => hit(it.title, it.description)),
+          .map((m): MenuItem => {
+            const title = tb(m.type)
+            const description = tb(`${m.type}Desc`)
+            const variants = blockVariants(m.type).map((v) => ({ id: v.id, label: tb(`variant_${m.type}_${v.id}`) }))
+            // Typing a style's name ("chevron") finds its block, set to that
+            // style — unless the block's own name matches.
+            const matched = q && !title.toLowerCase().includes(q)
+              ? variants.find((v) => v.label.toLowerCase().includes(q))?.id
+              : undefined
+            return {
+              key: m.type,
+              icon: m.type,
+              title,
+              description,
+              make: () => [createBlock(m.type, matched)],
+              add: () => handleAdd(m.type, matched),
+              type: m.type,
+              variants: variants.length ? variants : undefined,
+              matched,
+            }
+          })
+          .filter((it) => hit(it.title, it.description) || it.matched),
       }
     }),
   ].filter((g) => g.total > 0)
@@ -177,23 +214,38 @@ export default function AddBlockMenu({
   }
   const visible = q ? groups.filter((g) => g.items.length > 0) : groups.filter((g) => g.id === activeGroup)
 
-  // Open toward whichever side has more room, and cap the height to the space
-  // actually available there (minus a margin) so the menu never overflows the
-  // viewport — the list scrolls instead of being clipped behind the header.
+  // One size for the whole time the menu is open, so it never jumps as the
+  // group or the search results change: MENU_REM × MENU_HEIGHT, or less when
+  // the canvas / window is smaller. It opens below the trigger, else above it,
+  // else wherever it fits fully on screen (covering the trigger rather than
+  // shrinking); horizontally it stays inside the canvas, clear of the sidebar.
   function toggle() {
     if (!open) {
       setQuery('')
-      const rect = triggerRef.current?.getBoundingClientRect()
-      if (rect) {
-        const margin = 16
-        // Space above is bounded by the fixed app header (h-14 = 56px), not the
-        // viewport top, or an upward menu gets clipped behind it.
-        const headerBottom = 56
-        const below = window.innerHeight - rect.bottom - margin
-        const above = rect.top - headerBottom - margin
-        const up = above > below
-        setPlacement(up ? 'up' : 'down')
-        setMaxHeight(Math.max(260, Math.min(520, up ? above : below)))
+      const trigger = triggerRef.current?.getBoundingClientRect()
+      const root = rootRef.current?.getBoundingClientRect()
+      if (trigger && root) {
+        // The canvas scrolls and clips its content, so the menu must fit in it
+        // (below the app header and any banner over the canvas).
+        const area = rootRef.current?.closest('.canvas')?.getBoundingClientRect() ?? {
+          left: 0,
+          right: window.innerWidth,
+          top: HEADER_BOTTOM,
+          bottom: window.innerHeight,
+        }
+        const minTop = Math.max(HEADER_BOTTOM, area.top) + MARGIN
+        const maxBottom = Math.min(window.innerHeight, area.bottom) - MARGIN
+        const height = Math.max(240, Math.min(MENU_HEIGHT, maxBottom - minTop))
+        let top = trigger.bottom + 8
+        if (top + height > maxBottom) {
+          top = trigger.top - 8 - height
+          if (top < minTop) top = Math.max(minTop, maxBottom - height)
+        }
+        const side = 8
+        const width = Math.min(MENU_REM * 16, area.right - area.left - 2 * side)
+        const center = (trigger.left + trigger.right) / 2
+        const left = Math.min(Math.max(center - width / 2, area.left + side), area.right - side - width)
+        setBox({ top: top - root.top, left: left - root.left, width, height })
       }
     }
     setOpen((v) => !v)
@@ -204,25 +256,77 @@ export default function AddBlockMenu({
     if (open) searchRef.current?.focus()
     else {
       window.clearTimeout(hoverTimer.current)
+      window.clearTimeout(chipsTimer.current)
+      hoverShown.current = null
       setHover(null)
+      setChips(null)
     }
   }, [open])
-  useEffect(() => () => window.clearTimeout(hoverTimer.current), [])
+  useEffect(
+    () => () => {
+      window.clearTimeout(hoverTimer.current)
+      window.clearTimeout(chipsTimer.current)
+    },
+    [],
+  )
 
-  // Props for an item that previews `make()` after a short hover / focus.
+  // Props for an item (or style chip) that previews `make()` after a short
+  // hover / focus. Once a preview is up, the next item or chip swaps it at
+  // once; leaving keeps it a moment, so the pointer can reach the chips.
   function previewProps(key: string, title: string, description: string, make: () => Block[]) {
+    const show = () => {
+      const pos = previewPosition()
+      if (!pos) return
+      hoverShown.current = key
+      setHover({ key, title, description, blocks: make(), ...pos })
+    }
     const start = () => {
       window.clearTimeout(hoverTimer.current)
-      hoverTimer.current = window.setTimeout(() => {
-        const pos = previewPosition()
-        if (pos) setHover({ key, title, description, blocks: make(), ...pos })
-      }, 450)
+      if (hoverShown.current) show()
+      else hoverTimer.current = window.setTimeout(show, 450)
     }
     const stop = () => {
       window.clearTimeout(hoverTimer.current)
-      setHover((h) => (h?.key === key ? null : h))
+      hoverTimer.current = window.setTimeout(() => {
+        hoverShown.current = null
+        setHover(null)
+      }, 150)
     }
     return { onMouseEnter: start, onMouseLeave: stop, onFocus: start, onBlur: stop }
+  }
+
+  // Style chips of an item: shown over the items below it (or above, near the
+  // bottom of the list), so nothing in the menu moves. Keyboard focus opens
+  // them at once; the pointer after a beat, so sweeping across items doesn't
+  // flash them.
+  function chipProps(item: MenuItem) {
+    if (!item.variants) return {}
+    const openNow = (el: HTMLElement) => {
+      window.clearTimeout(chipsTimer.current)
+      const list = listRef.current?.getBoundingClientRect()
+      const r = el.getBoundingClientRect()
+      const up = !!list && r.bottom > list.top + list.height * 0.62
+      setChips((c) => (c?.key === item.key ? c : { key: item.key, up }))
+    }
+    const close = () => {
+      window.clearTimeout(chipsTimer.current)
+      setChips((c) => (c?.key === item.key ? null : c))
+    }
+    return {
+      onMouseEnter: (e: MouseEvent<HTMLDivElement>) => {
+        const el = e.currentTarget
+        window.clearTimeout(chipsTimer.current)
+        chipsTimer.current = window.setTimeout(() => openNow(el), 120)
+      },
+      onMouseLeave: (e: MouseEvent<HTMLDivElement>) => {
+        if (!e.currentTarget.contains(document.activeElement)) close()
+        else window.clearTimeout(chipsTimer.current)
+      },
+      onFocus: (e: FocusEvent<HTMLDivElement>) => openNow(e.currentTarget),
+      onBlur: (e: FocusEvent<HTMLDivElement>) => {
+        if (!e.currentTarget.contains(e.relatedTarget as Node | null)) close()
+      },
+    }
   }
 
   // Beside the menu — right if the 22rem card fits in the window, else left —
@@ -247,8 +351,11 @@ export default function AddBlockMenu({
   // Search keeps focus on open; ↓ moves into the block list.
   useMenu({ open, onClose: () => setOpen(false), rootRef, triggerRef, focusFirst: false })
 
-  function handleAdd(type: BlockType) {
-    addBlock(lessonId, type, atIndex)
+  // A style other than the default goes in as one ready-made block (one undo
+  // step, selected, like the default).
+  function handleAdd(type: BlockType, variantId?: string) {
+    if (variantId && variantId !== blockVariants(type)[0]?.id) insertBlocks(lessonId, [createBlock(type, variantId)], atIndex)
+    else addBlock(lessonId, type, atIndex)
     setOpen(false)
     setQuery('')
   }
@@ -318,10 +425,8 @@ export default function AddBlockMenu({
       {open && (
         <div
           ref={menuRef}
-          style={{ maxHeight, width: `${MENU_REM}rem` }}
-          className={`pop-in absolute left-1/2 z-30 flex max-w-[calc(100vw-2rem)] -translate-x-1/2 flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-2xl ${
-            placement === 'up' ? 'bottom-full mb-2' : 'top-full mt-2'
-          }`}
+          style={box}
+          className="pop-in absolute z-30 flex flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-2xl"
         >
           <div className="border-b border-gray-100 p-2">
             <input
@@ -345,7 +450,7 @@ export default function AddBlockMenu({
             {/* Section rail: ready-made groups, then basic block categories. */}
             <nav
               aria-label={td('blockSections')}
-              className="flex shrink-0 gap-1 overflow-x-auto border-b border-gray-100 bg-gray-50/80 p-2 sm:w-48 sm:flex-col sm:overflow-y-auto sm:border-b-0 sm:border-r sm:p-2.5"
+              className="flex shrink-0 gap-1 overflow-x-auto border-b border-gray-100 bg-gray-50/80 p-2 sm:w-52 sm:flex-col sm:overflow-y-auto sm:border-b-0 sm:border-r sm:p-2.5"
             >
               {SECTIONS.map((section) => (
                 <div key={section} className="contents sm:block sm:pb-2">
@@ -384,7 +489,7 @@ export default function AddBlockMenu({
                           >
                             <BlockIcon type={g.icon} className="h-3.5 w-3.5" />
                           </span>
-                          <span className="min-w-0 flex-1 truncate">{g.label}</span>
+                          <span className="min-w-0 flex-1 truncate sm:whitespace-normal sm:leading-tight">{g.label}</span>
                           <span className="rounded-full px-1.5 text-[11px] tabular-nums text-gray-400">{count}</span>
                         </button>
                       )
@@ -393,7 +498,11 @@ export default function AddBlockMenu({
               ))}
             </nav>
 
-            <div role="menu" className="min-h-0 flex-1 overflow-y-auto p-3">
+            <div
+              ref={listRef}
+              role="menu"
+              className={`min-h-0 flex-1 overflow-y-auto p-3 ${visible.length === 0 ? 'flex items-center justify-center' : ''}`}
+            >
               {visible.map((g) => (
                 <section key={g.id} className="mb-4 last:mb-0" aria-label={`${g.sectionLabel}: ${g.label}`}>
                   <header className="sticky -top-3 z-10 -mx-3 mb-2 flex items-baseline gap-2 border-b border-gray-100 bg-white/95 px-3 pb-2 pt-1 backdrop-blur">
@@ -405,39 +514,98 @@ export default function AddBlockMenu({
                     <span className="ml-auto text-xs tabular-nums text-gray-400">{g.items.length}</span>
                   </header>
                   <div className="grid grid-cols-1 gap-1.5 sm:grid-cols-2">
-                    {g.items.map((item) => (
-                      <button
-                        key={item.key}
-                        type="button"
-                        role="menuitem"
-                        onClick={item.add}
-                        {...previewProps(item.key, item.title, item.description, item.make)}
-                        className={`flex flex-col gap-1 rounded-xl border p-2.5 text-left transition focus:outline-none ${
-                          g.section === 'tpl'
-                            ? 'border-gray-100 bg-gradient-to-br from-white to-brand/[0.04] hover:-translate-y-px hover:border-brand/40 hover:shadow-sm focus:border-brand/40 focus:bg-brand/5'
-                            : 'border-gray-100 hover:border-brand/40 hover:bg-brand/5 focus:border-brand/40 focus:bg-brand/5'
-                        }`}
-                      >
-                        <span className="flex items-center gap-2">
-                          <span
-                            className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg ${
+                    {g.items.map((item) => {
+                      const showChips = chips?.key === item.key && item.variants
+                      const matchedLabel = item.variants?.find((v) => v.id === item.matched)?.label
+                      return (
+                        <div key={item.key} className="relative flex" {...chipProps(item)}>
+                          <button
+                            type="button"
+                            role="menuitem"
+                            onClick={item.add}
+                            {...previewProps(item.key, item.title, item.description, item.make)}
+                            className={`flex w-full flex-col gap-1 rounded-xl border p-2.5 text-left transition focus:outline-none ${
                               g.section === 'tpl'
-                                ? 'bg-gradient-to-br from-brand to-brand-dark text-white shadow-sm'
-                                : 'bg-brand/10 text-brand'
+                                ? 'border-gray-100 bg-gradient-to-br from-white to-brand/[0.04] hover:-translate-y-px hover:border-brand/40 hover:shadow-sm focus:border-brand/40 focus:bg-brand/5'
+                                : showChips
+                                  ? 'border-brand/40 bg-brand/5'
+                                  : 'border-gray-100 hover:border-brand/40 hover:bg-brand/5 focus:border-brand/40 focus:bg-brand/5'
                             }`}
                           >
-                            <BlockIcon type={item.icon} />
-                          </span>
-                          <span className="text-sm font-medium leading-tight text-gray-800">{item.title}</span>
-                        </span>
-                        <span className="text-xs leading-tight text-gray-500">{item.description}</span>
-                      </button>
-                    ))}
+                            <span className="flex w-full items-center gap-2">
+                              <span
+                                className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg ${
+                                  g.section === 'tpl'
+                                    ? 'bg-gradient-to-br from-brand to-brand-dark text-white shadow-sm'
+                                    : 'bg-brand/10 text-brand'
+                                }`}
+                              >
+                                <BlockIcon type={item.icon} />
+                              </span>
+                              <span className="min-w-0 flex-1 text-sm font-medium leading-tight text-gray-800">{item.title}</span>
+                              {item.variants &&
+                                (matchedLabel ? (
+                                  <span className="shrink-0 rounded-full bg-brand/15 px-1.5 py-px text-[10.5px] font-medium text-brand-dark">
+                                    {matchedLabel}
+                                  </span>
+                                ) : (
+                                  // Compact "has styles" mark, so titles keep to one line.
+                                  <span
+                                    title={tb('variantsCount', { n: item.variants.length })}
+                                    className="flex shrink-0 items-center gap-0.5 rounded-full bg-gray-100 px-1.5 py-px text-[10.5px] font-medium tabular-nums text-gray-500"
+                                  >
+                                    <svg aria-hidden viewBox="0 0 16 16" className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth="1.6">
+                                      <rect x="2" y="5.5" width="9" height="8" rx="1.5" />
+                                      <path d="M5 3h7.5A1.5 1.5 0 0 1 14 4.5V11" />
+                                    </svg>
+                                    <span aria-hidden>{item.variants.length}</span>
+                                    <span className="sr-only">{tb('variantsCount', { n: item.variants.length })}</span>
+                                  </span>
+                                ))}
+                            </span>
+                            <span className="text-xs leading-tight text-gray-500">{item.description}</span>
+                          </button>
+                          {showChips && item.type && (
+                            // The transparent padding bridges the pointer from the card to the chips.
+                            <div className={`absolute inset-x-0 z-20 ${chips.up ? 'bottom-full pb-1' : 'top-full pt-1'}`}>
+                              <div
+                                role="group"
+                                aria-label={tb('variantStyles', { block: item.title })}
+                                className="pop-in flex flex-wrap gap-1 rounded-xl border border-gray-200 bg-white p-1.5 shadow-lg"
+                              >
+                                {item.variants!.map((v) => {
+                                  const label = `${item.title} — ${v.label}`
+                                  return (
+                                    <button
+                                      key={v.id}
+                                      type="button"
+                                      role="menuitem"
+                                      aria-label={label}
+                                      onClick={() => handleAdd(item.type!, v.id)}
+                                      {...previewProps(`${item.key}:${v.id}`, label, item.description, () => [
+                                        createBlock(item.type!, v.id),
+                                      ])}
+                                      className={`rounded-full border px-2 py-0.5 text-[11.5px] font-medium transition focus:outline-none focus-visible:ring-2 focus-visible:ring-brand ${
+                                        v.id === item.matched
+                                          ? 'border-brand/50 bg-brand/10 text-brand-dark'
+                                          : 'border-gray-200 text-gray-600 hover:border-brand/50 hover:bg-brand/5 hover:text-brand-dark focus:border-brand/50 focus:bg-brand/5 focus:text-brand-dark'
+                                      }`}
+                                    >
+                                      {v.label}
+                                    </button>
+                                  )
+                                })}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      )
+                    })}
                   </div>
                 </section>
               ))}
               {visible.length === 0 && (
-                <p className="px-1 py-6 text-center text-sm text-gray-400">{t('noBlocks')}</p>
+                <p className="px-1 text-center text-sm text-gray-400">{t('noBlocks')}</p>
               )}
             </div>
           </div>

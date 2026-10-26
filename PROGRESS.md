@@ -35,7 +35,8 @@ Legend: `[ ]` planned · `[~]` in progress · `[x]` done
 
 - [x] Text: heading (H1–H3), paragraph (rich text), list (ul/ol), note/warning
 - [x] Media: image (single), gallery, video (HTML5) — data URL for now, assets/ in Phase 3
-- [x] Continue (unrestricted / restricted)
+- [x] Continue (unrestricted / restricted): reveals the rest of the lesson; restricted locks until the tasks above are done
+- [x] Process diagram, step-by-step guide, comparison, before / after slider, reflection (2026-10-26)
 - [x] Tabs, Accordion (functional + inline editing)
 - [x] Flashcards (CSS 3D flip)
 - [x] Scenario (dialogue trainer: node editor, choices, emotions)
@@ -462,4 +463,53 @@ captions and larger text, in the builder preview and in the exported player alik
     `src/styles/blocks.css` synced into `player.css`.
   - Demo course and landing (new Design section, carousel/testimonial demos)
     updated. Verified headlessly (Chromium) in editor, preview and player.
+- 2026-10-26 — **Explainer blocks, Continue gates, LMS conformance pass**:
+  - Continue: mid-lesson (either mode) it hides the blocks below until clicked,
+    then reveals them in place (scroll + focus); at the very end it still leads
+    on. Clicks persist. **Blocking** mode is now really locked until the
+    quizzes, exercises, reflections and required videos above are done
+    (preview + player; it already looked locked in the editor).
+  - New blocks: **Process diagram** (arrows / chevrons / cycle the learner
+    explores / pyramid), **Step-by-step guide** (all steps or one at a time,
+    rich text + picture per step), **Comparison** (pros & cons or options,
+    2–4 columns, optional VS badge), **Before / after** slider (mouse, touch
+    and keyboard), **Reflection** (free-text answer → sample answer; reported
+    as a neutral long-fill-in interaction, `fill-in` on 1.2). Container
+    queries keep the layouts right at any block width; dark / accent panels
+    covered. Pre-export checks and AGENTS.md entries for each.
+  - Spec audit of the runtime (cmi5, SCORM 1.2 / 2004) and fixes: a cmi5
+    session carries one of passed / failed (a fail waits for the session end,
+    a passing retake replaces it); completed / passed flags are saved only
+    once the LRS stores the statement; unload posts everything still queued
+    with `terminated` as one keepalive batch (also after "Exit course" times
+    out); no resume write before the saved state is read; queued statements
+    from a Browse / Review launch are dropped. Slow LRS (handshake past the
+    8 s wait): the player starts fresh, its writes are held, and when the saved
+    state turns up it is merged in (`whenReady(cb, onLate)` → `lateResume`):
+    union of visited / continued / watched, the newer quiz answers, and a
+    learner still at the start goes on to the saved lesson. SCORM: the package's own API
+    version is preferred (and `top.opener` searched); 1.2 writes the score
+    only once complete (mastery-score overrides); the course score is rounded
+    once so verdict and raw agree; interaction / objective indexes advance
+    only when the LMS accepts the id; progress_measure stays below 1 until
+    complete; terminate on pagehide (beforeunload only commits), reload when
+    restored from the back/forward cache.
+- 2026-10-26 — **Text editor, diagram styles, editor polish**:
+  - Rich text: tables (size picker, Tab between cells, rows / columns, header
+    row, grid / stripes / lines, full width or fit; right-click menu), links
+    (button + Ctrl/⌘+K; web, mail and phone only; open in a new tab), and
+    hotkeys matched on the physical key so they work on any layout (B / I / U,
+    K, Shift+7 / 8 lists, Shift+L / E / R alignment, \ clear). Toolbar shows
+    the formatting at the caret. Table look shared via `.rich-text table`
+    (lines from currentColor, so light cards and dark panels both work).
+  - Process diagram: Arrows redesigned (numbered circles joined by arrows, at
+    most 4 per row, balanced rows, one column when narrow) and a Style per
+    layout (`ProcessData.variant`: solid / soft / outline). Step descriptions
+    are inline rich text (`ProcessStep.html`: bold, italic, underline, links;
+    the editor's `inline` mode), older plain `text` still renders; step titles
+    follow the course typography (editorial / modern).
+  - Block style popover floats over the block next to its button (flips /
+    clamps inside the canvas); keys pressed in popovers no longer reach the
+    block shortcuts. Add-block menu has a fixed size (640×620, capped to the
+    canvas) so it no longer jumps between groups or searches.
 

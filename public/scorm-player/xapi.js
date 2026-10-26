@@ -14,8 +14,12 @@
    cmi5-defined statements carry the cmi5 category context activity; the
    others (`progressed`, `answered`, objective results) deliberately do not.
    `completed` and `passed` are sent at most once per registration (the flags
-   survive relaunches inside the resume state); `failed` at most once per
-   session and never after `passed`.
+   survive relaunches inside the resume state, and are set only once the LRS
+   has accepted the statement). A session carries at most one of passed /
+   failed (§9.3), so `failed` waits for the end of the session — a pass later
+   in the same session replaces it — and never follows a `passed`.
+   Statements go out one at a time in order; on unload whatever is still
+   waiting is posted with `terminated` as one keepalive batch.
 
    Resume: cmi5 has no suspend_data field — we persist the player's resume blob
    via the xAPI State API under stateId `suspendData` so getSuspend/setSuspend
@@ -74,9 +78,22 @@
   var sessionId = uuid();
   var startTime = 0;
   var score = null;          // { scaled, raw?, min?, max? } from setScore
-  var sent = {};             // dedupe per-session statements (initialized, terminated, failed)
+  var sent = {};             // dedupe per-session statements (initialized, terminated, passed)
   // Result statements already sent in this registration (persisted, see x5).
   var regSent = { completed: false, passed: false, failed: false };
+  // Result statements waiting in the outbox or in flight (not yet accepted).
+  var pending = { completed: false, passed: false, failed: false };
+  var failedScore = null;    // score of a fail to report when the session ends
+  // Statements not yet handed to fetch, oldest first: { stmt, flag? }.
+  var outbox = [];
+  // Resume state is written only after it has been read: a player that gave
+  // up waiting for a slow handshake must not overwrite the saved blob first.
+  var handshakeDone = false;
+  // The player stopped waiting (READY_TIMEOUT_MS) and started fresh…
+  var startedEarly = false;
+  // …before the saved state was read: it merges that state in late (see
+  // whenReady), and only then are its writes sent.
+  var resumeMissed = false;
   var lastProgress = -1;     // last reported progress, 0..100
   var queue = Promise.resolve();
 
@@ -139,19 +156,27 @@
   // the page is unloading after "Exit course").
   function trackingAllowed() { return auMode() === 'Normal' && !sent.terminated; }
 
-  // Passed: once per registration. Failed: once per session and never after a
-  // pass — a later successful retry in the same session may still send passed.
+  function resultStatement(passed, sc) {
+    var res = { success: !!passed, duration: elapsed(), score: { scaled: sc.scaled } };
+    if (typeof sc.raw === 'number') { res.score.raw = sc.raw; res.score.min = sc.min; res.score.max = sc.max; }
+    return statement(passed ? V.passed : V.failed, res, { cmi5: true, moveOn: true });
+  }
+
+  // Passed: once per registration, sent right away. Failed: remembered and
+  // sent when the session ends (sendPendingFailed) unless a pass came first —
+  // a session may carry only one of the two, and failed never follows passed.
   function sendResult(passed) {
-    if (!active || !score || !trackingAllowed() || regSent.passed) return;
-    if (passed) regSent.passed = true;
-    else if (sent.failed) return;
-    else { sent.failed = true; regSent.failed = true; }
-    persistFlags();
-    enqueue(function () {
-      var res = { success: !!passed, duration: elapsed(), score: { scaled: score.scaled } };
-      if (typeof score.raw === 'number') { res.score.raw = score.raw; res.score.min = score.min; res.score.max = score.max; }
-      return post(statement(passed ? V.passed : V.failed, res, { cmi5: true, moveOn: true }));
-    });
+    if (!active || !score || !trackingAllowed() || regSent.passed || pending.passed) return;
+    if (!passed) { failedScore = score; return; }
+    failedScore = null;
+    sent.passed = true;
+    send(resultStatement(true, score), 'passed');
+  }
+  function sendPendingFailed() {
+    if (!failedScore || sent.passed || regSent.passed || pending.passed) return;
+    var sc = failedScore;
+    failedScore = null;
+    send(resultStatement(false, sc), 'failed');
   }
 
   function statement(verb, result, opts) {
@@ -167,29 +192,72 @@
     return s;
   }
 
+  // POST one statement or an array of them; resolves to whether the LRS
+  // stored them.
   function post(stmt) {
-    if (!active || !auth) return Promise.resolve();
+    if (!active || !auth) return Promise.resolve(false);
     return fetch(endpoint + 'statements', {
       method: 'POST',
       headers: headers(),
       body: JSON.stringify(stmt),
       keepalive: true, // let final statements survive page unload
     }).then(function (r) {
-      if (!r.ok) { console.warn('[xAPI] statement rejected: ' + r.status); return; }
+      if (!r.ok) { console.warn('[xAPI] statement rejected: ' + r.status); return false; }
       // xAPI answers 200 with the stored statement ids. Some LMSes answer 200
       // with {"success":false,"message":…} instead — TalentLMS does so while
       // its xAPI integration is disabled — and silently drop the statement.
       return r.text().then(function (text) {
         var body = null;
         try { body = JSON.parse(text); } catch (e) { /* not JSON */ }
-        if (body && body.success === false) console.warn('[xAPI] statement not stored by the LMS: ' + (body.message || text));
+        if (body && body.success === false) {
+          console.warn('[xAPI] statement not stored by the LMS: ' + (body.message || text));
+          return false;
+        }
+        return true;
       });
-    }).catch(function (e) { console.warn('[xAPI] statement failed', e); });
+    }).catch(function (e) { console.warn('[xAPI] statement failed', e); return false; });
   }
 
   function enqueue(fn) {
     queue = queue.then(fn).catch(function (e) { console.warn('[xAPI]', e); });
     return queue;
+  }
+
+  // Queue a statement behind the handshake and earlier statements. `flag`
+  // (completed / passed / failed) is recorded for the registration only once
+  // the LRS accepts it; a rejected result statement may be sent again later.
+  function send(stmt, flag) {
+    var item = { stmt: stmt, flag: flag };
+    if (flag) pending[flag] = true;
+    outbox.push(item);
+    return enqueue(function () {
+      var k = outbox.indexOf(item);
+      if (k < 0) return; // already went out with the unload batch
+      outbox.splice(k, 1);
+      // Queued before LaunchData arrived (the player stops waiting after a
+      // timeout): a Browse / Review launch only gets terminated (§10.2.2).
+      if (auMode() !== 'Normal' && stmt.verb !== V.terminated) { if (flag) pending[flag] = false; return; }
+      return post(stmt).then(function (ok) {
+        if (!flag) return;
+        pending[flag] = false;
+        if (ok) { regSent[flag] = true; persistFlags(); }
+      });
+    });
+  }
+
+  // The page is going away: post everything still waiting as one keepalive
+  // batch (xAPI orders statements by timestamp, so the queue order holds).
+  // Its response can't be read any more, so its result flags are saved now.
+  function flushOutbox() {
+    if (!active || !auth) return null;
+    var items = outbox.splice(0);
+    // Result flags of these and of a statement still in flight.
+    var flagged = false;
+    Object.keys(pending).forEach(function (f) {
+      if (pending[f]) { regSent[f] = true; pending[f] = false; flagged = true; }
+    });
+    if (flagged) persistFlags(true);
+    return items.length ? post(items.map(function (it) { return it.stmt; })) : null;
   }
 
   // xAPI State API helpers — used for resume (suspendData). The state is scoped
@@ -240,14 +308,15 @@
   }
   // Re-save the resume state so a flag change is durable even if the player
   // doesn't write progress again before the window closes.
-  function persistFlags() {
+  function persistFlags(now) {
     if (playerSuspend == null) return;
     pendingSuspend = withFlags(playerSuspend);
     suspendDirty = true;
-    flushSuspend();
+    flushSuspend(now);
   }
-  function flushSuspend() {
-    if (!active || !auth || flushingSuspend) return;
+  // `now`: on unload, don't wait for a PUT in flight to finish first.
+  function flushSuspend(now) {
+    if (!active || !auth || !handshakeDone || (flushingSuspend && !now)) return;
     if (pendingSuspend == null) return;
     flushingSuspend = true;
     var body = pendingSuspend;
@@ -298,6 +367,8 @@
       })
       .then(function (sd) {
         resumedSuspend = extractFlags(sd || '');
+        resumeMissed = startedEarly;
+        if (!resumeMissed) { handshakeDone = true; flushSuspend(); }
         // cmi5 §11: the LMS keeps the learner's language in an agent profile,
         // not in LaunchData.
         var url = endpoint + 'agents/profile?profileId=cmi5LearnerPreferences'
@@ -361,7 +432,11 @@
     // Resume data, LaunchData (mode, mastery, language) and the auth token
     // arrive asynchronously; the player must not read them or write progress
     // before this fires, or it would start over and overwrite the saved state.
-    whenReady: function (cb) {
+    // A slow LRS: after READY_TIMEOUT_MS `cb` runs anyway (a fresh start), and
+    // if the saved state then turns up, `onLate` runs so the player can merge
+    // it. Writes made in between are held and dropped: the merged state the
+    // player writes in onLate replaces them.
+    whenReady: function (cb, onLate) {
       if (!readyPromise) { cb(); return; }
       var done = false, timer = null;
       function once() {
@@ -370,20 +445,22 @@
         clearTimeout(timer);
         cb();
       }
-      timer = setTimeout(once, READY_TIMEOUT_MS);
-      readyPromise.then(once);
+      timer = setTimeout(function () { startedEarly = true; once(); }, READY_TIMEOUT_MS);
+      readyPromise.then(function () {
+        if (!done) { once(); return; }
+        if (!resumeMissed) return;
+        handshakeDone = true;
+        pendingSuspend = null;
+        suspendDirty = false;
+        if (onLate) onLate(); else flushSuspend();
+      });
     },
 
     // completed: boolean; success: 'passed' | 'failed' | null
     report: function (completed, success) {
       if (!active || !trackingAllowed()) return;
-      if (completed && !regSent.completed) {
-        regSent.completed = true;
-        persistFlags();
-        enqueue(function () {
-          var res = { completion: true, duration: elapsed() };
-          return post(statement(V.completed, res, { cmi5: true, moveOn: true }));
-        });
+      if (completed && !regSent.completed && !pending.completed) {
+        send(statement(V.completed, { completion: true, duration: elapsed() }, { cmi5: true, moveOn: true }), 'completed');
       }
       // The player only passes `success` once the whole course is complete;
       // sendResult() (driven by setScore) usually fires earlier. Its guards
@@ -439,11 +516,9 @@
       var bucket = Math.floor(pct / 10) * 10;
       if (bucket <= lastProgress || bucket <= 0 || bucket >= 100) return;
       lastProgress = bucket;
-      enqueue(function () {
-        var res = { duration: elapsed(), extensions: {} };
-        res.extensions[PROGRESS_EXT] = bucket;
-        return post(statement(V.progressed, res, { cmi5: false }));
-      });
+      var res = { duration: elapsed(), extensions: {} };
+      res.extensions[PROGRESS_EXT] = bucket;
+      send(statement(V.progressed, res, { cmi5: false }));
     },
 
     // Objectives in cmi5 are not part of the moveOn contract; we still send
@@ -455,43 +530,39 @@
       var lo = data.min == null ? 0 : data.min, hi = data.max == null ? 100 : data.max;
       var range = hi - lo || 1;
       var scaled = raw == null ? null : Math.max(0, Math.min(1, (raw - lo) / range));
-      enqueue(function () {
-        var res = { duration: elapsed() };
-        if (raw != null) res.score = { scaled: scaled, raw: raw, min: lo, max: hi };
-        if (data.success) res.success = data.success === 'passed';
-        var s = statement(data.success === 'failed' ? V.failed : (data.success === 'passed' ? V.passed : V.completed), res, { cmi5: false });
-        s.object = {
-          id: activityId + '/objectives/' + encodeURIComponent(data.id),
-          objectType: 'Activity',
-          definition: {
-            type: 'http://adlnet.gov/expapi/activities/objective',
-            name: data.name ? { 'en-US': String(data.name) } : undefined,
-          },
-        };
-        return post(s);
-      });
+      var res = { duration: elapsed() };
+      if (raw != null) res.score = { scaled: scaled, raw: raw, min: lo, max: hi };
+      if (data.success) res.success = data.success === 'passed';
+      var s = statement(data.success === 'failed' ? V.failed : (data.success === 'passed' ? V.passed : V.completed), res, { cmi5: false });
+      s.object = {
+        id: activityId + '/objectives/' + encodeURIComponent(data.id),
+        objectType: 'Activity',
+        definition: {
+          type: 'http://adlnet.gov/expapi/activities/objective',
+          name: data.name ? { 'en-US': String(data.name) } : undefined,
+        },
+      };
+      send(s);
       void i;
     },
 
     // Quiz answer → an `answered` interaction statement (no cmi5 category).
     recordInteraction: function (i, data) {
       if (!active || !trackingAllowed()) return;
-      enqueue(function () {
-        var res = { response: formatResponse(data.response), success: !!data.correct };
-        if (typeof data.latencySec === 'number') res.duration = 'PT' + Math.max(0, Math.floor(data.latencySec)) + 'S';
-        var s = statement(V.answered, res, { cmi5: false });
-        s.object = buildInteractionObject(data);
-        return post(s);
-      });
+      var res = { response: formatResponse(data.response) };
+      // Unscored answers (reflections) carry no success.
+      if (!data.neutral) res.success = !!data.correct;
+      if (typeof data.latencySec === 'number') res.duration = 'PT' + Math.max(0, Math.floor(data.latencySec)) + 'S';
+      var s = statement(V.answered, res, { cmi5: false });
+      s.object = buildInteractionObject(data);
+      send(s);
       void i;
     },
 
     // Learner comment → xAPI `commented` statement (not cmi5-defined; ADL verb).
     setComment: function (text) {
       if (!active || !trackingAllowed() || !text) return;
-      enqueue(function () {
-        return post(statement(V.commented, { response: String(text).slice(0, 4000) }, { cmi5: false }));
-      });
+      send(statement(V.commented, { response: String(text).slice(0, 4000) }, { cmi5: false }));
     },
 
     // `abandoned` is an LMS-issued verb in cmi5 (when an AU session ends
@@ -542,20 +613,24 @@
     suspendLimit: function () { return 0; },
 
     commit: function () {}, // statements are sent immediately
-    // unloading: the page is going away, so anything still waiting in the
-    // queue may never be sent — post `terminated` right now (keepalive) so the
-    // LMS doesn't mark the session abandoned. Otherwise `terminated` is queued
-    // after the pending statements, and the returned promise resolves once it
-    // is sent (the "Exit course" button waits for it before leaving).
+    // Ends the session: a held `failed`, then `terminated`, go to the back of
+    // the queue; the returned promise resolves once they are sent (the "Exit
+    // course" button waits for it before leaving). unloading — or a second
+    // call once the page is going away — posts whatever is still waiting as
+    // one keepalive batch, so `terminated` (and any result statements before
+    // it) aren't lost with the page.
     finish: function (unloading) {
-      if (!active || sent.terminated) return null;
-      var stmt = statement(V.terminated, { duration: elapsed() }, { cmi5: true });
-      sent.terminated = true;
-      if (unloading) {
-        flushSuspend();
-        return post(stmt);
+      if (!active) return null;
+      var done = null;
+      if (!sent.terminated) {
+        if (auMode() === 'Normal') sendPendingFailed();
+        sent.terminated = true;
+        done = send(statement(V.terminated, { duration: elapsed() }, { cmi5: true }));
       }
-      return enqueue(function () { return post(stmt); });
+      if (!unloading) return done;
+      var batch = flushOutbox();
+      flushSuspend(true);
+      return batch || done;
     },
     available: function () { return active; },
   };

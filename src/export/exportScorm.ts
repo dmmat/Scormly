@@ -15,7 +15,7 @@ export async function exportScorm(version: ScormVersion = '2004'): Promise<strin
   const { course, directoryHandle } = useCourseStore.getState()
   const zip = new JSZip()
 
-  const files = await addPlayer(zip, course, 'scorm.js')
+  const files = await addPlayer(zip, course, 'scorm.js', version)
   files.push(...(await addAssets(zip, directoryHandle, course)))
   // Package-level control documents: not part of the SCO, so not listed in
   // the resource's <file> entries.

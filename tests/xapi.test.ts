@@ -220,9 +220,30 @@ describe('xAPI — full session statement order', () => {
     SCORM.init()
     SCORM.setScore(50, 0, 100) // scaled 0.5 < 0.8
     await wait()
-    const stmts = statements().filter((s) => s.verb.id === V.failed || s.verb.id === V.passed)
-    const result = stmts.find((s) => s.object.id === 'https://scormly.app/course/x/au')
-    expect(result?.verb.id).toBe(V.failed)
+    // A fail waits for the end of the session (a retake may still pass).
+    const onAu = () => statements().filter((s) => (s.verb.id === V.failed || s.verb.id === V.passed) && s.object.id === 'https://scormly.app/course/x/au')
+    expect(onAu()).toEqual([])
+    await SCORM.finish()
+    await wait()
+    expect(onAu().map((s) => s.verb.id)).toEqual([V.failed])
+    const verbs = statements().map((s) => s.verb.id)
+    expect(verbs.indexOf(V.failed)).toBeLessThan(verbs.indexOf(V.terminated))
+  })
+
+  test('a session carries only one of passed / failed: a passing retake replaces the fail (cmi5 §9.3)', async () => {
+    const { SCORM, statements, wait } = loadXapi({
+      params: defaultLaunch(),
+      launchData: { launchMode: 'Normal', masteryScore: 0.8 },
+    })
+    SCORM.init()
+    SCORM.setScore(50, 0, 100)
+    SCORM.setScore(90, 0, 100)
+    await SCORM.finish()
+    await wait()
+    const results = statements()
+      .filter((s) => s.object.id === 'https://scormly.app/course/x/au' && (s.verb.id === V.failed || s.verb.id === V.passed))
+      .map((s) => s.verb.id)
+    expect(results).toEqual([V.passed])
   })
 
   test('passed is emitted at most once per session (setScore + report are deduped)', async () => {
@@ -522,10 +543,102 @@ describe('xAPI — cmi5 conformance guards', () => {
     SCORM.setScore(85, 0, 100)
     // The player judged 85 ≥ its own 80 as passed; the LMS mastery is 90.
     SCORM.report(true, 'passed')
+    await SCORM.finish()
     await wait()
     const verbs = statements().map((s) => s.verb.id)
     expect(verbs).not.toContain(V.passed)
     expect(verbs).toContain(V.failed)
+  })
+
+  test('unload posts everything still waiting together with terminated, as one batch', async () => {
+    const { SCORM, calls, statements, wait } = loadXapi({
+      params: defaultLaunch(),
+      launchData: { launchMode: 'Normal', masteryScore: 0.5 },
+    })
+    SCORM.init()
+    await wait()
+    SCORM.recordInteraction(0, { id: 'q1', type: 'choice', interactionType: 'choice', response: 'a', correct: true })
+    SCORM.setScore(90, 0, 100)
+    SCORM.report(true, 'passed')
+    SCORM.finish(true) // the page is going away before the queue ran
+    await wait()
+    const batches = calls.filter((c) => c.url.indexOf('/statements') >= 0 && Array.isArray(JSON.parse(String(c.body))))
+    expect(batches.length).toBe(1)
+    const batch = JSON.parse(String(batches[0].body)) as Array<{ verb: { id: string } }>
+    expect(batch.map((s) => s.verb.id)).toEqual([V.answered, V.passed, V.completed, V.terminated])
+    // Nothing goes out twice.
+    expect(statements().filter((s) => s.verb.id === V.completed).length).toBe(1)
+  })
+
+  test('after "Exit course", the unload still flushes what the exit left waiting', async () => {
+    const { SCORM, statements, wait } = loadXapi({ params: defaultLaunch(), launchData: { launchMode: 'Normal' } })
+    SCORM.init()
+    await wait()
+    SCORM.report(true, null)
+    SCORM.finish() // Exit course: queued behind the completed statement
+    SCORM.finish(true) // the 3 s exit timeout ran out and the page unloads
+    await wait()
+    const verbs = statements().map((s) => s.verb.id)
+    expect(verbs.filter((v) => v === V.terminated).length).toBe(1)
+    expect(verbs.indexOf(V.completed)).toBeGreaterThan(-1)
+    expect(verbs.indexOf(V.completed)).toBeLessThan(verbs.indexOf(V.terminated))
+  })
+
+  test('completed is recorded for the registration only once the LRS stores it', async () => {
+    const { SCORM, statements, stateCalls, wait } = loadXapi({
+      params: defaultLaunch(),
+      launchData: { launchMode: 'Normal' },
+      statementResponse: '{"success":false,"message":"xAPI disabled"}',
+    })
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+    SCORM.init()
+    await wait()
+    SCORM.setSuspend('{}')
+    SCORM.report(true, null)
+    await wait()
+    expect(stateCalls().some((c) => c.method === 'PUT' && String(c.body).includes('x5'))).toBe(false)
+    SCORM.report(true, null) // dropped by the LMS, so it may be sent again
+    await wait()
+    expect(statements().filter((s) => s.verb.id === V.completed).length).toBe(2)
+    warn.mockRestore()
+  })
+
+  test('slow LRS: the player starts fresh, then merges the late saved state before anything is written', async () => {
+    const { SCORM, stateCalls, wait } = loadXapi({
+      params: defaultLaunch(),
+      launchData: { launchMode: 'Normal' },
+      resumeBlob: '{"l":2,"v":[0,1,2]}',
+      suspendDelayMs: 150,
+      readyTimeoutMs: 30,
+    })
+    SCORM.init()
+    const events: string[] = []
+    SCORM.whenReady(
+      () => events.push('fresh:' + SCORM.getSuspend()),
+      () => {
+        events.push('late:' + SCORM.getSuspend())
+        SCORM.setSuspend('{"l":2,"v":[0,1,2],"q":{"a":100}}') // the merged state
+      },
+    )
+    await new Promise((r) => setTimeout(r, 60))
+    SCORM.setSuspend('{"l":0,"v":[0],"q":{"a":100}}') // fresh start, before the saved state arrived
+    await new Promise((r) => setTimeout(r, 200))
+    await wait()
+    expect(events).toEqual(['fresh:', 'late:{"l":2,"v":[0,1,2]}'])
+    const puts = stateCalls().filter((c) => c.stateId === 'suspendData' && c.method === 'PUT')
+    expect(puts.map((c) => c.body)).toEqual(['{"l":2,"v":[0,1,2],"q":{"a":100}}'])
+  })
+
+  test('no resume write before the saved state has been read', async () => {
+    const { SCORM, stateCalls, wait } = loadXapi({ params: defaultLaunch(), launchData: { launchMode: 'Normal' }, resumeBlob: '{"l":2}' })
+    SCORM.init()
+    SCORM.setSuspend('{"l":0}') // the player gave up waiting and started fresh
+    await wait()
+    const calls = stateCalls().filter((c) => c.stateId === 'suspendData')
+    const firstPut = calls.findIndex((c) => c.method === 'PUT')
+    const read = calls.findIndex((c) => c.method !== 'PUT')
+    expect(read).toBeGreaterThan(-1)
+    expect(firstPut).toBeGreaterThan(read)
   })
 
   test('sends no statements after terminated', async () => {

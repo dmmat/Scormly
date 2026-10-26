@@ -45,4 +45,16 @@ export const KEYS = {
   moveDown: `${IS_MAC ? '⌥' : 'Alt'}+↓`,
   deselect: 'Esc',
   help: '?',
+  // Rich-text editor (matched on the physical key, any layout).
+  bold: `${MOD}+B`,
+  italic: `${MOD}+I`,
+  underline: `${MOD}+U`,
+  link: `${MOD}+K`,
+  numberedList: `${MOD}+Shift+7`,
+  bulletList: `${MOD}+Shift+8`,
+  alignLeft: `${MOD}+Shift+L`,
+  alignCenter: `${MOD}+Shift+E`,
+  alignRight: `${MOD}+Shift+R`,
+  clearFormat: `${MOD}+\\`,
+  nextCell: 'Tab',
 } as const

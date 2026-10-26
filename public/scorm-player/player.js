@@ -50,7 +50,11 @@
       startCourse: 'Start course', continueCourse: 'Continue course', lessonsCount: '{n} lessons',
       nextLesson: 'Next lesson', lessonsMenu: 'Lessons', courseHome: 'Course home', closeMenu: 'Close',
       progressPct: '{n}% complete', download: 'Download', carousel: 'Image carousel',
-      slideOf: 'Image {n} of {total}', prevSlide: 'Previous image', nextSlide: 'Next image', goToSlide: 'Show image {n}' },
+      slideOf: 'Image {n} of {total}', prevSlide: 'Previous image', nextSlide: 'Next image', goToSlide: 'Show image {n}',
+      openStep: 'Step {n}: {title}', exploredOf: 'Explored {n} of {total}', back: 'Back', startOver: 'Start over',
+      baSlider: 'Compare: drag to show more of “{before}” or “{after}”',
+      answerPlaceholder: 'Type your answer…', submitAnswer: 'Submit', answerSaved: 'Your answer is saved.',
+      editAnswer: 'Edit answer', sampleAnswer: 'Sample answer', continueLocked: 'Complete the tasks above to continue.' },
     uk: { prev: 'Назад', next: 'Далі', progress: 'Урок {n} з {total}',
       empty: 'У цьому уроці ще немає контенту.', submit: 'Відповісти', submitAll: 'Надіслати відповіді', retry: 'Спробувати ще раз',
       correct: 'Правильно', incorrect: 'Неправильно', yourScore: 'Ваш результат: {s}%',
@@ -80,7 +84,11 @@
       startCourse: 'Почати курс', continueCourse: 'Продовжити курс', lessonsCount: 'Уроків: {n}',
       nextLesson: 'Наступний урок', lessonsMenu: 'Уроки', courseHome: 'Головна курсу', closeMenu: 'Закрити',
       progressPct: 'Пройдено {n}%', download: 'Завантажити', carousel: 'Карусель зображень',
-      slideOf: 'Зображення {n} з {total}', prevSlide: 'Попереднє зображення', nextSlide: 'Наступне зображення', goToSlide: 'Показати зображення {n}' },
+      slideOf: 'Зображення {n} з {total}', prevSlide: 'Попереднє зображення', nextSlide: 'Наступне зображення', goToSlide: 'Показати зображення {n}',
+      openStep: 'Крок {n}: {title}', exploredOf: 'Переглянуто {n} з {total}', back: 'Назад', startOver: 'Спочатку',
+      baSlider: 'Порівняння: тягніть, щоб показати більше «{before}» або «{after}»',
+      answerPlaceholder: 'Напишіть свою відповідь…', submitAnswer: 'Надіслати', answerSaved: 'Вашу відповідь збережено.',
+      editAnswer: 'Змінити відповідь', sampleAnswer: 'Приклад відповіді', continueLocked: 'Виконайте завдання вище, щоб продовжити.' },
   };
   var lang = (navigator.language || 'en').toLowerCase().indexOf('uk') === 0 ? 'uk' : 'en';
   function t(key, vars) {
@@ -266,7 +274,7 @@
   // score, per-block objectives, the 'quiz' completion rule, linear gating).
   var SCORED = { quiz: true, ordering: true, fillBlanks: true };
 
-  var state = { course: null, lessonIndex: 0, visited: {}, continued: {}, watched: {}, quizResults: {}, quizzes: [], quizIndexById: {}, interactionIndex: 0, sessionStart: 0, complete: false, finished: false, summary: null, learner: null, lmsMode: 'normal',
+  var state = { course: null, lessonIndex: 0, visited: {}, continued: {}, watched: {}, reflections: {}, quizResults: {}, quizzes: [], quizIndexById: {}, interactionIndex: 0, sessionStart: 0, complete: false, finished: false, summary: null, learner: null, lmsMode: 'normal',
     onIntro: false, navDirection: null, revealed: {}, menuOpen: false };
   // Set at boot to the unload handler, so the completion screen's "Exit course"
   // button can end the LMS session the same way closing the window does.
@@ -274,13 +282,16 @@
 
   function start(course) {
     state.course = course;
-    var accent = THEME_ACCENT[course.theme] || THEME_ACCENT.rose;
+    // A custom theme arrives as a resolved palette (see withThemeTokens).
+    var tk = course.theme === 'custom' && course.themeTokens;
+    var accent = tk ? [tk.brand, tk.brandDark, tk.radiusBtn, tk.radiusInteractive]
+      : THEME_ACCENT[course.theme] || THEME_ACCENT.rose;
     document.documentElement.style.setProperty('--brand', accent[0]);
     document.documentElement.style.setProperty('--brand-dark', accent[1]);
     document.documentElement.style.setProperty('--radius-btn', accent[2]);
     document.documentElement.style.setProperty('--radius-surface', accent[3]);
     // Theme-specific extras beyond color/radius (e.g. terminal font) live in player.css.
-    document.documentElement.setAttribute('data-theme', THEME_ACCENT[course.theme] ? course.theme : 'rose');
+    document.documentElement.setAttribute('data-theme', tk ? 'custom' : THEME_ACCENT[course.theme] ? course.theme : 'rose');
     // High-contrast accent: the theme's dark shade pushed toward black so
     // white-on-brand buttons and brand-colored text reach ~7:1.
     document.documentElement.style.setProperty('--brand-hc', darken(accent[1], 0.6));
@@ -316,19 +327,49 @@
     var exited = false;
     // unloading: see SCORM.finish. Returns its result (a promise for cmi5).
     endSession = function (unloading) {
-      if (exited) return null;
+      // After "Exit course", the unload still flushes what the exit left
+      // waiting (cmi5 batches it with terminated; SCORM finish is a no-op).
+      if (exited) return unloading ? SCORM.finish(true) : null;
       exited = true;
       SCORM.setSessionTime(sessionSeconds());
       SCORM.setExit('suspend');
       // Only ever terminate from the AU; cmi5 `abandoned` is LMS-issued.
       return SCORM.finish(unloading);
     };
-    function onExit() { endSession(true); }
-    window.addEventListener('beforeunload', onExit);
-    window.addEventListener('pagehide', onExit);
+    // beforeunload can still be cancelled (a "leave this page?" prompt), so it
+    // only commits; the session ends on pagehide. A page restored from the
+    // back/forward cache has a finished session, so it reloads for a new one.
+    window.addEventListener('beforeunload', function () {
+      if (exited) return;
+      SCORM.setSessionTime(sessionSeconds());
+      SCORM.commit();
+    });
+    window.addEventListener('pagehide', function () { endSession(true); });
+    window.addEventListener('pageshow', function (e) { if (e.persisted && exited) location.reload(); });
     // cmi5 loads its launch context and resume data over the network; SCORM
     // calls back immediately.
-    SCORM.whenReady(resume);
+    SCORM.whenReady(resume, lateResume);
+  }
+
+  // cmi5 on a slow LMS: the player stopped waiting and started fresh, then the
+  // saved state arrived. Merge the two so nothing from either session is lost
+  // (answers given meanwhile are the newer ones), and write the result. A
+  // learner still on the cover page or the untouched first lesson goes on to
+  // the saved place; one already working stays put (no re-render under them).
+  function lateResume() {
+    state.learner = SCORM.getLearner && SCORM.getLearner();
+    state.lmsMode = (SCORM.getMode && SCORM.getMode()) || 'normal';
+    var saved = null;
+    try { saved = JSON.parse(SCORM.getSuspend() || 'null'); } catch (e) { saved = null; }
+    var fresh = state.quizResults;
+    var atStart = state.onIntro || (state.lessonIndex === 0 && Object.keys(state.visited).length <= 1
+      && !Object.keys(fresh).length);
+    applySuspend(saved);
+    Object.keys(fresh).forEach(function (id) { state.quizResults[id] = fresh[id]; });
+    if (atStart && state.onIntro) render(); // the cover's button now reads "Continue course"
+    else if (atStart && saved && typeof saved.l === 'number') { visit(saved.l); return; }
+    else refreshGating();
+    reportProgress();
   }
 
   function resume() {
@@ -456,31 +497,63 @@
     }
     return true;
   }
-  // Continue button. Both modes advance to the next lesson (or finish on the
-  // last one) like the preview does — but only when the lesson's rules allow
-  // leaving it (required videos, linear quiz rule, later gates). A restricted
-  // gate is marked passed first, so its hidden content is revealed and stays
-  // unlocked when the learner comes back via Previous; if the learner can't
-  // leave yet (or the gate hides content on the last lesson), the lesson is
-  // re-rendered in place to show that content.
-  function onContinue(b, restricted) {
-    var lessons = state.course.lessons || [];
-    var lesson = lessons[state.lessonIndex];
-    var isLast = state.lessonIndex >= lessons.length - 1;
-    if (restricted) { state.continued[b.id] = true; reportProgress(); }
+  // Finished tasks for restricted Continue gates: scored blocks answered,
+  // reflections submitted, required videos watched.
+  function taskDone(b) {
+    if (SCORED[b.type]) return state.quizResults[b.id] != null;
+    if (b.type === 'reflection') return state.reflections[b.id] != null;
+    if (b.type === 'video' && b.data.requireWatch) return !!state.watched[b.id];
+    return true;
+  }
+  // A restricted Continue stays locked until every task above it is done.
+  function continueLocked(b) {
+    if (b.data.mode !== 'restricted' || state.continued[b.id]) return false;
+    var lesson = (state.course.lessons || [])[state.lessonIndex];
     var blocks = (lesson && lesson.blocks) || [];
-    var hidesContent = restricted && blocks.indexOf(b) < blocks.length - 1;
-    if (canLeaveLesson(state.lessonIndex) && !(isLast && hidesContent)) {
-      if (isLast) finishCourse(); else visit(state.lessonIndex + 1);
+    for (var k = 0, at = blocks.indexOf(b); k < at; k++) if (!taskDone(blocks[k])) return true;
+    return false;
+  }
+  // Whether a Continue block hides the blocks after it (any mode). One at the
+  // very end of the lesson leads on instead, like the "Next lesson" card.
+  function isGate(b) {
+    var lesson = (state.course.lessons || [])[state.lessonIndex];
+    var blocks = (lesson && lesson.blocks) || [];
+    var at = blocks.indexOf(b);
+    return at >= 0 && at < blocks.length - 1;
+  }
+  // Continue button. Mid-lesson it reveals the blocks after it in place and
+  // steps aside; the click is remembered, so that content stays open when the
+  // learner comes back (and restricted gates count toward completion). At the
+  // end it advances to the next lesson (or finishes on the last one) when the
+  // lesson's rules allow leaving it (required videos, linear quiz rule, gates).
+  function onContinue(b) {
+    var lessons = state.course.lessons || [];
+    state.continued[b.id] = true;
+    reportProgress();
+    if (isGate(b)) { revealAfter(b); return; }
+    if (canLeaveLesson(state.lessonIndex)) {
+      if (state.lessonIndex >= lessons.length - 1) finishCourse(); else visit(state.lessonIndex + 1);
       return;
     }
-    if (restricted) {
-      // Re-render in place, keeping the scroll position.
-      var top = window.pageYOffset;
-      render();
-      window.scrollTo(0, top);
-    }
     refreshGating();
+  }
+  // Re-render in place, then bring the newly shown content into view and move
+  // focus to it (the clicked button is gone).
+  function revealAfter(b) {
+    var blocks = state.course.lessons[state.lessonIndex].blocks;
+    var top = window.pageYOffset;
+    render();
+    window.scrollTo(0, top);
+    var el = null;
+    for (var k = blocks.indexOf(b) + 1; k < blocks.length && !el; k++) {
+      el = document.querySelector('.blk[data-block="' + blocks[k].id + '"]');
+    }
+    if (!el) return;
+    el.setAttribute('tabindex', '-1');
+    try { el.focus({ preventScroll: true }); } catch (e) { el.focus(); }
+    var header = document.querySelector('.player-header');
+    var y = el.getBoundingClientRect().top + window.pageYOffset - (header ? header.offsetHeight : 0) - 16;
+    try { window.scrollTo({ top: y, behavior: motionReduced() ? 'auto' : 'smooth' }); } catch (e) { window.scrollTo(0, y); }
   }
 
   // Linear navigation: a lesson can be jumped to only when every lesson
@@ -558,6 +631,15 @@
       var hint = document.getElementById('vgate-' + id);
       if (hint) hint.style.display = 'none';
     });
+    // Unlock restricted Continue buttons whose tasks are now done.
+    var lesson = (state.course.lessons || [])[state.lessonIndex];
+    ((lesson && lesson.blocks) || []).forEach(function (b) {
+      if (b.type !== 'continue') return;
+      var el = document.querySelector('.continue[data-continue="' + b.id + '"]');
+      if (!el || (el.getAttribute('data-locked') === '1') === continueLocked(b)) return;
+      var fresh = renderBlock(b);
+      if (fresh) el.parentNode.replaceChild(fresh, el);
+    });
   }
 
   function visit(index) {
@@ -608,10 +690,6 @@
     lessons.forEach(function (_, i) { if (lessonComplete(i)) completedCount++; });
     var contentDone = lessons.length > 0 && completedCount === lessons.length;
     var progressFraction = lessons.length ? completedCount / lessons.length : 0;
-    SCORM.setProgress(progressFraction);
-    // cmi5: emit a `progressed` statement when crossing a 10% milestone.
-    // No-op on SCORM, where setProgress already covers the progress measure.
-    if (SCORM.setProgressed) SCORM.setProgressed(progressFraction);
 
     var hasQuiz = state.quizzes.length > 0;
     var quizzesDone = hasQuiz && state.quizzes.every(function (q) {
@@ -624,11 +702,21 @@
       ? (contentDone && quizzesDone)
       : contentDone;
 
+    // A 2004 progress_measure of 1 means complete, so it stays below 1 while
+    // quizzes are still open.
+    if (!completed) progressFraction = Math.min(progressFraction, 0.99);
+    SCORM.setProgress(progressFraction);
+    // cmi5: emit a `progressed` statement when crossing a 10% milestone.
+    // No-op on SCORM, where setProgress already covers the progress measure.
+    if (SCORM.setProgressed) SCORM.setProgressed(progressFraction);
+
     // Scoring / pass-fail — only when enabled and the course has quizzes.
     var success = null;
     var scoreValue = null;
     if (cfg.scored && hasQuiz && quizzesDone) {
-      scoreValue = avgOf(state.quizzes.map(function (q) { return state.quizResults[q.id]; }));
+      // Rounded once, so the verdict here and the raw score the LMS stores
+      // (and judges by its own mastery score) agree: 79.5 is 80 everywhere.
+      scoreValue = Math.round(avgOf(state.quizzes.map(function (q) { return state.quizResults[q.id]; })));
       SCORM.setScore(scoreValue, 0, 100);
       if (completed) success = scoreValue >= cfg.passingScore ? 'passed' : 'failed';
     }
@@ -806,9 +894,9 @@
         var b = lesson.blocks[bi];
         var el = renderBlock(b);
         if (el) { blocksEl.appendChild(wrapBlock(b, el, anim)); lastShown = b; }
-        // Hide everything after an unpassed restricted gate.
-        if (b.type === 'continue' && b.data.mode === 'restricted' && !state.continued[b.id]) {
-          gated = bi < lesson.blocks.length - 1;
+        // Hide everything after a Continue that hasn't been clicked yet.
+        if (b.type === 'continue' && !state.continued[b.id] && isGate(b)) {
+          gated = true;
           break;
         }
       }
@@ -1193,11 +1281,16 @@
       case 'quote':
         return renderQuote(b);
       case 'continue': {
-        var restricted = b.data.mode === 'restricted';
         // A passed gate disappears; the blocks it was hiding are now shown.
-        if (restricted && state.continued[b.id]) return null;
-        return h('div', { class: 'continue' }, h('button', { class: 'btn', text: b.data.label,
-          onclick: function () { onContinue(b, restricted); } }));
+        if (state.continued[b.id] && isGate(b)) return null;
+        var locked = continueLocked(b);
+        return h('div', { class: 'continue', 'data-continue': b.id, 'data-locked': locked ? '1' : null }, [
+          h('button', { class: 'btn', type: 'button', disabled: locked ? 'true' : null,
+            'aria-describedby': locked ? 'clock-' + b.id : null,
+            onclick: function () { if (!continueLocked(b)) onContinue(b); } },
+            [locked ? h('span', { 'aria-hidden': 'true', text: '🔒 ' }) : null, b.data.label || '']),
+          locked ? h('p', { id: 'clock-' + b.id, class: 'continue-locked', text: t('continueLocked') }) : null,
+        ]);
       }
       case 'divider':
         return renderDivider(b.data);
@@ -1215,6 +1308,11 @@
       case 'imageText': return renderImageText(b);
       case 'attachment': return renderAttachment(b);
       case 'columns': return renderColumns(b);
+      case 'process': return renderProcess(b);
+      case 'steps': return renderSteps(b);
+      case 'comparison': return renderComparison(b);
+      case 'beforeAfter': return renderBeforeAfter(b);
+      case 'reflection': return renderReflection(b);
       default: return null;
     }
   }
@@ -1291,6 +1389,268 @@
       ]);
     }));
   }
+  // ── Process diagram ──────────────────────────────────────────────────────
+  // Mirrors ProcessPreview.tsx; geometry as in src/blocks/process.ts.
+  function pctOf(v) { return Math.round(v * 1000) / 10 + '%'; }
+  // A step's description: its rich text, or older plain text escaped with
+  // line breaks kept (as stepHtml in src/blocks/process.ts).
+  function stepHtml(s) {
+    if (typeof s.html === 'string') return s.html;
+    return String(s.text || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>');
+  }
+  function ringPoint(k, n) {
+    var a = (k / n) * 2 * Math.PI - Math.PI / 2;
+    return { x: 50 + 38 * Math.cos(a), y: 50 + 38 * Math.sin(a), deg: (a * 180) / Math.PI };
+  }
+
+  // Style variants each layout offers (src/blocks/process.ts PROCESS_VARIANTS).
+  var PROCESS_VARIANTS = { flow: { soft: 1, outline: 1 }, chevrons: { soft: 1 }, pyramid: { soft: 1 }, cycle: { soft: 1 } };
+
+  function renderProcess(b) {
+    var steps = b.data.steps || [];
+    var n = steps.length;
+    if (!n) return null;
+    var layout = { chevrons: 1, cycle: 1, pyramid: 1 }[b.data.layout] ? b.data.layout : 'flow';
+    // Flow: at most 4 steps per row, rows balanced (5 → 3 + 2).
+    var cols = n <= 4 ? n : Math.ceil(n / Math.ceil(n / 4));
+    var size = layout === 'flow' ? ' sc-process-cols-' + cols : (n > 4 ? ' sc-process-many' : '') + (n > 6 ? ' sc-process-lots' : '');
+    var variant = PROCESS_VARIANTS[layout][b.data.variant] ? ' sc-process-' + b.data.variant : '';
+    var wrap = h('div', { class: 'sc-process sc-process-' + layout + size + variant });
+    wrap.style.setProperty('--n', String(n));
+    wrap.style.setProperty('--cols', String(cols));
+    if (layout === 'cycle') { renderCycle(b, wrap, steps); return wrap; }
+    var ol = h('ol', { class: 'sc-process-list' });
+    steps.forEach(function (s, i) {
+      var num = h('span', { class: 'sc-process-num', 'aria-hidden': 'true', text: String(i + 1) });
+      var title = h('p', { class: 'sc-process-title', text: s.title || '' });
+      var li = h('li', { class: 'sc-process-step' },
+        layout === 'flow' ? [num, title] : [h('div', { class: 'sc-process-head' }, [num, title])]);
+      li.appendChild(h('div', { class: 'sc-process-text rich-text', html: stepHtml(s) }));
+      if (layout === 'pyramid') {
+        var top = 0.4 + (0.6 * i) / n, bottom = 0.4 + (0.6 * (i + 1)) / n, slant = (bottom - top) / 2;
+        li.style.setProperty('--w', pctOf(bottom));
+        li.style.setProperty('--cut', pctOf(slant / bottom));
+        li.style.setProperty('--pad', pctOf(slant));
+        li.style.setProperty('--tint', pctOf(0.1 + 0.22 * (n > 1 ? i / (n - 1) : 1)));
+      }
+      ol.appendChild(li);
+    });
+    wrap.appendChild(ol);
+    return wrap;
+  }
+
+  // Steps on a ring; the open step's text shows in the middle.
+  function renderCycle(b, wrap, steps) {
+    var n = steps.length;
+    var seen = {};
+    var ring = h('div', { class: 'sc-cycle-ring' });
+    var panel = h('div', { id: 'cycle-' + b.id, class: 'sc-cycle-panel', 'aria-live': 'polite' });
+    var progress = h('p', { class: 'sc-cycle-progress' });
+    var nodes = steps.map(function (s, k) {
+      var p = ringPoint(k, n);
+      var btn = h('button', { type: 'button', class: 'sc-cycle-node', 'aria-controls': panel.id,
+        'aria-label': t('openStep', { n: k + 1, title: s.title || '' }), onclick: function () { show(k); } }, [
+        h('span', { class: 'sc-cycle-node-num', text: String(k + 1) }),
+        h('span', { class: 'sc-cycle-node-title', text: s.title || '' }),
+      ]);
+      btn.style.setProperty('--x', p.x + '%');
+      btn.style.setProperty('--y', p.y + '%');
+      ring.appendChild(btn);
+      return btn;
+    });
+    steps.forEach(function (s, k) {
+      var p = ringPoint(k + 0.5, n);
+      var arrow = h('span', { class: 'sc-cycle-arrow', 'aria-hidden': 'true' });
+      arrow.style.setProperty('--x', p.x + '%');
+      arrow.style.setProperty('--y', p.y + '%');
+      arrow.style.setProperty('--r', (p.deg + 135) + 'deg');
+      ring.appendChild(arrow);
+    });
+    ring.appendChild(panel);
+    function show(k) {
+      seen[k] = true;
+      var count = 0;
+      nodes.forEach(function (btn, j) {
+        if (seen[j]) count++;
+        btn.className = 'sc-cycle-node' + (j === k ? ' is-active' : '') + (seen[j] ? ' is-seen' : '');
+        btn.setAttribute('aria-pressed', j === k ? 'true' : 'false');
+      });
+      panel.innerHTML = '';
+      panel.appendChild(h('p', { class: 'sc-process-title', text: steps[k].title || '' }));
+      panel.appendChild(h('div', { class: 'sc-process-text rich-text', html: stepHtml(steps[k]) }));
+      progress.textContent = t('exploredOf', { n: count, total: n });
+    }
+    show(0);
+    wrap.appendChild(ring);
+    wrap.appendChild(progress);
+  }
+
+  // ── Step-by-step guide ───────────────────────────────────────────────────
+  // 'list' shows every step; 'slides' one at a time with Back / Next.
+  function guideStepBody(s) {
+    return h('div', { class: 'sc-steps-body' }, [
+      s.title ? h('h3', { class: 'sc-steps-title', text: s.title }) : null,
+      h('div', { class: 'sc-steps-text rich-text', html: s.html || '' }),
+      s.src ? h('figure', { class: 'sc-steps-media' }, h('img', { src: s.src, alt: s.alt || '' })) : null,
+    ]);
+  }
+
+  function renderSteps(b) {
+    var steps = b.data.steps || [];
+    if (!steps.length) return null;
+    if (b.data.layout !== 'slides') {
+      return h('ol', { class: 'sc-steps sc-steps-list' }, steps.map(function (s, i) {
+        return h('li', { class: 'sc-steps-item' }, [
+          h('span', { class: 'sc-steps-num', 'aria-hidden': 'true', text: String(i + 1) }), guideStepBody(s)]);
+      }));
+    }
+    var index = 0;
+    var bars = h('div', { class: 'sc-steps-bars', 'aria-hidden': 'true' }, steps.map(function () { return h('span'); }));
+    var slide = h('div', { class: 'sc-steps-slide', 'aria-live': 'polite' });
+    var count = h('span', { class: 'sc-steps-count' });
+    var back = h('button', { class: 'btn btn-outline', type: 'button', text: t('back'),
+      onclick: function () { go(index - 1); } });
+    var next = h('button', { class: 'btn', type: 'button',
+      onclick: function () { go(index === steps.length - 1 ? 0 : index + 1); } });
+    function go(n) {
+      if (n < 0 || n >= steps.length) return;
+      index = n;
+      Array.prototype.forEach.call(bars.children, function (bar, k) { bar.className = k <= n ? 'is-done' : ''; });
+      slide.innerHTML = '';
+      slide.appendChild(h('span', { class: 'sc-steps-num', 'aria-hidden': 'true', text: String(n + 1) }));
+      slide.appendChild(guideStepBody(steps[n]));
+      count.textContent = t('stepOf', { n: n + 1, total: steps.length });
+      next.textContent = n === steps.length - 1 ? t('startOver') : t('next');
+      // Keep keyboard focus alive when the focused button becomes disabled.
+      var focused = document.activeElement;
+      back.disabled = n === 0;
+      if (focused === back && back.disabled) next.focus();
+    }
+    go(0);
+    return h('div', { class: 'sc-steps sc-steps-slides' }, [bars, slide,
+      h('div', { class: 'sc-steps-nav' }, [back, count, next])]);
+  }
+
+  // ── Comparison (pros & cons, A vs B) ─────────────────────────────────────
+  function renderComparison(b) {
+    var cols = (b.data.columns || []).slice(0, 4);
+    if (!cols.length) return null;
+    var vs = !!b.data.versus && cols.length === 2;
+    var grid = h('div', { class: 'sc-compare-grid' });
+    cols.forEach(function (c, i) {
+      if (vs && i === 1) grid.appendChild(h('span', { class: 'sc-compare-badge', 'aria-hidden': 'true', text: 'VS' }));
+      var tone = { pro: 1, con: 1 }[c.tone] ? c.tone : 'neutral';
+      var items = (c.items || []).filter(function (it) { return String(it).trim(); });
+      grid.appendChild(h('div', { class: 'sc-compare-col sc-compare-' + tone }, [
+        c.title ? h('h3', { class: 'sc-compare-title', text: c.title }) : null,
+        h('ul', { class: 'sc-compare-list' }, items.map(function (it) {
+          return h('li', { class: 'sc-compare-item' }, [
+            h('span', { class: 'sc-compare-mark', 'aria-hidden': 'true' }), h('span', { text: it })]);
+        })),
+      ]));
+    });
+    var wrap = h('div', { class: 'sc-compare' + (vs ? ' sc-compare-vs' : '') }, grid);
+    wrap.style.setProperty('--n', String(cols.length));
+    return wrap;
+  }
+
+  // ── Before / after slider ────────────────────────────────────────────────
+  // Mouse and pen jump to the pointer; touch moves on horizontal drags only
+  // (touch-action: pan-y), so a vertical swipe still scrolls the page.
+  var BA_KEYS = { ArrowLeft: -5, ArrowDown: -5, ArrowRight: 5, ArrowUp: 5, PageDown: -20, PageUp: 20 };
+  function renderBeforeAfter(b) {
+    var d = b.data;
+    if (!d.before || !d.after) return null;
+    var pos = 50;
+    var dragging = false;
+    var handle = h('div', { class: 'sc-ba-handle', role: 'slider', tabindex: '0',
+      'aria-label': t('baSlider', { before: d.beforeLabel || '', after: d.afterLabel || '' }),
+      'aria-valuemin': '0', 'aria-valuemax': '100' }, h('span', { class: 'sc-ba-knob' }));
+    var wrap = h('div', { class: 'sc-ba' }, [
+      h('img', { class: 'sc-ba-after', src: d.after, alt: d.afterAlt || '', draggable: 'false' }),
+      h('div', { class: 'sc-ba-before' }, h('img', { src: d.before, alt: d.beforeAlt || '', draggable: 'false' })),
+      d.beforeLabel ? h('span', { class: 'sc-ba-label sc-ba-label-before', 'aria-hidden': 'true', text: d.beforeLabel }) : null,
+      d.afterLabel ? h('span', { class: 'sc-ba-label sc-ba-label-after', 'aria-hidden': 'true', text: d.afterLabel }) : null,
+      handle,
+    ]);
+    function set(v) {
+      pos = Math.round(Math.min(100, Math.max(0, v)));
+      wrap.style.setProperty('--pos', pos + '%');
+      handle.setAttribute('aria-valuenow', String(pos));
+      handle.setAttribute('aria-valuetext', pos + '%');
+    }
+    function moveTo(x) {
+      var r = wrap.getBoundingClientRect();
+      if (r.width) set(((x - r.left) / r.width) * 100);
+    }
+    wrap.addEventListener('pointerdown', function (e) {
+      if (e.button !== 0) return;
+      dragging = true;
+      try { wrap.setPointerCapture(e.pointerId); } catch (err) { /* capture unsupported */ }
+      if (e.pointerType !== 'touch') moveTo(e.clientX);
+    });
+    wrap.addEventListener('pointermove', function (e) { if (dragging) moveTo(e.clientX); });
+    wrap.addEventListener('pointerup', function () { dragging = false; });
+    wrap.addEventListener('pointercancel', function () { dragging = false; });
+    handle.addEventListener('keydown', function (e) {
+      var next = e.key === 'Home' ? 0 : e.key === 'End' ? 100 : BA_KEYS[e.key] != null ? pos + BA_KEYS[e.key] : null;
+      if (next == null) return;
+      e.preventDefault();
+      set(next);
+    });
+    set(50);
+    return wrap;
+  }
+
+  // ── Reflection ───────────────────────────────────────────────────────────
+  // Not scored. Submitting reports the answer as a neutral long-fill-in
+  // interaction, shows the sample answer and counts as a done task for a
+  // restricted Continue below. Answers live for the session only (they could
+  // overflow suspend_data).
+  function renderReflection(b) {
+    var d = b.data;
+    var id = 'reflect-' + b.id;
+    var input = h('textarea', { id: id, class: 'sc-reflect-input', placeholder: t('answerPlaceholder') });
+    input.value = state.reflections[b.id] || '';
+    var status = h('span', { class: 'sc-reflect-status', role: 'status' });
+    var actions = h('div', { class: 'sc-reflect-actions' });
+    var sample = String(d.sample || '').trim() ? h('div', { class: 'sc-reflect-sample' }, [
+      h('p', { class: 'sc-reflect-sample-label', text: t('sampleAnswer') }),
+      h('p', { class: 'sc-reflect-sample-text', text: d.sample }),
+    ]) : null;
+    var wrap = h('div', { class: 'sc-reflect' }, [
+      h('label', { class: 'sc-reflect-prompt', for: id, text: d.prompt || '' }), input, actions]);
+    var submit = h('button', { class: 'btn', type: 'button', text: t('submitAnswer'), onclick: function () {
+      var text = input.value.trim();
+      if (!text) return;
+      state.reflections[b.id] = text;
+      SCORM.recordInteraction(state.interactionIndex++, {
+        id: b.id,
+        type: 'long-fill-in',
+        interactionType: 'long-fill-in',
+        response: text,
+        neutral: true,
+        description: d.prompt || '',
+      });
+      setSaved(true);
+      refreshGating();
+    } });
+    var edit = h('button', { class: 'btn btn-outline', type: 'button', text: t('editAnswer'),
+      onclick: function () { setSaved(false); input.focus(); } });
+    function setSaved(on) {
+      input.readOnly = on;
+      actions.innerHTML = '';
+      actions.appendChild(on ? edit : submit);
+      actions.appendChild(status);
+      status.textContent = on ? t('answerSaved') : '';
+      if (on && sample && !sample.parentNode) wrap.appendChild(sample);
+    }
+    input.addEventListener('input', function () { submit.disabled = !input.value.trim(); });
+    submit.disabled = !input.value.trim();
+    setSaved(state.reflections[b.id] != null);
+    return wrap;
+  }
+
 
   function formatBytes(bytes) {
     if (!bytes || bytes < 0) return '';

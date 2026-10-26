@@ -13,6 +13,8 @@ const themes: LocaleTable = {
     mintDesc: 'Teal accent, extra-soft large corners',
     grapeDesc: 'Purple accent, pill buttons with crisp cards',
     terminalDesc: 'Hacker terminal: monospace font, phosphor-green buttons',
+    custom: 'Custom',
+    customDesc: 'Your own color and corners (Project settings → Appearance)',
   },
   uk: {
     roseDesc: 'Рожевий акцент, м’які заокруглені кнопки',
@@ -25,6 +27,8 @@ const themes: LocaleTable = {
     mintDesc: 'Бірюзовий акцент, дуже м’які великі заокруглення',
     grapeDesc: 'Фіолетовий акцент, кнопки-пігулки й чіткі картки',
     terminalDesc: 'Хакерський термінал: моноширинний шрифт, зелені кнопки-фосфор',
+    custom: 'Власна',
+    customDesc: 'Ваш колір і кути (Налаштування проєкту → Вигляд)',
   },
 }
 
