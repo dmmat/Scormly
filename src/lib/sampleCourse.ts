@@ -1,6 +1,6 @@
 import type { Block, BlockBackground, Course, Lesson } from '../types/course'
 import { DEFAULT_COURSE_SETTINGS } from '../types/course'
-import { avatarArt, coverArt, flagSlide, inboxArt, textFile } from './sampleArt'
+import { avatarArt, coverArt, flagSlide, inboxArt, reportButtonArt, textFile } from './sampleArt'
 import type { Language } from '../i18n/types'
 
 // Built-in sample course ("Spot the phish"), opened from the landing page and the
@@ -52,6 +52,45 @@ function phishingEmailSvg(tr: (t: Text) => string): string {
 <text x="76" y="422" fill="#374151" font-size="16">📎 invoice_2026.zip</text>
 </svg>`
   return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg)
+}
+
+// The genuine counterpart of the phishing email, in the same frame, for the
+// before / after slider: real domain, a name, no threat, no link, no file.
+function genuineEmailSvg(tr: (t: Text) => string): string {
+  const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+  const x = (t: Text) => esc(tr(t))
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" font-family="Arial, sans-serif">
+<rect width="800" height="500" rx="16" fill="#f3f4f6"/>
+<rect x="24" y="24" width="752" height="452" rx="12" fill="#fff" stroke="#e5e7eb"/>
+<rect x="24" y="24" width="752" height="48" rx="12" fill="#1f2937"/>
+<circle cx="52" cy="48" r="7" fill="#f87171"/><circle cx="74" cy="48" r="7" fill="#fbbf24"/><circle cx="96" cy="48" r="7" fill="#34d399"/>
+<text x="400" y="54" fill="#e5e7eb" font-size="16" text-anchor="middle">${x(L('Inbox', 'Вхідні'))}</text>
+<text x="56" y="108" fill="#6b7280" font-size="16">${x(L('From:', 'Від:'))}</text>
+<text x="120" y="108" fill="#111827" font-size="16">${x(L('IT Service Desk', 'ІТ-підтримка'))} &lt;servicedesk@yourcompany.com&gt;</text>
+<text x="56" y="146" fill="#6b7280" font-size="16">${x(L('Subject:', 'Тема:'))}</text>
+<text x="136" y="146" fill="#111827" font-size="17" font-weight="bold">${x(L('Planned email maintenance on Saturday', 'Планові роботи з поштою в суботу'))}</text>
+<line x1="56" y1="170" x2="744" y2="170" stroke="#e5e7eb"/>
+<text x="56" y="212" fill="#111827" font-size="17">${x(L('Hi Anna,', 'Привіт, Анно!'))}</text>
+<text x="56" y="246" fill="#374151" font-size="16">${x(L('Email may be unavailable on Saturday from 9:00 to 11:00.', 'У суботу з 9:00 до 11:00 пошта може бути недоступна.'))}</text>
+<text x="56" y="272" fill="#374151" font-size="16">${x(L('You don’t need to do anything.', 'Від вас нічого не потрібно.'))}</text>
+<rect x="56" y="300" width="460" height="48" rx="8" fill="#f0fdf4" stroke="#bbf7d0"/>
+<text x="76" y="330" fill="#166534" font-size="16">${x(L('Questions? Call the service desk: ext. 1234', 'Питання? Дзвоніть у підтримку: внутр. 1234'))}</text>
+<text x="56" y="420" fill="#9ca3af" font-size="14">${x(L('— IT Service Desk', '— ІТ-підтримка'))}</text>
+</svg>`
+  return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg)
+}
+
+// Display names vs. real addresses (a rich-text table in lesson 2). Two
+// columns, the verdict under each address, so it reads on a phone too.
+function addressTable(tr: (t: Text) => string): string {
+  const row = (name: Text, address: string, verdict: Text) =>
+    `<tr><td>${tr(name)}</td><td>${address}<br><em>${tr(verdict)}</em></td></tr>`
+  return `<table class="rt-table rt-table-stripes"><thead><tr><th scope="col">${tr(L('Display name', 'Ім’я відправника'))}</th><th scope="col">${tr(L('Real address', 'Справжня адреса'))}</th></tr></thead><tbody>${[
+    row(L('IT Support', 'ІТ-підтримка'), 'security@micros0ft-help.co', L('❌ A zero instead of “o”', '❌ Нуль замість «o»')),
+    row(L('PayPal', 'PayPal'), 'service@paypa1-secure.net', L('❌ “1” instead of “l”', '❌ «1» замість «l»')),
+    row(L('Anna Kovalenko, CEO', 'Анна Коваленко, CEO'), 'anna.k.ceo@gmail.com', L('❌ A personal mailbox', '❌ Особиста скринька')),
+    row(L('IT Service Desk', 'ІТ-підтримка'), 'servicedesk@yourcompany.com', L('✅ Your company’s domain', '✅ Домен вашої компанії')),
+  ].join('')}</tbody></table>`
 }
 
 export function makeSampleCourse(lang: Language): Course {
@@ -177,6 +216,22 @@ export function makeSampleCourse(lang: Language): Course {
           },
         ],
       }),
+      block('heading', { level: 2, text: tr(L('Fake or real?', 'Підробка чи справжній?')) }),
+      block('paragraph', {
+        html: p(L(
+          'Drag the slider to compare the phishing email with a genuine message from your IT team.',
+          'Потягніть повзунок, щоб порівняти фішинговий лист зі справжнім повідомленням від вашої ІТ-служби.',
+        )),
+      }),
+      block('beforeAfter', {
+        before: phishingEmailSvg(tr),
+        beforeAlt: tr(L('The phishing email: look-alike sender, an urgent threat and a “Verify account” button', 'Фішинговий лист: підроблений відправник, термінова погроза й кнопка «Підтвердити акаунт»')),
+        beforeLabel: tr(L('Phishing', 'Фішинг')),
+        after: genuineEmailSvg(tr),
+        afterAlt: tr(L('The genuine email: the company’s own domain, a greeting by name, no links and no attachment', 'Справжній лист: домен компанії, звертання на ім’я, без посилань і вкладень')),
+        afterLabel: tr(L('Genuine', 'Справжній')),
+      }),
+      block('continue', { mode: 'unrestricted', label: tr(L('Continue', 'Продовжити')) }),
       block('heading', { level: 2, text: tr(L('Four red flags to remember', 'Чотири ознаки, які варто запам’ятати')) }),
       block('gallery', {
         layout: 'carousel',
@@ -202,6 +257,13 @@ export function makeSampleCourse(lang: Language): Course {
             caption: tr(L('A password request is a phishing attempt — always.', 'Прохання назвати пароль — це завжди фішинг.')),
           },
         ],
+      }),
+      block('paragraph', {
+        html:
+          p(L(
+            '<strong>Read the address, not the name.</strong> A display name can say anything:',
+            '<strong>Читайте адресу, а не ім’я.</strong> Ім’я відправника може бути будь-яким:',
+          )) + addressTable(tr),
       }),
       {
         id: id('block'),
@@ -233,6 +295,16 @@ export function makeSampleCourse(lang: Language): Course {
             title: tr(L('Calls (vishing)', 'Дзвінки (вішинг)')),
             html: p(L('A caller pretending to be your bank or IT desk asks for a one-time code. No real support will ever ask for it.', 'Людина, що видає себе за банк чи ІТ-підтримку, просить одноразовий код. Справжня підтримка ніколи його не питає.')),
           },
+        ],
+      }),
+      block('heading', { level: 2, text: tr(L('When something looks off', 'Коли щось здається підозрілим')) }),
+      block('process', {
+        layout: 'chevrons',
+        steps: [
+          { id: id('step'), title: tr(L('Stop', 'Зупиніться')), text: tr(L('Don’t click, reply or open attachments.', 'Не клікайте, не відповідайте й не відкривайте вкладення.')) },
+          { id: id('step'), title: tr(L('Check', 'Перевірте')), text: tr(L('Read the sender’s address and hover over links.', 'Прочитайте адресу відправника й наведіть курсор на посилання.')) },
+          { id: id('step'), title: tr(L('Report', 'Повідомте')), text: tr(L('Use “Report phishing” or tell your security team.', 'Натисніть «Повідомити про фішинг» або напишіть службі безпеки.')) },
+          { id: id('step'), title: tr(L('Delete', 'Видаліть')), text: tr(L('Remove the email once it’s reported.', 'Видаліть лист, коли про нього повідомили.')) },
         ],
       }),
       block('heading', { level: 2, text: tr(L('Key terms', 'Ключові терміни')) }),
@@ -336,6 +408,8 @@ export function makeSampleCourse(lang: Language): Course {
         passingScore: 80,
         showAnswers: true,
       }),
+      // Blocking: opens once both exercises above are answered.
+      block('continue', { mode: 'restricted', label: tr(L('Continue', 'Продовжити')) }),
       block('heading', { level: 2, text: tr(L('Clicked a bad link? Act fast', 'Клікнули на підозріле посилання? Дійте швидко')) }),
       block('timeline', {
         layout: 'stepper',
@@ -350,14 +424,70 @@ export function makeSampleCourse(lang: Language): Course {
         variant: 'success',
         text: tr(L('Key point: reporting fast matters more than feeling embarrassed — security teams would rather get ten false alarms than miss one real attack.', 'Головне: швидко повідомити важливіше за незручність — служба безпеки радше отримає десять хибних тривог, ніж пропустить одну справжню атаку.')),
       }),
-      block('table', {
-        header: true,
-        rows: [
-          [tr(L('Do', 'Робіть')), tr(L('Don’t', 'Не робіть'))],
-          [tr(L('Hover over links before clicking', 'Наводьте курсор на посилання перед кліком')), tr(L('Open unexpected attachments', 'Відкривати неочікувані вкладення'))],
-          [tr(L('Verify requests through a known channel', 'Перевіряти запити через відомий канал')), tr(L('Share passwords or one-time codes', 'Повідомляти паролі чи одноразові коди'))],
-          [tr(L('Turn on MFA everywhere', 'Вмикати MFA всюди')), tr(L('Let urgency rush your decision', 'Піддаватися тиску терміновості'))],
+      block('heading', { level: 2, text: tr(L('How to report a phishing email', 'Як повідомити про фішинговий лист')) }),
+      block('steps', {
+        layout: 'list',
+        steps: [
+          {
+            id: id('step'),
+            title: tr(L('Don’t interact', 'Нічого не робіть із листом')),
+            html: p(L('Don’t reply, click links or open attachments — not even “just to check”.', 'Не відповідайте, не клікайте посилання й не відкривайте вкладення — навіть «просто перевірити».')),
+          },
+          {
+            id: id('step'),
+            title: tr(L('Use the Report button', 'Натисніть «Повідомити»')),
+            html: p(L(
+              'In your mail app choose <strong>Report → Phishing</strong>. No such button? Forward the email as an attachment to <a href="mailto:security@yourcompany.com" target="_blank" rel="noopener noreferrer">security@yourcompany.com</a>.',
+              'У поштовій програмі оберіть <strong>Повідомити → Фішинг</strong>. Немає такої кнопки? Перешліть лист як вкладення на <a href="mailto:security@yourcompany.com" target="_blank" rel="noopener noreferrer">security@yourcompany.com</a>.',
+            )),
+            src: reportButtonArt({
+              reply: tr(L('Reply', 'Відповісти')),
+              forward: tr(L('Forward', 'Переслати')),
+              report: tr(L('Report phishing', 'Повідомити про фішинг')),
+            }),
+            alt: tr(L('A mail toolbar with the “Report phishing” button highlighted', 'Панель пошти з виділеною кнопкою «Повідомити про фішинг»')),
+          },
+          {
+            id: id('step'),
+            title: tr(L('Delete it', 'Видаліть лист')),
+            html: p(L('Once it’s reported, delete the email — and empty it from Deleted items too.', 'Коли повідомили, видаліть лист — і з папки «Видалені» теж.')),
+          },
         ],
+      }),
+      block('comparison', {
+        columns: [
+          {
+            id: id('col'),
+            title: tr(L('Do', 'Робіть')),
+            tone: 'pro',
+            items: [
+              tr(L('Hover over links before clicking', 'Наводьте курсор на посилання перед кліком')),
+              tr(L('Verify requests through a known channel', 'Перевіряйте запити через відомий канал')),
+              tr(L('Turn on MFA everywhere', 'Вмикайте MFA всюди')),
+            ],
+          },
+          {
+            id: id('col'),
+            title: tr(L('Don’t', 'Не робіть')),
+            tone: 'con',
+            items: [
+              tr(L('Open unexpected attachments', 'Не відкривайте неочікувані вкладення')),
+              tr(L('Share passwords or one-time codes', 'Не повідомляйте паролі чи одноразові коди')),
+              tr(L('Let urgency rush your decision', 'Не піддавайтеся тиску терміновості')),
+            ],
+          },
+        ],
+      }),
+      block('heading', { level: 2, text: tr(L('Your turn', 'Ваша черга')) }),
+      block('reflection', {
+        prompt: tr(L(
+          'Think of the last message that made you hesitate. What gave it away — or what would you check now before clicking?',
+          'Згадайте останнє повідомлення, яке вас насторожило. Що його видало — або що б ви перевірили тепер, перш ніж клікнути?',
+        )),
+        sample: tr(L(
+          'For example: “An SMS said my parcel was on hold and asked for a small fee. I wasn’t expecting a delivery and the link was a short URL. Now I’d open the courier’s app myself instead of the link — and report the message.”',
+          'Наприклад: «SMS писало, що мою посилку затримано, і просило сплатити невелику суму. Я не чекав(-ла) доставки, а посилання було скороченим. Тепер я сам(-а) відкрию застосунок перевізника замість посилання — і повідомлю про це SMS».',
+        )),
       }),
       block('quote', {
         variant: 'statement',
@@ -466,8 +596,8 @@ export function makeSampleCourse(lang: Language): Course {
     title: tr(L('Spot the phish: security basics in 15 minutes', 'Розпізнай фішинг: основи безпеки за 15 хвилин')),
     description: tr(
       L(
-        'A short sample course made with Scormly: interactive hotspots, a chat scenario, exercises and a scored final test.',
-        'Короткий приклад курсу, створений у Scormly: інтерактивне зображення, чат-сценарій, вправи та фінальний тест з оцінюванням.',
+        'A short sample course made with Scormly: interactive hotspots, a before / after slider, a process diagram, a chat scenario, exercises, a reflection and a scored final test.',
+        'Короткий приклад курсу, створений у Scormly: інтерактивне зображення, слайдер «до / після», схема процесу, чат-сценарій, вправи, рефлексія та фінальний тест з оцінюванням.',
       ),
     ),
     theme: 'ocean',

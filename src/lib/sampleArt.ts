@@ -126,3 +126,16 @@ export function landscapeArt(hue = 205): string {
 <path d="M0 800V660l380-200 300 220 240-140 280 160v100Z" fill="hsl(${hue} 45% 30%)"/>
 </svg>`)
 }
+
+/** Mail toolbar with the "Report phishing" button highlighted (how-to step). */
+export function reportButtonArt(labels: { reply: string; forward: string; report: string }): string {
+  const btn = (x: number, w: number, label: string, on = false) =>
+    `<rect x="${x}" y="110" width="${w}" height="76" rx="14" fill="${on ? '#fef2f2' : '#fff'}" stroke="${on ? '#ef4444' : '#cbd5e1'}" stroke-width="${on ? 5 : 2}"/>
+<text x="${x + w / 2}" y="158" fill="${on ? '#b91c1c' : '#334155'}" font-size="30" font-weight="${on ? 700 : 500}" text-anchor="middle">${esc(label)}</text>`
+  return svgUrl(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 300" ${FONT}>
+<rect width="1200" height="300" fill="#e0f2fe"/>
+<rect x="60" y="50" width="1080" height="196" rx="24" fill="#f8fafc" stroke="#cbd5e1" stroke-width="2"/>
+${btn(110, 230, labels.reply)}${btn(370, 250, labels.forward)}${btn(650, 430, '⚑ ' + labels.report, true)}
+<path d="M955 168v74l17-15 13 29 14-6-13-29 23-1z" fill="#0f172a" stroke="#fff" stroke-width="4" stroke-linejoin="round"/>
+</svg>`)
+}
