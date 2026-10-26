@@ -3044,7 +3044,26 @@
   // rejects runtime requests for sibling files (404/400/403/CORS), while
   // <script>/<link>/<img> loads work fine.
   if (window.__SCORMLY_COURSE__) {
+    // Layout review (src/lib/layoutReview.ts): the editor loads the player in a
+    // hidden frame with no LMS and measures every lesson. show(i) renders lesson
+    // i (or the cover page for -1) whole: Continue gates open, no animations.
+    var review = window.__SCORMLY_REVIEW__;
+    if (review) a11y.motion = true;
     start(window.__SCORMLY_COURSE__);
+    if (review) {
+      review.show = function (i) {
+        var lessons = state.course.lessons || [];
+        state.finished = false;
+        state.menuOpen = false;
+        if (i < 0) { state.onIntro = true; render(); return; }
+        ((lessons[i] && lessons[i].blocks) || []).forEach(function (b) {
+          if (b.type === 'continue') state.continued[b.id] = true;
+        });
+        state.onIntro = false;
+        state.lessonIndex = i;
+        render();
+      };
+    }
   } else {
     document.getElementById('app').appendChild(
       h('p', { class: 'empty', style: 'padding:2rem', text: 'Course data not found' })

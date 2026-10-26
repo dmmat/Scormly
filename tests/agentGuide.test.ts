@@ -29,6 +29,11 @@ describe('buildAgentGuide', () => {
     expect(parsed.lessons[0].id).toBe('lesson-1')
   })
 
+  test('points to review.md and the public repository', () => {
+    expect(md).toContain('[`review.md`](./review.md)')
+    expect(md).toContain('https://github.com/dmmat/Scormly')
+  })
+
   test('code fences are balanced', () => {
     expect((md.match(/^```/gm) || []).length % 2).toBe(0)
   })
