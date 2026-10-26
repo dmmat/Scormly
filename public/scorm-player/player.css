@@ -1440,7 +1440,9 @@ html[data-a11y-contrast] .sc-intro-split .sc-intro-text, html[data-a11y-contrast
 .rich-text table { width: 100%; margin: 1.1rem 0; border-collapse: collapse; font-size: 0.95em; line-height: 1.5; }
 .rich-text table.rt-table-fit { width: auto; }
 .rich-text :is(th, td) {
-  padding: 0.55rem 0.8rem; text-align: left; vertical-align: top; overflow-wrap: anywhere;
+  /* Hyphenate (by the content language) rather than cut words mid-letter in
+     narrow columns; only a word that can't fit at all is broken. */
+  padding: 0.55rem 0.8rem; text-align: left; vertical-align: top; overflow-wrap: break-word; hyphens: auto;
   border: 1px solid color-mix(in srgb, currentColor 18%, transparent);
 }
 .rich-text th { font-weight: 650; background: color-mix(in srgb, var(--brand) 10%, transparent); }

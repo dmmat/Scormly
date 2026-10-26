@@ -1,6 +1,7 @@
 import type JSZip from 'jszip'
 import { isScoredBlock, type Course } from '../types/course'
 import { customThemeTokens, DEFAULT_CUSTOM_THEME } from '../theme/customTheme'
+import { getMemoryAsset } from '../lib/assets'
 
 // Shared helpers for building the export .zip (SCORM and cmi5). Both targets
 // ship the same vanilla player; only the tracking script and the manifest
@@ -220,9 +221,20 @@ export async function addAssets(
   directoryHandle: FileSystemDirectoryHandle | null,
   course: Course,
 ): Promise<string[]> {
-  if (!directoryHandle) return []
   const referenced = collectAssetPaths(course)
   if (referenced.size === 0) return []
+  // No folder: the media lives in memory (see saveAsset).
+  if (!directoryHandle) {
+    const added: string[] = []
+    for (const path of referenced) {
+      const blob = getMemoryAsset(path)
+      if (blob) {
+        zip.file(path, blob)
+        added.push(path)
+      }
+    }
+    return added
+  }
   try {
     const assets = await directoryHandle.getDirectoryHandle('assets', {
       create: false,

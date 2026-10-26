@@ -155,6 +155,9 @@ export default function BlockPreview({
       return <BeforeAfterPreview block={block} />
     case 'reflection':
       return <ReflectionPreview block={block} />
+    default:
+      // Unknown types (hand- or AI-edited project.json) aren't shown to learners.
+      return null
   }
 }
 

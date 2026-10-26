@@ -1,14 +1,23 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
 import Logo from '../layout/Logo'
 import LanguagePicker from '../editor/LanguagePicker'
 import { useT } from '../../i18n/I18nProvider'
 import { isFileSystemAccessSupported } from '../../lib/fileSystem'
 import {
+  createBrowserProject,
   createNewProject,
+  openBrowserProject,
   openExistingProject,
   openRecentProject,
   NoProjectError,
 } from '../../lib/projectService'
+import {
+  deleteBrowserProject,
+  isBrowserStorageSupported,
+  listBrowserProjects,
+  type BrowserProject,
+} from '../../lib/browserProjects'
+import { openProjectZip, ZipProjectError } from '../../lib/importProjectZip'
 import {
   listRecentProjects,
   forgetRecentProject,
@@ -28,10 +37,18 @@ export default function WelcomeScreen({ onSkip, onSample }: WelcomeScreenProps) 
   const [error, setError] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
   const [recents, setRecents] = useState<RecentProject[]>([])
+  const zipInputRef = useRef<HTMLInputElement>(null)
+  // Projects kept in the browser's own storage (see browserProjects).
+  const inBrowser = isBrowserStorageSupported()
+  const [browserProjects, setBrowserProjects] = useState<BrowserProject[]>([])
 
   useEffect(() => {
     if (supported) void listRecentProjects().then(setRecents)
   }, [supported])
+
+  useEffect(() => {
+    if (inBrowser) void listBrowserProjects().then(setBrowserProjects)
+  }, [inBrowser])
 
   async function run(action: () => Promise<void>) {
     setError(null)
@@ -42,6 +59,8 @@ export default function WelcomeScreen({ onSkip, onSample }: WelcomeScreenProps) 
       // User dismissing the OS picker is not an error.
       if (err instanceof DOMException && err.name === 'AbortError') {
         // ignore
+      } else if (err instanceof ZipProjectError) {
+        setError(t(`zip_${err.reason}`, { detail: err.detail }))
       } else if (err instanceof NoProjectError) {
         setError(t('noProject'))
       } else {
@@ -81,50 +100,51 @@ export default function WelcomeScreen({ onSkip, onSample }: WelcomeScreenProps) 
             </div>
           )}
 
-          <div className="grid gap-5 sm:grid-cols-2">
-            <WelcomeCard
-              icon="✚"
-              title={t('createTitle')}
-              text={t('createText')}
-              cta={t('createCta')}
-              disabled={!supported || busy}
-              onClick={() => run(createNewProject)}
-            />
-            <WelcomeCard
-              icon="📂"
-              title={t('openTitle')}
-              text={t('openText')}
-              cta={t('openCta')}
-              disabled={!supported || busy}
-              onClick={() => run(openExistingProject)}
-            />
-          </div>
-
-          <button
-            type="button"
-            onClick={onSample}
-            disabled={busy}
-            className="interactive-surface mt-5 flex w-full items-center gap-4 rounded-2xl border border-gray-200 bg-white p-5 text-left shadow-sm hover:border-brand/40 disabled:opacity-50"
-          >
-            <span aria-hidden className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-brand/10 text-2xl">
-              🎓
-            </span>
-            <span className="flex-1">
-              <span className="block font-semibold text-gray-900">{t('sampleTitle')}</span>
-              <span className="mt-1 block text-sm text-gray-600">{t('sampleText')}</span>
-            </span>
-            <span aria-hidden className="text-brand">→</span>
-          </button>
-
-          {busy && (
-            <p role="status" className="mt-4 flex items-center justify-center gap-2 text-sm text-gray-500">
-              <span className="h-4 w-4 animate-spin rounded-full border-2 border-gray-300 border-t-brand" />
-              {t('opening')}
-            </p>
+          {/* Returning authors see their projects first. */}
+          {browserProjects.length > 0 && (
+            <div className="mb-8">
+              <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-400">
+                {t('browserListTitle')}
+              </p>
+              <ul className="divide-y divide-gray-100 overflow-hidden rounded-xl border border-gray-200 bg-white">
+                {browserProjects.map((p) => (
+                  <li key={p.id} className="flex items-center">
+                    <button
+                      type="button"
+                      disabled={busy}
+                      onClick={() => run(() => openBrowserProject(p.id))}
+                      className="flex min-w-0 flex-1 items-center gap-3 px-4 py-3 text-left hover:bg-gray-50 disabled:opacity-50"
+                    >
+                      <span aria-hidden className="text-brand">🗂️</span>
+                      <span className="min-w-0 flex-1">
+                        <span className="block truncate text-sm font-medium text-gray-800">{p.title}</span>
+                        <span className="block text-xs text-gray-400">
+                          {t('updatedAgo', { when: new Date(p.updatedAt).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' }) })}
+                        </span>
+                      </span>
+                    </button>
+                    <button
+                      type="button"
+                      title={t('deleteBrowserProject')}
+                      aria-label={`${t('deleteBrowserProject')}: ${p.title}`}
+                      onClick={async () => {
+                        if (!window.confirm(t('deleteBrowserConfirm', { title: p.title }))) return
+                        await deleteBrowserProject(p.id)
+                        setBrowserProjects(await listBrowserProjects())
+                      }}
+                      className="px-3 py-3 text-gray-400 hover:text-red-600"
+                    >
+                      ✕
+                    </button>
+                  </li>
+                ))}
+              </ul>
+              <p className="mt-2 text-xs text-gray-400">{t('browserListHint')}</p>
+            </div>
           )}
 
           {recents.length > 0 && (
-            <div className="mt-8">
+            <div className="mb-8">
               <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-400">
                 {t('recentTitle')}
               </p>
@@ -160,16 +180,61 @@ export default function WelcomeScreen({ onSkip, onSample }: WelcomeScreenProps) 
             </div>
           )}
 
-          {!supported && (
-            <div className="mt-6 text-center">
-              <button
-                type="button"
-                onClick={onSkip}
-                className="btn-secondary text-sm"
-              >
-                {t('tryAnyway')}
-              </button>
-            </div>
+          <div className="grid gap-5 sm:grid-cols-2">
+            <WelcomeCard
+              icon="✚"
+              title={t('createTitle')}
+              text={t('createText')}
+              cta={t('createCta')}
+              disabled={!supported || busy}
+              onClick={() => run(createNewProject)}
+            />
+            <WelcomeCard
+              icon="📂"
+              title={t('openTitle')}
+              text={t('openText')}
+              cta={t('openCta')}
+              disabled={!supported || busy}
+              onClick={() => run(openExistingProject)}
+            />
+          </div>
+
+          {/* No folder access needed: a .zip project, or a project that lives in
+              this tab and is saved by downloading a .zip. */}
+          <div className="mt-5 grid gap-5 sm:grid-cols-2">
+            <WelcomeRow icon="📦" title={t('zipTitle')} text={t('zipText')} disabled={busy} onClick={() => zipInputRef.current?.click()} />
+            {inBrowser ? (
+              <WelcomeRow icon="🗂️" title={t('browserTitle')} text={t('browserText')} disabled={busy} onClick={() => run(createBrowserProject)} />
+            ) : (
+              <WelcomeRow icon="📝" title={t('startTitle')} text={t('startText')} disabled={busy} onClick={onSkip} />
+            )}
+          </div>
+          <input
+            ref={zipInputRef}
+            type="file"
+            accept=".zip,application/zip"
+            className="hidden"
+            onChange={(e) => {
+              const file = e.target.files?.[0]
+              e.target.value = ''
+              if (file) void run(() => openProjectZip(file))
+            }}
+          />
+
+          <WelcomeRow
+            icon="🎓"
+            title={t('sampleTitle')}
+            text={t('sampleText')}
+            disabled={busy}
+            onClick={onSample}
+            className="mt-5"
+          />
+
+          {busy && (
+            <p role="status" className="mt-4 flex items-center justify-center gap-2 text-sm text-gray-500">
+              <span className="h-4 w-4 animate-spin rounded-full border-2 border-gray-300 border-t-brand" />
+              {t('opening')}
+            </p>
           )}
 
           <p className="mt-8 text-center text-xs text-gray-400">
@@ -178,6 +243,41 @@ export default function WelcomeScreen({ onSkip, onSample }: WelcomeScreenProps) 
         </div>
       </div>
     </div>
+  )
+}
+
+// A full-width row button: icon, title and a line of text.
+function WelcomeRow({
+  icon,
+  title,
+  text,
+  disabled,
+  onClick,
+  className = '',
+}: {
+  icon: ReactNode
+  title: string
+  text: string
+  disabled?: boolean
+  onClick: () => void
+  className?: string
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      className={`interactive-surface flex w-full items-center gap-4 rounded-2xl border border-gray-200 bg-white p-5 text-left shadow-sm hover:border-brand/40 disabled:opacity-50 ${className}`}
+    >
+      <span aria-hidden className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-brand/10 text-2xl">
+        {icon}
+      </span>
+      <span className="flex-1">
+        <span className="block font-semibold text-gray-900">{title}</span>
+        <span className="mt-1 block text-sm text-gray-600">{text}</span>
+      </span>
+      <span aria-hidden className="text-brand">→</span>
+    </button>
   )
 }
 

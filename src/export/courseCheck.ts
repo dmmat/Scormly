@@ -1,5 +1,6 @@
 import { INTRO_ID, type Block, type Course } from '../types/course'
 import { blankAnswers } from '../blocks/fillBlanks'
+import { BLOCK_REGISTRY } from '../blocks/registry'
 
 /**
  * How serious an issue is. 'warning' (default) opens the pre-export dialog;
@@ -175,6 +176,15 @@ function checkBlock(block: Block): BlockIssue[] {
   }
 }
 
+// A type this version doesn't know (hand- or AI-edited project.json): the
+// player skips it, so the author should know before exporting.
+function checkAnyBlock(block: Block): BlockIssue[] {
+  if (!Object.prototype.hasOwnProperty.call(BLOCK_REGISTRY, block.type)) {
+    return [{ key: 'chkUnknownBlock', vars: { type: String(block.type ?? '?') } }]
+  }
+  return [...checkBlock(block), ...checkBlockA11y(block)]
+}
+
 /** Lint the course before export. An empty list means nothing to report. */
 export function checkCourse(course: Course): CourseIssue[] {
   if (course.lessons.length === 0) return [{ key: 'chkNoLessons' }]
@@ -186,7 +196,7 @@ export function checkCourse(course: Course): CourseIssue[] {
     // The dialog names the cover page itself (lessonTitle stays empty).
     const at = { lessonId: INTRO_ID, lessonTitle: '' }
     for (const block of course.intro.blocks ?? []) {
-      for (const issue of [...checkBlock(block), ...checkBlockA11y(block)]) {
+      for (const issue of checkAnyBlock(block)) {
         issues.push({ ...issue, ...at, blockId: block.id })
       }
     }
@@ -198,7 +208,7 @@ export function checkCourse(course: Course): CourseIssue[] {
       continue
     }
     for (const block of lesson.blocks) {
-      for (const issue of [...checkBlock(block), ...checkBlockA11y(block)]) {
+      for (const issue of checkAnyBlock(block)) {
         issues.push({ ...issue, ...at, blockId: block.id })
       }
     }

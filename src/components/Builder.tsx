@@ -3,6 +3,7 @@ import Header from './layout/Header'
 import Sidebar from './layout/Sidebar'
 import Workspace from './layout/Workspace'
 import WelcomeScreen from './welcome/WelcomeScreen'
+import ZipUpdateDialog from './editor/ZipUpdateDialog'
 import PreviewOverlay from './preview/PreviewOverlay'
 import ProjectSettings from './editor/ProjectSettings'
 import Toaster from './editor/Toaster'
@@ -18,6 +19,8 @@ import { useCourseStore } from '../store/courseStore'
 import { flushSave, hasPendingSave, restoreOpenProject } from '../lib/projectService'
 import { useRoute, navigate } from '../hooks/useRoute'
 import { useT, useLang } from '../i18n/I18nProvider'
+import { hasUnsavedZipChanges } from '../lib/exportProjectZip'
+import { setMemoryUserInstructions } from '../lib/userInstructions'
 
 // Course builder (editor). Rendered on the #/app route. Shows the welcome screen
 // until a project folder is opened (or the user opts to continue without saving).
@@ -26,6 +29,8 @@ export default function Builder() {
   useEditorShortcuts()
   useAutosave()
   const directoryHandle = useCourseStore((s) => s.directoryHandle)
+  // Set for a project opened from a .zip too (no folder, see openProjectZip).
+  const projectName = useCourseStore((s) => s.projectName)
   const previewOpen = useCourseStore((s) => s.previewOpen)
   const settingsOpen = useCourseStore((s) => s.settingsOpen)
   const setSettingsOpen = useCourseStore((s) => s.setSettingsOpen)
@@ -71,7 +76,7 @@ export default function Builder() {
       const s = useCourseStore.getState()
       const atRisk = s.directoryHandle
         ? hasPendingSave() || s.saveState === 'error'
-        : skipped && s.past.length > 0
+        : (skipped || s.projectName !== null) && s.past.length > 0 && hasUnsavedZipChanges()
       if (!atRisk) return
       if (s.directoryHandle) void flushSave()
       e.preventDefault()
@@ -90,25 +95,30 @@ export default function Builder() {
     )
   }
 
-  if (!directoryHandle && !skipped) {
+  if (!directoryHandle && !skipped && !projectName) {
     return (
-      <WelcomeScreen
-        onSample={() => {
-          navigate('demo')
-          openSample()
-        }}
-        onSkip={() => {
-          // Regenerate the demo course in the current UI language (the module-load
-          // default may not match the user's selected language).
-          useCourseStore.getState().newDemoCourse()
-          setSkipped(true)
-        }}
-      />
+      <>
+        <ZipUpdateDialog />
+        <WelcomeScreen
+          onSample={() => {
+            navigate('demo')
+            openSample()
+          }}
+          onSkip={() => {
+            // Regenerate the demo course in the current UI language (the module-load
+            // default may not match the user's selected language).
+            useCourseStore.getState().newDemoCourse()
+            setMemoryUserInstructions(null)
+            setSkipped(true)
+          }}
+        />
+      </>
     )
   }
 
   return (
     <ThemeProvider>
+      <ZipUpdateDialog />
       <Header />
       {!directoryHandle && (
         <div className="flex shrink-0 flex-wrap items-center justify-center gap-x-3 gap-y-1 border-b border-amber-200 bg-amber-50 px-4 py-2 text-center text-xs text-amber-900 sm:text-sm">

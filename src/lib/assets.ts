@@ -1,7 +1,8 @@
 // Media assets: copy uploaded files into the project's assets/ folder and store
 // relative paths in the model. Images are optimized in-browser (downscale +
 // re-encode) while preserving transparency. Display paths are resolved back to
-// object URLs via the project's directory handle.
+// object URLs via the project's directory handle — or, without a folder, via
+// the in-memory store below.
 
 import { useCourseStore } from '../store/courseStore'
 import { writeBlobToSubdir, getSubdirectory } from './fileSystem'
@@ -119,38 +120,79 @@ async function optimizeImage(file: File): Promise<Blob> {
   }
 }
 
-function blobToDataUrl(blob: Blob): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader()
-    reader.onload = () => resolve(String(reader.result))
-    reader.onerror = reject
-    reader.readAsDataURL(blob)
-  })
+// ── In-memory media (no project folder) ──
+// Browsers without the File System Access API, a project opened from a .zip,
+// "try without saving": uploads are kept in memory under the same relative
+// paths they would have on disk (assets/images/…), so project.json stays clean
+// and SCORM exports and the project .zip carry real files.
+const memoryAssets = new Map<string, Blob>()
+
+// Cache resolved object URLs per relative path for the session.
+const urlCache = new Map<string, string>()
+
+export function putMemoryAsset(path: string, blob: Blob): void {
+  const old = urlCache.get(path)
+  if (old) URL.revokeObjectURL(old)
+  urlCache.delete(path)
+  memoryAssets.set(path, blob)
+}
+
+export function getMemoryAsset(path: string): Blob | undefined {
+  return memoryAssets.get(path)
+}
+
+/** Forget all in-memory media and resolved URLs (another project replaces
+ *  the current one). */
+export function clearMemoryAssets(): void {
+  for (const url of urlCache.values()) URL.revokeObjectURL(url)
+  urlCache.clear()
+  memoryAssets.clear()
+}
+
+const MIME_BY_EXT: Record<string, string> = {
+  ...Object.fromEntries(
+    [IMAGE_MIME, VIDEO_MIME, AUDIO_MIME, CAPTIONS_MIME].flatMap((t) => Object.entries(t).map(([mime, ext]) => [ext, mime])),
+  ),
+  jpeg: 'image/jpeg',
+  wav: 'audio/wav',
+  pdf: 'application/pdf',
+}
+
+/** File extension for a media type the app accepts, if any. */
+export function extForMime(mime: string): string | undefined {
+  for (const table of [IMAGE_MIME, VIDEO_MIME, AUDIO_MIME, CAPTIONS_MIME]) {
+    if (table[mime]) return table[mime]
+  }
+  return undefined
+}
+
+/** Media type for a file path by its extension (files read back from a .zip
+ *  carry none, and an SVG or a video needs one to display). */
+export function mimeForPath(path: string): string {
+  const ext = /\.([a-z0-9]+)$/i.exec(path)?.[1]?.toLowerCase() ?? ''
+  return MIME_BY_EXT[ext] ?? 'application/octet-stream'
 }
 
 /**
- * Validate, optimize and store an uploaded file. Returns a project-relative path
- * (assets/images/...) when a project folder is open, or a data URL fallback when
- * working in-memory. Throws UnsupportedFormatError for disallowed formats.
+ * Validate, optimize and store an uploaded file. Returns a project-relative
+ * path (assets/images/...) — on disk when a project folder is open, otherwise
+ * in memory. Throws UnsupportedFormatError for disallowed formats.
  */
 export async function saveAsset(file: File, kind: AssetKind): Promise<string> {
   const ext = fileExtension(file, kind)
   if (!ext) throw new UnsupportedFormatError(kind)
 
   let blob: Blob = kind === 'image' ? await optimizeImage(file) : file
-  // Normalize the type so a data-URL fallback is served as WebVTT.
+  // Normalize the type so captions are served as WebVTT.
   if (kind === 'captions' && blob.type !== 'text/vtt') blob = new Blob([blob], { type: 'text/vtt' })
-  const handle = useCourseStore.getState().directoryHandle
-  if (!handle) return blobToDataUrl(blob) // no project: keep it self-contained
-
   const sub = SUBDIR_BY_KIND[kind]
   const name = `${uid()}.${ext}`
-  await writeBlobToSubdir(handle, ['assets', sub], name, blob)
-  return `assets/${sub}/${name}`
+  const path = `assets/${sub}/${name}`
+  const handle = useCourseStore.getState().directoryHandle
+  if (!handle) putMemoryAsset(path, blob)
+  else await writeBlobToSubdir(handle, ['assets', sub], name, blob)
+  return path
 }
-
-// Cache resolved object URLs per relative path for the session.
-const urlCache = new Map<string, string>()
 
 /** Resolve a stored asset path to a displayable URL (object URL). */
 export async function resolveAssetUrl(src: string): Promise<string | null> {
@@ -159,7 +201,13 @@ export async function resolveAssetUrl(src: string): Promise<string | null> {
   if (urlCache.has(src)) return urlCache.get(src)!
 
   const handle = useCourseStore.getState().directoryHandle
-  if (!handle) return null
+  if (!handle) {
+    const blob = memoryAssets.get(src)
+    if (!blob) return null
+    const objectUrl = URL.createObjectURL(blob)
+    urlCache.set(src, objectUrl)
+    return objectUrl
+  }
 
   try {
     const parts = src.split('/')

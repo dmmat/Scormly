@@ -7,6 +7,7 @@ import IntroView from '../../preview/IntroView'
 import A11yMenu from '../../preview/A11yMenu'
 import { A11yContext, a11yClasses, useA11yPrefs } from '../../preview/a11y'
 import { PreviewProgress } from '../../preview/progress'
+import { BLOCK_REGISTRY } from '../../blocks/registry'
 import { useBlockWrapper } from '../../blocks/useBlockWrapper'
 import { usePageWidthVar } from '../../hooks/usePageWidthVar'
 import { themeStyle } from '../../theme/customTheme'
@@ -108,6 +109,8 @@ export default function PreviewOverlay() {
       const b = blocks[i]
       const isGate = b.type === 'continue' && i < blocks.length - 1
       if (isGate && continued[b.id]) continue
+      // An unknown type (a hand-edited project.json) renders nothing: no wrapper either.
+      if (!(b.type in BLOCK_REGISTRY)) continue
       out.push(b)
       if (isGate) return { visibleBlocks: out, gated: true }
     }

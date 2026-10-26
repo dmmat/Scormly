@@ -138,6 +138,8 @@ const blocks: LocaleTable = {
     beforeAfterDesc: 'Drag a slider to compare two images',
     reflection: 'Reflection',
     reflectionDesc: 'The learner writes an answer, then sees a sample',
+    unknownBlock: 'Unknown block type “{type}”',
+    unknownBlockHelp: 'Scormly can’t edit this block. It is kept in project.json as it is and skipped in the player.',
   },
   uk: {
     heading: 'Заголовок',
@@ -274,6 +276,8 @@ const blocks: LocaleTable = {
     beforeAfterDesc: 'Повзунок для порівняння двох зображень',
     reflection: 'Рефлексія',
     reflectionDesc: 'Студент пише відповідь і бачить приклад',
+    unknownBlock: 'Невідомий тип блоку «{type}»',
+    unknownBlockHelp: 'Scormly не може редагувати цей блок. Він лишається в project.json без змін і пропускається в плеєрі.',
   },
 }
 

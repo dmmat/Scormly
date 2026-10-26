@@ -17,6 +17,7 @@ import { uid } from '../lib/id'
 import { translate } from '../i18n/I18nProvider'
 import type { Language } from '../i18n/types'
 import { makeSampleCourse } from '../lib/sampleCourse'
+import { repairCourse, type RepairFix } from '../lib/repairCourse'
 
 const HISTORY_LIMIT = 50
 
@@ -65,6 +66,9 @@ export interface CourseState {
   directoryHandle: FileSystemDirectoryHandle | null
   projectName: string | null
   saveState: SaveState
+  /** Repairs made to the last loaded / opened course (see repairCourse);
+   *  empty for courses created in the app. */
+  loadFixes: RepairFix[]
 
   // Learner preview overlay
   previewOpen: boolean
@@ -98,6 +102,9 @@ export interface CourseState {
   /** Patch the cover page (created with defaults on first edit). */
   updateIntro: (patch: Partial<CourseIntro>, coalesceKey?: string) => void
   loadCourse: (course: Course) => void
+  /** Swap in a whole new version of the course (e.g. from a .zip) as one
+   *  undoable step — Ctrl+Z brings the previous version back. */
+  replaceCourse: (course: Course) => void
   /** Reset to a fresh in-memory demo course, localized to the current UI language. */
   newDemoCourse: () => void
   /** Load the built-in sample course (in memory) in the given language. */
@@ -171,13 +178,22 @@ function findContainer(course: Course, lessonId: string): { blocks: Block[] } | 
   return intro as { blocks: Block[] }
 }
 
-// Coerce a loaded course to current invariants: migrate a renamed/legacy theme
-// id to the default, and backfill completion/scoring settings for older projects.
-function migrateCourse(course: Course): Course {
+// Coerce a loaded course to current invariants: repair its structure (hand- or
+// AI-edited project.json), migrate a renamed/legacy theme id to the default,
+// and backfill completion/scoring settings for older projects.
+function migrateCourse(input: Course): { course: Course; fixes: RepairFix[] } {
+  const { course, fixes } = repairCourse(input)
   const theme = isThemeId(course.theme) ? course.theme : DEFAULT_THEME
   const settings = { ...DEFAULT_COURSE_SETTINGS, ...course.settings }
-  return { ...course, theme, settings }
+  return { course: { ...course, theme, settings }, fixes }
 }
+
+// Undo snapshots saved with a project get the same repair, so undo can't bring
+// a broken structure back.
+const repairHistory = (list: Course[] | undefined): Course[] =>
+  (Array.isArray(list) ? list : [])
+    .filter((c) => c && typeof c === 'object' && Array.isArray(c.lessons))
+    .map((c) => migrateCourse(c).course)
 
 export const useCourseStore = create<CourseState>((set, get) => {
   /**
@@ -215,6 +231,7 @@ export const useCourseStore = create<CourseState>((set, get) => {
     directoryHandle: null,
     projectName: null,
     saveState: 'idle',
+    loadFixes: [],
 
     previewOpen: false,
     setPreviewOpen: (open) => set({ previewOpen: open }),
@@ -260,9 +277,10 @@ export const useCourseStore = create<CourseState>((set, get) => {
       }, coalesceKey),
 
     loadCourse: (input) => {
-      const course = migrateCourse(input)
+      const { course, fixes } = migrateCourse(input)
       set({
         course,
+        loadFixes: fixes,
         activeLessonId: course.lessons[0]?.id ?? null,
         selectedBlockId: null,
         past: [],
@@ -271,10 +289,26 @@ export const useCourseStore = create<CourseState>((set, get) => {
       })
     },
 
+    replaceCourse: (input) => {
+      const { course, fixes } = migrateCourse(input)
+      mutate((draft) => {
+        for (const key of Object.keys(draft)) delete (draft as unknown as Record<string, unknown>)[key]
+        Object.assign(draft, structuredClone(course))
+      })
+      const { activeLessonId } = get()
+      const keep = activeLessonId === INTRO_ID || course.lessons.some((l) => l.id === activeLessonId)
+      set({
+        loadFixes: fixes,
+        selectedBlockId: null,
+        activeLessonId: keep ? activeLessonId : course.lessons[0]?.id ?? null,
+      })
+    },
+
     loadSampleCourse: (lang) => {
       const course = makeSampleCourse(lang)
       set({
         course,
+        loadFixes: [],
         activeLessonId: course.lessons[0]?.id ?? null,
         selectedBlockId: null,
         past: [],
@@ -287,6 +321,7 @@ export const useCourseStore = create<CourseState>((set, get) => {
       const course = makeInitialCourse()
       set({
         course,
+        loadFixes: [],
         activeLessonId: course.lessons[0]?.id ?? null,
         selectedBlockId: null,
         past: [],
@@ -296,16 +331,17 @@ export const useCourseStore = create<CourseState>((set, get) => {
     },
 
     openProject: (handle, name, input, history) => {
-      const course = migrateCourse(input)
+      const { course, fixes } = migrateCourse(input)
       set({
         directoryHandle: handle,
         projectName: name,
         saveState: 'saved',
         course,
+        loadFixes: fixes,
         activeLessonId: course.lessons[0]?.id ?? null,
         selectedBlockId: null,
-        past: history?.past ?? [],
-        future: history?.future ?? [],
+        past: repairHistory(history?.past),
+        future: repairHistory(history?.future),
         lastCoalesceKey: null,
       })
     },

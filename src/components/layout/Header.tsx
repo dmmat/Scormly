@@ -8,11 +8,13 @@ import { useCourseStore } from '../../store/courseStore'
 import { useT, useLang } from '../../i18n/I18nProvider'
 import { saveProject } from '../../lib/projectService'
 import ExportMenu from '../editor/ExportMenu'
-import { requestExport, useExportStore } from '../../export/runExport'
+import { requestExport, runExport, useExportStore } from '../../export/runExport'
 import { GITHUB_ISSUES_URL } from '../../lib/links'
 import HelpMenu from '../help/HelpMenu'
 import { useHelpStore } from '../../help/helpStore'
 import { KEYS } from '../../lib/keyboard'
+import { useRoute } from '../../hooks/useRoute'
+import { BROWSER_KEY_PREFIX } from '../../lib/browserProjects'
 
 export default function Header() {
   const [moreOpen, setMoreOpen] = useState(false)
@@ -20,8 +22,14 @@ export default function Header() {
   const redo = useCourseStore((s) => s.redo)
   const canUndo = useCourseStore((s) => s.past.length > 0)
   const canRedo = useCourseStore((s) => s.future.length > 0)
-  const projectName = useCourseStore((s) => s.projectName)
   const directoryHandle = useCourseStore((s) => s.directoryHandle)
+  // Projects that aren't files on the computer (kept in this browser, or only
+  // in this tab) get an explicit .zip download: it's how they're backed up
+  // and shared.
+  const { projectKey } = useRoute()
+  const inBrowser = !!directoryHandle && !!projectKey?.startsWith(BROWSER_KEY_PREFIX)
+  const zipButton =
+    'inline-flex items-center gap-1.5 rounded-md border border-gray-200 px-2.5 py-1.5 text-sm font-medium text-gray-700 hover:border-brand/40 hover:bg-gray-50 disabled:opacity-40'
   const saveState = useCourseStore((s) => s.saveState)
   const lastSavedAt = useCourseStore((s) => s.lastSavedAt)
   const setPreviewOpen = useCourseStore((s) => s.setPreviewOpen)
@@ -62,13 +70,7 @@ export default function Header() {
         <div className="shrink-0">
           <Logo />
         </div>
-        {projectName ? (
-          <ProjectMenu />
-        ) : (
-          <span className="hidden truncate text-xs text-gray-400 sm:inline">
-            {tw('noFolderTitle')}
-          </span>
-        )}
+        <ProjectMenu />
       </div>
 
       {/* Desktop controls */}
@@ -111,24 +113,48 @@ export default function Header() {
         >
           {tp('open')}
         </button>
-        <button
-          type="button"
-          data-tour="save"
-          onClick={() => void saveProject()}
-          disabled={!directoryHandle || saveState === 'saving'}
-          title={
-            !directoryHandle
-              ? tw('noFolderTitle')
-              : lastSavedAt
+        {directoryHandle ? (
+          <button
+            type="button"
+            data-tour="save"
+            onClick={() => void saveProject()}
+            disabled={saveState === 'saving'}
+            title={
+              lastSavedAt
                 ? `${t('savedAt', { time: new Date(lastSavedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) })} · ${tw('save')} (${KEYS.save})`
                 : `${tw('save')} (${KEYS.save})`
-          }
-          className={`rounded-md px-3 py-1.5 text-sm font-medium hover:bg-gray-100 disabled:opacity-40 ${
-            saveState === 'error' ? 'text-red-600' : 'text-gray-600'
-          }`}
-        >
-          {saveLabel}
-        </button>
+            }
+            className={`rounded-md px-3 py-1.5 text-sm font-medium hover:bg-gray-100 disabled:opacity-40 ${
+              saveState === 'error' ? 'text-red-600' : 'text-gray-600'
+            }`}
+          >
+            {saveLabel}
+          </button>
+        ) : (
+          <button
+            type="button"
+            data-tour="save"
+            onClick={() => void runExport('project')}
+            disabled={exporting}
+            title={`${tw('saveZipTitle')} (${KEYS.save})`}
+            className={zipButton}
+          >
+            <DownloadIcon />
+            {tw('saveZip')}
+          </button>
+        )}
+        {inBrowser && (
+          <button
+            type="button"
+            onClick={() => void runExport('project')}
+            disabled={exporting}
+            title={tw('downloadZipBrowserTitle')}
+            className={zipButton}
+          >
+            <DownloadIcon />
+            {tw('downloadZip')}
+          </button>
+        )}
         <ExportMenu />
       </div>
 
@@ -156,11 +182,21 @@ export default function Header() {
           </button>
           {moreOpen && (
             <div role="menu" className="absolute right-0 top-full z-40 mt-2 w-52 rounded-xl border border-gray-200 bg-white p-1.5 shadow-lg">
+              {inBrowser && (
+                <MoreItem
+                  label={tw('downloadZip')}
+                  disabled={exporting}
+                  onClick={() => {
+                    void runExport('project')
+                    setMoreOpen(false)
+                  }}
+                />
+              )}
               <MoreItem
-                label={saveLabel}
-                disabled={!directoryHandle || saveState === 'saving'}
+                label={directoryHandle ? saveLabel : tw('saveZip')}
+                disabled={(!!directoryHandle && saveState === 'saving') || (!directoryHandle && exporting)}
                 onClick={() => {
-                  void saveProject()
+                  void (directoryHandle ? saveProject() : runExport('project'))
                   setMoreOpen(false)
                 }}
               />
@@ -271,5 +307,16 @@ function MoreItem({
     >
       {label}
     </button>
+  )
+}
+
+function DownloadIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8}
+      strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 shrink-0" aria-hidden>
+      <path d="M12 3v12" />
+      <path d="m7 11 5 5 5-5" />
+      <path d="M5 21h14" />
+    </svg>
   )
 }

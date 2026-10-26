@@ -17,6 +17,13 @@ import {
   writeJson,
 } from './fileSystem'
 import { AGENT_GUIDE_FILE, buildAgentGuide } from './agentGuide'
+import { reportRepairs } from './repairCourse'
+import { ensureUserInstructions } from './userInstructions'
+import {
+  BROWSER_KEY_PREFIX,
+  browserProjectDir,
+  requestPersistentStorage,
+} from './browserProjects'
 import { rememberRecentProject, listRecentProjects } from './recentProjects'
 import { dismissToast, toast } from '../store/toastStore'
 import { navigate } from '../hooks/useRoute'
@@ -72,7 +79,7 @@ async function syncAgentGuide(
   }
 }
 
-function looksLikeCourse(value: unknown): value is Course {
+export function looksLikeCourse(value: unknown): value is Course {
   return (
     typeof value === 'object' &&
     value !== null &&
@@ -86,8 +93,9 @@ export async function createNewProject(): Promise<void> {
   const course = makeEmptyCourse(handle.name)
   await writeJson(handle, PROJECT_FILE, course)
   // Drop an agent guide alongside the project so AI agents / humans can edit
-  // project.json directly.
+  // project.json directly, and the author's own notes for them.
   await syncAgentGuide(handle, course)
+  await ensureUserInstructions(handle)
   useCourseStore.getState().openProject(handle, handle.name, course)
   await rememberRecentProject(handle)
   navigate('app', handle.name)
@@ -109,16 +117,55 @@ export async function openRecentProject(
   await loadProjectFromHandle(handle)
 }
 
+/** Start a new project kept in this browser (no folder access needed). */
+export async function createBrowserProject(): Promise<void> {
+  const id = uid('p')
+  const handle = await browserProjectDir(id, true)
+  if (!handle) throw new Error('Browser storage is unavailable')
+  requestPersistentStorage()
+  const course = makeEmptyCourse(translate('welcome', 'untitledCourse'))
+  await writeJson(handle, PROJECT_FILE, course)
+  await syncAgentGuide(handle, course)
+  await ensureUserInstructions(handle)
+  useCourseStore.getState().openProject(handle, course.title, course)
+  navigate('app', BROWSER_KEY_PREFIX + id)
+}
+
+/** Open a project kept in this browser. */
+export async function openBrowserProject(id: string): Promise<void> {
+  const handle = await browserProjectDir(id)
+  if (!handle) throw new NoProjectError()
+  await loadProjectFromHandle(handle, { key: BROWSER_KEY_PREFIX + id })
+}
+
+// Folder projects are named after the folder and remembered among the recent
+// projects; projects in this browser are named after the course and listed
+// from the browser's storage instead.
 async function loadProjectFromHandle(
   handle: FileSystemDirectoryHandle,
+  browser?: { key: string },
 ): Promise<void> {
   const course = await readJson<Course>(handle, PROJECT_FILE)
   if (!looksLikeCourse(course)) throw new NoProjectError()
-  // Refresh the agent guide (created if missing, rewritten if out of date).
+  // Refresh the agent guide (created if missing, rewritten if out of date);
+  // the author's instructions are only created when missing.
   await syncAgentGuide(handle, course)
+  await ensureUserInstructions(handle)
   const history =
     (await readJson<ProjectHistory>(handle, HISTORY_FILE)) ?? undefined
-  useCourseStore.getState().openProject(handle, handle.name, course, history)
+  const name = browser ? course.title || handle.name : handle.name
+  useCourseStore.getState().openProject(handle, name, course, history)
+  // A hand- or AI-edited project.json may have needed structural fixes:
+  // report them and write the repaired file back (so they're reported once).
+  const fixes = useCourseStore.getState().loadFixes
+  if (fixes.length) {
+    reportRepairs(fixes)
+    void saveProject()
+  }
+  if (browser) {
+    navigate('app', browser.key)
+    return
+  }
   await rememberRecentProject(handle)
   navigate('app', handle.name)
 }
@@ -127,6 +174,15 @@ async function loadProjectFromHandle(
 export async function restoreOpenProject(projectKey: string | null): Promise<boolean> {
   if (useCourseStore.getState().directoryHandle) return true
   if (!projectKey) return false
+  // A project in this browser needs no permission: just open it.
+  if (projectKey.startsWith(BROWSER_KEY_PREFIX)) {
+    try {
+      await openBrowserProject(projectKey.slice(BROWSER_KEY_PREFIX.length))
+      return true
+    } catch {
+      return false
+    }
+  }
   const match = (await listRecentProjects()).find((r) => r.name === projectKey)
   if (!match) return false
   // Re-requesting permission needs a user gesture, so only auto-open if the

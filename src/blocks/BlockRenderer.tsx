@@ -1,6 +1,7 @@
 import type { ComponentType } from 'react'
 import type { BlockType } from '../types/course'
 import type { BlockComponentProps } from './types'
+import { useT } from '../i18n/I18nProvider'
 import HeadingBlock from './components/HeadingBlock'
 import ParagraphBlock from './components/ParagraphBlock'
 import ListBlock from './components/ListBlock'
@@ -75,6 +76,21 @@ const BLOCK_COMPONENTS: Record<
 }
 
 export default function BlockRenderer(props: BlockComponentProps) {
-  const Component = BLOCK_COMPONENTS[props.block.type]
+  // A type this version doesn't know (e.g. invented in a hand- or AI-edited
+  // project.json) is kept in the data; it can still be moved or deleted.
+  const Component = Object.prototype.hasOwnProperty.call(BLOCK_COMPONENTS, props.block.type)
+    ? BLOCK_COMPONENTS[props.block.type]
+    : UnknownBlock
   return <Component {...props} />
+}
+
+function UnknownBlock({ block }: BlockComponentProps) {
+  const { t } = useT('blocks')
+  const type = typeof block.type === 'string' && block.type ? block.type : '?'
+  return (
+    <div className="rounded-lg border border-dashed border-gray-300 bg-gray-50 px-4 py-3 text-sm">
+      <p className="font-medium text-gray-700">{t('unknownBlock', { type })}</p>
+      <p className="mt-1 text-gray-500">{t('unknownBlockHelp')}</p>
+    </div>
+  )
 }

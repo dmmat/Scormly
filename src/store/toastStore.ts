@@ -16,7 +16,7 @@ interface ToastState {
 
 const DURATION: Record<ToastTone, number> = { info: 6000, success: 4000, error: 9000 }
 const MAX_VISIBLE = 3
-const timers = new Map<string, number>()
+const timers = new Map<string, ReturnType<typeof setTimeout>>()
 
 export const useToastStore = create<ToastState>()((set) => ({
   toasts: [],
@@ -41,7 +41,7 @@ export function toast(opts: Omit<Toast, 'id' | 'tone'> & { id?: string; tone?: T
   useToastStore.setState((s) => ({
     toasts: [...s.toasts.filter((t) => t.id !== id), next].slice(-MAX_VISIBLE),
   }))
-  timers.set(id, window.setTimeout(() => dismiss(id), DURATION[next.tone]))
+  timers.set(id, setTimeout(() => dismiss(id), DURATION[next.tone]))
   return id
 }
 

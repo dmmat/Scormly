@@ -1,4 +1,5 @@
 import {
+  useEffect,
   useRef,
   useState,
   useSyncExternalStore,
@@ -10,6 +11,7 @@ import { useDialog } from '../../hooks/useDialog'
 import { useCourseStore } from '../../store/courseStore'
 import { useLang, useT } from '../../i18n/I18nProvider'
 import ThemeChooser from './ThemeChooser'
+import { readUserInstructions, writeUserInstructions } from '../../lib/userInstructions'
 import { saveAsset, toastUploadError } from '../../lib/assets'
 import { useAssetUrl } from '../../hooks/useAssetUrl'
 import {
@@ -27,13 +29,14 @@ import {
 
 const IMAGE_ACCEPT = 'image/png,image/jpeg,image/webp,image/gif,image/svg+xml'
 
-type TabId = 'general' | 'appearance' | 'learner' | 'completion'
-const TABS: TabId[] = ['general', 'appearance', 'learner', 'completion']
+type TabId = 'general' | 'appearance' | 'learner' | 'completion' | 'ai'
+const TABS: TabId[] = ['general', 'appearance', 'learner', 'completion', 'ai']
 const TAB_LABEL_KEY: Record<TabId, string> = {
   general: 'tabGeneral',
   appearance: 'tabAppearance',
   learner: 'tabLearner',
   completion: 'tabCompletion',
+  ai: 'tabAi',
 }
 
 // Suggestions for the content language field (any BCP 47 tag is accepted).
@@ -184,6 +187,7 @@ export default function ProjectSettings({ onClose }: { onClose: () => void }) {
             {tab === 'appearance' && <AppearancePanel />}
             {tab === 'learner' && <LearnerPanel />}
             {tab === 'completion' && <CompletionPanel />}
+            {tab === 'ai' && <AiPanel />}
           </div>
         </div>
       </div>
@@ -544,6 +548,50 @@ function CompletionPanel() {
 
 // ── Building blocks ─────────────────────────────────────────────────────────
 
+// user-instructions.md: the author's notes for AI assistants (see
+// lib/userInstructions). Written to the project a moment after typing stops.
+function AiPanel() {
+  const { t } = useT('settings')
+  const [text, setText] = useState<string | null>(null)
+  const timer = useRef<ReturnType<typeof setTimeout>>(undefined)
+  const pending = useRef<string | null>(null)
+
+  useEffect(() => {
+    void readUserInstructions().then(setText)
+    // Closing the dialog right after typing still saves.
+    return () => {
+      clearTimeout(timer.current)
+      if (pending.current !== null) void writeUserInstructions(pending.current)
+    }
+  }, [])
+
+  function change(next: string) {
+    setText(next)
+    pending.current = next
+    clearTimeout(timer.current)
+    timer.current = setTimeout(() => {
+      pending.current = null
+      void writeUserInstructions(next)
+    }, 600)
+  }
+
+  return (
+    <Panel intro={t('aiIntro')}>
+      <Field label={t('aiLabel')} htmlFor="settings-ai" help={t('aiHelp')}>
+        <textarea
+          id="settings-ai"
+          value={text ?? ''}
+          disabled={text === null}
+          onChange={(e) => change(e.target.value)}
+          rows={18}
+          spellCheck
+          className={`${inputClass} resize-y font-mono text-[13px] leading-relaxed`}
+        />
+      </Field>
+    </Panel>
+  )
+}
+
 function Panel({ intro, children }: { intro: string; children: ReactNode }) {
   return (
     <div className="space-y-7">
@@ -708,6 +756,14 @@ function TabIcon({ id }: { id: TabId }) {
     'aria-hidden': true,
   }
   switch (id) {
+    case 'ai':
+      return (
+        <svg {...common}>
+          <path d="M12 3l1.8 4.2L18 9l-4.2 1.8L12 15l-1.8-4.2L6 9l4.2-1.8Z" />
+          <path d="M18.5 14.5l.8 1.7 1.7.8-1.7.8-.8 1.7-.8-1.7-1.7-.8 1.7-.8Z" />
+          <path d="M5 16v4M3 18h4" />
+        </svg>
+      )
     case 'general':
       return (
         <svg {...common}>

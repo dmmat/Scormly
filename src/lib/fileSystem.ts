@@ -23,6 +23,9 @@ export async function ensurePermission(
   handle: FileSystemHandle,
   readWrite = true,
 ): Promise<boolean> {
+  // Handles without the permission API (the browser's own storage in
+  // Firefox) are always usable.
+  if (typeof handle.queryPermission !== 'function') return true
   const opts: FileSystemHandlePermissionDescriptor = {
     mode: readWrite ? 'readwrite' : 'read',
   }

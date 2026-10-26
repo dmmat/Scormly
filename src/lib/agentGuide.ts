@@ -225,6 +225,14 @@ that exports to SCORM 1.2 / 2004 and cmi5 (xAPI).
 > reopen it afterwards), so your changes aren't overwritten by autosave. Keep the
 > JSON valid and every \`id\` unique.
 
+## Read first: the author's instructions
+
+[\`user-instructions.md\`](./user-instructions.md) holds the author's own
+notes for you — who the learners are, tone and style, terms to use or avoid,
+house rules. Read it before you change anything and follow it. Where it
+conflicts with the data format described here, the format wins. Scormly never
+rewrites that file (unlike this one); edit it only when the author asks you to.
+
 ## Data model
 
 \`\`\`
@@ -373,8 +381,29 @@ passes them is ready to export:
 2. Make your edits — add lessons/blocks, rewrite text, build quizzes — keeping
    ids unique and the JSON valid.
 3. Walk through the checklist above.
-4. Ask the author to reopen the project in Scormly to review, preview and export
-   (SCORM 2004 / 1.2 or cmi5). Exporting happens in the app, not from the file.
+4. Ask the author to reopen the project in Scormly (the folder, or the \`.zip\`
+   you return — see below) to review, preview and export (SCORM 2004 / 1.2 or
+   cmi5). Exporting happens in the app, not from the file.
+
+## Working from a .zip
+
+The author may hand you the project as a \`.zip\` (Scormly: **Save .zip** or
+**Download project**). It holds \`project.json\`, this \`AGENTS.md\` and the
+\`assets/\` folder. To work on it:
+
+1. Unzip it and edit \`project.json\` as described above (valid JSON, unique
+   ids). Put any new media under \`assets/images/\`, \`assets/videos/\`,
+   \`assets/audio/\`, \`assets/captions/\` or \`assets/files/\` and reference it
+   by that relative path — don't embed files as base64 \`data:\` URLs.
+2. Keep \`user-instructions.md\` in the archive, and the course \`id\` as it is: when the \`.zip\` comes back, Scormly uses
+   it to recognize the project and offers to update the author's copy (a
+   changed id opens as a separate project).
+3. Zip it again with \`project.json\` at the root of the archive (zipping the
+   project folder itself also works), keeping \`AGENTS.md\` and \`assets/\`.
+4. Give the \`.zip\` back to the author, who opens it with **Open .zip** on
+   Scormly's start screen or in the project menu — no folder needed, in any
+   browser. Small structural slips (missing or duplicate ids, missing fields)
+   are repaired on open and reported; still, follow the shapes above.
 
 ## Minimal example
 
