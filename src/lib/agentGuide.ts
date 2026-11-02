@@ -6,6 +6,7 @@
 // the union forces a matching entry here — the guide can't silently fall behind.
 
 import type { BlockType, Course } from '../types/course'
+import { GITHUB_URL } from './links'
 
 export const AGENT_GUIDE_FILE = 'AGENTS.md'
 
@@ -233,6 +234,27 @@ house rules. Read it before you change anything and follow it. Where it
 conflicts with the data format described here, the format wins. Scormly never
 rewrites that file (unlike this one); edit it only when the author asks you to.
 
+## Then: \`review.md\` (in a .zip)
+
+A \`.zip\` saved by Scormly also holds [\`review.md\`](./review.md): what
+Scormly found when it was saved. The course was rendered in the real learner
+player on a phone and a desktop screen, and the report lists, by lesson and
+block \`id\`, text that runs past the screen edge, spills out of its block or
+is cut off, images that don't load, plus the pre-export content check. You
+can't see the course, so treat it as your eyes: fix what it lists in
+\`project.json\`, and keep it in mind when you add content (long unbroken
+words, URLs and wide tables break phone layouts; cards, buttons and tabs have
+little room). It describes the course as saved, not your edits; the author
+re-saves the \`.zip\` in Scormly to get a fresh one.
+
+## Scormly source
+
+Scormly is open source: ${GITHUB_URL}. When this guide isn't enough, read the
+code there (you never need to run it): the data model in
+\`src/types/course.ts\`, how the learner sees each block in
+\`public/scorm-player/player.js\` and \`player.css\`, the content check in
+\`src/export/courseCheck.ts\`.
+
 ## Data model
 
 \`\`\`
@@ -377,7 +399,8 @@ passes them is ready to export:
 
 ## Typical agent workflow
 
-1. Read \`project.json\` (and this guide) to understand the current course.
+1. Read \`project.json\` (and this guide) to understand the current course,
+   and \`review.md\` if there is one.
 2. Make your edits — add lessons/blocks, rewrite text, build quizzes — keeping
    ids unique and the JSON valid.
 3. Walk through the checklist above.
@@ -389,7 +412,7 @@ passes them is ready to export:
 
 The author may hand you the project as a \`.zip\` (Scormly: **Save .zip** or
 **Download project**). It holds \`project.json\`, this \`AGENTS.md\` and the
-\`assets/\` folder. To work on it:
+\`assets/\` folder, \`user-instructions.md\` and \`review.md\`. To work on it:
 
 1. Unzip it and edit \`project.json\` as described above (valid JSON, unique
    ids). Put any new media under \`assets/images/\`, \`assets/videos/\`,

@@ -5,15 +5,20 @@ import { addAssets, downloadZip, sanitize } from '../export/packageCommon'
 import { AGENT_GUIDE_FILE, buildAgentGuide } from './agentGuide'
 import { extForMime } from './assets'
 import { readUserInstructions, USER_INSTRUCTIONS_FILE } from './userInstructions'
+import { checkCourse } from '../export/courseCheck'
+import { reviewLayout } from './layoutReview'
+import { buildReviewReport, REVIEW_FILE } from './reviewReport'
 
 // The project as a .zip: project.json + its media (assets/) + the AGENTS.md
-// guide + the author's user-instructions.md. It opens back in Scormly ("Open .zip", also in browsers that can't use
+// guide + the author's user-instructions.md (+ review.md when downloaded). It opens back in Scormly ("Open .zip", also in browsers that can't use
 // a project folder), unzips into a project folder, and can be handed to an AI
 // assistant that follows AGENTS.md. Excludes the undo/redo history sidecar
 // (.scormly-history.json).
 export async function buildProjectZip(
   course: Course,
   directoryHandle: FileSystemDirectoryHandle | null,
+  /** review.md contents (see buildReview). */
+  review?: string,
 ): Promise<JSZip> {
   const zip = new JSZip()
   // Media embedded as data: URLs (older no-folder projects) becomes files, so
@@ -23,6 +28,7 @@ export async function buildProjectZip(
   for (const [path, bytes] of files) zip.file(path, bytes)
   zip.file(AGENT_GUIDE_FILE, buildAgentGuide(course))
   zip.file(USER_INSTRUCTIONS_FILE, await readUserInstructions(directoryHandle))
+  if (review) zip.file(REVIEW_FILE, review)
   await addAssets(zip, directoryHandle, course)
   // Zip times are local wall-clock time (as Finder, Windows and Python write
   // them), but JSZip stores a date's UTC fields: shift it so they match.
@@ -44,10 +50,19 @@ export function zipEntryTime(date: Date): number {
 
 export async function downloadProjectZip(): Promise<string> {
   const { course, directoryHandle } = useCourseStore.getState()
-  const zip = await buildProjectZip(course, directoryHandle)
+  const zip = await buildProjectZip(course, directoryHandle, await buildReview(course))
   const filename = await downloadZip(zip, `${sanitize(course.title)}-project.zip`)
   markZipSaved(course)
   return filename
+}
+
+/** review.md: the rendered-layout check plus the pre-export content check. A
+ *  layout failure is reported in the file rather than blocking the save. */
+export async function buildReview(course: Course): Promise<string> {
+  const layout = await reviewLayout(course).catch((err: unknown) => ({
+    error: err instanceof Error ? err.message : String(err),
+  }))
+  return buildReviewReport(course, { checkIssues: checkCourse(course), layout, date: new Date() })
 }
 
 // Without a folder the .zip download is the save: remember what was saved, so
