@@ -34,6 +34,10 @@ exported as a **SCORM 1.2 / 2004** or **cmi5 (xAPI)** package for any LMS.
     code, tables, quotes.
   - *Media:* images, galleries, video, audio, and embeds (YouTube / Vimeo /
     any https page).
+  - *Code:* your own HTML / CSS / JavaScript, or an uploaded `.html` page or
+    `.zip` site (widgets, simulations, mini-games), shown in a frame that fits
+    its content. Pages can use the course look — theme color, button shape,
+    fonts and ready-made `sc-*` classes (the Scormly kit).
   - *Navigation:* a "Continue" button that reveals the rest of the lesson in
     parts (optionally **restricted** — locked until the tasks above are done),
     a divider, and a **course outline** that links to the
@@ -66,7 +70,8 @@ exported as a **SCORM 1.2 / 2004** or **cmi5 (xAPI)** package for any LMS.
   (JSZip). SCORM is verified on SCORM Cloud.
 - **AI-friendly** — every project gets an `AGENTS.md` documenting `project.json`
   and all block types, so an AI assistant can read, edit, or author courses by
-  editing the JSON directly.
+  editing the JSON directly — including pages for Code blocks (the block's
+  *Copy instructions for AI* button gives a chat assistant the same rules).
 - **Declarative data model** — the whole course is serialized JSON
   (`project.json`) that is easy to version, import, and export.
 
