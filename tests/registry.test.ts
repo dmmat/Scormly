@@ -75,8 +75,9 @@ describe('block registry', () => {
   })
 
   test('no variant adds a pre-export problem its default block does not have', () => {
-    // A quote on an image needs its image, like the ready-made one.
-    const allowed = new Set(['chkQuoteNoImage'])
+    // A quote on an image needs its image, like the ready-made one; the
+    // upload style of the code block needs its upload.
+    const allowed = new Set(['chkQuoteNoImage', 'chkMissingHtml'])
     for (const type of TYPES) {
       const base = new Set(issueKeys(createBlock(type)))
       for (const v of blockVariants(type)) {

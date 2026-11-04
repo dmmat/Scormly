@@ -12,6 +12,22 @@ export interface Release {
 
 export const RELEASES: Release[] = [
   {
+    id: '2026-11-04',
+    date: '2026-11-04',
+    items: {
+      en: [
+        'New Code block: write your own HTML, CSS and JavaScript, or upload an .html page or a .zip site — for widgets, simulations, calculators and mini-games. It plays in the exported course too.',
+        'Code pages match your course: the theme color, button shape and fonts, plus ready-made classes for buttons, cards, fields and feedback. Turn course styles off for a page with its own design.',
+        '“Copy instructions for AI” in the block: paste them into a chat assistant with what you need, and the page it writes drops straight in. AGENTS.md in every project explains it too.',
+      ],
+      uk: [
+        'Новий блок «Код»: пишіть власний HTML, CSS і JavaScript або завантажуйте сторінку .html чи сайт у .zip — для віджетів, симуляцій, калькуляторів і міні-ігор. Працює й в експортованому курсі.',
+        'Сторінки в блоці «Код» виглядають як курс: колір теми, форма кнопок і шрифти, а ще готові класи для кнопок, карток, полів і відгуків. Для сторінки з власним дизайном стилі курсу можна вимкнути.',
+        '«Скопіювати інструкцію для AI» в блоці: вставте її в чат-асистента разом з описом того, що потрібно, — і написана ним сторінка одразу підійде. Те саме пояснює AGENTS.md у кожному проєкті.',
+      ],
+    },
+  },
+  {
     id: '2026-10-26',
     date: '2026-10-26',
     items: {

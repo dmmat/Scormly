@@ -45,6 +45,10 @@ const content: LocaleTable = {
     newListItem: 'List item',
 
     codeSample: 'console.log("Hello, world!")',
+    htmlTitle: 'Interactive widget',
+    htmlSampleQuestion: 'How many bones are in the adult human body?',
+    htmlSampleButton: 'Show the answer',
+    htmlSampleAnswer: '206 bones.',
     tableHeader: 'Header',
     tableCell: 'Cell',
     quoteText: 'Your quote goes here.',
@@ -150,6 +154,10 @@ const content: LocaleTable = {
     newListItem: 'Пункт списку',
 
     codeSample: 'console.log("Привіт, світ!")',
+    htmlTitle: 'Інтерактивний віджет',
+    htmlSampleQuestion: 'Скільки кісток у тілі дорослої людини?',
+    htmlSampleButton: 'Показати відповідь',
+    htmlSampleAnswer: '206 кісток.',
     tableHeader: 'Заголовок',
     tableCell: 'Клітинка',
     quoteText: 'Тут ваша цитата.',

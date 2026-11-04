@@ -8,6 +8,7 @@ import VideoPreview from './components/VideoPreview'
 import AudioPreview from './components/AudioPreview'
 import EmbedPreview from './components/EmbedPreview'
 import CodePreview from './components/CodePreview'
+import HtmlPreview from './components/HtmlPreview'
 import TablePreview from './components/TablePreview'
 import QuotePreview from './components/QuotePreview'
 import TabsPreview from './components/TabsPreview'
@@ -97,6 +98,8 @@ export default function BlockPreview({
       return <AudioPreview block={block} />
     case 'embed':
       return <EmbedPreview block={block} />
+    case 'html':
+      return <HtmlPreview block={block} />
     case 'code':
       return <CodePreview block={block} />
     case 'table':

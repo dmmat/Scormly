@@ -1482,6 +1482,8 @@
           allow: 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture',
         }));
       }
+      case 'html':
+        return renderHtml(b);
       case 'code':
         return h('pre', { class: 'code' }, h('code', { text: b.data.code || '' }));
       case 'table':
@@ -1524,6 +1526,119 @@
       default: return null;
     }
   }
+
+  // Custom HTML: the author's page in a frame. An uploaded page loads from its
+  // folder in the package (relative files, fetch() and modules work); written
+  // code goes in srcdoc. Both are same-origin, so the frame can fit the page.
+  function renderHtml(b) {
+    var d = b.data || {};
+    var file = d.source === 'file';
+    if (file ? !d.src : !String(d.code || '').trim()) return null;
+    var fixed = d.height > 0 ? Math.min(d.height, 4000) : 0;
+    var fr = h('iframe', {
+      class: 'sc-html-frame', title: (d.title || '').trim() || t('embedTitle'),
+      allow: 'fullscreen; clipboard-write; autoplay',
+      style: 'height:' + (fixed || 300) + 'px', 'data-fit': fixed ? null : '1',
+    });
+    var styled = d.styles !== false;
+    // Course styles: code gets the kit in its srcdoc; an uploaded page gets it
+    // once loaded, and stays hidden until then so it doesn't flash unstyled.
+    if (file) {
+      fr.setAttribute('src', d.src);
+      if (styled) fr.style.visibility = 'hidden';
+    } else {
+      fr.setAttribute('srcdoc', styled ? withHead(d.code, kitLink() + '<style>' + kitTokens() + '</style>') : d.code);
+    }
+    fr.addEventListener('load', function () {
+      if (file && styled) injectKit(fr, function () { fr.style.visibility = ''; if (!fixed) fitFrame(fr); });
+      else if (!fixed) fitFrame(fr);
+    });
+    return fr;
+  }
+
+  function withHead(html, head) {
+    var m = /<head[^>]*>/i.exec(html);
+    return m ? html.slice(0, m.index + m[0].length) + head + html.slice(m.index + m[0].length) : head + html;
+  }
+
+  // The Scormly kit (kit.css next to the player) and its --sc-* tokens from
+  // the course theme and typography. Same rule as kitTokensCss() in the
+  // builder's htmlBundle.ts.
+  function kitHref() { return new URL('kit.css', document.baseURI).href; }
+  function kitLink() { return '<link rel="stylesheet" href="' + kitHref() + '">'; }
+  function probeFont(tag) {
+    var el = document.createElement(tag);
+    el.style.cssText = 'position:absolute;visibility:hidden;pointer-events:none';
+    (document.querySelector('.lesson') || document.body).appendChild(el);
+    var f = getComputedStyle(el).fontFamily;
+    el.remove();
+    return f;
+  }
+  function kitTokens() {
+    var cs = getComputedStyle(document.documentElement);
+    var tokens = {
+      '--sc-accent': cs.getPropertyValue('--brand').trim(),
+      '--sc-accent-dark': cs.getPropertyValue('--brand-dark').trim(),
+      '--sc-radius': cs.getPropertyValue('--radius-btn').trim(),
+      '--sc-font': probeFont('p'),
+      '--sc-heading-font': probeFont('h2'),
+    };
+    var out = [];
+    for (var k in tokens) if (tokens[k] && !/[<>{};]/.test(tokens[k])) out.push(k + ':' + tokens[k]);
+    return ':root{' + out.join(';') + '}';
+  }
+  function injectKit(fr, done) {
+    var doc;
+    try { doc = fr.contentDocument; } catch (e) { doc = null; }
+    if (!doc || !doc.head) return done();
+    var link = doc.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = kitHref();
+    link.onload = link.onerror = function () { done(); };
+    var style = doc.createElement('style');
+    style.textContent = kitTokens();
+    doc.head.insertBefore(style, doc.head.firstChild);
+    doc.head.insertBefore(link, style);
+  }
+
+  // Size a frame to its page's content (see HEIGHT_REPORTER in the builder's
+  // htmlBundle.ts for the rules). A cross-origin page can't be measured; it
+  // may post { type: 'scormly:height', height } instead.
+  function fitFrame(fr) {
+    var win, doc;
+    try { win = fr.contentWindow; doc = fr.contentDocument; } catch (e) { return; }
+    if (!doc || !doc.documentElement) return;
+    var last = 0, step = 0, same = 0;
+    function measure() {
+      var de = doc.documentElement, body = doc.body;
+      if (!body) return 0;
+      if (de.scrollHeight > de.clientHeight + 1) return de.scrollHeight;
+      return Math.ceil(body.getBoundingClientRect().bottom + (parseFloat(win.getComputedStyle(body).marginBottom) || 0));
+    }
+    function fit() {
+      var hh = Math.min(measure(), 4000);
+      if (!hh || Math.abs(hh - last) < 2) return;
+      if (hh - last === step && step > 0 && ++same > 2) return;
+      if (hh - last !== step) same = 0;
+      step = hh - last; last = hh;
+      fr.style.height = hh + 'px';
+    }
+    fit();
+    if (win.ResizeObserver) {
+      var ro = new win.ResizeObserver(fit);
+      ro.observe(doc.documentElement);
+      if (doc.body) ro.observe(doc.body);
+    }
+  }
+
+  window.addEventListener('message', function (e) {
+    var m = e.data;
+    if (!m || m.type !== 'scormly:height' || typeof m.height !== 'number' || !(m.height > 0)) return;
+    var frames = document.querySelectorAll('iframe.sc-html-frame[data-fit]');
+    for (var i = 0; i < frames.length; i++) {
+      if (frames[i].contentWindow === e.source) frames[i].style.height = Math.min(Math.ceil(m.height), 4000) + 'px';
+    }
+  });
 
   // Callout icons (24×24 stroked paths), same as the builder's NoteView.
   var NOTE_ICONS = {

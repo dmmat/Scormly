@@ -198,6 +198,18 @@ In the LMS, the player implements the SCORM API: for 1.2 — `LMSInitialize`,
   queries, so they follow the block's own width in the editor, preview and
   player; pyramid / ring geometry lives in `src/blocks/process.ts` (mirrored in
   the player).
+- **Code block** (`html`) — a page in a frame: written code (`srcdoc`) or an
+  upload unpacked to `assets/html/<folder>/` (`src/lib/htmlBundle.ts`). Only
+  the entry page is in `project.json`, so exports and the project `.zip` ship
+  the whole folder (`collectBundleDirs`). The editor and preview inline the
+  folder's files into a sandboxed `srcdoc` (no access to the app); the player
+  loads the real folder, same-origin, and fits the frame to the page's height
+  (or the block's fixed `height`). Unless `styles: false`, the frame gets the
+  Scormly kit (`public/scorm-player/kit.css`, in `@layer scormly-kit`):
+  `sc-*` classes and `--sc-*` tokens resolved from the course theme and
+  typography (`kitTokensCss` / the player's `kitTokens`). `HTML_BLOCK_GUIDE`
+  in `agentGuide.ts` is the AI-facing spec, used in `AGENTS.md` and by the
+  block's *Copy instructions for AI* button.
 - **Next lesson card** — shown at the end of each lesson unless the last visible
   block is a Continue button (which already leads on); `ContinueData.nextCard`
   keeps both.
