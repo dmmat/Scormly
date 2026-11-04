@@ -55,7 +55,7 @@ const BLOCK_DOCS: Record<BlockType, BlockDoc> = {
   },
   html: {
     summary: 'Custom HTML / CSS / JS (an interactive widget, simulation, game, chart…) shown in a frame — the author\'s own code or an uploaded .html page / .zip site. See "Custom HTML blocks" below.',
-    data: `{ source: 'code' | 'file', code: string, src: string, fileName?: string, title?: string, height?: number }  // source 'code': the page is the HTML document in code; 'file': the page is src, an entry file like assets/html/<folder>/index.html whose folder ships whole (keep code '' or src '' for the unused one). title: accessible name of the frame; height: frame height in px, omitted = fit the page's content`,
+    data: `{ source: 'code' | 'file', code: string, src: string, fileName?: string, title?: string, height?: number, styles?: boolean }  // source 'code': the page is the HTML document in code; 'file': the page is src, an entry file like assets/html/<folder>/index.html whose folder ships whole (keep code '' or src '' for the unused one). title: accessible name of the frame; height: frame height in px, omitted = fit the page's content; styles: load the Scormly kit (course fonts, accent, sc-* classes) into the page, default true`,
   },
   code: {
     summary: 'Monospaced code snippet.',
@@ -228,9 +228,30 @@ e-learning course (SCORM / cmi5 in an LMS), possibly offline.
   the page to \`100vh\` / \`height: 100%\` (that height is the frame's own). A
   fixed-height app (a canvas game) is fine when the author sets a height on
   the block.
-- **Look**: transparent or white background, the system font stack
-  (\`system-ui, sans-serif\`), readable 16 px text, rounded buttons. No page
-  margin around the content beyond ~8 px.
+- **Look — use the Scormly kit**: the course loads its own stylesheet into
+  the page (unless the block sets \`styles: false\`), so the page matches the
+  course theme and fonts with no CSS of its own. It already styles \`body\`
+  (8 px padding, transparent background, course font, 16 px text),
+  headings, links and focus rings. Use its classes rather than
+  hand-made colors:
+  - buttons: \`sc-btn\` (accent), \`sc-btn-secondary\` (outlined;
+    \`aria-pressed="true"\` shows it selected);
+  - surfaces: \`sc-card\` (white card), \`sc-panel\` (accent-tinted box),
+    \`sc-note\` (callout with an accent bar), \`sc-badge\` (small pill);
+  - forms: \`sc-label\`, \`sc-input\` (for input, select and textarea);
+  - feedback: \`sc-correct\`, \`sc-wrong\`, \`sc-progress\` (a bar: put a
+    \`<span style="width: 40%">\` inside);
+  - text and layout: \`sc-muted\`, \`sc-accent\`, \`sc-center\`,
+    \`sc-stack\` (vertical, 1 rem gaps), \`sc-row\` (wrapping row),
+    \`sc-grid\` (responsive columns).
+
+  For custom CSS, use its variables so a theme change follows:
+  \`--sc-accent\`, \`--sc-accent-dark\` (accent text on white),
+  \`--sc-accent-soft\` (tint), \`--sc-radius\` (button shape), \`--sc-font\`,
+  \`--sc-heading-font\`, \`--sc-text\`, \`--sc-heading\`, \`--sc-muted\`,
+  \`--sc-border\`, \`--sc-surface\`, \`--sc-success\`, \`--sc-error\`. White
+  text on \`--sc-accent\` is always readable. The kit sits in a CSS cascade
+  layer, so your own rules override it; don't link it yourself.
 - **Accessible**: real \`<button>\`s and labelled form fields, keyboard
   operable, visible focus, enough contrast, alt text on images, no
   flashing content; respect \`prefers-reduced-motion\`.

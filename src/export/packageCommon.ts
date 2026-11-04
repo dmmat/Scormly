@@ -11,7 +11,7 @@ import { htmlBundleDir } from '../lib/htmlBundle'
 /** Tracking runtime to bundle: SCORM (scorm.js) or cmi5/xAPI (xapi.js). */
 export type TrackingScript = 'scorm.js' | 'xapi.js'
 
-const STATIC_FILES = ['index.html', 'player.css', 'player.js']
+const STATIC_FILES = ['index.html', 'player.css', 'player.js', 'kit.css']
 
 export function escapeHtml(s: string): string {
   return s

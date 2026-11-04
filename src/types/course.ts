@@ -179,6 +179,9 @@ export interface HtmlData {
   title?: string
   /** Frame height in px; omitted = fit the content (the page's own height). */
   height?: number
+  /** Load the Scormly kit (course fonts, accent, sc-* classes) into the page;
+   *  default true. */
+  styles?: boolean
 }
 
 /** Whether a custom HTML block has something to show. */

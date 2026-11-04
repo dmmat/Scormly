@@ -2,6 +2,7 @@
 // whole site folder (src/lib/htmlBundle.ts, src/export/packageCommon.ts).
 
 import { describe, test, expect, beforeEach } from 'vitest'
+import { readFileSync } from 'node:fs'
 import JSZip from 'jszip'
 import { htmlBundleDir, pickEntry, resolveRef, saveHtmlUpload, HtmlUploadError } from '../src/lib/htmlBundle'
 import { addAssets } from '../src/export/packageCommon'
@@ -87,5 +88,20 @@ describe('AI guide', () => {
     expect(md).toContain('## Custom HTML blocks')
     expect(md).toContain(HTML_BLOCK_GUIDE)
     expect(HTML_BLOCK_GUIDE).toContain('relative')
+  })
+})
+
+describe('Scormly kit', () => {
+  const kit = readFileSync(new URL('../public/scorm-player/kit.css', import.meta.url), 'utf8')
+
+  test('sits in a cascade layer, so the page CSS wins', () => {
+    expect(kit.trim()).toMatch(/^\/\*[\s\S]*?\*\/\s*@layer scormly-kit \{[\s\S]*\}$/)
+  })
+
+  test('every class and variable the AI guide names exists in kit.css', () => {
+    const classes = new Set(HTML_BLOCK_GUIDE.match(/(?<![-\w])sc-[a-z-]+(?=`)/g))
+    expect(classes.size).toBeGreaterThan(10)
+    for (const c of classes) expect(kit, c).toContain(`.${c}`)
+    for (const v of HTML_BLOCK_GUIDE.match(/--sc-[a-z-]+/g)!) expect(kit, v).toContain(`${v}:`)
   })
 })

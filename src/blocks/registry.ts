@@ -36,23 +36,18 @@ const baseSettings = { spacing: 'normal' as const }
 const c = (key: string, vars?: Record<string, string | number>) =>
   translate('content', key, vars)
 
-// Starter page of a new custom HTML block: a tiny working widget to edit.
+// Starter page of a new custom HTML block: a tiny working widget to edit,
+// styled with the Scormly kit classes (public/scorm-player/kit.css).
 const htmlSample = () => `<!doctype html>
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<style>
-  body { margin: 0; padding: 8px; font: 16px/1.5 system-ui, sans-serif; color: #1f2937; }
-  .card { padding: 24px; border: 1px solid #e5e7eb; border-radius: 12px; text-align: center; }
-  button { padding: 10px 20px; border: 0; border-radius: 8px; background: #111827; color: #fff; font: inherit; cursor: pointer; }
-  #answer { margin-top: 16px; }
-</style>
 </head>
 <body>
-  <div class="card">
-    <p><strong>${c('htmlSampleQuestion')}</strong></p>
-    <button type="button" onclick="document.getElementById('answer').hidden = false">${c('htmlSampleButton')}</button>
-    <p id="answer" hidden>${c('htmlSampleAnswer')}</p>
+  <div class="sc-card sc-center">
+    <h3>${c('htmlSampleQuestion')}</h3>
+    <button type="button" class="sc-btn" onclick="document.getElementById('answer').hidden = false">${c('htmlSampleButton')}</button>
+    <p id="answer" class="sc-correct" style="margin-top: 1rem" hidden>${c('htmlSampleAnswer')}</p>
   </div>
 </body>
 </html>

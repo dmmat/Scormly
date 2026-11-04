@@ -1540,9 +1540,65 @@
       allow: 'fullscreen; clipboard-write; autoplay',
       style: 'height:' + (fixed || 300) + 'px', 'data-fit': fixed ? null : '1',
     });
-    if (file) fr.setAttribute('src', d.src); else fr.setAttribute('srcdoc', d.code);
-    if (!fixed) fr.addEventListener('load', function () { fitFrame(fr); });
+    var styled = d.styles !== false;
+    // Course styles: code gets the kit in its srcdoc; an uploaded page gets it
+    // once loaded, and stays hidden until then so it doesn't flash unstyled.
+    if (file) {
+      fr.setAttribute('src', d.src);
+      if (styled) fr.style.visibility = 'hidden';
+    } else {
+      fr.setAttribute('srcdoc', styled ? withHead(d.code, kitLink() + '<style>' + kitTokens() + '</style>') : d.code);
+    }
+    fr.addEventListener('load', function () {
+      if (file && styled) injectKit(fr, function () { fr.style.visibility = ''; if (!fixed) fitFrame(fr); });
+      else if (!fixed) fitFrame(fr);
+    });
     return fr;
+  }
+
+  function withHead(html, head) {
+    var m = /<head[^>]*>/i.exec(html);
+    return m ? html.slice(0, m.index + m[0].length) + head + html.slice(m.index + m[0].length) : head + html;
+  }
+
+  // The Scormly kit (kit.css next to the player) and its --sc-* tokens from
+  // the course theme and typography. Same rule as kitTokensCss() in the
+  // builder's htmlBundle.ts.
+  function kitHref() { return new URL('kit.css', document.baseURI).href; }
+  function kitLink() { return '<link rel="stylesheet" href="' + kitHref() + '">'; }
+  function probeFont(tag) {
+    var el = document.createElement(tag);
+    el.style.cssText = 'position:absolute;visibility:hidden;pointer-events:none';
+    (document.querySelector('.lesson') || document.body).appendChild(el);
+    var f = getComputedStyle(el).fontFamily;
+    el.remove();
+    return f;
+  }
+  function kitTokens() {
+    var cs = getComputedStyle(document.documentElement);
+    var tokens = {
+      '--sc-accent': cs.getPropertyValue('--brand').trim(),
+      '--sc-accent-dark': cs.getPropertyValue('--brand-dark').trim(),
+      '--sc-radius': cs.getPropertyValue('--radius-btn').trim(),
+      '--sc-font': probeFont('p'),
+      '--sc-heading-font': probeFont('h2'),
+    };
+    var out = [];
+    for (var k in tokens) if (tokens[k] && !/[<>{};]/.test(tokens[k])) out.push(k + ':' + tokens[k]);
+    return ':root{' + out.join(';') + '}';
+  }
+  function injectKit(fr, done) {
+    var doc;
+    try { doc = fr.contentDocument; } catch (e) { doc = null; }
+    if (!doc || !doc.head) return done();
+    var link = doc.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = kitHref();
+    link.onload = link.onerror = function () { done(); };
+    var style = doc.createElement('style');
+    style.textContent = kitTokens();
+    doc.head.insertBefore(style, doc.head.firstChild);
+    doc.head.insertBefore(link, style);
   }
 
   // Size a frame to its page's content (see HEIGHT_REPORTER in the builder's

@@ -103,7 +103,12 @@ The `html` (Code) block shows a page in a frame: written code, or an upload
 unpacked to `assets/html/<folder>/` (`lib/htmlBundle.ts`). Only the entry page
 is in the JSON, so exports ship the whole folder (`collectBundleDirs`); the
 editor inlines the files into a sandboxed `srcdoc`, the player loads the real
-folder. `HTML_BLOCK_GUIDE` (agentGuide) is the AI-facing spec for such pages.
+folder. Unless `styles: false`, the frame also gets the **Scormly kit**
+(`public/scorm-player/kit.css`, in `@layer scormly-kit`): `sc-*` classes and
+`--sc-*` tokens read from the course theme / typography where the frame sits
+(`kitTokensCss` in htmlBundle, `kitTokens` in the player — keep them in sync).
+`HTML_BLOCK_GUIDE` (agentGuide) is the AI-facing spec for such pages and lists
+the kit's classes (`tests/htmlBundle.test.ts` checks they exist).
 
 `Course.theme` (a `ThemeId`) stores the global project theme. `Course.intro` is
 the optional cover page shown before the first lesson (it is not a lesson; the

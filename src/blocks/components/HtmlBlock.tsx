@@ -89,6 +89,15 @@ export default function HtmlBlock({
               />
               <span>{t('htmlHeightPx')}</span>
             </label>
+            <label className="flex cursor-pointer items-center gap-2 text-xs font-medium text-gray-500" title={t('htmlStylesHint')}>
+              <input
+                type="checkbox"
+                checked={d.styles !== false}
+                onChange={(e) => update(lessonId, block.id, { styles: e.target.checked })}
+                className="accent-brand"
+              />
+              {t('htmlStyles')}
+            </label>
             <button type="button" onClick={copyGuide} className="btn-secondary text-sm">
               {t('htmlCopyAi')}
             </button>

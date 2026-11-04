@@ -135,9 +135,58 @@ export async function loadHtmlBundle(bundleDir: string): Promise<Map<string, Blo
 // Same rule as fitFrame() in the player.
 const HEIGHT_REPORTER = `<script>(function(){var l=0,d=0,n=0;function m(){var e=document.documentElement,b=document.body;if(!b)return 0;if(e.scrollHeight>e.clientHeight+1)return e.scrollHeight;return Math.ceil(b.getBoundingClientRect().bottom+(parseFloat(getComputedStyle(b).marginBottom)||0))}function s(){var h=m();if(!h||Math.abs(h-l)<2)return;if(h-l===d&&d>0&&++n>2)return;if(h-l!==d)n=0;d=h-l;l=h;parent.postMessage({type:'scormly:height',height:h},'*')}addEventListener('load',s);if(window.ResizeObserver){var o=new ResizeObserver(s);o.observe(document.documentElement);addEventListener('DOMContentLoaded',function(){o.observe(document.body)})}setTimeout(s,0)})()</script>`
 
-/** Code-mode document for the editor frame. */
-export function codeDocument(code: string): string {
-  return withScript(code, HEIGHT_REPORTER)
+/** Code-mode document for the editor frame; `head` is injected first
+ *  (the course styles, see kitHead). */
+export function codeDocument(code: string, head = ''): string {
+  return withScript(code, head + HEIGHT_REPORTER)
+}
+
+let kitCss: Promise<string> | null = null
+
+/** The Scormly kit stylesheet (public/scorm-player/kit.css, shipped with the
+ *  player), fetched once. */
+function loadKitCss(): Promise<string> {
+  kitCss ??= fetch(`${import.meta.env.BASE_URL}scorm-player/kit.css`)
+    .then((r) => (r.ok ? r.text() : ''))
+    .catch(() => '')
+  return kitCss
+}
+
+/** Font of an element of `tag` placed under `host` (typography rules style
+ *  headings by tag). */
+function probeFont(host: Element, tag: string): string {
+  const el = document.createElement(tag)
+  el.style.cssText = 'position:absolute;visibility:hidden;pointer-events:none'
+  host.appendChild(el)
+  const font = getComputedStyle(el).fontFamily
+  el.remove()
+  return font
+}
+
+/** The kit's --sc-* tokens as resolved where the frame sits: the course
+ *  theme's accent and button shape, and the typography's fonts. Same rule as
+ *  kitTokens() in the player. */
+export function kitTokensCss(host: Element): string {
+  const cs = getComputedStyle(host)
+  const v = (name: string) => cs.getPropertyValue(name).trim()
+  const tokens: Record<string, string> = {
+    '--sc-accent': v('--color-brand'),
+    '--sc-accent-dark': v('--color-brand-dark'),
+    '--sc-radius': v('--radius-btn'),
+    '--sc-font': probeFont(host, 'p'),
+    '--sc-heading-font': probeFont(host, 'h2'),
+  }
+  const decl = Object.entries(tokens)
+    .filter(([, value]) => value && !/[<>{};]/.test(value))
+    .map(([k, value]) => `${k}:${value}`)
+    .join(';')
+  return `:root{${decl}}`
+}
+
+/** Head markup that gives a frame the course look: the kit, then its tokens. */
+export async function kitHead(host: Element): Promise<string> {
+  const css = (await loadKitCss()).replace(/<\/style/gi, '<\\/style')
+  return `<style>${css}</style><style>${kitTokensCss(host)}</style>`
 }
 
 function withScript(html: string, script: string): string {
@@ -178,7 +227,7 @@ export function resolveRef(from: string, ref: string): string | null {
  * Imports inside ES modules aren't rewritten (they work in the exported
  * course, which serves the real folder).
  */
-export async function buildHtmlDocument(entry: string, files: Map<string, Blob>): Promise<string | null> {
+export async function buildHtmlDocument(entry: string, files: Map<string, Blob>, head = ''): Promise<string | null> {
   const page = files.get(entry)
   if (!page) return null
   const urls = new Map<string, string>()
@@ -246,5 +295,5 @@ export async function buildHtmlDocument(entry: string, files: Map<string, Blob>)
   const dir = JSON.stringify(entry.split('/').slice(0, -1).join('/'))
   const shim = `<script>(function(){var M=${JSON.stringify(map).replace(/</g, '\\u003c')},D=${dir};function r(u){if(typeof u!=='string'||/^([a-z][a-z0-9+.-]*:|\\/\\/|#)/i.test(u))return u;var p=u.replace(/[?#].*$/,''),a=p.charAt(0)==='/'?[]:(D?D.split('/'):[]);p.replace(/^\\//,'').split('/').forEach(function(s){if(s==='..')a.pop();else if(s&&s!=='.')a.push(s)});var k=a.join('/');try{k=decodeURIComponent(k)}catch(e){}return M[k]||u}var f=window.fetch;if(f)window.fetch=function(i,o){return f.call(this,typeof i==='string'?r(i):i,o)};var x=XMLHttpRequest.prototype.open;XMLHttpRequest.prototype.open=function(m,u){arguments[1]=r(u);return x.apply(this,arguments)}})()</script>`
   const html = `<!doctype html>${doc.documentElement.outerHTML}`
-  return withScript(html, shim + HEIGHT_REPORTER)
+  return withScript(html, head + shim + HEIGHT_REPORTER)
 }
