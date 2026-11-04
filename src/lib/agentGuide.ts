@@ -382,11 +382,14 @@ ${blockReference()}
   A process step's \`html\` is inline only (bold, italic, underline, links,
   line breaks) — no lists, tables or images inside diagram shapes.
 - **Media**: reference files by relative path under \`assets/images/\`,
-  \`assets/videos/\`, \`assets/audio/\`, \`assets/captions/\` (WebVTT) or \`assets/files/\`
-  (attachments). Put the files there too. A \`data:\` URL
+  \`assets/videos/\`, \`assets/audio/\`, \`assets/captions/\` (WebVTT),
+  \`assets/files/\` (attachments) or \`assets/html/<folder>/\` (a Code
+  block's page and its files). Put the files there too. A \`data:\` URL
   also works but bloats the file.
 - **Media formats**: images PNG/JPEG/WebP/GIF/SVG, video MP4/WebM, audio
   MP3/OGG/WAV/M4A, captions WebVTT (.vtt). Other formats are rejected by the app.
+  Attachments may be any document or archive except web pages and scripts
+  (HTML, JS, SVG, XML); a Code block's folder may hold any web files.
 - **Accessibility**: give every informative image a meaningful \`alt\` (or set
   \`decorative: true\` when it adds no information); give videos \`captions\`
   and/or a \`transcript\`, audio a \`transcript\`, embeds a \`title\`; set
@@ -414,7 +417,8 @@ ${blockReference()}
 - **Scenarios**: \`startNodeId\` and every non-null \`nextNodeId\` must be the
   \`id\` of a node in the same scenario.
 - **Don't** invent block \`type\`s or \`data\` fields beyond those listed above —
-  unknown blocks are ignored by the player.
+  unknown blocks are ignored by the player (and flagged before export). For
+  something no block type does, use a Code block (\`html\`).
 
 ## Custom HTML blocks
 
@@ -444,7 +448,11 @@ passes them is ready to export:
 
 - the course has at least one lesson, and no lesson is empty;
 - image / video / audio blocks have a \`src\`, galleries have at least one
-  image, embeds have a \`url\`, custom HTML blocks have code or a page;
+  image, embeds have a \`url\`, custom HTML blocks have code or a page,
+  attachments at least one file, and a quote in the \`image\` style its
+  background \`image\`;
+- image hotspots have an image and at least one marker, and timelines at
+  least one item;
 - quizzes have questions; every question has text, enough options/pairs and a
   correct answer (sequence questions: 2+ items; fill-in questions: a blank);
 - ordering blocks have at least 2 items with text; in categories mode at least
