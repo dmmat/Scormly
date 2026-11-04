@@ -1,7 +1,8 @@
 import type JSZip from 'jszip'
 import { isScoredBlock, type Course } from '../types/course'
 import { customThemeTokens, DEFAULT_CUSTOM_THEME } from '../theme/customTheme'
-import { getMemoryAsset } from '../lib/assets'
+import { getMemoryAsset, memoryAssetPaths } from '../lib/assets'
+import { htmlBundleDir } from '../lib/htmlBundle'
 
 // Shared helpers for building the export .zip (SCORM and cmi5). Both targets
 // ship the same vanilla player; only the tracking script and the manifest
@@ -75,6 +76,16 @@ export function collectAssetPaths(course: Course): Set<string> {
   return paths
 }
 
+// Folders of custom HTML uploads (assets/html/<folder>/): the course names
+// only the entry page, but the page loads its sibling files by relative path,
+// so the whole folder ships.
+export function collectBundleDirs(referenced: Set<string>): string[] {
+  return [...new Set([...referenced].map(htmlBundleDir).filter((d): d is string => !!d))]
+}
+
+const isShipped = (path: string, referenced: Set<string>, dirs: string[]) =>
+  referenced.has(path) || dirs.some((d) => path.startsWith(d))
+
 // Recursively add a directory's files to the zip under `prefix`, returning paths.
 // Only files whose path is in `referenced` are included.
 async function addDir(
@@ -82,15 +93,16 @@ async function addDir(
   dir: FileSystemDirectoryHandle,
   prefix: string,
   referenced: Set<string>,
+  dirs: string[],
 ): Promise<string[]> {
   const paths: string[] = []
   for await (const [name, child] of (dir as unknown as DirEntries).entries()) {
     const path = prefix + name
     if (child.kind === 'directory') {
       paths.push(
-        ...(await addDir(zip, child as FileSystemDirectoryHandle, path + '/', referenced)),
+        ...(await addDir(zip, child as FileSystemDirectoryHandle, path + '/', referenced, dirs)),
       )
-    } else if (referenced.has(path)) {
+    } else if (isShipped(path, referenced, dirs)) {
       const file = await (child as FileSystemFileHandle).getFile()
       zip.file(path, file)
       paths.push(path)
@@ -223,10 +235,12 @@ export async function addAssets(
 ): Promise<string[]> {
   const referenced = collectAssetPaths(course)
   if (referenced.size === 0) return []
+  const dirs = collectBundleDirs(referenced)
   // No folder: the media lives in memory (see saveAsset).
   if (!directoryHandle) {
     const added: string[] = []
-    for (const path of referenced) {
+    const bundled = memoryAssetPaths().filter((p) => dirs.some((d) => p.startsWith(d)))
+    for (const path of new Set([...referenced, ...bundled])) {
       const blob = getMemoryAsset(path)
       if (blob) {
         zip.file(path, blob)
@@ -239,7 +253,7 @@ export async function addAssets(
     const assets = await directoryHandle.getDirectoryHandle('assets', {
       create: false,
     })
-    return await addDir(zip, assets, 'assets/', referenced)
+    return await addDir(zip, assets, 'assets/', referenced, dirs)
   } catch {
     // No assets folder — media is either absent or embedded as data URLs.
     return []

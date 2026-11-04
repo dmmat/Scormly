@@ -1482,6 +1482,8 @@
           allow: 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture',
         }));
       }
+      case 'html':
+        return renderHtml(b);
       case 'code':
         return h('pre', { class: 'code' }, h('code', { text: b.data.code || '' }));
       case 'table':
@@ -1524,6 +1526,63 @@
       default: return null;
     }
   }
+
+  // Custom HTML: the author's page in a frame. An uploaded page loads from its
+  // folder in the package (relative files, fetch() and modules work); written
+  // code goes in srcdoc. Both are same-origin, so the frame can fit the page.
+  function renderHtml(b) {
+    var d = b.data || {};
+    var file = d.source === 'file';
+    if (file ? !d.src : !String(d.code || '').trim()) return null;
+    var fixed = d.height > 0 ? Math.min(d.height, 4000) : 0;
+    var fr = h('iframe', {
+      class: 'sc-html-frame', title: (d.title || '').trim() || t('embedTitle'),
+      allow: 'fullscreen; clipboard-write; autoplay',
+      style: 'height:' + (fixed || 300) + 'px', 'data-fit': fixed ? null : '1',
+    });
+    if (file) fr.setAttribute('src', d.src); else fr.setAttribute('srcdoc', d.code);
+    if (!fixed) fr.addEventListener('load', function () { fitFrame(fr); });
+    return fr;
+  }
+
+  // Size a frame to its page's content (see HEIGHT_REPORTER in the builder's
+  // htmlBundle.ts for the rules). A cross-origin page can't be measured; it
+  // may post { type: 'scormly:height', height } instead.
+  function fitFrame(fr) {
+    var win, doc;
+    try { win = fr.contentWindow; doc = fr.contentDocument; } catch (e) { return; }
+    if (!doc || !doc.documentElement) return;
+    var last = 0, step = 0, same = 0;
+    function measure() {
+      var de = doc.documentElement, body = doc.body;
+      if (!body) return 0;
+      if (de.scrollHeight > de.clientHeight + 1) return de.scrollHeight;
+      return Math.ceil(body.getBoundingClientRect().bottom + (parseFloat(win.getComputedStyle(body).marginBottom) || 0));
+    }
+    function fit() {
+      var hh = Math.min(measure(), 4000);
+      if (!hh || Math.abs(hh - last) < 2) return;
+      if (hh - last === step && step > 0 && ++same > 2) return;
+      if (hh - last !== step) same = 0;
+      step = hh - last; last = hh;
+      fr.style.height = hh + 'px';
+    }
+    fit();
+    if (win.ResizeObserver) {
+      var ro = new win.ResizeObserver(fit);
+      ro.observe(doc.documentElement);
+      if (doc.body) ro.observe(doc.body);
+    }
+  }
+
+  window.addEventListener('message', function (e) {
+    var m = e.data;
+    if (!m || m.type !== 'scormly:height' || typeof m.height !== 'number' || !(m.height > 0)) return;
+    var frames = document.querySelectorAll('iframe.sc-html-frame[data-fit]');
+    for (var i = 0; i < frames.length; i++) {
+      if (frames[i].contentWindow === e.source) frames[i].style.height = Math.min(Math.ceil(m.height), 4000) + 'px';
+    }
+  });
 
   // Callout icons (24×24 stroked paths), same as the builder's NoteView.
   var NOTE_ICONS = {

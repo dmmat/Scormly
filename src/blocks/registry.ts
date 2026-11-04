@@ -36,6 +36,28 @@ const baseSettings = { spacing: 'normal' as const }
 const c = (key: string, vars?: Record<string, string | number>) =>
   translate('content', key, vars)
 
+// Starter page of a new custom HTML block: a tiny working widget to edit.
+const htmlSample = () => `<!doctype html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  body { margin: 0; padding: 8px; font: 16px/1.5 system-ui, sans-serif; color: #1f2937; }
+  .card { padding: 24px; border: 1px solid #e5e7eb; border-radius: 12px; text-align: center; }
+  button { padding: 10px 20px; border: 0; border-radius: 8px; background: #111827; color: #fff; font: inherit; cursor: pointer; }
+  #answer { margin-top: 16px; }
+</style>
+</head>
+<body>
+  <div class="card">
+    <p><strong>${c('htmlSampleQuestion')}</strong></p>
+    <button type="button" onclick="document.getElementById('answer').hidden = false">${c('htmlSampleButton')}</button>
+    <p id="answer" hidden>${c('htmlSampleAnswer')}</p>
+  </div>
+</body>
+</html>
+`
+
 export const BLOCK_REGISTRY: { [T in BlockType]: BlockMeta<T> } = {
   heading: {
     type: 'heading',
@@ -201,6 +223,17 @@ export const BLOCK_REGISTRY: { [T in BlockType]: BlockMeta<T> } = {
       type: 'embed',
       settings: { ...baseSettings },
       data: { url: '', title: '' },
+    }),
+  },
+  html: {
+    type: 'html',
+    category: 'media',
+    variants: [{ id: 'code' }, { id: 'file', data: { source: 'file', code: '' } }],
+    create: () => ({
+      id: uid('block'),
+      type: 'html',
+      settings: { ...baseSettings },
+      data: { source: 'code', code: htmlSample(), src: '', title: c('htmlTitle') },
     }),
   },
   attachment: {

@@ -14,6 +14,7 @@ export type BlockType =
   | 'video'
   | 'audio'
   | 'embed'
+  | 'html'
   | 'code'
   | 'table'
   | 'quote'
@@ -160,6 +161,29 @@ export interface EmbedData {
   /** URL to embed in an iframe (e.g. a YouTube video). */
   url: string
   title?: string
+}
+
+/** Custom HTML / JS shown in a frame: the author's own code, or an uploaded
+ *  .html page / .zip site (files under assets/html/<folder>/). */
+export interface HtmlData {
+  /** 'code': the page in `code`; 'file': the uploaded page at `src`. */
+  source: 'code' | 'file'
+  /** A whole HTML document (or a fragment) for source 'code'. */
+  code: string
+  /** Entry page of an upload, e.g. assets/html/<folder>/index.html; the other
+   *  files of the folder ship with it and load by relative path. */
+  src: string
+  /** Name of the uploaded file (display only). */
+  fileName?: string
+  /** Accessible name of the frame. */
+  title?: string
+  /** Frame height in px; omitted = fit the content (the page's own height). */
+  height?: number
+}
+
+/** Whether a custom HTML block has something to show. */
+export function hasHtmlPage(d: HtmlData): boolean {
+  return d.source === 'file' ? !!d.src : !!d.code.trim()
 }
 
 export interface CodeData {
@@ -629,6 +653,7 @@ export type Block =
   | (BaseBlock & { type: 'video'; data: VideoData })
   | (BaseBlock & { type: 'audio'; data: AudioData })
   | (BaseBlock & { type: 'embed'; data: EmbedData })
+  | (BaseBlock & { type: 'html'; data: HtmlData })
   | (BaseBlock & { type: 'code'; data: CodeData })
   | (BaseBlock & { type: 'table'; data: TableData })
   | (BaseBlock & { type: 'quote'; data: QuoteData })
@@ -678,7 +703,7 @@ export function isTaskBlock(block: Block): boolean {
  *  lesson lists belong to lessons (scoring, progress, navigation). */
 export const INTRO_BLOCK_TYPES: readonly BlockType[] = [
   'heading', 'paragraph', 'list', 'note', 'quote', 'columns', 'table', 'code',
-  'image', 'gallery', 'imageText', 'video', 'audio', 'embed', 'attachment', 'divider',
+  'image', 'gallery', 'imageText', 'video', 'audio', 'embed', 'html', 'attachment', 'divider',
   'process', 'steps', 'comparison', 'beforeAfter',
 ]
 

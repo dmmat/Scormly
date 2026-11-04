@@ -1,4 +1,4 @@
-import { INTRO_ID, type Block, type Course } from '../types/course'
+import { INTRO_ID, hasHtmlPage, type Block, type Course } from '../types/course'
 import { blankAnswers } from '../blocks/fillBlanks'
 import { BLOCK_REGISTRY } from '../blocks/registry'
 
@@ -58,6 +58,8 @@ function checkBlockA11y(block: Block): BlockIssue[] {
       const d = block.data
       return d.url.trim() && !d.title?.trim() ? a11y('chkA11yEmbedTitle') : []
     }
+    case 'html':
+      return hasHtmlPage(block.data) && !block.data.title?.trim() ? a11y('chkA11yHtmlTitle') : []
     case 'beforeAfter': {
       const d = block.data
       return (d.before && !d.beforeAlt.trim()) || (d.after && !d.afterAlt.trim()) ? a11y('chkA11yBeforeAfterAlt') : []
@@ -104,6 +106,8 @@ function checkBlock(block: Block): BlockIssue[] {
       return block.data.src ? [] : [{ key: 'chkMissingAudio' }]
     case 'embed':
       return block.data.url.trim() ? [] : [{ key: 'chkMissingEmbed' }]
+    case 'html':
+      return hasHtmlPage(block.data) ? [] : [{ key: 'chkMissingHtml' }]
     case 'quiz': {
       const qs = block.data.questions
       if (qs.length === 0) return [{ key: 'chkQuizEmpty' }]

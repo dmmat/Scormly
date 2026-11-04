@@ -53,6 +53,10 @@ const BLOCK_DOCS: Record<BlockType, BlockDoc> = {
     summary: 'Embedded iframe (YouTube, Vimeo, or any https page).',
     data: `{ url: string, title?: string }  // title: accessible name of the iframe (screen readers announce it)`,
   },
+  html: {
+    summary: 'Custom HTML / CSS / JS (an interactive widget, simulation, game, chart…) shown in a frame — the author\'s own code or an uploaded .html page / .zip site. See "Custom HTML blocks" below.',
+    data: `{ source: 'code' | 'file', code: string, src: string, fileName?: string, title?: string, height?: number }  // source 'code': the page is the HTML document in code; 'file': the page is src, an entry file like assets/html/<folder>/index.html whose folder ships whole (keep code '' or src '' for the unused one). title: accessible name of the frame; height: frame height in px, omitted = fit the page's content`,
+  },
   code: {
     summary: 'Monospaced code snippet.',
     data: `{ code: string, language?: string }`,
@@ -202,6 +206,43 @@ const BLOCK_DOCS: Record<BlockType, BlockDoc> = {
   },
 }
 
+/**
+ * How to write a page for a custom HTML block. Part of AGENTS.md, and what the
+ * block's "Copy instructions for AI" button copies, so a chat assistant can
+ * produce a page that drops straight in.
+ */
+export const HTML_BLOCK_GUIDE = `Write the page as a **complete HTML document** (\`<!doctype html>\`, a
+\`<meta name="viewport" content="width=device-width, initial-scale=1">\`, CSS
+in \`<style>\`, JS in \`<script>\`). It runs in a frame inside a lesson of an
+e-learning course (SCORM / cmi5 in an LMS), possibly offline.
+
+- **One file is best**: inline the CSS and JS. For a bigger site, deliver a
+  \`.zip\` with \`index.html\` at its root and every other file (scripts,
+  styles, images, fonts, JSON) referenced by a **relative** path
+  (\`img/chart.png\`, not \`/img/chart.png\` or a file:// path). Don't load
+  libraries from a CDN unless the author agrees: learners may be offline or
+  behind a firewall — put the library file in the zip instead.
+- **Fit the column**: the frame is as wide as the lesson column (about 320 px
+  on phones up to ~1000 px) and, by default, as tall as the page's content —
+  so lay out for any width, let the content set the height, and don't size
+  the page to \`100vh\` / \`height: 100%\` (that height is the frame's own). A
+  fixed-height app (a canvas game) is fine when the author sets a height on
+  the block.
+- **Look**: transparent or white background, the system font stack
+  (\`system-ui, sans-serif\`), readable 16 px text, rounded buttons. No page
+  margin around the content beyond ~8 px.
+- **Accessible**: real \`<button>\`s and labelled form fields, keyboard
+  operable, visible focus, enough contrast, alt text on images, no
+  flashing content; respect \`prefers-reduced-motion\`.
+- **Self-contained**: don't navigate the top window, open pop-ups unasked,
+  or rely on cookies; wrap \`localStorage\` in try / catch (it can be
+  unavailable). Don't ask for personal data or send anything to a server.
+- **Optional height message**: a page whose height changes in a way the frame
+  can't see may report it: \`parent.postMessage({ type: 'scormly:height',
+  height: document.documentElement.scrollHeight }, '*')\`.
+- The course tracks completion and scores itself; the page doesn't need to
+  talk to the LMS.`
+
 function blockReference(): string {
   return (Object.keys(BLOCK_DOCS) as BlockType[])
     .map((type) => {
@@ -273,7 +314,7 @@ Course
     showOutline?: boolean,         // list the lessons under the button (default true)
     blocks?: Block[]               // extra content under the title: text and media blocks only
                                    // (heading, paragraph, list, note, quote, columns, table, code, image,
-                                   // gallery, imageText, video, audio, embed, attachment, divider,
+                                   // gallery, imageText, video, audio, embed, html, attachment, divider,
                                    // process, steps, comparison, beforeAfter)
   },                               // the cover page shows the course title, description and coverImage
   lessons: Lesson[]
@@ -348,10 +389,32 @@ ${blockReference()}
   with it. A \`restricted\` one also waits for the quizzes, exercises,
   reflections and required videos above it. One at the very end of a lesson
   leads to the next lesson.
+- **Custom HTML** (\`html\`): follow "Custom HTML blocks" below.
 - **Scenarios**: \`startNodeId\` and every non-null \`nextNodeId\` must be the
   \`id\` of a node in the same scenario.
 - **Don't** invent block \`type\`s or \`data\` fields beyond those listed above —
   unknown blocks are ignored by the player.
+
+## Custom HTML blocks
+
+An \`html\` block shows a page of its own — an interactive widget, a
+simulation, a calculator, a mini-game, a chart — in a frame inside the lesson.
+Use it for what the other block types can't do; prefer the built-in blocks for
+text, media, quizzes and exercises (they are tracked and themed).
+
+- **Small page** → \`source: 'code'\` and the whole HTML document in \`code\`
+  (a JSON string: escape quotes and line breaks).
+- **Page with files** → \`source: 'file'\`: put the site in its own folder
+  \`assets/html/<folder>/\` (a new folder name, e.g. \`html-x7f3a9\`) with
+  \`index.html\` in it, and set \`src\` to \`assets/html/<folder>/index.html\`.
+  Everything in that folder ships with the course; reference the files from
+  the page by relative path.
+- Give the block a \`title\` (what the frame is, for screen readers). Leave
+  \`height\` out to fit the content, or set it (px) for a fixed-size app.
+
+Writing the page:
+
+${HTML_BLOCK_GUIDE}
 
 ## Before you finish — quality checklist
 
@@ -360,7 +423,7 @@ passes them is ready to export:
 
 - the course has at least one lesson, and no lesson is empty;
 - image / video / audio blocks have a \`src\`, galleries have at least one
-  image, embeds have a \`url\`;
+  image, embeds have a \`url\`, custom HTML blocks have code or a page;
 - quizzes have questions; every question has text, enough options/pairs and a
   correct answer (sequence questions: 2+ items; fill-in questions: a blank);
 - ordering blocks have at least 2 items with text; in categories mode at least
@@ -372,7 +435,8 @@ passes them is ready to export:
   both images, and reflections a question;
 - accessibility: non-decorative images (image, gallery, hotspot, before /
   after, step-by-step pictures, images in rich text) have alt text, videos
-  have captions or a transcript, audio has a transcript, embeds have a title,
+  have captions or a transcript, audio has a transcript, embeds and custom
+  HTML blocks have a title,
   and the course content language is set.
 
 ## Typical agent workflow
@@ -393,7 +457,8 @@ The author may hand you the project as a \`.zip\` (Scormly: **Save .zip** or
 
 1. Unzip it and edit \`project.json\` as described above (valid JSON, unique
    ids). Put any new media under \`assets/images/\`, \`assets/videos/\`,
-   \`assets/audio/\`, \`assets/captions/\` or \`assets/files/\` and reference it
+   \`assets/audio/\`, \`assets/captions/\`, \`assets/files/\` or
+   \`assets/html/<folder>/\` (custom HTML pages) and reference it
    by that relative path — don't embed files as base64 \`data:\` URLs.
 2. Keep \`user-instructions.md\` in the archive, and the course \`id\` as it is: when the \`.zip\` comes back, Scormly uses
    it to recognize the project and offers to update the author's copy (a

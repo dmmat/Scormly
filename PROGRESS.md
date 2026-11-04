@@ -37,6 +37,7 @@ Legend: `[ ]` planned · `[~]` in progress · `[x]` done
 - [x] Media: image (single), gallery, video (HTML5) — data URL for now, assets/ in Phase 3
 - [x] Continue (unrestricted / restricted): reveals the rest of the lesson; restricted locks until the tasks above are done
 - [x] Process diagram, step-by-step guide, comparison, before / after slider, reflection (2026-10-26)
+- [x] Code block (`html`, like Rise's Code block): the author's own HTML / CSS / JS, or an uploaded .html page / .zip site (unpacked to `assets/html/<folder>/`, the whole folder ships); fits the page's height or a fixed one; "Copy instructions for AI" + an AGENTS.md section on writing such pages (2026-11-04)
 - [x] Tabs, Accordion (functional + inline editing)
 - [x] Flashcards (CSS 3D flip)
 - [x] Scenario (dialogue trainer: node editor, choices, emotions)
@@ -545,3 +546,4 @@ captions and larger text, in the builder preview and in the exported player alik
   and the browser default now pick any of them. `tests/playerLanguages.test.ts`
   keeps the table in sync (same keys and placeholders). The editor UI itself is
   still EN / UK.
+- 2026-11-04 — Code block (`html`): write HTML / CSS / JS or upload .html / .zip. Editor and preview show it in a sandboxed srcdoc frame with the site's files inlined (lib/htmlBundle.ts); the player loads the real folder from the package (same-origin, fits the content height). Export / project .zip ship the whole `assets/html/<folder>/`. AGENTS.md documents the block and how to write its page (`HTML_BLOCK_GUIDE`, also copied by the block's AI button).

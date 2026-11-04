@@ -141,6 +141,10 @@ export function getMemoryAsset(path: string): Blob | undefined {
   return memoryAssets.get(path)
 }
 
+export function memoryAssetPaths(): string[] {
+  return [...memoryAssets.keys()]
+}
+
 /** Forget all in-memory media and resolved URLs (another project replaces
  *  the current one). */
 export function clearMemoryAssets(): void {
