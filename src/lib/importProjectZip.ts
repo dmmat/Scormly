@@ -17,6 +17,9 @@ import { getMemoryUserInstructions, setMemoryUserInstructions, USER_INSTRUCTIONS
 import { uid } from './id'
 import { translate } from '../i18n/I18nProvider'
 import { toast } from '../store/toastStore'
+import { COMMENTS_FILE, mergeComments, parseComments, serializeComments } from './comments'
+import { useReviewStore } from '../store/reviewStore'
+import type { ReviewThread } from '../types/review'
 
 /** Why a .zip couldn't be opened (each has a message in the `welcome` strings). */
 export class ZipProjectError extends Error {
@@ -33,9 +36,10 @@ export class ZipProjectError extends Error {
 // A .zip whose course id matches a project already here (open now, or kept in
 // this browser) is most likely a new version of it — e.g. back from a
 // colleague or an AI assistant. The author decides; ZipUpdateDialog renders
-// the question.
+// the question. 'comments' keeps the course as it is here and only brings in
+// the .zip's review comments (offered when it has some).
 
-export type ZipChoice = 'update' | 'new' | 'cancel'
+export type ZipChoice = 'update' | 'new' | 'comments' | 'cancel'
 
 export interface ZipMatch {
   /** The project already here. */
@@ -46,6 +50,8 @@ export interface ZipMatch {
   /** The course in the .zip, and when its project.json was written. */
   zipTitle: string
   zipDate: number | null
+  /** Comment threads in the .zip (comments.json). */
+  zipComments: number
 }
 
 export const useZipPrompt = create<{ match: ZipMatch | null; answer: ((c: ZipChoice) => void) | null }>(() => ({
@@ -130,6 +136,7 @@ export async function openProjectZip(
   const media = entries.filter((f) => f.name.startsWith(`${root}assets/`))
   const notesFile = zip.file(`${root}${USER_INSTRUCTIONS_FILE}`)
   const notes = notesFile ? await notesFile.async('string') : null
+  const threads = await readZipComments(zip.file(`${root}${COMMENTS_FILE}`))
   const readMedia = async (f: JSZip.JSZipObject) => {
     const path = f.name.slice(root.length)
     return { path, blob: new Blob([await f.async('arraybuffer')], { type: mimeForPath(path) }) }
@@ -143,10 +150,15 @@ export async function openProjectZip(
       updatedAt: target.updatedAt,
       zipTitle: typeof course.title === 'string' ? course.title : '',
       zipDate: projectFile.date ? zipEntryTime(projectFile.date) : null,
+      zipComments: threads.length,
     })
     if (choice === 'cancel') return
+    if (choice === 'comments') {
+      await addCommentsOnly(target, threads)
+      return
+    }
     if (choice === 'update') {
-      await updateExisting(target, course, await Promise.all(media.map(readMedia)), notes)
+      await updateExisting(target, course, await Promise.all(media.map(readMedia)), notes, threads)
       return
     }
     // A separate project from now on: its own id, so later .zips of either
@@ -161,6 +173,7 @@ export async function openProjectZip(
       requestPersistentStorage()
       await writeFile(dir, 'project.json', JSON.stringify(course, null, 2))
       if (notes !== null) await writeFile(dir, USER_INSTRUCTIONS_FILE, notes)
+      if (threads.length) await writeFile(dir, COMMENTS_FILE, serializeComments(threads))
       for (const { path, blob } of await Promise.all(media.map(readMedia))) await writeMedia(dir, path, blob)
       await openBrowserProject(id)
       return
@@ -174,6 +187,7 @@ export async function openProjectZip(
   // and no #/app/<name> URL (it can't be reopened from a link).
   if (typeof window !== 'undefined' && window.location.hash.startsWith('#/app/')) window.location.hash = '/app'
   useCourseStore.getState().loadCourse(course)
+  useReviewStore.getState().loadThreads(threads)
   useCourseStore.setState({
     directoryHandle: null,
     projectName: file.name.replace(/\.zip$/i, '') || 'project',
@@ -182,6 +196,30 @@ export async function openProjectZip(
   markZipSaved(useCourseStore.getState().course)
   // An AI-edited project.json may need small structural fixes; say so.
   reportRepairs(useCourseStore.getState().loadFixes)
+}
+
+// The .zip's comments.json, repaired; none when it's missing or unreadable.
+async function readZipComments(file: JSZip.JSZipObject | null): Promise<ReviewThread[]> {
+  if (!file) return []
+  const threads = parseComments(await file.async('string'))
+  if (threads === null) toast({ id: 'comments-file', tone: 'error', message: translate('review', 'zipUnreadable') })
+  return threads ?? []
+}
+
+// Comments from another copy are added to the ones here, never replace them:
+// several reviewers can each send back their .zip.
+function mergeIntoProject(threads: ReviewThread[]): number {
+  const s = useReviewStore.getState()
+  const { threads: merged, added } = mergeComments(s.threads, threads)
+  s.setThreads(merged)
+  return added
+}
+
+async function addCommentsOnly(target: Target, threads: ReviewThread[]): Promise<void> {
+  if (target.where === 'browser') await openBrowserProject(target.id)
+  const added = mergeIntoProject(threads)
+  toast({ tone: 'success', message: translate('review', 'zipMerged', { n: added }) })
+  if (added) useReviewStore.getState().setPanelOpen(true)
 }
 
 function writeMedia(dir: FileSystemDirectoryHandle, path: string, blob: Blob): Promise<void> {
@@ -193,12 +231,14 @@ function writeMedia(dir: FileSystemDirectoryHandle, path: string, blob: Blob): P
 // The .zip's course replaces the existing project's as one undo step. Its media
 // is added next to the old files (kept, so undo still finds them; exports only
 // take what the course references). The author's user-instructions.md stays as
-// it is here; the .zip's copy is used only when the project has none.
+// it is here; the .zip's copy is used only when the project has none. Its
+// comments are added to the ones here.
 async function updateExisting(
   target: Target,
   course: Course,
   media: { path: string; blob: Blob }[],
   notes: string | null,
+  threads: ReviewThread[],
 ): Promise<void> {
   if (target.where === 'browser') await openBrowserProject(target.id)
   const { directoryHandle } = useCourseStore.getState()
@@ -214,6 +254,7 @@ async function updateExisting(
     }
   }
   useCourseStore.getState().replaceCourse(course)
+  mergeIntoProject(threads)
   // Without a folder the .zip is the saved state.
   if (!directoryHandle) markZipSaved(useCourseStore.getState().course)
   reportRepairs(useCourseStore.getState().loadFixes)

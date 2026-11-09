@@ -20,6 +20,7 @@ import assessment from './locales/assessment'
 import a11y from './locales/a11y'
 import design from './locales/design'
 import explainers from './locales/explainers'
+import review from './locales/review'
 
 // All translation namespaces. Each lives in its own file (src/i18n/locales/),
 // so they can be worked on in parallel without conflicts.
@@ -46,6 +47,7 @@ export const DICTIONARY = {
   a11y,
   design,
   explainers,
+  review,
 }
 
 export type Namespace = keyof typeof DICTIONARY

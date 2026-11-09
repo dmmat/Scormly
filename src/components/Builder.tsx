@@ -76,7 +76,7 @@ export default function Builder() {
       const s = useCourseStore.getState()
       const atRisk = s.directoryHandle
         ? hasPendingSave() || s.saveState === 'error'
-        : (skipped || s.projectName !== null) && s.past.length > 0 && hasUnsavedZipChanges()
+        : (skipped || s.projectName !== null) && hasUnsavedZipChanges()
       if (!atRisk) return
       if (s.directoryHandle) void flushSave()
       e.preventDefault()

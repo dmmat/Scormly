@@ -5,15 +5,20 @@ import { addAssets, downloadZip, sanitize } from '../export/packageCommon'
 import { AGENT_GUIDE_FILE, buildAgentGuide } from './agentGuide'
 import { extForMime } from './assets'
 import { readUserInstructions, USER_INSTRUCTIONS_FILE } from './userInstructions'
+import { COMMENTS_FILE, serializeComments } from './comments'
+import { useReviewStore } from '../store/reviewStore'
+import type { ReviewThread } from '../types/review'
 
 // The project as a .zip: project.json + its media (assets/) + the AGENTS.md
-// guide + the author's user-instructions.md. It opens back in Scormly ("Open .zip", also in browsers that can't use
+// guide + the author's user-instructions.md (+ comments.json when the project
+// has review comments). It opens back in Scormly ("Open .zip", also in browsers that can't use
 // a project folder), unzips into a project folder, and can be handed to an AI
 // assistant that follows AGENTS.md. Excludes the undo/redo history sidecar
 // (.scormly-history.json).
 export async function buildProjectZip(
   course: Course,
   directoryHandle: FileSystemDirectoryHandle | null,
+  threads: ReviewThread[] = useReviewStore.getState().threads,
 ): Promise<JSZip> {
   const zip = new JSZip()
   // Media embedded as data: URLs (older no-folder projects) becomes files, so
@@ -23,6 +28,7 @@ export async function buildProjectZip(
   for (const [path, bytes] of files) zip.file(path, bytes)
   zip.file(AGENT_GUIDE_FILE, buildAgentGuide(course))
   zip.file(USER_INSTRUCTIONS_FILE, await readUserInstructions(directoryHandle))
+  if (threads.length) zip.file(COMMENTS_FILE, serializeComments(threads))
   await addAssets(zip, directoryHandle, course)
   // Zip times are local wall-clock time (as Finder, Windows and Python write
   // them), but JSZip stores a date's UTC fields: shift it so they match.
@@ -44,22 +50,27 @@ export function zipEntryTime(date: Date): number {
 
 export async function downloadProjectZip(): Promise<string> {
   const { course, directoryHandle } = useCourseStore.getState()
-  const zip = await buildProjectZip(course, directoryHandle)
+  const { threads } = useReviewStore.getState()
+  const zip = await buildProjectZip(course, directoryHandle, threads)
   const filename = await downloadZip(zip, `${sanitize(course.title)}-project.zip`)
-  markZipSaved(course)
+  markZipSaved(course, threads)
   return filename
 }
 
 // Without a folder the .zip download is the save: remember what was saved, so
-// leaving the editor only warns about edits made since.
+// leaving the editor only warns about edits (and comments) made since.
 let savedCourse: Course | null = null
+let savedThreads: ReviewThread[] | null = null
 
-export function markZipSaved(course: Course): void {
+export function markZipSaved(course: Course, threads = useReviewStore.getState().threads): void {
   savedCourse = course
+  savedThreads = threads
 }
 
 export function hasUnsavedZipChanges(): boolean {
-  return useCourseStore.getState().course !== savedCourse
+  const s = useCourseStore.getState()
+  const { threads } = useReviewStore.getState()
+  return (s.past.length > 0 && s.course !== savedCourse) || (threads.length > 0 && threads !== savedThreads)
 }
 
 const SUBDIR_BY_TYPE: Record<string, string> = { image: 'images', video: 'videos', audio: 'audio' }

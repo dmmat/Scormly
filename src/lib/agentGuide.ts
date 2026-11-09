@@ -478,11 +478,48 @@ passes them is ready to export:
    you return — see below) to review, preview and export (SCORM 2004 / 1.2 or
    cmi5). Exporting happens in the app, not from the file.
 
+## Review comments (\`comments.json\`)
+
+The author and reviewers leave comments on blocks in Scormly, kept in
+[\`comments.json\`](./comments.json) beside \`project.json\` (no file means no
+comments). They are notes for the people making the course: learners never see
+them and exports leave them out.
+
+\`\`\`json
+{
+  "version": 1,
+  "threads": [
+    {
+      "id": "c-1",
+      "blockId": "<id of a block in project.json>",
+      "resolved": false,
+      "updatedAt": "2026-11-09T10:00:00.000Z",
+      "comments": [
+        { "id": "m-1", "author": "Olena", "text": "Shorten this paragraph.", "createdAt": "2026-11-09T10:00:00.000Z" }
+      ]
+    }
+  ]
+}
+\`\`\`
+
+- A thread is about one block (\`blockId\`): its first comment opens it, the
+  rest are replies, oldest first. An edited comment has \`editedAt\`; a resolved
+  thread has \`resolvedBy\` and \`resolvedAt\`. Times are ISO 8601 (UTC).
+- Read the open threads before you change a block: they often say what the
+  author wants changed there.
+- When the author asks you to work through the comments: make the change in
+  \`project.json\`, add a reply saying what you did (\`author\`: e.g. "AI
+  assistant"), and set \`resolved: true\`, \`resolvedBy\`, \`resolvedAt\` and
+  \`updatedAt\`. Leave threads you didn't act on open.
+- Don't delete or reword other people's comments, keep ids unique, and keep a
+  block's \`id\` when you edit the block — it's how its comments find it.
+
 ## Working from a .zip
 
 The author may hand you the project as a \`.zip\` (Scormly: **Save .zip** or
 **Download project**). It holds \`project.json\`, this \`AGENTS.md\` and the
-\`assets/\` folder. To work on it:
+\`assets/\` folder (and \`comments.json\` when there are review comments). To
+work on it:
 
 1. Unzip it and edit \`project.json\` as described above (valid JSON, unique
    ids). Put any new media under \`assets/images/\`, \`assets/videos/\`,
@@ -493,7 +530,8 @@ The author may hand you the project as a \`.zip\` (Scormly: **Save .zip** or
    it to recognize the project and offers to update the author's copy (a
    changed id opens as a separate project).
 3. Zip it again with \`project.json\` at the root of the archive (zipping the
-   project folder itself also works), keeping \`AGENTS.md\` and \`assets/\`.
+   project folder itself also works), keeping \`AGENTS.md\`, \`comments.json\`
+   and \`assets/\`.
 4. Give the \`.zip\` back to the author, who opens it with **Open .zip** on
    Scormly's start screen or in the project menu — no folder needed, in any
    browser. Small structural slips (missing or duplicate ids, missing fields)
