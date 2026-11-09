@@ -25,6 +25,13 @@ const preview: LocaleTable = {
     yourScore: 'Your score: {score}%',
     passed: 'Passed',
     failed: 'Not passed',
+    // Author shortcut on quizzes (preview window only)
+    autoTest: 'Complete the test',
+    autoTestHint: 'Preview only: answers the questions and submits, so you can check the result.',
+    autoPass: 'Passed',
+    autoFail: 'Not passed',
+    autoPassOff: 'This test can’t be passed — check its correct answers.',
+    autoFailOff: 'This test can’t be failed — check its passing score.',
 
     // Scenario
     restart: 'Restart',
@@ -56,6 +63,13 @@ const preview: LocaleTable = {
     yourScore: 'Ваш результат: {score}%',
     passed: 'Складено',
     failed: 'Не складено',
+    // Author shortcut on quizzes (preview window only)
+    autoTest: 'Пройти тест',
+    autoTestHint: 'Лише в перегляді: відповідає на запитання й надсилає тест, щоб перевірити результат.',
+    autoPass: 'Успішно',
+    autoFail: 'Неуспішно',
+    autoPassOff: 'Цей тест неможливо скласти — перевірте правильні відповіді.',
+    autoFailOff: 'Цей тест неможливо не скласти — перевірте прохідний бал.',
 
     // Scenario
     restart: 'Спочатку',

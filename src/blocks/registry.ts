@@ -36,6 +36,23 @@ const baseSettings = { spacing: 'normal' as const }
 const c = (key: string, vars?: Record<string, string | number>) =>
   translate('content', key, vars)
 
+// Starter page of a new custom HTML block: a tiny working widget to edit,
+// styled with the Scormly kit classes (public/scorm-player/kit.css).
+const htmlSample = () => `<!doctype html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+  <div class="sc-card sc-center">
+    <h3>${c('htmlSampleQuestion')}</h3>
+    <button type="button" class="sc-btn" onclick="document.getElementById('answer').hidden = false">${c('htmlSampleButton')}</button>
+    <p id="answer" class="sc-correct" style="margin-top: 1rem" hidden>${c('htmlSampleAnswer')}</p>
+  </div>
+</body>
+</html>
+`
+
 export const BLOCK_REGISTRY: { [T in BlockType]: BlockMeta<T> } = {
   heading: {
     type: 'heading',
@@ -201,6 +218,17 @@ export const BLOCK_REGISTRY: { [T in BlockType]: BlockMeta<T> } = {
       type: 'embed',
       settings: { ...baseSettings },
       data: { url: '', title: '' },
+    }),
+  },
+  html: {
+    type: 'html',
+    category: 'media',
+    variants: [{ id: 'code' }, { id: 'file', data: { source: 'file', code: '' } }],
+    create: () => ({
+      id: uid('block'),
+      type: 'html',
+      settings: { ...baseSettings },
+      data: { source: 'code', code: htmlSample(), src: '', title: c('htmlTitle') },
     }),
   },
   attachment: {

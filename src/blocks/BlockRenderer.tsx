@@ -12,6 +12,7 @@ import VideoBlock from './components/VideoBlock'
 import AudioBlock from './components/AudioBlock'
 import EmbedBlock from './components/EmbedBlock'
 import CodeBlock from './components/CodeBlock'
+import HtmlBlock from './components/HtmlBlock'
 import TableBlock from './components/TableBlock'
 import QuoteBlock from './components/QuoteBlock'
 import ContinueBlock from './components/ContinueBlock'
@@ -50,6 +51,7 @@ const BLOCK_COMPONENTS: Record<
   video: VideoBlock as ComponentType<BlockComponentProps>,
   audio: AudioBlock as ComponentType<BlockComponentProps>,
   embed: EmbedBlock as ComponentType<BlockComponentProps>,
+  html: HtmlBlock as ComponentType<BlockComponentProps>,
   code: CodeBlock as ComponentType<BlockComponentProps>,
   table: TableBlock as ComponentType<BlockComponentProps>,
   quote: QuoteBlock as ComponentType<BlockComponentProps>,

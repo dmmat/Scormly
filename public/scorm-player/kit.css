@@ -1,0 +1,87 @@
+/* Scormly kit: the course look for pages in Widget (html) blocks.
+   Loaded into the block's frame (editor, preview and exported player) unless
+   the block turns course styles off. Everything is in a cascade layer, so the
+   page's own CSS always wins over it. The frame's host sets the --sc-* tokens
+   from the course theme and typography; the values here are fallbacks.
+   Documented for AI assistants in HTML_BLOCK_GUIDE (src/lib/agentGuide.ts). */
+@layer scormly-kit {
+  :root {
+    --sc-accent: #db2777;
+    --sc-accent-dark: #be185d;
+    --sc-accent-soft: color-mix(in srgb, var(--sc-accent) 12%, #fff);
+    --sc-radius: 0.5rem;
+    --sc-font: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --sc-heading-font: var(--sc-font);
+    --sc-text: #1f2937;
+    --sc-heading: #111827;
+    --sc-muted: #6b7280;
+    --sc-border: #e5e7eb;
+    --sc-surface: #fff;
+    --sc-success: #15803d;
+    --sc-error: #b91c1c;
+    color-scheme: light;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+  body { margin: 0; padding: 8px; font: 16px/1.6 var(--sc-font); color: var(--sc-text); background: transparent; }
+  h1, h2, h3, h4 { margin: 0 0 0.5em; font-family: var(--sc-heading-font); line-height: 1.25; color: var(--sc-heading); }
+  h1 { font-size: 1.875rem; } h2 { font-size: 1.5rem; } h3 { font-size: 1.25rem; } h4 { font-size: 1.05rem; }
+  p { margin: 0 0 0.75em; }
+  a { color: var(--sc-accent-dark); }
+  img, svg, video, canvas { max-width: 100%; }
+  img, video { height: auto; }
+  :focus-visible { outline: 2px solid var(--sc-accent); outline-offset: 2px; }
+
+  /* Buttons */
+  .sc-btn, .sc-btn-secondary {
+    display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+    padding: 0.625rem 1.25rem; border: 1px solid var(--sc-accent); border-radius: var(--sc-radius);
+    font: inherit; font-weight: 600; line-height: 1.25; text-decoration: none; cursor: pointer;
+    transition: background 0.15s, color 0.15s, transform 0.15s;
+  }
+  .sc-btn { background: var(--sc-accent); color: #fff; }
+  .sc-btn:hover:not(:disabled) { background: var(--sc-accent-dark); border-color: var(--sc-accent-dark); }
+  .sc-btn-secondary { background: transparent; color: var(--sc-accent-dark); }
+  .sc-btn-secondary:hover:not(:disabled), .sc-btn-secondary[aria-pressed="true"] { background: var(--sc-accent-soft); }
+  .sc-btn:active:not(:disabled), .sc-btn-secondary:active:not(:disabled) { transform: translateY(1px); }
+  .sc-btn:disabled, .sc-btn-secondary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  /* Surfaces */
+  .sc-card {
+    padding: 1.25rem; background: var(--sc-surface); border: 1px solid var(--sc-border);
+    border-radius: calc(min(var(--sc-radius), 1rem) + 4px); box-shadow: 0 8px 24px -18px rgb(15 23 42 / 0.35);
+  }
+  .sc-panel { padding: 1rem 1.25rem; background: var(--sc-accent-soft); border-radius: calc(min(var(--sc-radius), 1rem) + 4px); }
+  .sc-note { padding: 0.75rem 1rem; background: var(--sc-accent-soft); border-left: 4px solid var(--sc-accent); border-radius: min(var(--sc-radius), 0.5rem); }
+  .sc-badge {
+    display: inline-flex; align-items: center; padding: 0.125rem 0.625rem; border-radius: 9999px;
+    background: var(--sc-accent-soft); color: var(--sc-accent-dark); font-size: 0.75rem; font-weight: 700;
+  }
+
+  /* Forms */
+  .sc-label { display: block; margin-bottom: 0.25rem; font-size: 0.875rem; font-weight: 600; color: var(--sc-heading); }
+  .sc-input {
+    width: 100%; padding: 0.5rem 0.75rem; border: 1px solid #d1d5db; border-radius: min(var(--sc-radius), 0.5rem);
+    background: #fff; color: var(--sc-text); font: inherit;
+  }
+  .sc-input:focus { outline: none; border-color: var(--sc-accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--sc-accent) 20%, transparent); }
+
+  /* Feedback */
+  .sc-correct, .sc-wrong { padding: 0.75rem 1rem; border-radius: min(var(--sc-radius), 0.5rem); font-weight: 600; }
+  .sc-correct { background: #f0fdf4; color: var(--sc-success); }
+  .sc-wrong { background: #fef2f2; color: var(--sc-error); }
+  .sc-progress { height: 0.5rem; overflow: hidden; background: var(--sc-border); border-radius: 9999px; }
+  .sc-progress > span { display: block; height: 100%; background: var(--sc-accent); transition: width 0.3s; }
+
+  /* Text and layout helpers */
+  .sc-muted { color: var(--sc-muted); }
+  .sc-accent { color: var(--sc-accent-dark); }
+  .sc-center { text-align: center; }
+  .sc-stack { display: flex; flex-direction: column; gap: 1rem; }
+  .sc-row { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem; }
+  .sc-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(200px, 100%), 1fr)); gap: 1rem; }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { transition: none !important; animation: none !important; }
+  }
+}

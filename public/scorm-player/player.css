@@ -1509,6 +1509,10 @@ html[data-a11y-contrast] .sc-intro-split .sc-intro-text, html[data-a11y-contrast
 }
 [data-theme="terminal"] .typo-editorial :is(h1, h2, h3, .sc-intro-title, .sc-quote-text, .sc-imgtext-body),
 [data-theme="terminal"] .typo-rounded { font-family: inherit; }
+
+/* Custom HTML (code) block: the page in a borderless frame, as wide as the
+   column; the height comes from the block or the page's content. */
+.sc-html-frame { display: block; width: 100%; border: 0; background: transparent; color-scheme: light; }
 /* <<< shared block design */
 html[data-a11y-contrast] .sc-note { background: #fff; border: 2px solid #000; border-left-width: 6px; color: #000; }
 

@@ -53,6 +53,12 @@ const PATHS: Record<BlockType, ReactNode> = {
       <path d="M3 9h18M7 6.5h.01M10 6.5h.01" />
     </>
   ),
+  html: (
+    <>
+      <rect x="3" y="4" width="18" height="16" rx="2" />
+      <path d="M3 8h18M10 12l-2 2 2 2M14 12l2 2-2 2" />
+    </>
+  ),
   code: <path d="m16 18 6-6-6-6M8 6l-6 6 6 6" />,
   table: (
     <>

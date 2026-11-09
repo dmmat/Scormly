@@ -27,10 +27,22 @@ describe('sample course', () => {
 
   test('shows the newer blocks; Do / Don’t is a comparison, not a table', () => {
     const types = makeSampleCourse('en').lessons.flatMap((l) => l.blocks.map((b) => b.type))
-    for (const t of ['comparison', 'process', 'steps', 'beforeAfter', 'reflection', 'continue'] as const) {
+    for (const t of ['comparison', 'process', 'steps', 'beforeAfter', 'reflection', 'continue', 'html'] as const) {
       expect(types).toContain(t)
     }
     expect(types).not.toContain('table')
+  })
+
+  test('the widget is a whole page whose script compiles in each language', () => {
+    for (const lang of ['en', 'uk'] as const) {
+      const b = makeSampleCourse(lang).lessons.flatMap((l) => l.blocks).find((x) => x.type === 'html')
+      if (b?.type !== 'html') throw new Error('no widget')
+      expect(b.data.source).toBe('code')
+      expect(b.data.code).toMatch(/^<!doctype html>/)
+      const script = b.data.code.match(/<script>([\s\S]*)<\/script>/)?.[1] ?? ''
+      expect(script).toContain('var R = [')
+      expect(() => new Function(script)).not.toThrow()
+    }
   })
 
   test('a Blocking Continue has tasks above it that the learner can finish', () => {

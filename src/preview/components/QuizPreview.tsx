@@ -1,15 +1,13 @@
-import { useMemo, useState } from 'react'
+import { useContext, useMemo, useState } from 'react'
 import type { PreviewProps } from '../types'
 import type { Question } from '../../types/course'
 import { useT } from '../../i18n/I18nProvider'
-import { blankAnswers, isBlankCorrect } from '../../blocks/fillBlanks'
 import { shuffledOrder } from '../../blocks/ordering'
 import ScoreResult from './ScoreResult'
-import { useMarkDone } from '../progress'
+import { PreviewAuthorTools, useMarkDone } from '../progress'
+import { isAnswerCorrect, simulatedAnswers, type QuizAnswer as Answer } from '../simulateQuiz'
 import SequenceList, { currentOrder } from './SequenceList'
 import BlanksText from './BlanksText'
-
-type Answer = string | string[] | Record<string, string>
 
 // Fisher–Yates shuffle (pure; does not mutate the input array).
 function shuffle<T>(arr: T[]): T[] {
@@ -29,6 +27,7 @@ export default function QuizPreview({ block }: PreviewProps<'quiz'>) {
   const [submitted, setSubmitted] = useState(false)
   const [attempt, setAttempt] = useState(0)
   const markDone = useMarkDone()
+  const authorTools = useContext(PreviewAuthorTools)
 
   // Per attempt: scramble each matching question's right-column choices (one
   // per distinct answer, so several items can share a category) and each
@@ -54,36 +53,33 @@ export default function QuizPreview({ block }: PreviewProps<'quiz'>) {
   }
 
   function isCorrect(q: Question): boolean {
-    const a = answers[q.id]
-    if (q.type === 'sequence') {
-      const order = sequenceOrder(q)
-      return q.items.every((it, i) => order[i] === it.id)
-    }
-    if (q.type === 'fillBlanks') {
-      const responses = (a as string[] | undefined) ?? []
-      const strict = q.mode === 'type' && !!q.caseSensitive
-      const blanks = blankAnswers(q.text)
-      return blanks.length > 0 && blanks.every((ans, i) => isBlankCorrect(ans, responses[i], strict))
-    }
-    if (q.type === 'single') {
-      const opt = q.options.find((o) => o.id === a)
-      return !!opt?.correct
-    }
-    if (q.type === 'multiple') {
-      const chosen = new Set(Array.isArray(a) ? a : [])
-      const correct = q.options.filter((o) => o.correct).map((o) => o.id)
-      return (
-        chosen.size === correct.length && correct.every((id) => chosen.has(id))
-      )
-    }
-    const map = (a as Record<string, string>) ?? {}
-    return q.pairs.every((p) => map[p.id] === p.right)
+    return isAnswerCorrect(q, q.type === 'sequence' ? sequenceOrder(q) : answers[q.id])
   }
 
   const correctCount = questions.filter(isCorrect).length
   const score = questions.length
     ? Math.round((correctCount / questions.length) * 100)
     : 0
+
+  function submit() {
+    setSubmitted(true)
+    markDone(block.id)
+  }
+
+  // Author shortcut in the preview: answer so the quiz passes / fails, then submit.
+  const simulated = useMemo(
+    () =>
+      authorTools
+        ? { pass: simulatedAnswers(questions, passingScore, 'pass'), fail: simulatedAnswers(questions, passingScore, 'fail') }
+        : null,
+    [authorTools, questions, passingScore],
+  )
+  function simulate(outcome: 'pass' | 'fail') {
+    const next = simulated?.[outcome]
+    if (!next) return
+    setAnswers(next)
+    submit()
+  }
 
   function reset() {
     setAnswers({})
@@ -239,11 +235,11 @@ export default function QuizPreview({ block }: PreviewProps<'quiz'>) {
         score={score}
         passingScore={passingScore}
         submitLabel={questions.length > 1 ? t('submitAll') : undefined}
-        onSubmit={() => {
-          setSubmitted(true)
-          markDone(block.id)
-        }}
+        onSubmit={submit}
         onRetry={reset}
+        onSimulate={simulated ? simulate : undefined}
+        canPass={!!simulated?.pass}
+        canFail={!!simulated?.fail}
       />
     </div>
   )

@@ -6,7 +6,7 @@ import BlockPreview from '../../preview/BlockPreview'
 import IntroView from '../../preview/IntroView'
 import A11yMenu from '../../preview/A11yMenu'
 import { A11yContext, a11yClasses, useA11yPrefs } from '../../preview/a11y'
-import { PreviewProgress } from '../../preview/progress'
+import { PreviewAuthorTools, PreviewProgress } from '../../preview/progress'
 import { BLOCK_REGISTRY } from '../../blocks/registry'
 import { useBlockWrapper } from '../../blocks/useBlockWrapper'
 import { usePageWidthVar } from '../../hooks/usePageWidthVar'
@@ -316,6 +316,7 @@ export default function PreviewOverlay() {
           >
             <A11yContext.Provider value={{ captions: prefs.captions }}>
             <PreviewProgress.Provider value={markDone}>
+            <PreviewAuthorTools.Provider value>
               <div key={screenKey} className={transitionClass}>
                 {finished ? (
                   <div className="py-10 text-center">
@@ -390,6 +391,7 @@ export default function PreviewOverlay() {
                   </>
                 ) : null}
               </div>
+            </PreviewAuthorTools.Provider>
             </PreviewProgress.Provider>
             </A11yContext.Provider>
           </main>
