@@ -10,6 +10,7 @@ import Toaster from './editor/Toaster'
 import ShortcutsHelp from './editor/ShortcutsHelp'
 import ExportCheckDialog from './editor/ExportCheckDialog'
 import HelpLayer from './help/HelpLayer'
+import ReviewPanel from './review/ReviewPanel'
 import { runExport, useExportStore } from '../export/runExport'
 import ThemeProvider from '../theme/ThemeProvider'
 import { useUndoRedoShortcuts } from '../hooks/useUndoRedoShortcuts'
@@ -135,6 +136,7 @@ export default function Builder() {
       <div className="flex min-h-0 flex-1">
         <Sidebar />
         <Workspace />
+        <ReviewPanel />
       </div>
       {previewOpen && <PreviewOverlay />}
       {settingsOpen && <ProjectSettings onClose={() => setSettingsOpen(false)} />}

@@ -19,6 +19,7 @@ import { useCourseStore, INTRO_ID } from '../../store/courseStore'
 import { deleteLessonWithUndo } from '../../lib/deleteWithUndo'
 import type { Lesson } from '../../types/course'
 import { useT } from '../../i18n/I18nProvider'
+import { CommentIcon, useOpenComments } from '../review/reviewUi'
 
 export default function Sidebar() {
   const course = useCourseStore((s) => s.course)
@@ -167,8 +168,10 @@ function SortableLesson({
   const moveLesson = useCourseStore((s) => s.moveLesson)
   const lessonCount = useCourseStore((s) => s.course.lessons.length)
   const { t } = useT('common')
+  const { t: tr } = useT('review')
   const isActive = lesson.id === activeLessonId
   const blockCount = lesson.blocks.length
+  const openComments = useOpenComments(lesson.blocks.map((b) => b.id))
 
   function open() {
     setActiveLesson(lesson.id)
@@ -252,6 +255,16 @@ function SortableLesson({
           </span>
         )}
 
+        {!editing && openComments > 0 && (
+          <span
+            title={tr('lessonOpen', { n: openComments })}
+            className="inline-flex shrink-0 items-center gap-0.5 rounded-full bg-amber-100 px-1.5 text-[11px] font-semibold tabular-nums text-amber-900"
+          >
+            <CommentIcon className="h-3 w-3" />
+            <span aria-hidden>{openComments}</span>
+            <span className="sr-only">{tr('lessonOpen', { n: openComments })}</span>
+          </span>
+        )}
         {!editing && (
           // Count and actions share one grid cell and only toggle visibility,
           // so hovering a row doesn't change its size (no jumping).

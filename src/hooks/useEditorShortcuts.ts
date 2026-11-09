@@ -1,12 +1,14 @@
 import { useEffect } from 'react'
 import { useCourseStore, blocksOf } from '../store/courseStore'
-import { editorShortcutsBlocked, isEditableTarget } from '../lib/keyboard'
+import { editorShortcutsBlocked, isCommentShortcut, isEditableTarget } from '../lib/keyboard'
 import { deleteBlockWithUndo } from '../lib/deleteWithUndo'
+import { useReviewStore } from '../store/reviewStore'
 
 // Editor keyboard shortcuts acting on the selected block:
 //   Delete, Backspace — delete block
 //   Ctrl/Cmd + D      — duplicate block
 //   Alt + ↑ / ↓       — move block up / down
+//   Ctrl+Alt+M (⌘⌥A)  — comment on the block (also while editing its text)
 //   Escape            — deselect
 //   ?                 — keyboard shortcuts help
 // Ignored while typing in inputs / textareas / contentEditable (except Escape),
@@ -15,6 +17,8 @@ export function useEditorShortcuts() {
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
       if (editorShortcutsBlocked()) return
+      // Typing and clicking in the comments panel never acts on the block.
+      if ((e.target as Element | null)?.closest?.('[data-review-panel]')) return
       const s = useCourseStore.getState()
       if (e.key === '?' && !isEditableTarget(e.target)) {
         e.preventDefault()
@@ -29,6 +33,11 @@ export function useEditorShortcuts() {
       const index = blocks.findIndex((b) => b.id === id)
       if (index === -1) return
 
+      if (isCommentShortcut(e)) {
+        e.preventDefault()
+        useReviewStore.getState().startComment(id)
+        return
+      }
       if (e.key === 'Escape') {
         s.selectBlock(null)
         return

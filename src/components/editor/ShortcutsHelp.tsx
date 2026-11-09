@@ -21,6 +21,7 @@ const GROUPS: { title: string; items: { label: string; keys: string }[] }[] = [
       { label: 'delete', keys: KEYS.delete },
       { label: 'moveUp', keys: KEYS.moveUp },
       { label: 'moveDown', keys: KEYS.moveDown },
+      { label: 'scComment', keys: KEYS.comment },
       { label: 'scDeselect', keys: KEYS.deselect },
       { label: 'scDragKeys', keys: 'Space' },
     ],

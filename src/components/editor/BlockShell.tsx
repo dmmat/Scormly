@@ -10,6 +10,8 @@ import ContextMenu, { type ContextMenuItem } from './ContextMenu'
 import { KEYS, isEditableTarget } from '../../lib/keyboard'
 import { useBlockWrapper } from '../../blocks/useBlockWrapper'
 import BlockStylePopover from './BlockStylePopover'
+import { useReviewStore } from '../../store/reviewStore'
+import { CommentBadge, CommentIcon } from '../review/reviewUi'
 
 interface BlockShellProps {
   block: Block
@@ -48,11 +50,14 @@ export default function BlockShell({
   const hasBackground = (block.settings.background ?? 'none') !== 'none'
   const wrapper = useBlockWrapper(block.settings)
   const { t: td } = useT('design')
+  const { t: tr } = useT('review')
+  const startComment = useReviewStore((s) => s.startComment)
 
   const menuItems: ContextMenuItem[] = [
     { label: t('moveUp'), icon: '↑', shortcut: KEYS.moveUp, disabled: index === 0, onClick: () => moveBlock(lessonId, index, index - 1) },
     { label: t('moveDown'), icon: '↓', shortcut: KEYS.moveDown, disabled: index === total - 1, onClick: () => moveBlock(lessonId, index, index + 1) },
     { label: t('duplicate'), icon: '⧉', shortcut: KEYS.duplicate, onClick: () => duplicateBlock(lessonId, block.id) },
+    { label: tr('addCommentMenu'), icon: <CommentIcon className="h-3.5 w-3.5" />, shortcut: KEYS.comment, onClick: () => startComment(block.id) },
     { label: t('delete'), icon: '✕', shortcut: KEYS.delete, danger: true, onClick: () => deleteBlockWithUndo(lessonId, block.id) },
   ]
 
@@ -79,6 +84,7 @@ export default function BlockShell({
         elRef.current = el
       }}
       style={style}
+      data-block-id={block.id}
       onClick={() => selectBlock(block.id)}
       onContextMenu={(e) => {
         // Text fields keep the browser menu (cut/copy/paste, spellcheck);
@@ -107,6 +113,9 @@ export default function BlockShell({
       </button>
       {selected && (
         <div className="absolute -top-3.5 right-3 z-20 flex items-center gap-0.5 rounded-lg border border-gray-200 bg-white p-0.5 shadow-md">
+          <ToolbarButton label={tr('addComment')} shortcut={KEYS.comment} onClick={() => startComment(block.id)}>
+            <CommentIcon />
+          </ToolbarButton>
           <ToolbarButton
             label={td('blockStyle')}
             active={styleOpen}
@@ -155,6 +164,7 @@ export default function BlockShell({
           </ToolbarButton>
         </div>
       )}
+      <CommentBadge blockId={block.id} />
       {selected && styleOpen && (
         <BlockStylePopover
           block={block}
