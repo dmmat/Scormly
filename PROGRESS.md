@@ -555,3 +555,7 @@ captions and larger text, in the builder preview and in the exported player alik
   a URL that shows who owns the site; a stamp marks it genuine / phishing; score and
   a rule of thumb at the end). Plain HTML / JS on the Scormly kit, so it follows the
   theme; `tests/sampleCourse.test.ts` checks its script compiles in both languages.
+- 2026-11-09 — Preview: *Complete the test* → Passed / Not passed on quizzes, in the
+  preview window only (`PreviewAuthorTools`). `src/preview/simulateQuiz.ts` builds the
+  answers (fail = as many right as possible under the pass mark, so the result shows
+  a mix) and holds the quiz grading the preview now shares.

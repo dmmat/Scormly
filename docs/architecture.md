@@ -192,6 +192,13 @@ In the LMS, the player implements the SCORM API: for 1.2 — `LMSInitialize`,
   videos watched) — the player's `continueLocked`, the preview's
   `PreviewProgress` context (`src/preview/progress.ts`). Reflection answers
   live for the session only (they could overflow suspend_data).
+- **Preview shortcuts** — the preview window (not the landing demos or the
+  editor's hover preview) provides `PreviewAuthorTools`
+  (`src/preview/progress.ts`). Quizzes then show *Complete the test* →
+  Passed / Not passed: `simulatedAnswers` (`src/preview/simulateQuiz.ts`)
+  answers everything right, or as many right as possible while staying
+  under the passing score, and submits — so authors can check the result
+  panels and the gates after a test without answering by hand.
 - **Explainer blocks** — `process`, `steps`, `comparison`, `beforeAfter`,
   `reflection` (shared CSS `sc-process*`, `sc-steps*`, `sc-compare*`,
   `sc-ba*`, `sc-reflect*`). Process and comparison lay out with container
