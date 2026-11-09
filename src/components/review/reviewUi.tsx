@@ -9,8 +9,8 @@ export function CommentIcon({ className = 'h-4 w-4' }: { className?: string }) {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round"
       strokeLinejoin="round" className={className} aria-hidden>
-      <path d="M21 12a8 8 0 0 1-11.6 7.1L4 20.5l1.4-4.6A8 8 0 1 1 21 12Z" />
-      <path d="M8.5 10.5h7M8.5 13.5h4.5" />
+      <path d="M21 12a9 9 0 0 1-13 8.1L3 21l.9-5A9 9 0 1 1 21 12Z" />
+      <path d="M8 10.5h8M8 14h5" />
     </svg>
   )
 }

@@ -55,7 +55,7 @@ export default function ContextMenu({ x, y, items, onClose }: ContextMenuProps) 
       // block (which would re-select it, e.g. right after deleting it).
       onClick={(e) => e.stopPropagation()}
       onContextMenu={(e) => e.preventDefault()}
-      className="z-50 w-56 rounded-xl border border-gray-200 bg-white p-1.5 shadow-lg"
+      className="z-50 w-max min-w-56 max-w-[calc(100vw-1rem)] rounded-xl border border-gray-200 bg-white p-1.5 shadow-lg"
     >
       {items.map((item, i) => (
         <button
@@ -73,10 +73,10 @@ export default function ContextMenu({ x, y, items, onClose }: ContextMenuProps) 
               : 'text-gray-700 hover:bg-gray-50 focus:bg-gray-50 focus:outline-none'
           }`}
         >
-          {item.icon && <span className="w-4 text-gray-400">{item.icon}</span>}
+          {item.icon && <span className="flex w-4 shrink-0 items-center justify-center text-gray-400">{item.icon}</span>}
           {item.label}
           {item.shortcut && (
-            <span className="ml-auto pl-3 text-xs text-gray-400">{item.shortcut}</span>
+            <span className="ml-auto whitespace-nowrap pl-3 text-xs text-gray-400">{item.shortcut}</span>
           )}
         </button>
       ))}
