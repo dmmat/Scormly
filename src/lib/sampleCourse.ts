@@ -93,6 +93,282 @@ function addressTable(tr: (t: Text) => string): string {
   ].join('')}</tbody></table>`
 }
 
+// "Link detective", a Widget (html) block for lesson 2: the learner clicks the
+// part of a web address that shows who really owns the site. Plain HTML / CSS /
+// JS on the Scormly kit (sc-* classes, --sc-* tokens), so it follows the course
+// theme — a showcase of what authors can build in the block.
+function linkDetectiveHtml(tr: (t: Text) => string, lang: Language): string {
+  type Part = { kind: 'scheme' | 'sub' | 'sep' | 'owner' | 'path'; text: string }
+  const scheme: Part = { kind: 'scheme', text: 'https://' }
+  const dot: Part = { kind: 'sep', text: '.' }
+  const sub = (text: string): Part => ({ kind: 'sub', text })
+  const owner = (text: string): Part => ({ kind: 'owner', text })
+  const path = (text: string): Part => ({ kind: 'path', text })
+  const rounds = [
+    {
+      brand: 'PayPal',
+      safe: true,
+      parts: [scheme, sub('www'), dot, owner('paypal.com'), path('/signin')],
+      explain: tr(L('It sits right before the first “/”, so this really is PayPal. “www” is just a prefix.', 'Він стоїть просто перед першою «/», тож це справді PayPal. «www» — лише префікс.')),
+    },
+    {
+      brand: 'PayPal',
+      safe: false,
+      parts: [scheme, sub('paypal.com'), dot, owner('secure-login.net'), path('/verify')],
+      explain: tr(L('“paypal.com” on the left is only a disguise: whoever owns secure-login.net can write anything there.', '«paypal.com» ліворуч — лише маска: хто володіє secure-login.net, може написати там будь-що.')),
+    },
+    {
+      brand: 'Microsoft',
+      safe: false,
+      parts: [scheme, owner('micros0ft-help.co'), path('/login')],
+      explain: tr(L('A zero instead of “o” — and not Microsoft’s domain at all. Look-alike names are a classic trick.', 'Нуль замість «o» — і це зовсім не домен Microsoft. Схожі назви — класичний прийом.')),
+    },
+    {
+      brand: 'Google',
+      safe: true,
+      parts: [scheme, sub('accounts'), dot, owner('google.com'), path('/signin/v2')],
+      explain: tr(L('“accounts” is a subdomain Google made itself. This one is genuine.', '«accounts» — піддомен, який створив сам Google. Цей сайт справжній.')),
+    },
+    {
+      brand: tr(L('YourBank', 'ВашБанк')),
+      safe: false,
+      parts: [scheme, sub('yourbank'), dot, owner('com-secure.info'), path('/login')],
+      explain: tr(L('Tricky: the dash glues “com-secure” into a new name, so the owner is not your bank.', 'Хитро: дефіс склеює «com-secure» в нову назву, тож власник — зовсім не ваш банк.')),
+    },
+  ]
+  const s = {
+    step: tr(L('Link {n} of {total}', 'Посилання {n} з {total}')),
+    ask: tr(L('Who really owns this site? Click that part of the address.', 'Кому насправді належить цей сайт? Клацніть цю частину адреси.')),
+    bar: tr(L('Address bar', 'Адресний рядок')),
+    signIn: tr(L('Sign in to your account', 'Увійдіть в акаунт')),
+    email: tr(L('Email', 'Пошта')),
+    password: tr(L('Password', 'Пароль')),
+    login: tr(L('Log in', 'Увійти')),
+    right: tr(L('✅ Right!', '✅ Так!')),
+    wrong: tr(L('❌ Not quite.', '❌ Не зовсім.')),
+    why: {
+      scheme: tr(L('https:// only means the connection is encrypted — phishing sites have the padlock too.', 'https:// означає лише, що з’єднання зашифроване, — фішингові сайти теж мають замочок.')),
+      sub: tr(L('That part sits left of the owner, and the owner can put anything there.', 'Ця частина стоїть ліворуч від власника, а власник може написати там будь-що.')),
+      path: tr(L('Everything after the first “/” is just a page on the site — its owner can name it anything.', 'Усе після першої «/» — лише сторінка на сайті, і власник може назвати її як завгодно.')),
+    },
+    owner: tr(L('The site belongs to {owner}.', 'Сайт належить {owner}.')),
+    safe: tr(L('Genuine', 'Справжній')),
+    phish: tr(L('Phishing', 'Фішинг')),
+    next: tr(L('Next link →', 'Наступне посилання →')),
+    finish: tr(L('See my result', 'Мій результат')),
+    endTitle: tr(L('You found {score} of {total} owners', 'Ви знайшли {score} з {total} власників')),
+    endAll: tr(L('Perfect — no link can fool you.', 'Бездоганно — вас не обдурить жодне посилання.')),
+    endSome: tr(L('Good start! Play again and read each address from the first “/” leftwards.', 'Непоганий початок! Зіграйте ще раз і читайте кожну адресу від першої «/» ліворуч.')),
+    rule: tr(L(
+      'Rule of thumb: find the first single “/” after https://. The last two words before it — like paypal.com — are the real owner. Anything further left can be made up.',
+      'Правило: знайдіть першу одинарну «/» після https://. Останні два слова перед нею — як-от paypal.com — і є справжнім власником. Усе, що лівіше, можна вигадати.',
+    )),
+    again: tr(L('Play again', 'Зіграти ще раз')),
+  }
+  const esc = (v: string) => v.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
+  const json = (v: unknown) => JSON.stringify(v).replace(/</g, '\\u003c')
+  return `<!doctype html>
+<html lang="${lang}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  .ld { max-width: 640px; margin: 0 auto; }
+  .ld-top { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; }
+  .ld-top h3 { margin: 0; font-size: 1.05rem; outline: none; }
+  .ld-dots { display: flex; gap: 6px; }
+  .ld-dots span { width: 10px; height: 10px; border-radius: 50%; background: var(--sc-border); transition: background 0.2s, transform 0.2s; }
+  .ld-dots .is-now { background: var(--sc-accent); transform: scale(1.3); }
+  .ld-dots .is-ok { background: var(--sc-success); }
+  .ld-dots .is-bad { background: var(--sc-error); }
+  .ld-ask { margin: 0.25rem 0 0.9rem; color: var(--sc-muted); }
+  .ld-browser { overflow: hidden; background: var(--sc-surface); border: 1px solid var(--sc-border); border-radius: 14px; box-shadow: 0 18px 40px -28px rgb(15 23 42 / 0.55); }
+  .ld-chrome { display: flex; align-items: center; gap: 0.6rem; padding: 0.55rem 0.7rem; background: #f1f5f9; border-bottom: 1px solid var(--sc-border); }
+  .ld-lights { display: flex; flex: none; gap: 5px; }
+  .ld-lights i { width: 10px; height: 10px; border-radius: 50%; background: #f87171; }
+  .ld-lights i:nth-child(2) { background: #fbbf24; }
+  .ld-lights i:nth-child(3) { background: #34d399; }
+  .ld-bar { display: flex; flex: 1; align-items: center; gap: 0.45rem; min-width: 0; padding: 0.3rem 0.8rem; background: #fff; border: 1px solid var(--sc-border); border-radius: 1.1rem; }
+  .ld-bar svg { flex: none; color: var(--sc-muted); }
+  .ld-url { min-width: 0; font: 600 15px/1.7 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; overflow-wrap: anywhere; }
+  .ld-sep { color: var(--sc-muted); }
+  .ld-part { margin: 0; padding: 0 2px; font: inherit; color: var(--sc-text); background: none; border: 0; border-bottom: 2px dashed color-mix(in srgb, var(--sc-accent) 60%, transparent); border-radius: 4px 4px 0 0; cursor: pointer; overflow-wrap: anywhere; transition: background 0.15s; }
+  .ld-part:hover:not(:disabled) { background: var(--sc-accent-soft); }
+  .ld-part:disabled { color: var(--sc-muted); border-bottom-color: transparent; cursor: default; }
+  .ld-part.is-owner { color: #166534; background: #dcfce7; border-bottom: 2px solid #16a34a; animation: ld-pop 0.4s ease-out; }
+  .ld-part.is-wrong { color: #991b1b; background: #fee2e2; text-decoration: line-through; animation: ld-shake 0.4s; }
+  .ld-page { position: relative; display: grid; justify-items: start; gap: 0.55rem; min-height: 200px; padding: 1.4rem 1.5rem 1.6rem; }
+  .ld-brand { font-family: var(--sc-heading-font); font-size: 1.5rem; font-weight: 800; color: var(--sc-heading); }
+  .ld-sub { margin-bottom: 0.2rem; font-size: 0.9rem; color: var(--sc-muted); }
+  .ld-field, .ld-login { width: min(260px, 100%); padding: 0.45rem 0.7rem; font-size: 0.9rem; border-radius: min(var(--sc-radius), 0.5rem); }
+  .ld-field { color: #6b7280; border: 1px solid #d1d5db; }
+  .ld-login { font-weight: 700; text-align: center; color: #fff; background: #475569; }
+  .ld-stamp { position: absolute; top: 50%; right: 1.25rem; padding: 0.3rem 0.9rem; font-size: 1.35rem; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; background: rgb(255 255 255 / 0.9); border: 3px solid currentColor; border-radius: 8px; opacity: 0; transform: translateY(-50%) rotate(-12deg) scale(1.6); pointer-events: none; }
+  .ld-stamp.is-on { opacity: 1; transform: translateY(-50%) rotate(-12deg) scale(1); transition: opacity 0.2s, transform 0.35s cubic-bezier(0.2, 1.5, 0.4, 1); }
+  .ld-stamp.is-safe, .ld-verdict.is-safe { color: #166534; }
+  .ld-stamp.is-phish, .ld-verdict.is-phish { color: #991b1b; }
+  .ld-fb { margin-top: 1rem; padding: 1rem 1.15rem; background: var(--sc-surface); border: 1px solid var(--sc-border); border-left: 5px solid var(--sc-success); border-radius: calc(min(var(--sc-radius), 1rem) + 4px); }
+  .ld-fb.is-bad { border-left-color: var(--sc-error); }
+  .ld-fb-head { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; margin: 0 0 0.35rem; font-size: 1.05rem; }
+  .ld-verdict { padding: 0.1rem 0.6rem; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; background: #dcfce7; border-radius: 999px; }
+  .ld-verdict.is-phish { background: #fee2e2; }
+  .ld-fb p:last-of-type { margin-bottom: 0.9rem; }
+  .ld-emoji { margin-bottom: 0.5rem; font-size: 2.75rem; line-height: 1; }
+  .ld-end .sc-progress { max-width: 280px; margin: 0.75rem auto 1rem; }
+  .ld-end h3 { outline: none; }
+  .ld-rule { margin: 1rem 0 1.25rem; text-align: left; }
+  .ld-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  @keyframes ld-pop { 40% { transform: scale(1.12); } }
+  @keyframes ld-shake { 25% { transform: translateX(-4px); } 75% { transform: translateX(4px); } }
+  @media (max-width: 420px) { .ld-lights { display: none; } .ld-page { padding-inline: 1rem; } }
+  @media (prefers-reduced-motion: reduce) { .ld-part, .ld-stamp.is-on { animation: none; transition: none; } }
+</style>
+</head>
+<body>
+<div class="ld">
+  <div id="game">
+    <div class="ld-top">
+      <h3 id="step" tabindex="-1"></h3>
+      <div id="dots" class="ld-dots" aria-hidden="true"></div>
+    </div>
+    <p class="ld-ask">${esc(s.ask)}</p>
+    <div class="ld-browser">
+      <div class="ld-chrome">
+        <span class="ld-lights" aria-hidden="true"><i></i><i></i><i></i></span>
+        <div class="ld-bar">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+          <div id="url" class="ld-url" role="group" aria-label="${esc(s.bar)}"></div>
+        </div>
+      </div>
+      <div class="ld-page" aria-hidden="true">
+        <div id="brand" class="ld-brand"></div>
+        <div class="ld-sub">${esc(s.signIn)}</div>
+        <div class="ld-field">${esc(s.email)}</div>
+        <div class="ld-field">${esc(s.password)}</div>
+        <div class="ld-login">${esc(s.login)}</div>
+        <div id="stamp" class="ld-stamp"></div>
+      </div>
+    </div>
+    <div id="fb" class="ld-fb" hidden>
+      <p class="ld-fb-head"><strong id="fb-title"></strong><span id="verdict" class="ld-verdict"></span></p>
+      <p id="fb-text"></p>
+      <button id="next" type="button" class="sc-btn"></button>
+    </div>
+  </div>
+  <div id="end" class="ld-end sc-card sc-center" hidden>
+    <div class="ld-emoji" aria-hidden="true">🕵️</div>
+    <h3 id="end-title" tabindex="-1"></h3>
+    <div class="sc-progress" aria-hidden="true"><span id="end-bar"></span></div>
+    <p id="end-text"></p>
+    <p class="sc-note ld-rule">${esc(s.rule)}</p>
+    <button id="again" type="button" class="sc-btn-secondary">${esc(s.again)}</button>
+  </div>
+  <p id="live" class="ld-sr" role="status" aria-live="polite"></p>
+</div>
+<script>
+(function () {
+  var S = ${json(s)};
+  var R = ${json(rounds)};
+  var i = 0, results = [], answered = false;
+  function $(id) { return document.getElementById(id); }
+  function fmt(text, vars) {
+    for (var k in vars) text = text.split('{' + k + '}').join(vars[k]);
+    return text;
+  }
+  function focus(el) { try { el.focus({ preventScroll: true }); } catch (e) { el.focus(); } }
+
+  function dots() {
+    var box = $('dots');
+    box.textContent = '';
+    R.forEach(function (_, k) {
+      var d = document.createElement('span');
+      d.className = k < results.length ? (results[k] ? 'is-ok' : 'is-bad') : k === i ? 'is-now' : '';
+      box.appendChild(d);
+    });
+  }
+
+  function show(moveFocus) {
+    var r = R[i];
+    answered = false;
+    $('step').textContent = fmt(S.step, { n: i + 1, total: R.length });
+    $('brand').textContent = r.brand;
+    $('stamp').className = 'ld-stamp';
+    $('fb').hidden = true;
+    $('live').textContent = '';
+    var url = $('url');
+    url.textContent = '';
+    r.parts.forEach(function (p) {
+      var el = document.createElement(p.kind === 'sep' ? 'span' : 'button');
+      el.textContent = p.text;
+      if (p.kind === 'sep') el.className = 'ld-sep';
+      else {
+        el.type = 'button';
+        el.className = 'ld-part';
+        el.addEventListener('click', function () { pick(p, el); });
+      }
+      url.appendChild(el);
+    });
+    dots();
+    if (moveFocus) focus($('step'));
+  }
+
+  function pick(p, btn) {
+    if (answered) return;
+    answered = true;
+    var r = R[i], ok = p.kind === 'owner', owner = '';
+    results.push(ok);
+    var nodes = $('url').children;
+    r.parts.forEach(function (q, k) {
+      if (q.kind === 'sep') return;
+      nodes[k].disabled = true;
+      if (q.kind === 'owner') { nodes[k].className += ' is-owner'; owner = q.text; }
+    });
+    if (!ok) btn.className += ' is-wrong';
+    var verdict = r.safe ? S.safe : S.phish, tone = r.safe ? 'is-safe' : 'is-phish';
+    $('stamp').textContent = verdict;
+    $('stamp').className = 'ld-stamp is-on ' + tone;
+    $('fb').className = 'ld-fb' + (ok ? '' : ' is-bad');
+    $('fb-title').textContent = ok ? S.right : S.wrong;
+    $('verdict').textContent = verdict;
+    $('verdict').className = 'ld-verdict ' + tone;
+    var text = (ok ? '' : S.why[p.kind] + ' ') + fmt(S.owner, { owner: owner }) + ' ' + r.explain;
+    $('fb-text').textContent = text;
+    $('next').textContent = i === R.length - 1 ? S.finish : S.next;
+    $('fb').hidden = false;
+    $('live').textContent = $('fb-title').textContent + ' ' + verdict + '. ' + text;
+    dots();
+    focus($('next'));
+  }
+
+  function finish() {
+    var score = results.filter(Boolean).length;
+    $('game').hidden = true;
+    $('end').hidden = false;
+    $('live').textContent = '';
+    $('end-title').textContent = fmt(S.endTitle, { score: score, total: R.length });
+    $('end-bar').style.width = Math.round((score / R.length) * 100) + '%';
+    $('end-text').textContent = score === R.length ? S.endAll : S.endSome;
+    focus($('end-title'));
+  }
+
+  $('next').addEventListener('click', function () {
+    if (i < R.length - 1) { i++; show(true); } else finish();
+  });
+  $('again').addEventListener('click', function () {
+    i = 0;
+    results = [];
+    $('end').hidden = true;
+    $('game').hidden = false;
+    show(true);
+  });
+  show(false);
+})();
+</script>
+</body>
+</html>
+`
+}
+
 export function makeSampleCourse(lang: Language): Course {
   seq = 0
   const tr = (t: Text) => t[lang]
@@ -264,6 +540,13 @@ export function makeSampleCourse(lang: Language): Course {
             '<strong>Read the address, not the name.</strong> A display name can say anything:',
             '<strong>Читайте адресу, а не ім’я.</strong> Ім’я відправника може бути будь-яким:',
           )) + addressTable(tr),
+      }),
+      block('heading', { level: 2, text: tr(L('Who really owns the link?', 'Кому насправді належить посилання?')) }),
+      block('html', {
+        source: 'code',
+        code: linkDetectiveHtml(tr, lang),
+        src: '',
+        title: tr(L('Link detective: who really owns the site?', 'Детектив посилань: кому насправді належить сайт?')),
       }),
       {
         id: id('block'),
@@ -596,8 +879,8 @@ export function makeSampleCourse(lang: Language): Course {
     title: tr(L('Spot the phish: security basics in 15 minutes', 'Розпізнай фішинг: основи безпеки за 15 хвилин')),
     description: tr(
       L(
-        'A short sample course made with Scormly: interactive hotspots, a before / after slider, a process diagram, a chat scenario, exercises, a reflection and a scored final test.',
-        'Короткий приклад курсу, створений у Scormly: інтерактивне зображення, слайдер «до / після», схема процесу, чат-сценарій, вправи, рефлексія та фінальний тест з оцінюванням.',
+        'A short sample course made with Scormly: interactive hotspots, a before / after slider, a custom “link detective” widget, a process diagram, a chat scenario, exercises, a reflection and a scored final test.',
+        'Короткий приклад курсу, створений у Scormly: інтерактивне зображення, слайдер «до / після», власний віджет «Детектив посилань», схема процесу, чат-сценарій, вправи, рефлексія та фінальний тест з оцінюванням.',
       ),
     ),
     theme: 'ocean',

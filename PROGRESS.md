@@ -551,3 +551,7 @@ captions and larger text, in the builder preview and in the exported player alik
 - 2026-11-09 — The `html` block is now called **Widget** / «Віджет» in the UI, docs,
   AGENTS.md and the user-instructions template (it was "Code", like the `code`
   snippet block). The data type stays `html`, so existing projects are untouched.
+- 2026-11-09 — Sample course: a "Link detective" widget in lesson 2 (click the part of
+  a URL that shows who owns the site; a stamp marks it genuine / phishing; score and
+  a rule of thumb at the end). Plain HTML / JS on the Scormly kit, so it follows the
+  theme; `tests/sampleCourse.test.ts` checks its script compiles in both languages.
