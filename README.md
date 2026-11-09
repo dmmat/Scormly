@@ -70,7 +70,7 @@ exported as a **SCORM 1.2 / 2004** or **cmi5 (xAPI)** package for any LMS.
   (JSZip). SCORM is verified on SCORM Cloud.
 - **AI-friendly** — every project gets an `AGENTS.md` documenting `project.json`
   and all block types, so an AI assistant can read, edit, or author courses by
-  editing the JSON directly — including pages for Code blocks (the block's
+  editing the JSON directly — including pages for Widget blocks (the block's
   *Copy instructions for AI* button gives a chat assistant the same rules).
 - **Declarative data model** — the whole course is serialized JSON
   (`project.json`) that is easy to version, import, and export.

@@ -198,7 +198,7 @@ In the LMS, the player implements the SCORM API: for 1.2 — `LMSInitialize`,
   queries, so they follow the block's own width in the editor, preview and
   player; pyramid / ring geometry lives in `src/blocks/process.ts` (mirrored in
   the player).
-- **Code block** (`html`) — a page in a frame: written code (`srcdoc`) or an
+- **Widget block** (`html`) — a page in a frame: written code (`srcdoc`) or an
   upload unpacked to `assets/html/<folder>/` (`src/lib/htmlBundle.ts`). Only
   the entry page is in `project.json`, so exports and the project `.zip` ship
   the whole folder (`collectBundleDirs`). The editor and preview inline the

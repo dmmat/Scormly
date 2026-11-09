@@ -383,13 +383,13 @@ ${blockReference()}
   line breaks) — no lists, tables or images inside diagram shapes.
 - **Media**: reference files by relative path under \`assets/images/\`,
   \`assets/videos/\`, \`assets/audio/\`, \`assets/captions/\` (WebVTT),
-  \`assets/files/\` (attachments) or \`assets/html/<folder>/\` (a Code
+  \`assets/files/\` (attachments) or \`assets/html/<folder>/\` (a Widget
   block's page and its files). Put the files there too. A \`data:\` URL
   also works but bloats the file.
 - **Media formats**: images PNG/JPEG/WebP/GIF/SVG, video MP4/WebM, audio
   MP3/OGG/WAV/M4A, captions WebVTT (.vtt). Other formats are rejected by the app.
   Attachments may be any document or archive except web pages and scripts
-  (HTML, JS, SVG, XML); a Code block's folder may hold any web files.
+  (HTML, JS, SVG, XML); a Widget block's folder may hold any web files.
 - **Accessibility**: give every informative image a meaningful \`alt\` (or set
   \`decorative: true\` when it adds no information); give videos \`captions\`
   and/or a \`transcript\`, audio a \`transcript\`, embeds a \`title\`; set
@@ -418,7 +418,7 @@ ${blockReference()}
   \`id\` of a node in the same scenario.
 - **Don't** invent block \`type\`s or \`data\` fields beyond those listed above —
   unknown blocks are ignored by the player (and flagged before export). For
-  something no block type does, use a Code block (\`html\`).
+  something no block type does, use a Widget block (\`html\`).
 
 ## Custom HTML blocks
 

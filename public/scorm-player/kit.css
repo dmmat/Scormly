@@ -1,4 +1,4 @@
-/* Scormly kit: the course look for pages in Code (html) blocks.
+/* Scormly kit: the course look for pages in Widget (html) blocks.
    Loaded into the block's frame (editor, preview and exported player) unless
    the block turns course styles off. Everything is in a cascade layer, so the
    page's own CSS always wins over it. The frame's host sets the --sc-* tokens

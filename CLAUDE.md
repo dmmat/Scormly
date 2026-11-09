@@ -99,7 +99,7 @@ A `continue` block mid-lesson hides the blocks after it until clicked; a
 the player (`continueLocked`), the preview (`PreviewProgress`) and this rule
 in sync.
 
-The `html` (Code) block shows a page in a frame: written code, or an upload
+The `html` (Widget) block shows a page in a frame: written code, or an upload
 unpacked to `assets/html/<folder>/` (`lib/htmlBundle.ts`). Only the entry page
 is in the JSON, so exports ship the whole folder (`collectBundleDirs`); the
 editor inlines the files into a sandboxed `srcdoc`, the player loads the real
