@@ -103,6 +103,7 @@ encoding, so these requirements are tracked here as the living list.
 - [x] Right-click context menu (actions on blocks and lessons)
 - [x] Welcome screen on startup: "Open project from computer" / "Create new" (folder picker)
 - [x] GitHub issue templates + a "Report an issue" link in the app (Header + landing footer)
+- [x] Review comments on blocks: for colleagues or as notes to self. Kept in a separate `comments.json` in the project (older projects keep working); no accounts — type your name or pick one of the project's commenters
 
 ## Phase 4 — SCORM export (SCORM 1.2 done)
 
@@ -559,3 +560,11 @@ captions and larger text, in the builder preview and in the exported player alik
   preview window only (`PreviewAuthorTools`). `src/preview/simulateQuiz.ts` builds the
   answers (fail = as many right as possible under the pass mark, so the result shows
   a mix) and holds the quiz grading the preview now shares.
+- 2026-11-09 — Review comments on blocks: the Comments panel (this lesson / whole
+  course, show resolved), *Comment* on the block toolbar and context menu
+  (Ctrl+Alt+M / ⌘⌥A), a count badge on blocks and lessons, replies, edit, resolve /
+  reopen, delete with Undo. Saved in `comments.json` beside `project.json` (only
+  once there is a comment; unreadable → `comments.broken.json`), carried in the
+  project .zip; a .zip of the same project merges its comments, or brings in only
+  them. The commenter's name is per browser, typed or picked from the project.
+  AGENTS.md documents the file so an assistant can work through the comments.

@@ -68,6 +68,10 @@ exported as a **SCORM 1.2 / 2004** or **cmi5 (xAPI)** package for any LMS.
   backend whatsoever.
 - **SCORM 1.2 / 2004 and cmi5 (xAPI) export** — runs entirely client-side
   (JSZip). SCORM is verified on SCORM Cloud.
+- **Review comments** — comment on any block, reply and resolve: for
+  colleagues or as notes to self. No accounts — just your name. They
+  live in the project's own `comments.json`, travel in the project `.zip` and
+  never reach the exported course.
 - **AI-friendly** — every project gets an `AGENTS.md` documenting `project.json`
   and all block types, so an AI assistant can read, edit, or author courses by
   editing the JSON directly — including pages for Widget blocks (the block's

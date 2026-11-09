@@ -139,6 +139,34 @@ color and the shape of buttons/interactive surfaces. Implementation:
 The theme registry is in [`themes.ts`](../src/theme/themes.ts); the switcher is
 [`ThemePicker`](../src/components/editor/ThemePicker.tsx).
 
+## Review comments
+
+Comments on blocks, for colleagues or as notes to self (the **Comments**
+button in the header, *Comment* on a block's toolbar or `Ctrl+Alt+M` / `⌘⌥A`).
+
+- **Stored apart from the course** in `comments.json` beside `project.json`
+  ([`lib/comments.ts`](../src/lib/comments.ts): format, repair, merge;
+  [`lib/projectComments.ts`](../src/lib/projectComments.ts): the folder). So
+  they never reach an export, don't take part in course undo / redo, and
+  projects without the file — every older one — simply have no comments. The
+  file is written only when there are comments; autosave writes it with
+  `project.json` (`saveProject`) when the threads changed since they were read.
+- **State:** [`store/reviewStore.ts`](../src/store/reviewStore.ts) — `threads`,
+  `savedThreads` (what's on disk), the panel (scope: this page / whole course,
+  show resolved), the draft and the reviewer's name. `courseStore` resets it
+  whenever another course is loaded; the project loader then reads the file.
+  Deleting a comment offers Undo in a toast instead of history.
+- **Threads** point at a block by `blockId` (lesson or cover page). A thread on
+  a deleted block stays — undo brings the block back — and is listed under
+  *Deleted blocks* in the whole-course view.
+- **No accounts:** the name is typed once or picked from the project's
+  commenters, and kept in this browser (`localStorage['scormly.reviewer']`).
+- **Sharing:** the project .zip carries `comments.json`. Opening a .zip of the
+  same project merges its comments (new threads and replies added, newer edits
+  and resolved state win, nothing removed); the dialog also offers *Add
+  comments only*, which leaves the course as it is — for a reviewer's copy that
+  came back while the author kept editing.
+
 ## SCORM export (planned)
 
 Export will run entirely on the client:
