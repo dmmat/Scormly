@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { useCourseStore } from '../../store/courseStore'
@@ -10,6 +10,8 @@ import ContextMenu, { type ContextMenuItem } from './ContextMenu'
 import { KEYS, isEditableTarget } from '../../lib/keyboard'
 import { useBlockWrapper } from '../../blocks/useBlockWrapper'
 import BlockStylePopover from './BlockStylePopover'
+import { useReviewStore } from '../../store/reviewStore'
+import { CommentBadge, CommentIcon } from '../review/reviewUi'
 
 interface BlockShellProps {
   block: Block
@@ -48,12 +50,15 @@ export default function BlockShell({
   const hasBackground = (block.settings.background ?? 'none') !== 'none'
   const wrapper = useBlockWrapper(block.settings)
   const { t: td } = useT('design')
+  const { t: tr } = useT('review')
+  const startComment = useReviewStore((s) => s.startComment)
 
   const menuItems: ContextMenuItem[] = [
-    { label: t('moveUp'), icon: '↑', shortcut: KEYS.moveUp, disabled: index === 0, onClick: () => moveBlock(lessonId, index, index - 1) },
-    { label: t('moveDown'), icon: '↓', shortcut: KEYS.moveDown, disabled: index === total - 1, onClick: () => moveBlock(lessonId, index, index + 1) },
-    { label: t('duplicate'), icon: '⧉', shortcut: KEYS.duplicate, onClick: () => duplicateBlock(lessonId, block.id) },
-    { label: t('delete'), icon: '✕', shortcut: KEYS.delete, danger: true, onClick: () => deleteBlockWithUndo(lessonId, block.id) },
+    { label: t('moveUp'), icon: <ArrowIcon up small />, shortcut: KEYS.moveUp, disabled: index === 0, onClick: () => moveBlock(lessonId, index, index - 1) },
+    { label: t('moveDown'), icon: <ArrowIcon small />, shortcut: KEYS.moveDown, disabled: index === total - 1, onClick: () => moveBlock(lessonId, index, index + 1) },
+    { label: t('duplicate'), icon: <DuplicateIcon small />, shortcut: KEYS.duplicate, onClick: () => duplicateBlock(lessonId, block.id) },
+    { label: tr('addCommentMenu'), icon: <CommentIcon className={SMALL} />, shortcut: KEYS.comment, onClick: () => startComment(block.id) },
+    { label: t('delete'), icon: <DeleteIcon small />, shortcut: KEYS.delete, danger: true, onClick: () => deleteBlockWithUndo(lessonId, block.id) },
   ]
 
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
@@ -79,6 +84,7 @@ export default function BlockShell({
         elRef.current = el
       }}
       style={style}
+      data-block-id={block.id}
       onClick={() => selectBlock(block.id)}
       onContextMenu={(e) => {
         // Text fields keep the browser menu (cut/copy/paste, spellcheck);
@@ -107,6 +113,9 @@ export default function BlockShell({
       </button>
       {selected && (
         <div className="absolute -top-3.5 right-3 z-20 flex items-center gap-0.5 rounded-lg border border-gray-200 bg-white p-0.5 shadow-md">
+          <ToolbarButton label={tr('addComment')} shortcut={KEYS.comment} onClick={() => startComment(block.id)}>
+            <CommentIcon className={ICON} />
+          </ToolbarButton>
           <ToolbarButton
             label={td('blockStyle')}
             active={styleOpen}
@@ -114,12 +123,12 @@ export default function BlockShell({
             popup
             onClick={toggleStyle}
           >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className="h-4 w-4" aria-hidden>
+            <Icon>
               <path d="M12 3a9 9 0 1 0 0 18c1.1 0 1.8-.9 1.8-1.9 0-.5-.2-.9-.5-1.3-.3-.3-.5-.8-.5-1.3 0-1 .8-1.8 1.8-1.8H17a4 4 0 0 0 4-4c0-4.3-4-7.7-9-7.7Z" />
               <circle cx="7.5" cy="11" r="1" fill="currentColor" />
               <circle cx="10.5" cy="7" r="1" fill="currentColor" />
               <circle cx="15" cy="7.5" r="1" fill="currentColor" />
-            </svg>
+            </Icon>
           </ToolbarButton>
           <span aria-hidden className="mx-0.5 h-4 w-px bg-gray-200" />
           <ToolbarButton
@@ -128,7 +137,7 @@ export default function BlockShell({
             disabled={index === 0}
             onClick={() => moveBlock(lessonId, index, index - 1)}
           >
-            ↑
+            <ArrowIcon up />
           </ToolbarButton>
           <ToolbarButton
             label={t('moveDown')}
@@ -136,14 +145,14 @@ export default function BlockShell({
             disabled={index === total - 1}
             onClick={() => moveBlock(lessonId, index, index + 1)}
           >
-            ↓
+            <ArrowIcon />
           </ToolbarButton>
           <ToolbarButton
             label={t('duplicate')}
             shortcut={KEYS.duplicate}
             onClick={() => duplicateBlock(lessonId, block.id)}
           >
-            ⧉
+            <DuplicateIcon />
           </ToolbarButton>
           <ToolbarButton
             label={t('delete')}
@@ -151,10 +160,11 @@ export default function BlockShell({
             danger
             onClick={() => deleteBlockWithUndo(lessonId, block.id)}
           >
-            ✕
+            <DeleteIcon />
           </ToolbarButton>
         </div>
       )}
+      <CommentBadge blockId={block.id} />
       {selected && styleOpen && (
         <BlockStylePopover
           block={block}
@@ -180,6 +190,37 @@ export default function BlockShell({
       )}
     </div>
   )
+}
+
+// Toolbar and context-menu icons: one 24px grid, one stroke, one size, so
+// none of them looks bigger than the rest (text glyphs like ↑ ⧉ ✕ don't).
+const ICON = 'h-4 w-4'
+const SMALL = 'h-3.5 w-3.5'
+
+function Icon({ small, children }: { small?: boolean; children: ReactNode }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round"
+      strokeLinejoin="round" className={small ? SMALL : ICON} aria-hidden>
+      {children}
+    </svg>
+  )
+}
+
+function ArrowIcon({ up, small }: { up?: boolean; small?: boolean }) {
+  return <Icon small={small}>{up ? <path d="M12 19V5M6 11l6-6 6 6" /> : <path d="M12 5v14M6 13l6 6 6-6" />}</Icon>
+}
+
+function DuplicateIcon({ small }: { small?: boolean }) {
+  return (
+    <Icon small={small}>
+      <rect x="8" y="8" width="12" height="12" rx="2" />
+      <path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" />
+    </Icon>
+  )
+}
+
+function DeleteIcon({ small }: { small?: boolean }) {
+  return <Icon small={small}><path d="M6 6l12 12M18 6 6 18" /></Icon>
 }
 
 interface ToolbarButtonProps {

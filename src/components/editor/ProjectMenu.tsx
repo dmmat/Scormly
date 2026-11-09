@@ -38,8 +38,7 @@ export default function ProjectMenu() {
   // there are edits since the last .zip download.
   async function leave(): Promise<boolean> {
     if (!hasFolder) {
-      const s = useCourseStore.getState()
-      return !(s.past.length > 0 && hasUnsavedZipChanges()) || window.confirm(tw('leaveUnsavedZip'))
+      return !hasUnsavedZipChanges() || window.confirm(tw('leaveUnsavedZip'))
     }
     if (await flushSave()) return true
     return window.confirm(t('leaveUnsaved'))

@@ -41,6 +41,7 @@ src/
 ├── styles/blocks.css         # learner block design shared with the SCORM player
 ├── types/course.ts           # data model (discriminated union of blocks)
 ├── store/courseStore.ts      # Zustand store: CRUD + undo/redo (+ replaceCourse)
+├── store/reviewStore.ts      # review comments + the comments panel (not in undo)
 ├── lib/                      # projects, storage, assets, zip, repair, agent guide
 │   ├── projectService.ts     # create / open / save (folder or browser), autosave
 │   ├── browserProjects.ts    # projects kept in OPFS (list / open / delete)
@@ -49,7 +50,9 @@ src/
 │   ├── importProjectZip.ts   # open a .zip; update an existing project or open as new
 │   ├── repairCourse.ts       # fix hand / AI-edited project.json on load
 │   ├── agentGuide.ts         # AGENTS.md written into every project
-│   └── userInstructions.ts   # user-instructions.md (the author's notes for AI)
+│   ├── userInstructions.ts   # user-instructions.md (the author's notes for AI)
+│   ├── comments.ts           # comments.json: parse / repair / merge
+│   └── projectComments.ts    # comments.json in the project folder (load / save)
 ├── export/                   # SCORM / cmi5 packaging, pre-export check
 ├── preview/                  # in-app learner preview (BlockPreview + components)
 ├── i18n/                     # internationalization (EN/UK)
@@ -146,12 +149,23 @@ Keyboard shortcuts (Ctrl/Cmd+Z / Y) are wired by `useUndoRedoShortcuts`. See
   store a `directoryHandle`, so saving, media, history and export share one
   path. Without one, media lives in memory (`putMemoryAsset`) and Save /
   Ctrl+S download the .zip.
-- **Project .zip:** `project.json`, `assets/`, `AGENTS.md` (generated) and
+- **Project .zip:** `project.json`, `assets/`, `AGENTS.md` (generated),
   `user-instructions.md` (the author's notes for AI — created from a template
-  once, never overwritten, editable in Project settings → AI assistant).
+  once, never overwritten, editable in Project settings → AI assistant) and
+  `comments.json` when there are review comments.
 - **The course `id` identifies a project:** opening a .zip whose id matches the
   open project or one in the browser asks to update it (one undoable
-  `replaceCourse`) or open it as new (a fresh id).
+  `replaceCourse`) or open it as new (a fresh id); a .zip with comments can
+  also bring in only them. Comments are always merged, never replaced.
+- **Review comments** live in `comments.json` beside `project.json` — never
+  in the course, its undo history or an export. Threads point at a block by
+  `blockId` (threads of a deleted block are kept: undo brings it back).
+  The file is written only once there are comments and a missing one means
+  none, so older projects (and older Scormly versions) are unaffected; an
+  unreadable one is copied to `comments.broken.json` before it can be
+  replaced. There are no accounts: the commenter's name is per browser
+  (`scormly.reviewer`), typed or picked from the project's commenters.
+  AGENTS.md documents the file for AI assistants.
 - **Everything loaded passes `repairCourse`** (ids, types, missing fields,
   unknown block types kept but skipped). When the data model changes, update
   `BLOCK_DOCS` / the guide text in `agentGuide.ts` — it is what AI assistants

@@ -590,6 +590,7 @@ function AiPanel() {
           className={`${inputClass} resize-y font-mono text-[13px] leading-relaxed`}
         />
       </Field>
+      <p className="text-sm text-gray-500">{t('aiComments')}</p>
     </Panel>
   )
 }

@@ -19,6 +19,7 @@ import {
 import { AGENT_GUIDE_FILE, buildAgentGuide } from './agentGuide'
 import { reportRepairs } from './repairCourse'
 import { ensureUserInstructions } from './userInstructions'
+import { loadProjectComments, saveProjectComments } from './projectComments'
 import {
   BROWSER_KEY_PREFIX,
   browserProjectDir,
@@ -155,6 +156,7 @@ async function loadProjectFromHandle(
     (await readJson<ProjectHistory>(handle, HISTORY_FILE)) ?? undefined
   const name = browser ? course.title || handle.name : handle.name
   useCourseStore.getState().openProject(handle, name, course, history)
+  await loadProjectComments(handle)
   // A hand- or AI-edited project.json may have needed structural fixes:
   // report them and write the repaired file back (so they're reported once).
   const fixes = useCourseStore.getState().loadFixes
@@ -234,7 +236,7 @@ export async function flushSave(): Promise<boolean> {
   return useCourseStore.getState().saveState !== 'error'
 }
 
-/** Persist the current course and history to the open project's folder. */
+/** Persist the current course, history and comments to the open project's folder. */
 export function saveProject(): Promise<void> {
   // Chain behind a running write so two saves never interleave on disk.
   const run = (inFlight ?? Promise.resolve()).then(writeProject)
@@ -257,6 +259,7 @@ async function writeProject(): Promise<void> {
       return
     }
     await writeJson(directoryHandle, PROJECT_FILE, course)
+    await saveProjectComments(directoryHandle)
     await writeJson(directoryHandle, HISTORY_FILE, {
       past: past.slice(-PERSISTED_HISTORY),
       future: future.slice(0, PERSISTED_HISTORY),

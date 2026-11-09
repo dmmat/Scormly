@@ -45,6 +45,9 @@ export const KEYS = {
   moveDown: `${IS_MAC ? '⌥' : 'Alt'}+↓`,
   deselect: 'Esc',
   help: '?',
+  // The usual "new comment" keys of text editors (⌘⌥M would minimize
+  // windows on a Mac).
+  comment: IS_MAC ? `${MOD}+⌥+A` : 'Ctrl+Alt+M',
   // Rich-text editor (matched on the physical key, any layout).
   bold: `${MOD}+B`,
   italic: `${MOD}+I`,
@@ -58,3 +61,10 @@ export const KEYS = {
   clearFormat: `${MOD}+\\`,
   nextCell: 'Tab',
 } as const
+
+/** The "comment on the selected block" shortcut (KEYS.comment), any layout. */
+export function isCommentShortcut(e: KeyboardEvent): boolean {
+  return IS_MAC
+    ? e.metaKey && e.altKey && !e.ctrlKey && e.code === 'KeyA'
+    : e.ctrlKey && e.altKey && !e.metaKey && e.code === 'KeyM'
+}

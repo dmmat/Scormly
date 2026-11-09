@@ -15,6 +15,8 @@ import { useHelpStore } from '../../help/helpStore'
 import { KEYS } from '../../lib/keyboard'
 import { useRoute } from '../../hooks/useRoute'
 import { BROWSER_KEY_PREFIX } from '../../lib/browserProjects'
+import { useReviewStore } from '../../store/reviewStore'
+import { CommentIcon, useOpenComments } from '../review/reviewUi'
 
 export default function Header() {
   const [moreOpen, setMoreOpen] = useState(false)
@@ -41,6 +43,11 @@ export default function Header() {
   const { t } = useT('common')
   const { t: tw } = useT('welcome')
   const { t: tp } = useT('preview')
+  const { t: tr } = useT('review')
+  const reviewOpen = useReviewStore((s) => s.panelOpen)
+  const setReviewOpen = useReviewStore((s) => s.setPanelOpen)
+  const openComments = useOpenComments()
+  const commentsLabel = openComments ? `${tr('button')} (${openComments})` : tr('button')
   const { lang, setLang } = useLang()
   const moreRef = useRef<HTMLDivElement>(null)
   const moreTriggerRef = useRef<HTMLButtonElement>(null)
@@ -105,6 +112,24 @@ export default function Header() {
 
         <div className="mx-1 h-6 w-px bg-gray-200" />
 
+        <button
+          type="button"
+          onClick={() => setReviewOpen(!reviewOpen)}
+          aria-pressed={reviewOpen}
+          aria-label={commentsLabel}
+          title={tr('buttonTitle')}
+          className={`inline-flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-sm font-medium hover:bg-gray-100 ${
+            reviewOpen ? 'bg-gray-100 text-gray-900' : 'text-gray-600'
+          }`}
+        >
+          <CommentIcon />
+          <span className="hidden xl:inline">{tr('button')}</span>
+          {openComments > 0 && (
+            <span className="rounded-full bg-amber-100 px-1.5 text-xs font-semibold tabular-nums text-amber-900">
+              {openComments}
+            </span>
+          )}
+        </button>
         <button
           type="button"
           data-tour="preview"
@@ -221,6 +246,13 @@ export default function Header() {
                 disabled={exporting}
                 onClick={() => {
                   requestExport('cmi5')
+                  setMoreOpen(false)
+                }}
+              />
+              <MoreItem
+                label={commentsLabel}
+                onClick={() => {
+                  setReviewOpen(true)
                   setMoreOpen(false)
                 }}
               />

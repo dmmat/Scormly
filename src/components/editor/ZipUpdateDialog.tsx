@@ -2,6 +2,7 @@ import { useRef } from 'react'
 import { useT } from '../../i18n/I18nProvider'
 import { useDialog } from '../../hooks/useDialog'
 import { useZipPrompt, type ZipChoice, type ZipMatch } from '../../lib/importProjectZip'
+import { CommentIcon } from '../review/reviewUi'
 
 // "This .zip is a version of a project you already have": update it, or open
 // the .zip as a new project (with its own id). See openProjectZip.
@@ -13,6 +14,7 @@ export default function ZipUpdateDialog() {
 
 function Dialog({ match, answer }: { match: ZipMatch; answer: (c: ZipChoice) => void }) {
   const { t } = useT('welcome')
+  const { t: tr } = useT('review')
   const ref = useRef<HTMLDivElement>(null)
   useDialog(ref, () => answer('cancel'))
   const when = (ms: number | null) =>
@@ -50,6 +52,18 @@ function Dialog({ match, answer }: { match: ZipMatch; answer: (c: ZipChoice) => 
           </dd>
         </dl>
         <p className="mt-3 text-xs text-gray-500">{t('zipMatchNote')}</p>
+        {match.zipComments > 0 && (
+          // A reviewer's copy: their comments can come in without the course.
+          <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-2 rounded-xl border border-amber-200 bg-amber-50/70 px-3 py-2.5">
+            <CommentIcon className="h-4 w-4 shrink-0 text-amber-800" />
+            <p className="min-w-[12rem] flex-1 text-xs leading-relaxed text-amber-950">
+              {tr('zipComments', { n: match.zipComments })}
+            </p>
+            <button type="button" onClick={() => answer('comments')} className="btn-secondary bg-white px-3 py-1.5 text-xs">
+              {tr('zipCommentsOnly')}
+            </button>
+          </div>
+        )}
         <div className="mt-5 flex flex-wrap justify-end gap-2">
           <button type="button" onClick={() => answer('cancel')} className="rounded-md px-3 py-2 text-sm text-gray-600 hover:bg-gray-100">
             {t('zipMatchCancel')}

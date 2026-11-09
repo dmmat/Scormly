@@ -18,6 +18,7 @@ import { translate } from '../i18n/I18nProvider'
 import type { Language } from '../i18n/types'
 import { makeSampleCourse } from '../lib/sampleCourse'
 import { repairCourse, type RepairFix } from '../lib/repairCourse'
+import { useReviewStore } from './reviewStore'
 
 const HISTORY_LIMIT = 50
 
@@ -278,6 +279,7 @@ export const useCourseStore = create<CourseState>((set, get) => {
 
     loadCourse: (input) => {
       const { course, fixes } = migrateCourse(input)
+      useReviewStore.getState().reset()
       set({
         course,
         loadFixes: fixes,
@@ -306,6 +308,7 @@ export const useCourseStore = create<CourseState>((set, get) => {
 
     loadSampleCourse: (lang) => {
       const course = makeSampleCourse(lang)
+      useReviewStore.getState().reset()
       set({
         course,
         loadFixes: [],
@@ -319,6 +322,7 @@ export const useCourseStore = create<CourseState>((set, get) => {
 
     newDemoCourse: () => {
       const course = makeInitialCourse()
+      useReviewStore.getState().reset()
       set({
         course,
         loadFixes: [],
@@ -332,6 +336,8 @@ export const useCourseStore = create<CourseState>((set, get) => {
 
     openProject: (handle, name, input, history) => {
       const { course, fixes } = migrateCourse(input)
+      // Comments belong to a project (comments.json): the loader reads them.
+      useReviewStore.getState().reset()
       set({
         directoryHandle: handle,
         projectName: name,
