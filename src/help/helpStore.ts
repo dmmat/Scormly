@@ -24,21 +24,27 @@ function write(key: string, value: string): void {
 
 export type HelpDialog = 'faq' | 'whatsNew'
 
+/** Questions & answers items linked from elsewhere (help faqQ<n>). */
+export const FAQ_AI_COMMENTS = 12
+
 interface HelpState {
   tourOpen: boolean
   dialog: HelpDialog | null
+  /** The Q&A item shown open (1-based). */
+  faqItem: number
   /** Release id the author last opened in "What's new". */
   whatsNewSeen: string | null
   startTour: () => void
   /** Skip or finish: never offer the tour automatically again. */
   endTour: () => void
-  openDialog: (dialog: HelpDialog) => void
+  openDialog: (dialog: HelpDialog, faqItem?: number) => void
   closeDialog: () => void
 }
 
 export const useHelpStore = create<HelpState>()((set) => ({
   tourOpen: false,
   dialog: null,
+  faqItem: 1,
   whatsNewSeen: read(WHATS_NEW_KEY),
   startTour: () => set({ tourOpen: true, dialog: null }),
   endTour: () => {
@@ -48,11 +54,11 @@ export const useHelpStore = create<HelpState>()((set) => ({
     if (read(WHATS_NEW_KEY) === null) write(WHATS_NEW_KEY, LATEST_RELEASE)
     set({ tourOpen: false, whatsNewSeen: read(WHATS_NEW_KEY) ?? LATEST_RELEASE })
   },
-  openDialog: (dialog) => {
+  openDialog: (dialog, faqItem = 1) => {
     if (dialog === 'whatsNew') {
       write(WHATS_NEW_KEY, LATEST_RELEASE)
       set({ dialog, whatsNewSeen: LATEST_RELEASE })
-    } else set({ dialog })
+    } else set({ dialog, faqItem })
   },
   closeDialog: () => set({ dialog: null }),
 }))

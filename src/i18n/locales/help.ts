@@ -49,7 +49,7 @@ const help: LocaleTable = {
     faqTitle: 'Questions & answers',
     faqQ1: 'Where is my course saved?',
     faqA1:
-      'In the folder you picked, on your own computer: project.json (the course), an assets/ folder with your media, and a history file for undo/redo. Scormly has no server — nothing is uploaded.',
+      'In the folder you picked, on your own computer: project.json (the course), an assets/ folder with your media, a history file for undo/redo, and comments.json once there are comments. Scormly has no server — nothing is uploaded.',
     faqQ2: 'Do I need to press Save?',
     faqA2:
       'No. Changes are saved automatically about a second after you stop editing. Ctrl/⌘+S saves immediately. The Save button shows the state and turns red if saving fails.',
@@ -76,7 +76,13 @@ const help: LocaleTable = {
       'Chrome, Edge, Opera and other Chromium browsers can save to a folder. Other browsers can use the builder without saving — download the project zip to keep your work.',
     faqQ10: 'Can AI tools edit my course?',
     faqA10:
-      'Yes. Each project folder has an AGENTS.md describing the project.json format, so an AI agent (or you) can edit the course file directly.',
+      'Yes. Each project folder (and project .zip) has an AGENTS.md describing the project.json format, so an AI agent (or you) can edit the course file directly. It can work through your comments too — see below.',
+    faqQ11: 'How do comments work?',
+    faqA11:
+      'Select a block and click Comment in its toolbar (Ctrl+Alt+M, ⌘⌥A on a Mac) to leave a note for a colleague or for yourself. There are no accounts: you type your name once and this browser remembers it. The Comments button in the header lists them — reply, resolve or delete them there. Comments are kept in the project’s comments.json, travel in the project .zip and never reach the exported course. When a colleague’s .zip of the project comes back, their comments are added to yours — or choose “Add comments only” to keep your course as it is.',
+    faqQ12: 'Can an AI assistant work through the comments?',
+    faqA12:
+      'Yes. AGENTS.md describes comments.json, so give the assistant the project folder or its .zip and ask, for example: “Read AGENTS.md and work through the open comments in comments.json.” It changes the course, replies to each comment with what it did and marks it resolved. Open the project — or the .zip it gives back — and read its replies in the Comments panel; reopen a comment if the change isn’t right.',
 
     // What's new
     whatsNewTitle: "What's new",
@@ -125,7 +131,7 @@ const help: LocaleTable = {
     faqTitle: 'Питання й відповіді',
     faqQ1: 'Де зберігається мій курс?',
     faqA1:
-      'У папці, яку ви обрали, на вашому комп’ютері: project.json (сам курс), папка assets/ з медіа і файл історії для скасування дій. У Scormly немає сервера — нічого не завантажується.',
+      'У папці, яку ви обрали, на вашому комп’ютері: project.json (сам курс), папка assets/ з медіа, файл історії для скасування дій, а коли з’являться коментарі — ще й comments.json. У Scormly немає сервера — нічого не завантажується.',
     faqQ2: 'Чи треба натискати «Зберегти»?',
     faqA2:
       'Ні. Зміни зберігаються автоматично приблизно за секунду після останньої правки. Ctrl/⌘+S зберігає одразу. Кнопка «Зберегти» показує стан і червоніє, якщо зберегти не вдалося.',
@@ -152,7 +158,13 @@ const help: LocaleTable = {
       'Chrome, Edge, Opera та інші браузери на Chromium вміють зберігати в папку. В інших браузерах конструктор працює без збереження — завантажуйте zip проєкту, щоб не втратити роботу.',
     faqQ10: 'Чи можуть ШІ-інструменти редагувати мій курс?',
     faqA10:
-      'Так. У кожній папці проєкту є AGENTS.md з описом формату project.json, тож ШІ-агент (або ви) можете редагувати файл курсу напряму.',
+      'Так. У кожній папці проєкту (і в .zip проєкту) є AGENTS.md з описом формату project.json, тож ШІ-агент (або ви) можете редагувати файл курсу напряму. Він уміє й опрацьовувати ваші коментарі — див. нижче.',
+    faqQ11: 'Як працюють коментарі?',
+    faqA11:
+      'Виділіть блок і натисніть «Коментар» на його панелі (Ctrl+Alt+M, на Mac ⌘⌥A), щоб лишити нотатку колезі чи собі на потім. Облікових записів немає: ім’я вводите один раз, і браузер його запам’ятовує. Кнопка «Коментарі» в шапці показує всі коментарі — там можна відповісти, позначити вирішеним чи видалити. Коментарі зберігаються у файлі проєкту comments.json, їдуть разом із .zip проєкту й ніколи не потрапляють в експортований курс. Коли .zip проєкту повертається від колеги, його коментарі додаються до ваших — або виберіть «Лише додати коментарі», щоб курс лишився як є.',
+    faqQ12: 'Чи може ШІ-асистент опрацювати коментарі?',
+    faqA12:
+      'Так. AGENTS.md описує comments.json, тож дайте асистентові папку проєкту або його .zip і попросіть, наприклад: «Прочитай AGENTS.md і опрацюй відкриті коментарі в comments.json». Він змінить курс, відповість на кожен коментар, що саме зробив, і позначить його вирішеним. Відкрийте проєкт — або .zip, який він поверне, — і перегляньте відповіді в панелі «Коментарі»; якщо зміна не підходить, відкрийте коментар знову.',
 
     whatsNewTitle: 'Що нового',
   },

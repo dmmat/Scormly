@@ -58,6 +58,8 @@ const review: LocaleTable = {
     zipMerged: 'Comments from the .zip added: {n} new.',
     zipComments: 'The .zip has comments ({n}). You can add just them and keep the course as it is here.',
     zipCommentsOnly: 'Add comments only',
+    aiHint: 'An AI assistant can work through the open comments for you.',
+    aiHintLink: 'How?',
   },
   uk: {
     button: 'Коментарі',
@@ -115,6 +117,8 @@ const review: LocaleTable = {
     zipMerged: 'Коментарі з .zip додано, нових: {n}.',
     zipComments: 'У .zip є коментарі ({n}). Можна додати лише їх, а курс лишити таким, як тут.',
     zipCommentsOnly: 'Лише додати коментарі',
+    aiHint: 'ШІ-асистент може опрацювати відкриті коментарі за вас.',
+    aiHintLink: 'Як?',
   },
 }
 

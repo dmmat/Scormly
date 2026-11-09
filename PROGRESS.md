@@ -567,4 +567,6 @@ captions and larger text, in the builder preview and in the exported player alik
   once there is a comment; unreadable → `comments.broken.json`), carried in the
   project .zip; a .zip of the same project merges its comments, or brings in only
   them. The commenter's name is per browser, typed or picked from the project.
-  AGENTS.md documents the file so an assistant can work through the comments.
+  AGENTS.md documents the file so an assistant can work through the comments; the
+  Q&A (two new answers), Project settings → AI assistant and a hint in the panel
+  tell authors they can ask for that.

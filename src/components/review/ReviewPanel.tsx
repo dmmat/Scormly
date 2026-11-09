@@ -8,6 +8,7 @@ import { useLang, useT } from '../../i18n/I18nProvider'
 import BlockIcon from '../../blocks/BlockIcon'
 import { KEYS, MOD } from '../../lib/keyboard'
 import { Avatar, CommentIcon } from './reviewUi'
+import { FAQ_AI_COMMENTS, useHelpStore } from '../../help/helpStore'
 
 // The comments panel (review mode): threads on the blocks of the open page or
 // of the whole course, replies, resolve / reopen, and who is commenting. Sits
@@ -267,6 +268,19 @@ function Panel() {
             </div>
           )}
         </div>
+
+        {openTotal > 0 && (
+          <p className="border-t border-gray-200 px-4 py-2.5 text-xs leading-relaxed text-gray-500">
+            {t('aiHint')}{' '}
+            <button
+              type="button"
+              onClick={() => useHelpStore.getState().openDialog('faq', FAQ_AI_COMMENTS)}
+              className="font-medium text-brand-dark underline-offset-2 hover:underline"
+            >
+              {t('aiHintLink')}
+            </button>
+          </p>
+        )}
       </aside>
     </>
   )
@@ -531,7 +545,10 @@ function Composer({ placeholder, submitLabel, onSubmit, onCancel, initial = '', 
     const el = ref.current
     if (!el) return
     el.style.height = 'auto'
-    el.style.height = `${Math.min(el.scrollHeight, 240)}px`
+    // scrollHeight leaves out the border: add it, or a scrollbar shows up.
+    const full = el.scrollHeight + el.offsetHeight - el.clientHeight
+    el.style.height = `${Math.min(full, 240)}px`
+    el.style.overflowY = full > 240 ? 'auto' : 'hidden'
   }, [text])
 
   useEffect(() => {
