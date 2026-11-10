@@ -13,7 +13,7 @@ const review: LocaleTable = {
     whoTitle: 'Who’s commenting?',
     whoHint: 'No accounts needed: your name is kept in this browser and shown on your comments.',
     nameLabel: 'Your name',
-    namePlaceholder: 'e.g. Ksui',
+    namePlaceholder: 'e.g. Ksiu',
     pickName: 'Or pick a name from this project:',
     continue: 'Continue',
     cancel: 'Cancel',
