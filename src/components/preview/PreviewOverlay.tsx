@@ -12,10 +12,15 @@ import { useBlockWrapper } from '../../blocks/useBlockWrapper'
 import { usePageWidthVar } from '../../hooks/usePageWidthVar'
 import { themeStyle } from '../../theme/customTheme'
 import { CONTENT_WIDTH_PX, DEFAULT_CONTENT_WIDTH, isTaskBlock, type BlockAnimation, type Block } from '../../types/course'
+import { useReviewStore } from '../../store/reviewStore'
+import ReviewPanel from '../review/ReviewPanel'
+import { CommentIcon, useOpenComments } from '../review/reviewUi'
 
 // Full-screen, learner-facing preview of the course with lesson navigation.
 // Mirrors the SCORM player: optional cover page, lesson menu with progress,
 // block entrance animations, lesson transitions and a "next lesson" card.
+// Comments can be left here too: the comments panel opens beside the course
+// and every block gets a Comment button.
 export default function PreviewOverlay() {
   const course = useCourseStore((s) => s.course)
   const activeLessonId = useCourseStore((s) => s.activeLessonId)
@@ -23,6 +28,12 @@ export default function PreviewOverlay() {
   const { t } = useT('preview')
   const { t: td } = useT('design')
   const { t: ta } = useT('a11y')
+  const { t: tr } = useT('review')
+  const commenting = useReviewStore((s) => s.panelOpen)
+  const setCommenting = useReviewStore((s) => s.setPanelOpen)
+  const openComments = useOpenComments()
+  // The block last commented on or shown from the panel (outlined).
+  const [commentBlock, setCommentBlock] = useState<string | null>(null)
   const { prefs, reduceMotion, update: updatePrefs } = useA11yPrefs()
   const settings = course.settings
   const contentLanguage = settings?.contentLanguage?.trim() || undefined
@@ -90,11 +101,14 @@ export default function PreviewOverlay() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [index, finished, onIntro])
 
-  // Esc closes the lesson menu first, then the preview; focus moves into it
-  // (so keys don't land in the editor field underneath) and stays trapped.
-  useDialog(rootRef, () => (menuOpen ? setMenuOpen(false) : setPreviewOpen(false)), {
-    focusContainer: true,
-  })
+  // Esc closes the lesson menu first, then the comments, then the preview;
+  // focus moves into it (so keys don't land in the editor field underneath)
+  // and stays trapped.
+  useDialog(
+    rootRef,
+    () => (menuOpen ? setMenuOpen(false) : commenting ? setCommenting(false) : setPreviewOpen(false)),
+    { focusContainer: true },
+  )
   const total = course.lessons.length
   const isLast = index >= total - 1
   const progress = total ? Math.round((Object.keys(visited).length / total) * 100) : 0
@@ -181,6 +195,23 @@ export default function PreviewOverlay() {
     el.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' })
   }, [revealed, reduceMotion])
 
+  // A block chip in the comments panel: go to that page and the block.
+  function showBlock(blockId: string, pageId: string) {
+    setCommentBlock(blockId)
+    if (pageId === INTRO_ID) {
+      if (!introEnabled) return
+      if (!onIntro) goIntro()
+    } else {
+      const i = course.lessons.findIndex((l) => l.id === pageId)
+      if (i < 0) return
+      if (onIntro || finished || i !== index) goTo(i)
+    }
+    // The panel covers the page on a phone: get out of the way.
+    if (window.matchMedia('(max-width: 767px)').matches) setCommenting(false)
+    setRevealed(blockId)
+  }
+  const comments = commenting ? { activeId: commentBlock, onPick: setCommentBlock } : undefined
+
   const transitionClass =
     transition === 'none'
       ? ''
@@ -241,6 +272,24 @@ export default function PreviewOverlay() {
           )}
         </div>
         <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => setCommenting(!commenting)}
+            aria-pressed={commenting}
+            aria-label={openComments ? `${tr('button')} (${openComments})` : tr('button')}
+            title={tr('previewButtonTitle')}
+            className={`flex h-9 items-center gap-1.5 rounded-lg px-2 text-sm font-medium hover:bg-gray-100 ${
+              commenting ? 'bg-gray-100 text-gray-900' : 'text-gray-600'
+            }`}
+          >
+            <CommentIcon className="h-5 w-5" />
+            <span className="hidden lg:inline">{tr('button')}</span>
+            {openComments > 0 && (
+              <span className="rounded-full bg-amber-100 px-1.5 text-xs font-semibold tabular-nums text-amber-900">
+                {openComments}
+              </span>
+            )}
+          </button>
           <A11yMenu prefs={prefs} reduceMotion={reduceMotion} onChange={updatePrefs} />
           {finished ? (
             <button type="button" onClick={() => setFinished(false)} className="btn-secondary text-sm">
@@ -346,7 +395,7 @@ export default function PreviewOverlay() {
                   >
                     {course.intro?.blocks?.length
                       ? course.intro.blocks.map((block) => (
-                          <Reveal key={block.id} block={block} animation={blockAnimation}>
+                          <Reveal key={block.id} block={block} animation={blockAnimation} comments={comments}>
                             <BlockPreview block={block} currentLessonId={INTRO_ID} onNavigate={goTo} />
                           </Reveal>
                         ))
@@ -369,7 +418,7 @@ export default function PreviewOverlay() {
                     ) : (
                       <div className="space-y-7">
                         {visibleBlocks.map((block) => (
-                          <Reveal key={block.id} block={block} animation={blockAnimation}>
+                          <Reveal key={block.id} block={block} animation={blockAnimation} comments={comments}>
                             <BlockPreview
                               block={block}
                               currentLessonId={lesson.id}
@@ -396,6 +445,9 @@ export default function PreviewOverlay() {
             </A11yContext.Provider>
           </main>
         </div>
+        <ReviewPanel
+          preview={{ pageId: onIntro ? INTRO_ID : (lesson?.id ?? null), blockId: commentBlock, showBlock }}
+        />
       </div>
     </div>
   )
@@ -405,7 +457,24 @@ export default function PreviewOverlay() {
 // Blocks entering together are staggered slightly.
 let lastReveal = 0
 let revealStep = 0
-function Reveal({ block, animation, children }: { block: Block; animation: BlockAnimation; children: ReactNode }) {
+interface RevealComments {
+  /** The block outlined as the one being commented on. */
+  activeId: string | null
+  onPick: (blockId: string) => void
+}
+
+function Reveal({
+  block,
+  animation,
+  comments,
+  children,
+}: {
+  block: Block
+  animation: BlockAnimation
+  /** Set while commenting: the block gets its comments and a Comment button. */
+  comments?: RevealComments
+  children: ReactNode
+}) {
   const ref = useRef<HTMLDivElement>(null)
   const [shown, setShown] = useState(animation === 'none')
 
@@ -433,9 +502,50 @@ function Reveal({ block, animation, children }: { block: Block; animation: Block
 
   const wrapper = useBlockWrapper(block.settings)
   const anim = animation === 'none' ? '' : ` anim-${animation}${shown ? ' is-in' : ''}`
+  const commentable = comments ? ` pv-commentable${comments.activeId === block.id ? ' pv-comment-active' : ''}` : ''
   return (
-    <div ref={ref} {...wrapper} data-block={block.id} className={`${wrapper.className}${anim} outline-none`}>
+    <div ref={ref} {...wrapper} data-block={block.id} className={`${wrapper.className}${anim}${commentable} outline-none`}>
       {children}
+      {comments && <BlockComments blockId={block.id} onPick={comments.onPick} />}
+    </div>
+  )
+}
+
+// A block's open comments and its Comment button (shown on hover / focus, see
+// .pv-comment-add), on the block's top edge so they don't cover its content.
+// Slate, not gray, text: blocks on dark backgrounds turn gray text white.
+function BlockComments({ blockId, onPick }: { blockId: string; onPick: (blockId: string) => void }) {
+  const { t } = useT('review')
+  const n = useReviewStore((s) => s.threads.filter((th) => th.blockId === blockId && !th.resolved).length)
+  const { startComment, showBlockThreads } = useReviewStore.getState()
+  return (
+    <div className="absolute -top-3.5 right-3 z-10 flex items-center gap-1.5">
+      {n > 0 && (
+        <button
+          type="button"
+          onClick={() => {
+            onPick(blockId)
+            showBlockThreads(blockId)
+          }}
+          title={t('badge', { n })}
+          aria-label={t('badge', { n })}
+          className="flex h-7 items-center gap-1 rounded-full bg-amber-100 px-2 text-xs font-semibold tabular-nums text-amber-900 shadow-sm ring-1 ring-amber-300 hover:bg-amber-200"
+        >
+          <CommentIcon className="h-3.5 w-3.5" />
+          {n}
+        </button>
+      )}
+      <button
+        type="button"
+        onClick={() => {
+          onPick(blockId)
+          startComment(blockId)
+        }}
+        className="pv-comment-add flex h-7 items-center gap-1 rounded-full bg-white px-2.5 text-xs font-semibold text-slate-700 shadow-md ring-1 ring-slate-200 hover:text-slate-900 hover:ring-brand/50"
+      >
+        <CommentIcon className="h-3.5 w-3.5" />
+        {t('addComment')}
+      </button>
     </div>
   )
 }

@@ -18,7 +18,7 @@ export const RELEASES: Release[] = [
     date: '2026-11-09',
     items: {
       en: [
-        'Review comments: comment on any block, reply and resolve. For colleagues, or as notes to yourself for later. No accounts: just type your name, or pick one of the people who have commented.',
+        'Review comments: comment on any block, reply and resolve — in the editor or in Preview, while you go through the course as a learner. For colleagues, or as notes to yourself for later. No accounts: just type your name, or pick one of the people who have commented.',
         'Comments are kept in the project’s own comments.json file, travel in the project .zip and never reach the exported course. When a reviewer’s .zip comes back, their comments are added to yours — or bring in only the comments and keep your course as it is.',
         'New Widget block: write your own HTML, CSS and JavaScript, or upload an .html page or a .zip site — for widgets, simulations, calculators and mini-games. It plays in the exported course too.',
         'Widget pages match your course: the theme color, button shape and fonts, plus ready-made classes for buttons, cards, fields and feedback. Turn course styles off for a page with its own design.',
@@ -27,7 +27,7 @@ export const RELEASES: Release[] = [
         'Preview: “Complete the test” → Passed / Not passed answers and submits a test in one click, so you can check the result screen and what comes after it without answering by hand.',
       ],
       uk: [
-        'Рецензування: коментуйте будь-який блок, відповідайте й позначайте вирішеним. Для колег або собі на потім. Без облікових записів: просто вкажіть ім’я чи виберіть когось із тих, хто вже коментував.',
+        'Рецензування: коментуйте будь-який блок, відповідайте й позначайте вирішеним — у редакторі або в перегляді, поки проходите курс як слухач. Для колег або собі на потім. Без облікових записів: просто вкажіть ім’я чи виберіть когось із тих, хто вже коментував.',
         'Коментарі зберігаються в окремому файлі проєкту comments.json, їдуть разом із .zip проєкту й ніколи не потрапляють в експортований курс. Коли .zip повертається від рецензента, його коментарі додаються до ваших — або можна забрати лише коментарі, а курс лишити як є.',
         'Новий блок «Віджет»: пишіть власний HTML, CSS і JavaScript або завантажуйте сторінку .html чи сайт у .zip — для віджетів, симуляцій, калькуляторів і міні-ігор. Працює й в експортованому курсі.',
         'Сторінки в блоці «Віджет» виглядають як курс: колір теми, форма кнопок і шрифти, а ще готові класи для кнопок, карток, полів і відгуків. Для сторінки з власним дизайном стилі курсу можна вимкнути.',

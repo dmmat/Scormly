@@ -640,3 +640,21 @@ body {
   }
   .ws-drop { display: none; }
 }
+
+/* Commenting in the preview (PreviewOverlay): outline the block pointed at or
+ * commented on; its Comment button shows on hover / focus (always on touch). */
+.pv-commentable:is(:hover, :focus-within) {
+  outline: 2px dashed color-mix(in srgb, var(--color-brand) 45%, transparent);
+  outline-offset: 6px;
+}
+.pv-commentable.pv-comment-active {
+  outline: 2px solid #f59e0b;
+  outline-offset: 6px;
+}
+/* Edge-to-edge bands: keep the outline inside the screen. */
+.blk-full.pv-commentable:is(:hover, :focus-within, .pv-comment-active) { outline-offset: -3px; }
+.pv-comment-add { opacity: 0; transition: opacity 0.15s ease; }
+.pv-commentable:is(:hover, :focus-within, .pv-comment-active) .pv-comment-add { opacity: 1; }
+@media (hover: none) {
+  .pv-comment-add { opacity: 1; }
+}

@@ -1,4 +1,4 @@
-import { useEffect, useId, useLayoutEffect, useMemo, useRef, useState, type FormEvent } from 'react'
+import { createContext, useContext, useEffect, useId, useLayoutEffect, useMemo, useRef, useState, type FormEvent } from 'react'
 import { useCourseStore, INTRO_ID } from '../../store/courseStore'
 import { deleteReplyWithUndo, deleteThreadWithUndo, useReviewStore } from '../../store/reviewStore'
 import { commentAuthors } from '../../lib/comments'
@@ -12,7 +12,8 @@ import { FAQ_AI_COMMENTS, useHelpStore } from '../../help/helpStore'
 
 // The comments panel (review mode): threads on the blocks of the open page or
 // of the whole course, replies, resolve / reopen, and who is commenting. Sits
-// right of the canvas; on a phone it slides over it.
+// right of the canvas — or of the preview, which passes its own page, block
+// and way to show a block (ReviewPanelProps); on a phone it slides over it.
 
 interface BlockPlace {
   block: Block
@@ -105,17 +106,32 @@ function goToBlock(place: BlockPlace) {
   )
 }
 
-export default function ReviewPanel() {
-  const open = useReviewStore((s) => s.panelOpen)
-  return open ? <Panel /> : null
+export interface ReviewPanelProps {
+  /** The preview's open page and block, instead of the editor's. */
+  preview?: {
+    pageId: string | null
+    blockId: string | null
+    showBlock: (blockId: string, pageId: string) => void
+  }
 }
 
-function Panel() {
+// How a block chip shows its block: select it in the editor, or go to it in the preview.
+const ShowBlockContext = createContext<(place: BlockPlace) => void>(goToBlock)
+
+export default function ReviewPanel(props: ReviewPanelProps) {
+  const open = useReviewStore((s) => s.panelOpen)
+  return open ? <Panel {...props} /> : null
+}
+
+function Panel({ preview }: ReviewPanelProps) {
   const { t } = useT('review')
   const { t: td } = useT('design')
   const course = useCourseStore((s) => s.course)
-  const activeLessonId = useCourseStore((s) => s.activeLessonId)
-  const selectedBlockId = useCourseStore((s) => s.selectedBlockId)
+  const editorPageId = useCourseStore((s) => s.activeLessonId)
+  const editorBlockId = useCourseStore((s) => s.selectedBlockId)
+  const activeLessonId = preview ? preview.pageId : editorPageId
+  const selectedBlockId = preview ? preview.blockId : editorBlockId
+  const showBlock = preview ? (place: BlockPlace) => preview.showBlock(place.block.id, place.pageId) : goToBlock
   const threads = useReviewStore((s) => s.threads)
   const reviewer = useReviewStore((s) => s.reviewer)
   const scope = useReviewStore((s) => s.scope)
@@ -164,7 +180,7 @@ function Panel() {
     `rounded-md px-2.5 py-1 transition-colors ${on ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-800'}`
 
   return (
-    <>
+    <ShowBlockContext.Provider value={showBlock}>
       <div className="fixed inset-0 z-30 bg-black/30 md:hidden" onClick={() => setPanelOpen(false)} />
       <aside
         data-review-panel
@@ -262,7 +278,7 @@ function Panel() {
               </p>
               {!inScope.length && (
                 <p className="mx-auto mt-1.5 max-w-[16rem] text-xs leading-relaxed text-gray-500">
-                  {t('emptyHint', { key: KEYS.comment })}
+                  {preview ? t('emptyHintPreview') : t('emptyHint', { key: KEYS.comment })}
                 </p>
               )}
             </div>
@@ -282,7 +298,7 @@ function Panel() {
           </p>
         )}
       </aside>
-    </>
+    </ShowBlockContext.Provider>
   )
 }
 
@@ -377,6 +393,7 @@ function NameForm({ canCancel, onDone }: { canCancel: boolean; onDone: () => voi
 function BlockChip({ place }: { place: BlockPlace | undefined }) {
   const { t } = useT('review')
   const { t: tb } = useT('blocks')
+  const show = useContext(ShowBlockContext)
   if (!place) {
     return (
       <p className="mb-2 rounded-md bg-gray-50 px-2 py-1 text-xs text-gray-500" title={t('deletedHint')}>
@@ -389,7 +406,7 @@ function BlockChip({ place }: { place: BlockPlace | undefined }) {
   return (
     <button
       type="button"
-      onClick={() => goToBlock(place)}
+      onClick={() => show(place)}
       title={t('showBlock')}
       className="mb-2 flex w-full min-w-0 items-center gap-1.5 rounded-md bg-gray-50 px-2 py-1 text-left text-xs text-gray-600 outline-none hover:bg-gray-100 focus-visible:ring-2 focus-visible:ring-brand"
     >
@@ -585,7 +602,9 @@ function Composer({ placeholder, submitLabel, onSubmit, onCancel, initial = '', 
             e.preventDefault()
             submit()
           } else if (e.key === 'Escape') {
+            // Only this box: not the preview dialog or the editor's deselect (on document).
             e.preventDefault()
+            e.stopPropagation()
             cancel()
             if (collapsible) e.currentTarget.blur()
           }

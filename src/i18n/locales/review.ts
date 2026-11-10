@@ -26,6 +26,8 @@ const review: LocaleTable = {
     emptyResolved: 'All comments here are resolved.',
     emptyHint:
       'Select a block and click Comment in its toolbar ({key}). Leave notes for colleagues, or for yourself for later.',
+    emptyHintPreview: 'Point at a block and click Comment. Leave notes for colleagues, or for yourself for later.',
+    previewButtonTitle: 'Comment on blocks while you go through the course',
     newComment: 'New comment',
     placeholder: 'Write a comment…',
     replyPlaceholder: 'Reply…',
@@ -85,6 +87,8 @@ const review: LocaleTable = {
     emptyResolved: 'Усі коментарі тут вирішено.',
     emptyHint:
       'Виділіть блок і натисніть «Коментар» на його панелі ({key}). Лишайте нотатки колегам або собі на потім.',
+    emptyHintPreview: 'Наведіть на блок і натисніть «Коментар». Лишайте нотатки колегам або собі на потім.',
+    previewButtonTitle: 'Коментуйте блоки, поки проходите курс',
     newComment: 'Новий коментар',
     placeholder: 'Напишіть коментар…',
     replyPlaceholder: 'Відповісти…',

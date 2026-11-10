@@ -136,7 +136,8 @@ export default function Builder() {
       <div className="flex min-h-0 flex-1">
         <Sidebar />
         <Workspace />
-        <ReviewPanel />
+        {/* The preview shows its own panel (one at a time: they share element ids). */}
+        {!previewOpen && <ReviewPanel />}
       </div>
       {previewOpen && <PreviewOverlay />}
       {settingsOpen && <ProjectSettings onClose={() => setSettingsOpen(false)} />}
