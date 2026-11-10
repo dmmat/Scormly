@@ -27,8 +27,8 @@
     <meta property="og:locale:alternate" content="uk_UA" />
     <meta property="og:image" content="https://scormly.app/og-image.png" />
     <meta property="og:image:type" content="image/png" />
-    <meta property="og:image:width" content="1200" />
-    <meta property="og:image:height" content="630" />
+    <meta property="og:image:width" content="1187" />
+    <meta property="og:image:height" content="610" />
     <meta property="og:image:alt" content="Scormly — build interactive courses and export to SCORM" />
 
     <!-- Twitter -->
@@ -45,7 +45,7 @@
     <meta name="author" content="Dmytro Matsiuk" />
     <meta name="robots" content="index, follow" />
     <meta name="application-name" content="Scormly" />
-    <link rel="apple-touch-icon" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 
     <!-- Installable web app (Chrome "Install app") -->
     <link rel="manifest" href="/manifest.webmanifest" />
@@ -69,9 +69,9 @@
         "name": "Scormly",
         "alternateName": ["Scormly SCORM editor", "Scormly SCORM builder"],
         "applicationCategory": "EducationalApplication",
-        "operatingSystem": "Web browser (Chromium-based for disk save)",
+        "operatingSystem": "Any modern web browser (Chrome, Edge, Firefox); saving to a folder needs Chrome or Edge",
         "url": "https://scormly.app/",
-        "description": "Free, open-source SCORM editor and course builder (SCORM authoring tool) that runs online in the browser and exports SCORM 1.2 / 2004 and cmi5 (xAPI) packages for any LMS. No backend, no account — your data stays on your device.",
+        "description": "Free, open-source SCORM editor and course builder (SCORM authoring tool) that runs online in the browser and exports SCORM 1.2 / 2004 and cmi5 (xAPI) packages for any LMS. No backend, no account — courses are kept in the browser, in a folder on disk or as a project .zip, and never leave the device.",
         "license": "https://opensource.org/licenses/MIT",
         "isAccessibleForFree": true,
         "inLanguage": ["en", "uk"],
@@ -79,16 +79,20 @@
         "codeRepository": "https://github.com/dmmat/Scormly",
         "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
         "featureList": [
-          "Block-based course editor with undo/redo and insert-anywhere",
-          "SCORM 1.2 / 2004 export",
-          "cmi5 (xAPI) export with resume",
-          "Pre-export course check",
-          "Quizzes with LMS reporting, flashcards, branching dialogue scenarios with chat layout",
-          "Image hotspots, timelines and process steps, sort/order and fill-in-the-blanks exercises",
-          "Required video watching and linear navigation",
-          "Guided tour, in-app Q&A and keyboard shortcuts with full keyboard accessibility",
-          "AI-ready: AGENTS.md in every project documents the course format for AI agents",
-          "Accessible courses designed to help meet WCAG 2.1 AA: keyboard and screen-reader support, captions and transcripts, a learner accessibility menu, and pre-export accessibility checks",
+          "Block-based course editor with drag-and-drop, undo/redo and insert-anywhere",
+          "SCORM 1.2, SCORM 2004 (4th edition) and cmi5 (xAPI) export with resume, scores and question interactions",
+          "Pre-export course check, including accessibility gaps",
+          "Quizzes mixing single, multiple, matching, ordering and fill-in-the-blanks questions",
+          "Branching dialogue scenarios with a chat layout, flashcards, image hotspots and reflection",
+          "Process diagrams, step-by-step guides, timelines, comparison tables and before / after sliders",
+          "Widget block: custom HTML / CSS / JavaScript or an uploaded page, styled to match the course",
+          "Cover page, 10 themes and a custom theme, block backgrounds and ready-made block templates",
+          "Review comments on blocks, shared through the project .zip, with no accounts",
+          "Projects kept in the browser, in a folder on disk or as a project .zip",
+          "AI-ready: AGENTS.md in every project documents the course format for AI assistants",
+          "Accessible courses designed to help meet WCAG 2.1 AA: keyboard and screen-reader support, captions and transcripts, a learner accessibility menu",
+          "Player interface in 8 languages; editor in English and Ukrainian",
+          "Guided tour, in-app Q&A and keyboard shortcuts",
           "Installable web app (PWA)",
           "Local-first: no backend, data stays on device"
         ]
@@ -108,7 +112,7 @@
             "url": "https://scormly.app/",
             "logo": {
               "@type": "ImageObject",
-              "url": "https://scormly.app/favicon.svg",
+              "url": "https://scormly.app/icon-512.png",
               "caption": "Scormly"
             },
             "image": "https://scormly.app/og-image.png",

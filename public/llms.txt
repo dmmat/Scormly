@@ -1,39 +1,94 @@
 # Scormly
 
-> Scormly is a free, open-source, **local-first** course builder that runs entirely in the
-> browser and exports **SCORM 1.2 / 2004** and **cmi5 (xAPI)** packages for any LMS. There is
-> no backend and no account — projects and media live in the user's own file system via the
-> File System Access API, and packaging happens client-side.
+> Scormly is a free, open-source (MIT), local-first course builder that runs entirely in the
+> browser and exports SCORM 1.2, SCORM 2004 and cmi5 (xAPI) packages for Moodle, TalentLMS,
+> SCORM Cloud and virtually any standards-compliant LMS. There is no backend and no account:
+> courses, media and comments stay on the author's device, and packages are built client-side.
 
-## What it does
+Scormly is a block-based authoring tool: an author builds a course out of lessons, and each
+lesson out of blocks, editing them in place (WYSIWYG) with drag-and-drop and undo/redo. The
+interface is in English and Ukrainian. It works in current desktop browsers; Chrome and Edge
+can also save a project straight to a folder on disk.
 
-- **Block-based course editor** with inline editing, drag-and-drop, insert-a-block-anywhere,
-  undo/redo (also straight from the notification after a delete).
-- **Blocks:** headings, rich-text paragraphs, lists, callouts, images, galleries, video
-  (with optional "require watch" gate and disabled download), audio, embeds, code, tables,
-  quotes, a "Continue" gate, a divider, a course outline (links to other lessons), tabs,
-  accordions, flashcards, image hotspots, timelines / process steps, sort-the-order and
-  fill-in-the-blanks exercises, a branching **dialogue scenario** (classic or
-  **chat/messenger** layout with avatars), and **quizzes** (single / multiple / matching,
-  with feedback, a passing score, and an optional "show answers" toggle).
-- **Exports:** SCORM 1.2, SCORM 2004, and cmi5 (xAPI, with resume) — generated in the browser
-  with JSZip. Quiz objectives, question interactions and progress are reported to the LMS.
-  A course check runs before export (empty lessons, missing media, questions without a
-  correct answer…). SCORM is verified on SCORM Cloud.
-- **Course settings:** completion rule, pass/fail scoring, and a free/linear navigation mode.
-- **Help & accessibility:** guided tour, in-app Q&A, a "What's new" page, keyboard shortcuts
-  (press ?) and full keyboard support in menus, dialogs and reordering.
-- **Installable app (PWA)** from Chrome or Edge; English and Ukrainian interface.
-- **Privacy by architecture:** nothing is uploaded, stored remotely, or transmitted.
+## Where a project lives
 
-## For AI agents
+- **In the browser** (Chrome, Edge, Firefox): kept in the browser's private storage (OPFS),
+  saved automatically, still there after a reload. One click to start.
+- **In a folder on disk** (Chrome, Edge — File System Access API): `project.json`, an
+  `assets/` folder with the media, `AGENTS.md`, `user-instructions.md` and, once there are
+  review comments, `comments.json`. Saved automatically; easy to back up, sync or put in Git.
+- **As a project .zip**: the same files in one archive. Any project downloads as a .zip and
+  any browser opens one — for backups, sharing with colleagues or handing to an AI assistant.
+  A .zip of a project that is already open can update it (one undoable step) or open as new.
 
-Every Scormly project folder contains an `AGENTS.md` that documents `project.json` (the entire
-course as JSON) and every block type's `data` shape, so an AI assistant can read, edit, or
-author whole courses by editing that single file.
+## Blocks
+
+- **Text:** heading, paragraph (rich text with links, lists, tables and inline images), list,
+  quote, note / callout, columns, table, code.
+- **Media:** image, gallery / carousel, image & text, video (captions, transcript, optional
+  "must watch to continue"), audio, embed, attachment (downloadable file).
+- **Widget:** custom HTML / CSS / JavaScript, or an uploaded .html page or .zip site, for
+  simulations, calculators and mini-games. It gets the course theme and a small CSS kit, and
+  has "Copy instructions for AI" so a chat assistant can write the page.
+- **Explainers:** process diagram, step-by-step guide, timeline, comparison, before / after
+  slider, tabs, accordion, flashcards, image hotspots.
+- **Practice and assessment:** quiz (single choice, multiple choice, matching, ordering and
+  fill-in-the-blanks questions mixed under one Submit, with feedback and a passing score),
+  sort-the-order and fill-in-the-blanks exercises, branching dialogue scenario (classic or
+  chat / messenger layout), reflection.
+- **Navigation:** Continue (reveals the rest of a lesson, optionally only after the tasks
+  above it are done), divider, course outline.
+- Ready-made block templates and per-block styles (theme or photo backgrounds, spacing,
+  full-width bands).
+
+## Course design and export
+
+- A cover page before the first lesson; 10 themes (Rose, Ocean, Forest, Sunset, Mono, Indigo,
+  Crimson, Mint, Grape, Terminal) plus a custom accent color and corner shape; every theme
+  keeps WCAG AA contrast.
+- Course settings: completion rule, pass / fail scoring, free or linear navigation, lesson
+  progress, a custom finish message, and the language of the player's buttons and messages
+  (English, Ukrainian, Spanish, French, German, Italian, Dutch, Portuguese, or automatic).
+- Accessible output aimed at WCAG 2.1 AA: keyboard and screen-reader support, captions and
+  transcripts, a learner accessibility menu (text size, high contrast, readable spacing,
+  reduced motion).
+- A pre-export check flags empty lessons, missing media, questions without a correct answer
+  and accessibility gaps such as missing alt text or captions.
+- Exports: SCORM 1.2, SCORM 2004 (4th edition) and cmi5, with resume, time spent, score,
+  pass / fail, per-quiz objectives and detailed question interactions reported to the LMS.
+  Packages include the official schema files; SCORM output is tested on SCORM Cloud.
+- In-app preview of the learner view, guided tour, Q&A, release notes and keyboard
+  shortcuts (press `?`). Installable as a web app (PWA).
+
+## Review comments
+
+Authors and reviewers comment on any block, reply and resolve, with no accounts — a reviewer
+just types a name. Comments live in the project's `comments.json` (never in the course or an
+export) and travel in the project .zip; when a reviewer's .zip comes back, their comments
+merge into the author's.
+
+## For AI assistants
+
+- Every project (folder or .zip) contains `AGENTS.md`, generated by Scormly: it documents
+  `project.json` — the whole course as one JSON file — every block type's `data` shape, the
+  Widget page spec and `comments.json`. An assistant can read it and then edit or write a
+  whole course, or work through the open review comments and reply to each one.
+- `user-instructions.md` holds the author's own notes for AI (tone, audience, conventions);
+  it is edited in Project settings → AI assistant and never overwritten by Scormly.
+- Scormly repairs a hand- or AI-edited `project.json` when it is opened (ids, types, missing
+  fields) and reports what it fixed.
+- To hand a project to an assistant: download it as a .zip (or point the assistant at the
+  project folder), ask it to follow `AGENTS.md`, then open the .zip it returns.
 
 ## Links
 
-- App: https://scormly.app/
-- Source code (MIT): https://github.com/dmmat/Scormly
-- Issues: https://github.com/dmmat/Scormly/issues
+- [Scormly](https://scormly.app/): the app and the landing page, with a live demo course
+- [Demo course](https://scormly.app/#/demo): opens a sample course with every kind of block
+- [Source code](https://github.com/dmmat/Scormly): MIT-licensed, React + TypeScript
+- [Issues](https://github.com/dmmat/Scormly/issues): bug reports and feature requests
+
+## Optional
+
+- [Architecture](https://github.com/dmmat/Scormly/blob/main/docs/architecture.md): data model, state and undo/redo, storage, export
+- [Adding a block type](https://github.com/dmmat/Scormly/blob/main/docs/adding-blocks.md): how blocks are defined, rendered and exported
+- [AGENTS.md generator](https://github.com/dmmat/Scormly/blob/main/src/lib/agentGuide.ts): the source of the per-project guide for AI assistants
