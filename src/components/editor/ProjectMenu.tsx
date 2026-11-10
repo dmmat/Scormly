@@ -2,28 +2,16 @@ import { useRef, useState } from 'react'
 import { useMenu } from '../../hooks/useMenu'
 import { useCourseStore } from '../../store/courseStore'
 import { useT } from '../../i18n/I18nProvider'
-import {
-  createBrowserProject,
-  createNewProject,
-  flushSave,
-  NoProjectError,
-  openExistingProject,
-} from '../../lib/projectService'
-import { isFileSystemAccessSupported } from '../../lib/fileSystem'
-import { isBrowserStorageSupported } from '../../lib/browserProjects'
+import { flushSave } from '../../lib/projectService'
 import { hasUnsavedZipChanges } from '../../lib/exportProjectZip'
-import { openProjectZip, ZipProjectError } from '../../lib/importProjectZip'
 import { runExport } from '../../export/runExport'
-import { toast } from '../../store/toastStore'
 
-// Dropdown on the project name: switch to another project (a folder or a
-// .zip), download it as a .zip, or close it. Without a project name it reads
-// "Not saving to disk" (work in this tab only).
+// Dropdown on the project name: back to the projects screen (to create, open
+// or switch projects — see WelcomeScreen), or download this one as a .zip.
+// Without a project name it reads "Not saving to disk" (work in this tab only).
 export default function ProjectMenu() {
   const projectName = useCourseStore((s) => s.projectName)
   const hasFolder = useCourseStore((s) => s.directoryHandle !== null)
-  const zipInputRef = useRef<HTMLInputElement>(null)
-  const folders = isFileSystemAccessSupported()
   const closeProject = useCourseStore((s) => s.closeProject)
   const { t } = useT('common')
   const { t: tw } = useT('welcome')
@@ -33,34 +21,15 @@ export default function ProjectMenu() {
 
   useMenu({ open, onClose: () => setOpen(false), rootRef, triggerRef })
 
-  // Switching or closing the project: write pending edits first, and ask
-  // before discarding them if the write failed — or, without a folder, if
-  // there are edits since the last .zip download.
+  // Leaving the project: write pending edits first, and ask before discarding
+  // them if the write failed — or, without a folder, if there are edits since
+  // the last .zip download.
   async function leave(): Promise<boolean> {
     if (!hasFolder) {
       return !hasUnsavedZipChanges() || window.confirm(tw('leaveUnsavedZip'))
     }
     if (await flushSave()) return true
     return window.confirm(t('leaveUnsaved'))
-  }
-
-  async function pick(action: () => Promise<void>, leaving = false) {
-    setOpen(false)
-    if (leaving && !(await leave())) return
-    try {
-      await action()
-    } catch (err) {
-      if (err instanceof DOMException && err.name === 'AbortError') return
-      toast({
-        tone: 'error',
-        message:
-          err instanceof ZipProjectError
-            ? tw(`zip_${err.reason}`, { detail: err.detail })
-            : err instanceof NoProjectError
-              ? tw('noProject')
-              : t('openFailed'),
-      })
-    }
   }
 
   return (
@@ -86,33 +55,19 @@ export default function ProjectMenu() {
       </button>
 
       {open && (
-        <div role="menu" className="absolute left-0 top-full z-30 mt-1.5 w-60 rounded-xl border border-gray-200 bg-white p-1.5 shadow-lg">
+        <div role="menu" className="absolute left-0 top-full z-30 mt-1.5 w-64 rounded-xl border border-gray-200 bg-white p-1.5 shadow-lg">
           <p className="px-3 pb-1 pt-1.5 text-xs font-semibold uppercase tracking-wide text-gray-400">
             {t('manageProject')}
           </p>
-          {folders && (
-            <>
-              <MenuItem icon="+" onClick={() => pick(createNewProject, true)}>
-                {t('newProject')}
-              </MenuItem>
-              <MenuItem icon={<FolderIcon />} onClick={() => pick(openExistingProject, true)}>
-                {t('openProject')}
-              </MenuItem>
-            </>
-          )}
-          {isBrowserStorageSupported() && (
-            <MenuItem icon="+" onClick={() => pick(createBrowserProject, true)}>
-              {tw('browserTitle')}
-            </MenuItem>
-          )}
           <MenuItem
-            icon={<ZipIcon />}
+            icon={<ProjectsIcon />}
+            hint={t('allProjectsHint')}
             onClick={() => {
               setOpen(false)
-              zipInputRef.current?.click()
+              void leave().then((ok) => ok && closeProject())
             }}
           >
-            {tw('openZip')}
+            {t('allProjects')}
           </MenuItem>
           <div className="my-1 h-px bg-gray-100" />
           <MenuItem icon={<DownloadIcon />} onClick={() => {
@@ -121,44 +76,20 @@ export default function ProjectMenu() {
             }}>
             {t('downloadProject')}
           </MenuItem>
-          {projectName && (
-            <>
-              <div className="my-1 h-px bg-gray-100" />
-              <MenuItem
-                icon="✕"
-                onClick={() => {
-                  setOpen(false)
-                  void leave().then((ok) => ok && closeProject())
-                }}
-              >
-                {t('closeProject')}
-              </MenuItem>
-            </>
-          )}
         </div>
       )}
-      {/* Outside the menu so it survives the menu closing while the picker is open. */}
-      <input
-        ref={zipInputRef}
-        type="file"
-        accept=".zip,application/zip"
-        className="hidden"
-        onChange={(e) => {
-          const file = e.target.files?.[0]
-          e.target.value = ''
-          if (file) void pick(() => openProjectZip(file), true)
-        }}
-      />
     </div>
   )
 }
 
 function MenuItem({
   icon,
+  hint,
   onClick,
   children,
 }: {
   icon?: React.ReactNode
+  hint?: string
   onClick: () => void
   children: React.ReactNode
 }) {
@@ -167,12 +98,15 @@ function MenuItem({
       type="button"
       role="menuitem"
       onClick={onClick}
-      className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 focus:bg-gray-50 focus:outline-none"
+      className={`flex w-full gap-2.5 rounded-lg px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 focus:bg-gray-50 focus:outline-none ${hint ? 'items-start' : 'items-center'}`}
     >
-      <span className="flex h-4 w-4 shrink-0 items-center justify-center text-gray-400">
+      <span className={`flex h-4 w-4 shrink-0 items-center justify-center text-gray-400 ${hint ? 'mt-0.5' : ''}`}>
         {icon}
       </span>
-      {children}
+      <span className="min-w-0">
+        {children}
+        {hint && <span className="mt-0.5 block text-xs text-gray-400">{hint}</span>}
+      </span>
     </button>
   )
 }
@@ -186,12 +120,14 @@ function FolderIcon() {
   )
 }
 
-function ZipIcon() {
+function ProjectsIcon() {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8}
       strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 shrink-0" aria-hidden>
-      <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z" />
-      <path d="M14 3v5h5M11 5h1M11 8h1M11 11h1M10.5 14h2v3h-2z" />
+      <rect x="3" y="3" width="7" height="7" rx="1.5" />
+      <rect x="14" y="3" width="7" height="7" rx="1.5" />
+      <rect x="3" y="14" width="7" height="7" rx="1.5" />
+      <path d="M17.5 14v7M14 17.5h7" />
     </svg>
   )
 }

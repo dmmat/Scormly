@@ -156,9 +156,8 @@ const common: LocaleTable = {
     catAssessment: 'Knowledge check',
     catNavigation: 'Navigation',
 
-    newProject: 'New project…',
-    openProject: 'Open project…',
-    closeProject: 'Close project',
+    allProjects: 'Projects…',
+    allProjectsHint: 'Create a new one, open another or switch',
     leaveUnsaved: 'The latest changes could not be saved to the project folder. Leave anyway and lose them?',
     downloadProject: 'Download project (.zip)',
     manageProject: 'Project',
@@ -320,9 +319,8 @@ const common: LocaleTable = {
     catAssessment: 'Перевірка знань',
     catNavigation: 'Навігація',
 
-    newProject: 'Новий проєкт…',
-    openProject: 'Відкрити проєкт…',
-    closeProject: 'Закрити проєкт',
+    allProjects: 'Проєкти…',
+    allProjectsHint: 'Створити новий, відкрити інший чи перемкнутися',
     leaveUnsaved: 'Останні зміни не вдалося зберегти в папку проєкту. Все одно вийти й втратити їх?',
     downloadProject: 'Завантажити проєкт (.zip)',
     manageProject: 'Проєкт',

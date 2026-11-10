@@ -66,6 +66,10 @@ export interface CourseState {
   // Project persistence (File System Access)
   directoryHandle: FileSystemDirectoryHandle | null
   projectName: string | null
+  /** Working without a project: the demo course or "just this tab". The
+   *  welcome screen shows while there is neither this nor a project. */
+  tabOnly: boolean
+  setTabOnly: (tabOnly: boolean) => void
   saveState: SaveState
   /** Repairs made to the last loaded / opened course (see repairCourse);
    *  empty for courses created in the app. */
@@ -231,6 +235,8 @@ export const useCourseStore = create<CourseState>((set, get) => {
 
     directoryHandle: null,
     projectName: null,
+    tabOnly: false,
+    setTabOnly: (tabOnly) => set({ tabOnly }),
     saveState: 'idle',
     loadFixes: [],
 
@@ -355,7 +361,7 @@ export const useCourseStore = create<CourseState>((set, get) => {
     closeProject: () => {
       // Drop the project key from the URL.
       if (window.location.hash.startsWith('#/app/')) window.location.hash = '/app'
-      set({ directoryHandle: null, projectName: null, saveState: 'idle' })
+      set({ directoryHandle: null, projectName: null, tabOnly: false, saveState: 'idle' })
     },
 
     setSaveState: (saveState) =>

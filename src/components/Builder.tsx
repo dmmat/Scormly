@@ -41,10 +41,10 @@ export default function Builder() {
   const { lang } = useLang()
   const { t } = useT('common')
   const { t: tw } = useT('welcome')
-  const [skipped, setSkipped] = useState(false)
+  const skipped = useCourseStore((s) => s.tabOnly)
   const openSample = () => {
     useCourseStore.getState().loadSampleCourse(lang)
-    setSkipped(true)
+    useCourseStore.getState().setTabOnly(true)
   }
 
   // #/demo (from the landing page) opens the sample course directly, unless a
@@ -110,7 +110,7 @@ export default function Builder() {
             // default may not match the user's selected language).
             useCourseStore.getState().newDemoCourse()
             setMemoryUserInstructions(null)
-            setSkipped(true)
+            useCourseStore.getState().setTabOnly(true)
           }}
         />
       </>

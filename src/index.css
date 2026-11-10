@@ -563,3 +563,80 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .drawer-in { animation: none; }
 }
+
+/* ──────────────────────────────────────────────────────────────────────────
+ * Welcome screen: the "where should the course live?" choice and its little
+ * animated scenes (WelcomeScreen.tsx).
+ * ────────────────────────────────────────────────────────────────────────── */
+.welcome-bg {
+  background-color: #f6f6f8;
+  background-image:
+    radial-gradient(56rem 26rem at 50% -8rem, color-mix(in srgb, var(--color-brand) 10%, transparent), transparent 70%),
+    radial-gradient(circle at 1px 1px, rgb(15 23 42 / 0.045) 1px, transparent 0);
+  background-size: auto, 22px 22px;
+}
+.ws-scene-bg {
+  background-color: color-mix(in srgb, var(--color-brand) 6%, #fff);
+  background-image: radial-gradient(circle at 1px 1px, color-mix(in srgb, var(--color-brand) 22%, transparent) 1px, transparent 0);
+  background-size: 18px 18px;
+}
+@keyframes ws-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+.ws-in { animation: ws-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) both; }
+/* A line of text being typed, then saved. */
+@keyframes ws-typing {
+  0% { width: 8%; }
+  55%, 100% { width: 72%; }
+}
+.ws-typing { width: 72%; animation: ws-typing 3s ease-in-out infinite; }
+@keyframes ws-saved {
+  0%, 55% { opacity: 0; transform: scale(0.85); }
+  65%, 92% { opacity: 1; transform: none; }
+  100% { opacity: 0; }
+}
+.ws-saved { animation: ws-saved 3s ease-in-out infinite; }
+/* A change dropping from the page into the browser's storage. */
+@keyframes ws-drop {
+  0%, 40% { opacity: 0; transform: translateY(-34px) scale(0.9); }
+  48% { opacity: 1; }
+  62% { opacity: 1; transform: none; }
+  72%, 100% { opacity: 0; transform: translateY(4px) scale(0.7); }
+}
+.ws-drop { animation: ws-drop 3s ease-in-out infinite; }
+/* The folder's files appearing one by one. */
+@keyframes ws-line {
+  from { opacity: 0; transform: translateX(-6px); }
+  to { opacity: 1; transform: none; }
+}
+.ws-line { animation: ws-line 0.4s ease-out both; }
+@keyframes ws-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-brand) 45%, transparent); }
+  50% { box-shadow: 0 0 0 5px transparent; }
+}
+.ws-pulse { animation: ws-pulse 2s ease-in-out infinite; }
+/* Work in a tab fading away when the tab closes… */
+@keyframes ws-vanish {
+  0%, 40% { opacity: 1; filter: none; }
+  62%, 82% { opacity: 0.12; filter: blur(2px); }
+  100% { opacity: 1; filter: none; }
+}
+.ws-vanish { animation: ws-vanish 3.6s ease-in-out infinite; }
+/* …unless it was downloaded. */
+@keyframes ws-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+.ws-bounce { animation: ws-bounce 1.8s ease-in-out infinite; }
+@keyframes ws-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+.ws-float { animation: ws-float 6s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .ws-in, .ws-typing, .ws-saved, .ws-line, .ws-pulse, .ws-vanish, .ws-bounce, .ws-float {
+    animation: none;
+  }
+  .ws-drop { display: none; }
+}
