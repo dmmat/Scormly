@@ -2,6 +2,7 @@
 // variants a block offers there.
 
 import { describe, test, expect } from 'vitest'
+import { LANGUAGES } from '../src/i18n/types'
 import { BLOCK_CATEGORIES, BLOCK_REGISTRY, blockVariants, createBlock } from '../src/blocks/registry'
 import { checkCourse } from '../src/export/courseCheck'
 import blocks from '../src/i18n/locales/blocks'
@@ -27,7 +28,7 @@ describe('block registry', () => {
     }
     for (const cat of cats) {
       expect(TYPES.some((t) => BLOCK_REGISTRY[t].category === cat), cat).toBe(true)
-      for (const lang of ['en', 'uk'] as const) expect(common[lang][CAT_KEY[cat]], `${lang} ${cat}`).toBeTruthy()
+      for (const { id: lang } of LANGUAGES) expect(common[lang][CAT_KEY[cat]], `${lang} ${cat}`).toBeTruthy()
     }
   })
 
@@ -40,7 +41,7 @@ describe('block registry', () => {
       expect(variants[0].data, `${type}: first variant is the default`).toBeUndefined()
       expect(variants[0].settings).toBeUndefined()
       for (const id of ids) {
-        for (const lang of ['en', 'uk'] as const) {
+        for (const { id: lang } of LANGUAGES) {
           expect(blocks[lang][`variant_${type}_${id}`], `${lang} variant_${type}_${id}`).toBeTruthy()
         }
       }

@@ -1,6 +1,7 @@
 // "Complete the test" shortcut in the preview (src/preview/simulateQuiz.ts).
 
 import { describe, test, expect } from 'vitest'
+import { LANGUAGES } from '../src/i18n/types'
 import type { Question } from '../src/types/course'
 import { isAnswerCorrect, quizScore, simulatedAnswers } from '../src/preview/simulateQuiz'
 import { makeSampleCourse } from '../src/lib/sampleCourse'
@@ -56,7 +57,7 @@ describe('simulated quiz answers', () => {
   })
 
   test('the sample course test can be completed both ways', () => {
-    for (const lang of ['en', 'uk'] as const) {
+    for (const { id: lang } of LANGUAGES) {
       const quiz = makeSampleCourse(lang).lessons.flatMap((l) => l.blocks).find((b) => b.type === 'quiz')
       if (quiz?.type !== 'quiz') throw new Error('no quiz')
       const { questions: qs, passingScore } = quiz.data

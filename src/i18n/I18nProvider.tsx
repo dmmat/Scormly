@@ -7,7 +7,7 @@ import {
   useState,
   type ReactNode,
 } from 'react'
-import { DEFAULT_LANGUAGE, type Language } from './types'
+import { DEFAULT_LANGUAGE, LANGUAGES, type Language } from './types'
 import type { Namespace } from './dictionary'
 import { TABLES } from './registry'
 
@@ -49,12 +49,18 @@ interface I18nContextValue {
 
 const I18nContext = createContext<I18nContextValue | null>(null)
 
+const asLanguage = (code: string | null | undefined): Language | undefined =>
+  LANGUAGES.find((l) => l.id === code?.toLowerCase().split('-')[0])?.id
+
+// The saved choice, else the first browser language the interface has.
 function detectInitial(): Language {
-  const stored = localStorage.getItem(STORAGE_KEY)
-  if (stored === 'en' || stored === 'uk') return stored
-  return navigator.language.toLowerCase().startsWith('uk')
-    ? 'uk'
-    : DEFAULT_LANGUAGE
+  const stored = LANGUAGES.find((l) => l.id === localStorage.getItem(STORAGE_KEY))
+  if (stored) return stored.id
+  for (const code of navigator.languages ?? [navigator.language]) {
+    const match = asLanguage(code)
+    if (match) return match
+  }
+  return DEFAULT_LANGUAGE
 }
 
 export function I18nProvider({ children }: { children: ReactNode }) {

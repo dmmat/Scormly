@@ -1,7 +1,7 @@
 import type { LocaleTable } from '../types.ts'
 
 // Copy for the landing's auto-playing chat demo. The scenarios themselves live
-// in src/components/landing/demos/chatScenarios.ts as inline { en, uk }
+// in src/components/landing/demos/chatScenarios.ts as inline per-language
 // strings; only the replay button label is shared UI.
 const demo: LocaleTable = {
   en: {
@@ -9,6 +9,12 @@ const demo: LocaleTable = {
   },
   uk: {
     chatReplay: 'Спочатку',
+  },
+  fr: {
+    chatReplay: 'Rejouer',
+  },
+  es: {
+    chatReplay: 'Repetir',
   },
 }
 

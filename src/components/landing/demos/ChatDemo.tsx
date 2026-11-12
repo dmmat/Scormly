@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useT, useLang } from '../../../i18n/I18nProvider'
-import { chatScenarios, type ChatScenario } from './chatScenarios'
+import { chatScenarios, type ChatScenario, type LocalizedString } from './chatScenarios'
 
 // A phone-style dialogue trainer that plays itself: the character "types",
 // answers appear, one is auto-picked, and the conversation loops. Pure
@@ -8,7 +8,7 @@ import { chatScenarios, type ChatScenario } from './chatScenarios'
 //
 // The demo rotates through `chatScenarios` — a shuffled queue, no repeats
 // until the whole list is exhausted, then re-shuffled. Texts inside each
-// scenario are bilingual (en/uk) and resolved against the current UI language.
+// scenario are localized and resolved against the current UI language.
 
 type Bubble = { id: number; from: 'bot' | 'user'; text: string }
 
@@ -55,7 +55,7 @@ export default function ChatDemo() {
   // Resolve all texts up-front in the current language. useMemo so the same
   // scenario doesn't get re-resolved on every render tick.
   const resolved = useMemo(() => {
-    const pick = <T extends string>(v: { en: T; uk: T }) => (lang === 'uk' ? v.uk : v.en)
+    const pick = (v: LocalizedString) => v[lang]
     return {
       name: pick(scenario.name),
       status: pick(scenario.status),

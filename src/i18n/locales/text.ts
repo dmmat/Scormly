@@ -64,6 +64,68 @@ const text: LocaleTable = {
     notePlaceholder: 'Текст примітки',
     warningPlaceholder: 'Текст попередження',
   },
+  fr: {
+    // Heading
+    headingPlaceholder: 'Titre',
+    headingLevel: 'Titre de niveau {level}',
+
+    // Paragraph
+    bold: 'Gras',
+    italic: 'Italique',
+    paragraphPlaceholder: 'Saisissez du texte…',
+
+    // List
+    bulleted: 'À puces',
+    numbered: 'Numérotée',
+    listItemPlaceholder: 'Élément de liste',
+    removeItem: 'Supprimer l’élément',
+    addItem: 'Ajouter un élément',
+
+    // Note
+    noteKind: 'Type',
+    note: 'Note',
+    tip: 'Conseil',
+    success: 'Succès',
+    warning: 'Avertissement',
+    paragraphStyle: 'Style',
+    para_normal: 'Normal',
+    para_lead: 'Chapô',
+    para_dropcap: 'Lettrine',
+    para_columns: 'Texte en colonnes',
+    notePlaceholder: 'Texte de la note',
+    warningPlaceholder: 'Texte de l’avertissement',
+  },
+  es: {
+    // Heading
+    headingPlaceholder: 'Título',
+    headingLevel: 'Título de nivel {level}',
+
+    // Paragraph
+    bold: 'Negrita',
+    italic: 'Cursiva',
+    paragraphPlaceholder: 'Escribe el texto…',
+
+    // List
+    bulleted: 'Con viñetas',
+    numbered: 'Numerada',
+    listItemPlaceholder: 'Elemento de la lista',
+    removeItem: 'Quitar elemento',
+    addItem: 'Añadir elemento',
+
+    // Note
+    noteKind: 'Tipo',
+    note: 'Nota',
+    tip: 'Consejo',
+    success: 'Éxito',
+    warning: 'Advertencia',
+    paragraphStyle: 'Estilo',
+    para_normal: 'Normal',
+    para_lead: 'Entradilla',
+    para_dropcap: 'Letra capital',
+    para_columns: 'Texto en columnas',
+    notePlaceholder: 'Texto de la nota',
+    warningPlaceholder: 'Texto de la advertencia',
+  },
 }
 
 export default text

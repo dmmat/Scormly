@@ -94,6 +94,96 @@ const assessment: LocaleTable = {
     blankN: 'Пропуск {n}',
     correctAnswer: 'Відповідь: {a}',
   },
+  fr: {
+    // Ordering — editor
+    modeSequence: 'Remettre dans l’ordre',
+    modeCategories: 'Classer par catégories',
+    promptLabel: 'Consigne',
+    promptPlaceholder: 'Consigne pour l’apprenant…',
+    itemsSequence: 'Éléments, dans le bon ordre',
+    itemsSequenceHelp: 'Les apprenants les voient mélangés et les remettent dans cet ordre.',
+    itemsCategories: 'Éléments',
+    itemPlaceholder: 'Texte de l’élément',
+    addItem: '+ Élément',
+    removeItem: 'Supprimer l’élément',
+    moveUp: 'Monter',
+    moveDown: 'Descendre',
+    categoriesLabel: 'Catégories',
+    categoryPlaceholder: 'Nom de la catégorie',
+    addCategory: '+ Catégorie',
+    removeCategory: 'Supprimer la catégorie',
+    itemCategory: 'Bonne catégorie',
+    noCategory: '— Catégorie —',
+
+    // Ordering — learner
+    sequenceHint: 'Faites glisser les éléments, ou utilisez les flèches, pour les remettre dans le bon ordre.',
+    categoriesHint: 'Faites glisser chaque élément dans une catégorie, ou choisissez-la dans sa liste.',
+    unsorted: 'Pas encore classés',
+    chooseCategory: 'Choisissez une catégorie',
+    correctPosition: 'Bonne position : {n}',
+    correctCategory: 'Bonne catégorie : {c}',
+    dragItem: 'Faites glisser pour réordonner',
+
+    // Fill in the blanks — editor
+    textLabel: 'Texte à trous',
+    textPlaceholder: 'La capitale de la France est [Paris].',
+    textHelp: 'Placez chaque réponse entre crochets : [Paris]. Séparez les autres réponses acceptées par |, par ex. [Paris|Paname] — la première est la bonne réponse.',
+    fbModeType: 'Saisir la réponse',
+    fbModeSelect: 'Choisir dans une liste',
+    caseSensitive: 'Réponses sensibles à la casse',
+    caseSensitiveHelp: 'Désactivé : « paris » est aussi accepté pour « Paris ». S’applique aux réponses saisies.',
+    blanksCount: 'Trous : {n}',
+    noBlanks: 'Aucun trou pour l’instant — placez une réponse entre [crochets].',
+
+    // Fill in the blanks — learner
+    blankN: 'Trou {n}',
+    correctAnswer: 'Réponse : {a}',
+  },
+  es: {
+    // Ordering — editor
+    modeSequence: 'Poner en orden',
+    modeCategories: 'Clasificar en categorías',
+    promptLabel: 'Tarea',
+    promptPlaceholder: 'Instrucción para el alumno…',
+    itemsSequence: 'Elementos, en el orden correcto',
+    itemsSequenceHelp: 'Los alumnos los ven mezclados y los devuelven a este orden.',
+    itemsCategories: 'Elementos',
+    itemPlaceholder: 'Texto del elemento',
+    addItem: '+ Elemento',
+    removeItem: 'Eliminar el elemento',
+    moveUp: 'Subir',
+    moveDown: 'Bajar',
+    categoriesLabel: 'Categorías',
+    categoryPlaceholder: 'Nombre de la categoría',
+    addCategory: '+ Categoría',
+    removeCategory: 'Eliminar la categoría',
+    itemCategory: 'Categoría correcta',
+    noCategory: '— Categoría —',
+
+    // Ordering — learner
+    sequenceHint: 'Arrastra los elementos, o usa las flechas, para ponerlos en el orden correcto.',
+    categoriesHint: 'Arrastra cada elemento a una categoría o elígela en su lista.',
+    unsorted: 'Sin clasificar',
+    chooseCategory: 'Elige una categoría',
+    correctPosition: 'Posición correcta: {n}',
+    correctCategory: 'Categoría correcta: {c}',
+    dragItem: 'Arrastra para cambiar el orden',
+
+    // Fill in the blanks — editor
+    textLabel: 'Texto con huecos',
+    textPlaceholder: 'La capital de Francia es [París].',
+    textHelp: 'Pon cada respuesta entre corchetes: [París]. Separa las demás respuestas aceptadas con |, p. ej. [París|Paris]; la primera es la respuesta correcta.',
+    fbModeType: 'Escribir la respuesta',
+    fbModeSelect: 'Elegir de una lista',
+    caseSensitive: 'Distinguir mayúsculas y minúsculas',
+    caseSensitiveHelp: 'Desactivado: “parís” también cuenta como “París”. Se aplica a las respuestas escritas.',
+    blanksCount: 'Huecos: {n}',
+    noBlanks: 'Aún no hay huecos: pon una respuesta entre [corchetes].',
+
+    // Fill in the blanks — learner
+    blankN: 'Hueco {n}',
+    correctAnswer: 'Respuesta: {a}',
+  },
 }
 
 export default assessment

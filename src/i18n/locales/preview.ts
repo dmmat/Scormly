@@ -78,6 +78,82 @@ const preview: LocaleTable = {
     // Flashcards
     flipHint: 'Клікніть, щоб перевернути',
   },
+  fr: {
+    title: 'Aperçu',
+    open: 'Aperçu',
+    close: 'Fermer l’aperçu',
+    prev: 'Précédent',
+    next: 'Suivant',
+    progress: 'Leçon {n} sur {total}',
+    empty: 'Cette leçon n’a pas encore de contenu.',
+    finish: 'Terminer',
+    courseComplete: 'Cours terminé',
+    courseCompleteText: 'Vous avez atteint la fin du cours.',
+    review: 'Revoir le cours',
+
+    // Quiz
+    submit: 'Valider la réponse',
+    submitAll: 'Valider les réponses',
+    retry: 'Réessayer',
+    correct: 'Correct',
+    incorrect: 'Incorrect',
+    selectAnswer: 'Sélectionnez une réponse',
+    yourScore: 'Votre score : {score} %',
+    passed: 'Réussi',
+    failed: 'Non réussi',
+    // Author shortcut on quizzes (preview window only)
+    autoTest: 'Passer le test',
+    autoTestHint: 'Aperçu uniquement : répond aux questions et les valide, pour que vous puissiez vérifier le résultat.',
+    autoPass: 'Réussi',
+    autoFail: 'Non réussi',
+    autoPassOff: 'Ce test ne peut pas être réussi — vérifiez ses bonnes réponses.',
+    autoFailOff: 'Ce test ne peut pas être raté — vérifiez son score de réussite.',
+
+    // Scenario
+    restart: 'Recommencer',
+    end: 'Fin',
+
+    // Flashcards
+    flipHint: 'Cliquez pour retourner',
+  },
+  es: {
+    title: 'Vista previa',
+    open: 'Vista previa',
+    close: 'Cerrar la vista previa',
+    prev: 'Anterior',
+    next: 'Siguiente',
+    progress: 'Lección {n} de {total}',
+    empty: 'Esta lección aún no tiene contenido.',
+    finish: 'Finalizar',
+    courseComplete: 'Curso completado',
+    courseCompleteText: 'Has llegado al final del curso.',
+    review: 'Repasar el curso',
+
+    // Quiz
+    submit: 'Enviar respuesta',
+    submitAll: 'Enviar respuestas',
+    retry: 'Intentar de nuevo',
+    correct: 'Correcto',
+    incorrect: 'Incorrecto',
+    selectAnswer: 'Selecciona una respuesta',
+    yourScore: 'Tu puntuación: {score} %',
+    passed: 'Aprobado',
+    failed: 'No aprobado',
+    // Author shortcut on quizzes (preview window only)
+    autoTest: 'Completar la prueba',
+    autoTestHint: 'Solo en la vista previa: responde las preguntas y las envía, para que puedas comprobar el resultado.',
+    autoPass: 'Aprobado',
+    autoFail: 'No aprobado',
+    autoPassOff: 'Esta prueba no se puede aprobar — revisa sus respuestas correctas.',
+    autoFailOff: 'Esta prueba no se puede suspender — revisa su puntuación mínima.',
+
+    // Scenario
+    restart: 'Reiniciar',
+    end: 'Fin',
+
+    // Flashcards
+    flipHint: 'Haz clic para girar',
+  },
 }
 
 export default preview

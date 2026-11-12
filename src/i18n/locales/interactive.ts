@@ -54,6 +54,58 @@ const interactive: LocaleTable = {
     frontPlaceholder: 'Лицьова сторона',
     backPlaceholder: 'Зворотна сторона',
   },
+  fr: {
+    // Tabs
+    addTab: '+ Onglet',
+    tabTitlePlaceholder: 'Titre',
+    tabFallback: 'Onglet',
+    removeTab: 'Supprimer l’onglet',
+    tabContentPlaceholder: 'Contenu de l’onglet…',
+    noTabs: 'Aucun onglet',
+
+    // Accordion
+    addSection: '+ Section',
+    sectionTitlePlaceholder: 'Titre de la section',
+    sectionFallback: 'Section',
+    removeSection: 'Supprimer la section',
+    sectionContentPlaceholder: 'Contenu de la section…',
+    collapse: 'Replier',
+    expand: 'Déplier',
+
+    // Flashcards
+    addCard: '+ Carte',
+    removeCard: '✕ Supprimer',
+    front: 'Recto',
+    back: 'Verso',
+    frontPlaceholder: 'Recto de la carte',
+    backPlaceholder: 'Verso de la carte',
+  },
+  es: {
+    // Tabs
+    addTab: '+ Pestaña',
+    tabTitlePlaceholder: 'Título',
+    tabFallback: 'Pestaña',
+    removeTab: 'Quitar pestaña',
+    tabContentPlaceholder: 'Contenido de la pestaña…',
+    noTabs: 'No hay pestañas',
+
+    // Accordion
+    addSection: '+ Sección',
+    sectionTitlePlaceholder: 'Título de la sección',
+    sectionFallback: 'Sección',
+    removeSection: 'Quitar sección',
+    sectionContentPlaceholder: 'Contenido de la sección…',
+    collapse: 'Contraer',
+    expand: 'Expandir',
+
+    // Flashcards
+    addCard: '+ Tarjeta',
+    removeCard: '✕ Quitar',
+    front: 'Anverso',
+    back: 'Reverso',
+    frontPlaceholder: 'Cara anterior',
+    backPlaceholder: 'Cara posterior',
+  },
 }
 
 export default interactive

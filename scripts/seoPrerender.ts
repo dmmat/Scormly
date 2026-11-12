@@ -107,7 +107,7 @@ const STYLE = `<style>
 </style>`
 
 // One page to index: the landing. The builder (/app) and the demo (/demo) are
-// the same app with nothing of their own to index, and the Ukrainian interface
+// the same app with nothing of their own to index, and the interface language
 // is chosen in the page, so there are no separate language URLs to list.
 const sitemap = (lastmod: string) => `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">

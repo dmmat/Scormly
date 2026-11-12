@@ -66,6 +66,70 @@ const hotspotTimeline: LocaleTable = {
     stepOf: 'Крок {n} з {total}',
     goToStep: 'Перейти до кроку {n}',
   },
+  fr: {
+    // Image hotspots — editor
+    hotspotAddHint: 'Cliquez sur l’image pour ajouter un repère. Faites glisser un repère pour le déplacer ; faites un clic droit dessus (ou appuyez sur Delete) pour le supprimer.',
+    hotspotEmptyHint: 'Aucun repère pour l’instant — cliquez sur l’image pour en ajouter un.',
+    hotspotTitlePlaceholder: 'Titre du repère',
+    hotspotTextPlaceholder: 'Texte affiché à l’ouverture du repère',
+    hotspotX: 'X, %',
+    hotspotY: 'Y, %',
+    removeHotspot: 'Supprimer le repère',
+    // Image hotspots — learner
+    hotspotMarker: 'Repère {n} : {title}',
+    hotspotProgress: 'Explorés : {n} sur {total}',
+    close: 'Fermer',
+
+    // Timeline — editor
+    layout: 'Disposition',
+    layoutVertical: 'Chronologie verticale',
+    layoutStepper: 'Étape par étape',
+    addStep: '+ Élément',
+    removeStep: 'Supprimer l’élément',
+    moveUp: 'Monter',
+    moveDown: 'Descendre',
+    labelPlaceholder: 'Libellé (date ou « Étape 1 »)',
+    stepTitlePlaceholder: 'Titre',
+    stepTextPlaceholder: 'Description',
+    noSteps: 'Aucun élément pour l’instant.',
+    // Timeline — learner
+    prev: 'Précédent',
+    next: 'Suivant',
+    stepOf: 'Étape {n} sur {total}',
+    goToStep: 'Aller à l’étape {n}',
+  },
+  es: {
+    // Image hotspots — editor
+    hotspotAddHint: 'Haz clic en la imagen para añadir un marcador. Arrastra un marcador para moverlo; haz clic derecho en él (o pulsa Delete) para eliminarlo.',
+    hotspotEmptyHint: 'Aún no hay marcadores: haz clic en la imagen para añadir uno.',
+    hotspotTitlePlaceholder: 'Título del marcador',
+    hotspotTextPlaceholder: 'Texto que se muestra al abrir el marcador',
+    hotspotX: 'X, %',
+    hotspotY: 'Y, %',
+    removeHotspot: 'Eliminar el marcador',
+    // Image hotspots — learner
+    hotspotMarker: 'Marcador {n}: {title}',
+    hotspotProgress: 'Explorados: {n} de {total}',
+    close: 'Cerrar',
+
+    // Timeline — editor
+    layout: 'Diseño',
+    layoutVertical: 'Línea de tiempo vertical',
+    layoutStepper: 'Paso a paso',
+    addStep: '+ Elemento',
+    removeStep: 'Eliminar el elemento',
+    moveUp: 'Subir',
+    moveDown: 'Bajar',
+    labelPlaceholder: 'Etiqueta (fecha o “Paso 1”)',
+    stepTitlePlaceholder: 'Título',
+    stepTextPlaceholder: 'Descripción',
+    noSteps: 'Aún no hay elementos.',
+    // Timeline — learner
+    prev: 'Anterior',
+    next: 'Siguiente',
+    stepOf: 'Paso {n} de {total}',
+    goToStep: 'Ir al paso {n}',
+  },
 }
 
 export default hotspotTimeline

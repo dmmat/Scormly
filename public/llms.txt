@@ -7,7 +7,7 @@
 
 Scormly is a block-based authoring tool: an author builds a course out of lessons, and each
 lesson out of blocks, editing them in place (WYSIWYG) with drag-and-drop and undo/redo. The
-interface is in English and Ukrainian. It works in current desktop browsers; Chrome and Edge
+interface is in English, Ukrainian, French and Spanish. It works in current desktop browsers; Chrome and Edge
 can also save a project straight to a folder on disk.
 
 ## Where a project lives

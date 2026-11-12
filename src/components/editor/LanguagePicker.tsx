@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useLang } from '../../i18n/I18nProvider'
 import { LANGUAGES } from '../../i18n/types'
 
-// Interface language switcher (EN / UK).
+// Interface language switcher.
 export default function LanguagePicker() {
   const { lang, setLang } = useLang()
   const [open, setOpen] = useState(false)
