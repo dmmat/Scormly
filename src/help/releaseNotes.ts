@@ -34,6 +34,7 @@ export const RELEASES: Release[] = [
       fr: [
         'L’éditeur et le site sont désormais disponibles en français et en espagnol : choisissez la langue dans la barre supérieure.',
         'Adresses plus courtes : scormly.app/app pour l’éditeur, scormly.app/demo pour le cours d’exemple. Les anciens liens fonctionnent toujours.',
+        'Le site a une adresse pour chaque langue : scormly.app/uk, scormly.app/fr et scormly.app/es.',
         'L’éditeur s’adapte mieux aux petits écrans : la barre supérieure tient sur une seule ligne, les titres longs passent à la ligne.',
         'Un projet qui n’existe que dans l’onglet affiche un « ! » orange à côté de son nom au lieu d’un bandeau, et Scormly propose de télécharger le .zip avant de le quitter.',
         'La visite guidée présente désormais les commentaires de relecture.',
@@ -41,6 +42,7 @@ export const RELEASES: Release[] = [
       es: [
         'El editor y el sitio ya están disponibles en español y en francés: elige el idioma en la barra superior.',
         'Direcciones más cortas: scormly.app/app para el editor y scormly.app/demo para el curso de ejemplo. Los enlaces antiguos siguen funcionando.',
+        'El sitio tiene una dirección para cada idioma: scormly.app/uk, scormly.app/fr y scormly.app/es.',
         'El editor se adapta mejor a las pantallas pequeñas: la barra superior se mantiene en una sola línea y los títulos largos pasan a la línea siguiente.',
         'Un proyecto que solo existe en la pestaña muestra un “!” ámbar junto a su nombre en lugar de un aviso, y al salir se ofrece descargar antes el .zip.',
         'El recorrido ahora incluye los comentarios de revisión.',
