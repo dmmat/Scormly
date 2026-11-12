@@ -129,6 +129,8 @@ const ICON_PATHS: Record<string, ReactNode> = {
     </>
   ),
   chevron: <path d="m6 9 6 6 6-6" />,
+  menu: <path d="M4 7h16M4 12h16M4 17h16" />,
+  close: <path d="M6 6l12 12M18 6 6 18" />,
   sparkles: (
     <>
       <path d="M12 3l1.9 4.6L18.5 9.5 13.9 11.4 12 16l-1.9-4.6L5.5 9.5l4.6-1.9L12 3z" />
@@ -238,6 +240,70 @@ function DotGrid({ id, className }: { id: string; className?: string }) {
   )
 }
 
+interface NavLink {
+  href: string
+  label: string
+  primary?: boolean
+  external?: boolean
+}
+
+// The section menu for screens where the full nav doesn't fit (below xl).
+function NavMenu({ links, label }: { links: NavLink[]; label: string }) {
+  const [open, setOpen] = useState(false)
+  const ref = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    if (!open) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setOpen(false)
+    }
+    const onPointer = (e: PointerEvent) => {
+      if (!ref.current?.contains(e.target as Node)) setOpen(false)
+    }
+    document.addEventListener('keydown', onKey)
+    document.addEventListener('pointerdown', onPointer)
+    return () => {
+      document.removeEventListener('keydown', onKey)
+      document.removeEventListener('pointerdown', onPointer)
+    }
+  }, [open])
+  return (
+    <div ref={ref} className="xl:hidden">
+      <button
+        type="button"
+        aria-label={label}
+        aria-expanded={open}
+        aria-controls="landing-nav-menu"
+        onClick={() => setOpen((v) => !v)}
+        className="flex h-9 w-9 items-center justify-center rounded-lg text-gray-700 hover:bg-gray-100 hover:text-brand-dark"
+      >
+        <Icon name={open ? 'close' : 'menu'} className="h-5 w-5" />
+      </button>
+      {open && (
+        <nav
+          id="landing-nav-menu"
+          aria-label={label}
+          className="absolute inset-x-0 top-full border-b border-gray-200 bg-white px-4 py-3 shadow-lg sm:inset-x-auto sm:right-6 sm:mt-2 sm:w-80 sm:rounded-2xl sm:border"
+        >
+          <ul className="grid grid-cols-2 gap-x-2 text-sm font-medium text-gray-700">
+            {links.map((l) => (
+              <li key={l.href}>
+                <a
+                  href={l.href}
+                  {...(l.external ? { target: '_blank', rel: 'noreferrer' } : {})}
+                  onClick={() => setOpen(false)}
+                  className="block rounded-lg px-3 py-2.5 hover:bg-brand/5 hover:text-brand-dark"
+                >
+                  {l.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      )}
+    </div>
+  )
+}
+
 export default function Landing() {
   const { t, lang } = useT('landing')
 
@@ -265,55 +331,48 @@ export default function Landing() {
   )
 
   function Nav() {
+    // `primary` links stay in the bar on mid-size screens; the menu button
+    // (shown below xl) always lists everything.
+    const links: NavLink[] = [
+      { href: '#demo', label: t('navDemo'), primary: true },
+      { href: '#design', label: t('navDesign') },
+      { href: '#features', label: t('navFeatures'), primary: true },
+      { href: '#accessibility', label: t('navA11y') },
+      { href: '#ai', label: t('navAi') },
+      { href: '#how', label: t('navHow'), primary: true },
+      { href: '#whats-new', label: t('navNews') },
+      { href: '#faq', label: t('navFaq'), primary: true },
+      { href: GITHUB_URL, label: t('navGithub'), primary: true, external: true },
+    ]
     return (
       <header className="sticky top-0 z-30 border-b border-gray-100 bg-white/80 backdrop-blur">
-        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
-          <a href="#/" aria-label="Scormly">
+        <div className="relative mx-auto flex h-16 max-w-6xl items-center justify-between gap-2 px-4 sm:px-6">
+          {/* On the narrowest phones only the logo mark shows, so the bar fits. */}
+          <a href="#/" aria-label="Scormly" className="shrink-0 max-[359px]:[&_span]:hidden">
             <Logo />
           </a>
-          <nav className="hidden items-center gap-5 whitespace-nowrap text-sm font-medium text-gray-600 xl:flex">
-            <a href="#demo" className="hover:text-brand">
-              {t('navDemo')}
-            </a>
-            <a href="#design" className="hover:text-brand">
-              {t('navDesign')}
-            </a>
-            <a href="#features" className="hover:text-brand">
-              {t('navFeatures')}
-            </a>
-            <a href="#accessibility" className="hover:text-brand">
-              {t('navA11y')}
-            </a>
-            <a href="#ai" className="hover:text-brand">
-              {t('navAi')}
-            </a>
-            <a href="#how" className="hover:text-brand">
-              {t('navHow')}
-            </a>
-            <a href="#whats-new" className="hover:text-brand">
-              {t('navNews')}
-            </a>
-            <a href="#faq" className="hover:text-brand">
-              {t('navFaq')}
-            </a>
-            <a
-              href={GITHUB_URL}
-              target="_blank"
-              rel="noreferrer"
-              className="hover:text-brand"
-            >
-              {t('navGithub')}
-            </a>
+          <nav className="hidden items-center gap-5 whitespace-nowrap text-sm font-medium text-gray-600 lg:flex">
+            {links.map((l) => (
+              <a
+                key={l.href}
+                href={l.href}
+                {...(l.external ? { target: '_blank', rel: 'noreferrer' } : {})}
+                className={`hover:text-brand${l.primary ? '' : ' hidden xl:inline'}`}
+              >
+                {l.label}
+              </a>
+            ))}
           </nav>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2">
             <LanguagePicker />
             <button
               type="button"
               onClick={() => navigate('app')}
-              className="btn-primary text-sm sm:whitespace-nowrap"
+              className="btn-primary px-3 text-sm sm:px-4 sm:whitespace-nowrap"
             >
               {t('openApp')}
             </button>
+            <NavMenu links={links} label={t('navMenu')} />
           </div>
         </div>
       </header>
@@ -362,7 +421,7 @@ export default function Landing() {
                 {t('heroCtaSecondary')}
               </a>
             </div>
-            <p className="reveal-visible mt-5 text-sm text-gray-400">{t('heroNote')}</p>
+            <p className="reveal-visible mt-5 text-sm text-gray-500">{t('heroNote')}</p>
           </div>
 
           {/* Live, self-playing dialogue trainer — a real product block. */}
@@ -1104,7 +1163,7 @@ export default function Landing() {
             </a>
             <span>{t('footerLicense')}</span>
           </div>
-          <p className="text-xs text-gray-400">{t('footerMade')}</p>
+          <p className="text-xs text-gray-500">{t('footerMade')}</p>
         </div>
       </footer>
     )

@@ -50,7 +50,7 @@ export default function QuizDemo() {
 
       <div className="min-h-[1.5rem] text-sm">
         {picked == null ? (
-          <span className="text-gray-400">{t('quizPick')}</span>
+          <span className="text-gray-500">{t('quizPick')}</span>
         ) : picked === 0 ? (
           <span className="font-medium text-emerald-700">{t('quizCorrect')}</span>
         ) : (

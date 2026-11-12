@@ -44,7 +44,7 @@ export default function OutlineDemo() {
           })}
         </ol>
       </div>
-      <p className="text-center text-sm text-gray-400">{t('outlineHint')}</p>
+      <p className="text-center text-sm text-gray-500">{t('outlineHint')}</p>
     </div>
   )
 }

@@ -164,6 +164,7 @@ const landing: LocaleTable = {
 
     // What's new
     navNews: 'What’s new',
+    navMenu: 'Menu',
     newsBadge: 'Changelog',
     newsTitle: 'What’s new',
     newsSubtitle: 'Scormly ships often. Here are the latest updates to the builder.',
@@ -419,6 +420,7 @@ const landing: LocaleTable = {
 
     // What's new
     navNews: 'Що нового',
+    navMenu: 'Меню',
     newsBadge: 'Журнал змін',
     newsTitle: 'Що нового',
     newsSubtitle: 'Scormly оновлюється часто. Ось останні зміни в конструкторі.',

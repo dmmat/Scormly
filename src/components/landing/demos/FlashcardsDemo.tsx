@@ -29,7 +29,7 @@ export default function FlashcardsDemo() {
           </button>
         ))}
       </div>
-      <p className="text-center text-sm text-gray-400">{t('flipHint')}</p>
+      <p className="text-center text-sm text-gray-500">{t('flipHint')}</p>
     </div>
   )
 }
