@@ -271,7 +271,7 @@ export default function Landing() {
           <a href="#/" aria-label="Scormly">
             <Logo />
           </a>
-          <nav className="hidden items-center gap-6 text-sm font-medium text-gray-600 lg:flex">
+          <nav className="hidden items-center gap-5 whitespace-nowrap text-sm font-medium text-gray-600 xl:flex">
             <a href="#demo" className="hover:text-brand">
               {t('navDemo')}
             </a>
@@ -310,7 +310,7 @@ export default function Landing() {
             <button
               type="button"
               onClick={() => navigate('app')}
-              className="btn-primary text-sm"
+              className="btn-primary text-sm sm:whitespace-nowrap"
             >
               {t('openApp')}
             </button>
