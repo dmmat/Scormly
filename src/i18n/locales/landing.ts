@@ -229,8 +229,8 @@ const landing: LocaleTable = {
     // About the project
     aboutTitle:
       'About the project',
-    aboutRole:
-      'Creator and maintainer of Scormly',
+    aboutText:
+      'Scormly is an independent open-source project, developed in the open on GitHub. Questions, ideas and feedback are welcome.',
     aboutVersion:
       'Version',
     aboutReleased:
@@ -484,8 +484,8 @@ const landing: LocaleTable = {
     // About the project
     aboutTitle:
       'Про проєкт',
-    aboutRole:
-      'Автор і мейнтейнер Scormly',
+    aboutText:
+      'Scormly — незалежний проєкт з відкритим кодом, який розвивається відкрито на GitHub. Питання, ідеї та відгуки вітаються.',
     aboutVersion:
       'Версія',
     aboutReleased:

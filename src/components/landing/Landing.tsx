@@ -4,7 +4,7 @@ import LanguagePicker from '../editor/LanguagePicker'
 import { useT } from '../../i18n/I18nProvider'
 import { useReveal } from '../../hooks/useReveal'
 import { navigate } from '../../hooks/useRoute'
-import { GITHUB_URL, GITHUB_ISSUES_URL } from '../../lib/links'
+import { CONTACT_EMAIL, GITHUB_URL, GITHUB_ISSUES_URL } from '../../lib/links'
 import { RELEASES } from '../../help/releaseNotes'
 import ChatDemo from './demos/ChatDemo'
 
@@ -237,8 +237,6 @@ function DotGrid({ id, className }: { id: string; className?: string }) {
     </svg>
   )
 }
-
-const MAINTAINER = { name: 'Dmytro Matsiuk', github: 'https://github.com/dmmat' }
 
 export default function Landing() {
   const { t, lang } = useT('landing')
@@ -940,7 +938,7 @@ export default function Landing() {
     )
   }
 
-  // The maintainer and the project's vital signs.
+  // What the project is, how to reach it, and its vital signs.
   function About() {
     const latest = RELEASES.find((r) => r.date)?.date
     const fmt = new Intl.DateTimeFormat(lang, { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' })
@@ -951,20 +949,16 @@ export default function Landing() {
           <div className="mx-auto max-w-5xl rounded-3xl border border-gray-200 bg-white p-6 shadow-sm sm:p-10">
             <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">{t('aboutTitle')}</h2>
             <div className="mt-8 grid gap-8 md:grid-cols-[1fr_1.2fr] md:gap-12">
-              <div className="flex items-center gap-4">
-                <span
-                  aria-hidden
-                  className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-brand to-brand-dark text-xl font-bold text-white"
-                >
-                  DM
-                </span>
-                <div className="min-w-0">
-                  <p className="text-lg font-semibold">{MAINTAINER.name}</p>
-                  <p className="text-gray-600">{t('aboutRole')}</p>
-                  <a href={MAINTAINER.github} target="_blank" rel="noreferrer" className={`mt-1 inline-block text-sm ${linkClass}`}>
+              <div>
+                <p className="leading-relaxed text-gray-600">{t('aboutText')}</p>
+                <p className="mt-4 flex flex-wrap gap-x-5 gap-y-2 text-sm">
+                  <a href={GITHUB_URL} target="_blank" rel="noreferrer" className={linkClass}>
                     {t('navGithub')}
                   </a>
-                </div>
+                  <a href={`mailto:${CONTACT_EMAIL}`} className={linkClass}>
+                    {CONTACT_EMAIL}
+                  </a>
+                </p>
               </div>
               <dl className="grid grid-cols-2 gap-x-6 gap-y-5 text-sm [&>div]:min-w-0">
                 <div>
@@ -1096,6 +1090,9 @@ export default function Landing() {
             </a>
             <a href="/llms.txt" className="hover:text-brand">
               llms.txt
+            </a>
+            <a href={`mailto:${CONTACT_EMAIL}`} className="hover:text-brand">
+              {CONTACT_EMAIL}
             </a>
             <a
               href={GITHUB_ISSUES_URL}

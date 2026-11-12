@@ -2,6 +2,7 @@ import type { Plugin } from 'vite'
 import landing from '../src/i18n/locales/landing.ts'
 import demo from '../src/i18n/locales/demo.ts'
 import { RELEASES } from '../src/help/releaseNotes.ts'
+import { CONTACT_EMAIL } from '../src/lib/links.ts'
 import pkg from '../package.json' with { type: 'json' }
 
 // The site is a client-rendered SPA, so the served index.html used to contain an
@@ -70,11 +71,11 @@ function staticLanding(): string {
 <section id="faq"><h2>${esc(t.faqTitle)}</h2>${faqKeys(t)
     .map((i) => `<h3>${esc(t[`faqQ${i}`])}</h3><p>${esc(t[`faqA${i}`])}</p>`)
     .join('')}</section>
-<section id="about"><h2>${esc(t.aboutTitle)}</h2><p>Dmytro Matsiuk — ${esc(t.aboutRole)} (<a href="https://github.com/dmmat">${esc(t.navGithub)}</a>).</p>
+<section id="about"><h2>${esc(t.aboutTitle)}</h2><p>${esc(t.aboutText)} <a href="${GITHUB}">${esc(t.navGithub)}</a> · <a href="mailto:${CONTACT_EMAIL}">${CONTACT_EMAIL}</a></p>
 <p>${esc(t.aboutVersion)}: ${esc(pkg.version)} · ${esc(t.aboutReleased)}: <time datetime="${RELEASE_DATE}">${RELEASE_DATE}</time> · ${esc(t.aboutLicense)}: MIT · ${esc(t.aboutRepo)}: <a href="${GITHUB}">github.com/dmmat/Scormly</a> · <a href="#whats-new">${esc(t.aboutNews)}</a></p></section>
 <section><h2>${esc(t.contributeTitle)}</h2><p>${esc(t.contributeText)}</p><p><a href="${GITHUB}">${esc(t.contributeCta)}</a></p></section>
 </main>
-<footer><p>${esc(t.footerTagline)}</p><p><a href="${GITHUB}">${esc(t.navGithub)}</a> · <a href="#/demo">${esc(t.footerDemo)}</a> · <a href="#/app">${esc(t.openApp)}</a> · <a href="#whats-new">${esc(t.navNews)}</a> · <a href="/llms.txt">llms.txt</a> · <a href="${GITHUB}/issues">${esc(t.footerIssues)}</a> · ${esc(t.footerLicense)}</p></footer>
+<footer><p>${esc(t.footerTagline)}</p><p><a href="${GITHUB}">${esc(t.navGithub)}</a> · <a href="#/demo">${esc(t.footerDemo)}</a> · <a href="#/app">${esc(t.openApp)}</a> · <a href="#whats-new">${esc(t.navNews)}</a> · <a href="/llms.txt">llms.txt</a> · <a href="mailto:${CONTACT_EMAIL}">${CONTACT_EMAIL}</a> · <a href="${GITHUB}/issues">${esc(t.footerIssues)}</a> · ${esc(t.footerLicense)}</p></footer>
 </div>`
 }
 
