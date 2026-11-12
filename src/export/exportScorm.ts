@@ -1,4 +1,4 @@
-import JSZip from 'jszip'
+import { loadJSZip } from '../lib/zip'
 import { useCourseStore } from '../store/courseStore'
 import { buildManifest, type ScormVersion } from './scormManifest'
 import {
@@ -13,7 +13,7 @@ import {
 // Build and download a SCORM package (1.2 or 2004) for the current course.
 export async function exportScorm(version: ScormVersion = '2004'): Promise<string> {
   const { course, directoryHandle } = useCourseStore.getState()
-  const zip = new JSZip()
+  const zip = new (await loadJSZip())()
 
   const files = await addPlayer(zip, course, 'scorm.js', version)
   files.push(...(await addAssets(zip, directoryHandle, course)))

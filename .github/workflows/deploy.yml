@@ -52,3 +52,14 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v5
+
+      # Tell IndexNow (Bing, and through it ChatGPT / Copilot search) that the
+      # site changed. The key is public by design: it is served from the site
+      # root as /eea20db262bcd580dfee3b0a2d56f2b4.txt. Never fails the deploy.
+      - name: Notify IndexNow
+        if: github.repository == 'dmmat/Scormly'
+        continue-on-error: true
+        run: |
+          curl -sS --fail-with-body -X POST 'https://api.indexnow.org/indexnow' \
+            -H 'Content-Type: application/json; charset=utf-8' \
+            -d '{"host":"scormly.app","key":"eea20db262bcd580dfee3b0a2d56f2b4","keyLocation":"https://scormly.app/eea20db262bcd580dfee3b0a2d56f2b4.txt","urlList":["https://scormly.app/","https://scormly.app/llms.txt"]}'

@@ -1,4 +1,5 @@
-import JSZip from 'jszip'
+import type JSZip from 'jszip'
+import { loadJSZip } from './zip'
 import type { Course } from '../types/course'
 import { useCourseStore } from '../store/courseStore'
 import { addAssets, downloadZip, sanitize } from '../export/packageCommon'
@@ -20,7 +21,7 @@ export async function buildProjectZip(
   directoryHandle: FileSystemDirectoryHandle | null,
   threads: ReviewThread[] = useReviewStore.getState().threads,
 ): Promise<JSZip> {
-  const zip = new JSZip()
+  const zip = new (await loadJSZip())()
   // Media embedded as data: URLs (older no-folder projects) becomes files, so
   // project.json stays small enough to read and edit.
   const { json, files } = extractDataUrls(JSON.stringify(course, null, 2))

@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from 'react'
+import { lazy, Suspense, useEffect, useRef, useState, type ReactNode } from 'react'
 import Logo from '../layout/Logo'
 import LanguagePicker from '../editor/LanguagePicker'
 import { useT } from '../../i18n/I18nProvider'
@@ -7,8 +7,36 @@ import { navigate } from '../../hooks/useRoute'
 import { GITHUB_URL, GITHUB_ISSUES_URL } from '../../lib/links'
 import { RELEASES } from '../../help/releaseNotes'
 import ChatDemo from './demos/ChatDemo'
-import Playground from './demos/Playground'
-import DesignShowcase from './demos/DesignShowcase'
+
+// These demos render real learner blocks (the whole preview layer and the
+// sample course), so they load when their section comes near the viewport.
+const Playground = lazy(() => import('./demos/Playground'))
+const DesignShowcase = lazy(() => import('./demos/DesignShowcase'))
+
+function Deferred({ minHeight, children }: { minHeight: number; children: ReactNode }) {
+  const ref = useRef<HTMLDivElement>(null)
+  const [show, setShow] = useState(false)
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    // The landing scrolls inside its own container, so that is the root the
+    // margin has to grow.
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting) {
+          setShow(true)
+          observer.disconnect()
+        }
+      },
+      { root: el.closest('[data-landing-scroll]'), rootMargin: '600px 0px' },
+    )
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [])
+  // The reserved height keeps the page from jumping when the demo arrives.
+  const placeholder = <div style={{ minHeight }} aria-hidden />
+  return <div ref={ref}>{show ? <Suspense fallback={placeholder}>{children}</Suspense> : placeholder}</div>
+}
 
 function Reveal({
   children,
@@ -210,15 +238,18 @@ function DotGrid({ id, className }: { id: string; className?: string }) {
   )
 }
 
+const MAINTAINER = { name: 'Dmytro Matsiuk', github: 'https://github.com/dmmat' }
+
 export default function Landing() {
   const { t, lang } = useT('landing')
 
   return (
-    <div className="h-full overflow-y-auto overflow-x-hidden bg-white text-gray-900">
+    <div data-landing-scroll className="h-full overflow-y-auto overflow-x-hidden bg-white text-gray-900">
       <Nav />
       <main>
         <Hero />
         <Pillars />
+        <Audience />
         <Demo />
         <Design />
         <Features />
@@ -228,6 +259,7 @@ export default function Landing() {
         <HowItWorks />
         <WhatsNew />
         <Faq />
+        <About />
         <Contribute />
       </main>
       <Footer />
@@ -380,6 +412,43 @@ export default function Landing() {
     )
   }
 
+  // Who the product is for: four audiences, right under the pillars.
+  function Audience() {
+    const cards = [
+      { icon: 'blocks', title: t('who1Title'), text: t('who1Text') },
+      { icon: 'book', title: t('who2Title'), text: t('who2Text') },
+      { icon: 'package', title: t('who3Title'), text: t('who3Text') },
+      { icon: 'shield', title: t('who4Title'), text: t('who4Text') },
+    ]
+    return (
+      <section id="who" className="scroll-mt-20 py-20 sm:py-24">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6">
+          <Reveal>
+            <div className="mx-auto max-w-2xl text-center">
+              <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">{t('whoTitle')}</h2>
+              <p className="mt-4 text-lg leading-relaxed text-gray-600">{t('whoSubtitle')}</p>
+            </div>
+          </Reveal>
+          <ul className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {cards.map((c, i) => (
+              <li key={c.title}>
+                <Reveal delay={i * 90} className="h-full">
+                  <div className="h-full rounded-3xl border border-gray-200 bg-white p-6 shadow-sm">
+                    <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-brand/15 to-brand/5 text-brand ring-1 ring-brand/15">
+                      <Icon name={c.icon} className="h-[22px] w-[22px]" />
+                    </span>
+                    <h3 className="mt-5 text-lg font-semibold">{c.title}</h3>
+                    <p className="mt-2 leading-relaxed text-gray-600">{c.text}</p>
+                  </div>
+                </Reveal>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+    )
+  }
+
   // Interactive "play with the real blocks" section.
   function Demo() {
     const { t: td } = useT('demo')
@@ -406,7 +475,9 @@ export default function Landing() {
           </Reveal>
           <Reveal delay={120}>
             <div className="mt-12">
-              <Playground />
+              <Deferred minHeight={520}>
+                <Playground />
+              </Deferred>
             </div>
             <div className="mt-10 text-center">
               <a href="#/demo" className="btn-primary px-7 py-3 text-base">
@@ -446,7 +517,9 @@ export default function Landing() {
           </Reveal>
           <div className="mt-14 grid items-center gap-12 lg:grid-cols-[7fr_5fr]">
             <Reveal>
-              <DesignShowcase />
+              <Deferred minHeight={480}>
+                <DesignShowcase />
+              </Deferred>
             </Reveal>
             <div className="grid gap-6">
               {points.map((pt, i) => (
@@ -867,22 +940,73 @@ export default function Landing() {
     )
   }
 
+  // The maintainer and the project's vital signs.
+  function About() {
+    const latest = RELEASES.find((r) => r.date)?.date
+    const fmt = new Intl.DateTimeFormat(lang, { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' })
+    const linkClass = 'font-semibold text-brand-dark hover:text-brand'
+    return (
+      <section id="about" className="scroll-mt-20 px-4 py-20 sm:px-6">
+        <Reveal>
+          <div className="mx-auto max-w-5xl rounded-3xl border border-gray-200 bg-white p-6 shadow-sm sm:p-10">
+            <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">{t('aboutTitle')}</h2>
+            <div className="mt-8 grid gap-8 md:grid-cols-[1fr_1.2fr] md:gap-12">
+              <div className="flex items-center gap-4">
+                <span
+                  aria-hidden
+                  className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-brand to-brand-dark text-xl font-bold text-white"
+                >
+                  DM
+                </span>
+                <div className="min-w-0">
+                  <p className="text-lg font-semibold">{MAINTAINER.name}</p>
+                  <p className="text-gray-600">{t('aboutRole')}</p>
+                  <a href={MAINTAINER.github} target="_blank" rel="noreferrer" className={`mt-1 inline-block text-sm ${linkClass}`}>
+                    {t('navGithub')}
+                  </a>
+                </div>
+              </div>
+              <dl className="grid grid-cols-2 gap-x-6 gap-y-5 text-sm [&>div]:min-w-0">
+                <div>
+                  <dt className="text-gray-500">{t('aboutVersion')}</dt>
+                  <dd className="mt-0.5 font-semibold text-gray-900">{__APP_VERSION__}</dd>
+                </div>
+                {latest && (
+                  <div>
+                    <dt className="text-gray-500">{t('aboutReleased')}</dt>
+                    <dd className="mt-0.5 font-semibold text-gray-900">
+                      <time dateTime={latest}>{fmt.format(new Date(latest))}</time>
+                    </dd>
+                  </div>
+                )}
+                <div>
+                  <dt className="text-gray-500">{t('aboutLicense')}</dt>
+                  <dd className="mt-0.5 font-semibold text-gray-900">MIT</dd>
+                </div>
+                <div>
+                  <dt className="text-gray-500">{t('aboutRepo')}</dt>
+                  <dd className="mt-0.5">
+                    <a href={GITHUB_URL} target="_blank" rel="noreferrer" className={`break-all ${linkClass}`}>
+                      github.com/dmmat/Scormly
+                    </a>
+                  </dd>
+                </div>
+              </dl>
+            </div>
+            <a href="#whats-new" className={`mt-8 inline-flex items-center gap-2 ${linkClass}`}>
+              {t('aboutNews')} <Icon name="arrow" className="h-4 w-4" />
+            </a>
+          </div>
+        </Reveal>
+      </section>
+    )
+  }
+
   function Faq() {
-    const items = [
-      { q: t('faqQ1'), a: t('faqA1') },
-      { q: t('faqQ2'), a: t('faqA2') },
-      { q: t('faqQ3'), a: t('faqA3') },
-      { q: t('faqQ4'), a: t('faqA4') },
-      { q: t('faqQ5'), a: t('faqA5') },
-      { q: t('faqQ6'), a: t('faqA6') },
-      { q: t('faqQ7'), a: t('faqA7') },
-      { q: t('faqQ8'), a: t('faqA8') },
-      { q: t('faqQ9'), a: t('faqA9') },
-      { q: t('faqQ10'), a: t('faqA10') },
-      { q: t('faqQ11'), a: t('faqA11') },
-      { q: t('faqQ12'), a: t('faqA12') },
-      { q: t('faqQ13'), a: t('faqA13') },
-    ]
+    // faqQ1…faqQN: add a pair to landing.ts and it shows here, in the
+    // prerendered HTML and in the FAQPage schema.
+    const items: { q: string; a: string }[] = []
+    for (let i = 1; t(`faqQ${i}`) !== `faqQ${i}`; i++) items.push({ q: t(`faqQ${i}`), a: t(`faqA${i}`) })
     return (
       <section id="faq" className="scroll-mt-20 border-t border-gray-100 bg-gray-50/60 py-24">
         <div className="mx-auto max-w-3xl px-4 sm:px-6">
@@ -952,7 +1076,7 @@ export default function Landing() {
         <div className="mx-auto flex max-w-6xl flex-col items-center gap-4 px-4 sm:px-6 text-center">
           <Logo />
           <p className="text-sm text-gray-500">{t('footerTagline')}</p>
-          <div className="flex items-center gap-4 text-sm text-gray-500">
+          <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-sm text-gray-500">
             <a
               href={GITHUB_URL}
               target="_blank"
@@ -961,7 +1085,18 @@ export default function Landing() {
             >
               {t('navGithub')}
             </a>
-            <span aria-hidden>·</span>
+            <a href="#/demo" className="hover:text-brand">
+              {t('footerDemo')}
+            </a>
+            <a href="#/app" className="hover:text-brand">
+              {t('openApp')}
+            </a>
+            <a href="#whats-new" className="hover:text-brand">
+              {t('navNews')}
+            </a>
+            <a href="/llms.txt" className="hover:text-brand">
+              llms.txt
+            </a>
             <a
               href={GITHUB_ISSUES_URL}
               target="_blank"
@@ -970,7 +1105,6 @@ export default function Landing() {
             >
               {t('footerIssues')}
             </a>
-            <span aria-hidden>·</span>
             <span>{t('footerLicense')}</span>
           </div>
           <p className="text-xs text-gray-400">{t('footerMade')}</p>

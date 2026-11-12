@@ -1,4 +1,5 @@
-import JSZip from 'jszip'
+import type JSZip from 'jszip'
+import { loadJSZip } from './zip'
 import { create } from 'zustand'
 import type { Course } from '../types/course'
 import { useCourseStore } from '../store/courseStore'
@@ -117,7 +118,7 @@ export async function openProjectZip(
 ): Promise<void> {
   let zip: JSZip
   try {
-    zip = await JSZip.loadAsync(await file.arrayBuffer())
+    zip = await (await loadJSZip()).loadAsync(await file.arrayBuffer())
   } catch {
     throw new ZipProjectError('notZip')
   }

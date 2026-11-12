@@ -1,3 +1,4 @@
+import '../i18n/dictionary'
 import { useEffect, useState } from 'react'
 import Header from './layout/Header'
 import Sidebar from './layout/Sidebar'

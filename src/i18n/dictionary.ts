@@ -1,3 +1,4 @@
+import { registerTables } from './registry'
 import common from './locales/common'
 import blocks from './locales/blocks'
 import themes from './locales/themes'
@@ -51,3 +52,8 @@ export const DICTIONARY = {
 }
 
 export type Namespace = keyof typeof DICTIONARY
+
+// Importing this module is what makes every namespace available to
+// translate() / useT(): code that renders outside the landing page must
+// import it (the builder and the block previews do).
+registerTables(DICTIONARY)

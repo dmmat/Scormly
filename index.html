@@ -5,21 +5,20 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <title>Scormly — Free Open-Source SCORM Editor &amp; Course Builder Online</title>
+    <title>Free Open-Source SCORM Editor &amp; Authoring Tool | Scormly</title>
     <meta
       name="description"
-      content="Free, open-source SCORM editor and course builder that works online in your browser. Create interactive, accessible e-learning courses and export SCORM 1.2 / 2004 or cmi5 in one click. Try the live demo — no sign-up, no backend, your data stays on your computer."
+      content="Free, open-source SCORM authoring tool in your browser. Build interactive courses and export SCORM 1.2, 2004 or cmi5. No sign-up, data stays local."
     />
-    <meta name="keywords" content="SCORM editor, SCORM builder, SCORM course builder, free SCORM creator, open source SCORM editor, online SCORM editor, SCORM authoring tool, SCORM demo, cmi5, xAPI, e-learning, LMS, Moodle, accessible e-learning, WCAG" />
     <meta name="theme-color" content="#ec4899" />
     <link rel="canonical" href="https://scormly.app/" />
 
     <!-- Open Graph -->
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="Scormly — Free Open-Source SCORM Editor &amp; Course Builder Online" />
+    <meta property="og:title" content="Free Open-Source SCORM Editor &amp; Authoring Tool | Scormly" />
     <meta
       property="og:description"
-      content="A free, open-source SCORM editor in your browser: build interactive courses and export SCORM 1.2 / 2004 or cmi5. 100% local — your data never leaves your computer."
+      content="Free, open-source SCORM authoring tool in your browser. Build interactive courses and export SCORM 1.2, 2004 or cmi5. No sign-up, data stays local."
     />
     <meta property="og:site_name" content="Scormly" />
     <meta property="og:url" content="https://scormly.app/" />
@@ -27,16 +26,16 @@
     <meta property="og:locale:alternate" content="uk_UA" />
     <meta property="og:image" content="https://scormly.app/og-image.png" />
     <meta property="og:image:type" content="image/png" />
-    <meta property="og:image:width" content="1187" />
-    <meta property="og:image:height" content="610" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
     <meta property="og:image:alt" content="Scormly — build interactive courses and export to SCORM" />
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Scormly — Free Open-Source SCORM Editor &amp; Course Builder Online" />
+    <meta name="twitter:title" content="Free Open-Source SCORM Editor &amp; Authoring Tool | Scormly" />
     <meta
       name="twitter:description"
-      content="A free, open-source SCORM editor in your browser: build interactive courses and export SCORM or cmi5. 100% local."
+      content="Free, open-source SCORM authoring tool in your browser. Build interactive courses and export SCORM 1.2, 2004 or cmi5. No sign-up, data stays local."
     />
     <meta name="twitter:image" content="https://scormly.app/og-image.png" />
     <meta name="twitter:image:alt" content="Scormly — build interactive courses and export to SCORM" />
@@ -49,7 +48,6 @@
 
     <!-- Installable web app (Chrome "Install app") -->
     <link rel="manifest" href="/manifest.webmanifest" />
-    <meta name="theme-color" content="#ec4899" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="Scormly" />
@@ -61,7 +59,8 @@
       if (/^#\/?(app|demo)/.test(location.hash)) document.documentElement.classList.add('route-app')
     </script>
 
-    <!-- Structured data: helps search engines and AI assistants understand the project. -->
+    <!-- Structured data: helps search engines and AI assistants understand the project.
+         %APP_VERSION% and %RELEASE_DATE% are filled in at build time (scripts/seoPrerender.ts). -->
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
@@ -75,7 +74,11 @@
         "license": "https://opensource.org/licenses/MIT",
         "isAccessibleForFree": true,
         "inLanguage": ["en", "uk"],
-        "author": { "@type": "Person", "name": "Dmytro Matsiuk" },
+        "author": { "@type": "Person", "name": "Dmytro Matsiuk", "url": "https://github.com/dmmat" },
+        "softwareVersion": "%APP_VERSION%",
+        "dateModified": "%RELEASE_DATE%",
+        "screenshot": "https://scormly.app/screenshot-builder.png",
+        "installUrl": "https://scormly.app/#/app",
         "codeRepository": "https://github.com/dmmat/Scormly",
         "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
         "featureList": [
@@ -109,6 +112,7 @@
             "@type": "Organization",
             "@id": "https://scormly.app/#organization",
             "name": "Scormly",
+            "alternateName": ["Scornly"],
             "url": "https://scormly.app/",
             "logo": {
               "@type": "ImageObject",
@@ -116,7 +120,7 @@
               "caption": "Scormly"
             },
             "image": "https://scormly.app/og-image.png",
-            "founder": { "@type": "Person", "name": "Dmytro Matsiuk" },
+            "founder": { "@type": "Person", "name": "Dmytro Matsiuk", "url": "https://github.com/dmmat" },
             "sameAs": ["https://github.com/dmmat/Scormly"]
           },
           {
