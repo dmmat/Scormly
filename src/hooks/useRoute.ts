@@ -13,7 +13,10 @@ export function useRoute(): RouteState {
     const onChange = () =>
       setRoute((prev) => {
         const next = currentRoute()
-        return next.view === prev.view && next.projectKey === prev.projectKey && next.demo === prev.demo
+        return next.view === prev.view &&
+          next.projectKey === prev.projectKey &&
+          next.demo === prev.demo &&
+          next.lang === prev.lang
           ? prev
           : next
       })

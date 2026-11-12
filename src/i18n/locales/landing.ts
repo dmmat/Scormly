@@ -11,6 +11,12 @@ const landing: LocaleTable = {
     navGithub: 'GitHub',
     openApp: 'Open the builder',
 
+    // Page title and description (search results, link previews)
+    metaTitle: 'Free Open-Source SCORM Editor & Authoring Tool | Scormly',
+    metaDescription:
+      'Free, open-source SCORM authoring tool in your browser. Build interactive courses and export SCORM 1.2, 2004 or cmi5. No sign-up, data stays local.',
+    footerLanguages: 'Language',
+
     // Hero
     heroBadge: 'Open source · Free · 100% local',
     heroTitle:
@@ -263,6 +269,12 @@ const landing: LocaleTable = {
     navAi: 'AI',
     navGithub: 'GitHub',
     openApp: 'Відкрити конструктор',
+
+    // Page title and description (search results, link previews)
+    metaTitle: 'Безкоштовний SCORM-редактор з відкритим кодом | Scormly',
+    metaDescription:
+      'Безкоштовний конструктор SCORM-курсів з відкритим кодом у браузері. Створюйте інтерактивні курси й експортуйте SCORM 1.2, 2004 чи cmi5. Без реєстрації, дані лишаються у вас.',
+    footerLanguages: 'Мова',
 
     // Hero
     heroBadge: 'Open source · Безкоштовно · 100% локально',
@@ -517,6 +529,12 @@ const landing: LocaleTable = {
     navGithub: 'GitHub',
     openApp: 'Ouvrir l’éditeur',
 
+    // Page title and description (search results, link previews)
+    metaTitle: 'Éditeur SCORM gratuit et open source, outil auteur en ligne | Scormly',
+    metaDescription:
+      'Outil auteur SCORM gratuit et open source, dans votre navigateur. Créez des cours interactifs et exportez en SCORM 1.2, 2004 ou cmi5. Sans inscription, vos données restent en local.',
+    footerLanguages: 'Langue',
+
     // Hero
     heroBadge: 'Open source · Gratuit · 100 % local',
     heroTitle:
@@ -769,6 +787,12 @@ const landing: LocaleTable = {
     navAi: 'IA',
     navGithub: 'GitHub',
     openApp: 'Abrir el editor',
+
+    // Page title and description (search results, link previews)
+    metaTitle: 'Editor SCORM gratuito y de código abierto, herramienta de autor | Scormly',
+    metaDescription:
+      'Herramienta de autor SCORM gratuita y de código abierto, en tu navegador. Crea cursos interactivos y exporta a SCORM 1.2, 2004 o cmi5. Sin registro, tus datos se quedan en tu equipo.',
+    footerLanguages: 'Idioma',
 
     // Hero
     heroBadge: 'Código abierto · Gratis · 100 % local',
