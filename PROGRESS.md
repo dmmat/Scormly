@@ -587,3 +587,10 @@ captions and larger text, in the builder preview and in the exported player alik
   scenarios and the sample course gained `fr` / `es`; the initial language is the first browser
   language the interface has. `tests/i18n.test.ts` keeps all languages complete (same keys,
   `{placeholders}` and HTML tags as English).
+
+- 2026-11-12 — **Landing URL per language**: `/uk`, `/fr`, `/es` (English at `/`). The build writes a
+  translated page for each (`uk.html`, …: `<html lang>`, title, description, canonical, Open Graph
+  locale, prerendered copy and FAQ JSON-LD), every page carries hreflang links (x-default = `/`) and
+  `sitemap.xml` lists all four with their alternates. In the app a language in the URL wins for the
+  visit without touching the saved choice; the landing keeps its URL on the language shown, and the
+  footer has plain language links. Builder routes are unchanged.

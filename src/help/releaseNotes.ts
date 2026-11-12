@@ -18,6 +18,7 @@ export const RELEASES: Release[] = [
       en: [
         'The builder and the site now speak French and Spanish: pick the language in the top bar.',
         'Shorter addresses: scormly.app/app for the builder, scormly.app/demo for the sample course. Old links still work.',
+        'The site has an address for each language: scormly.app/uk, scormly.app/fr and scormly.app/es.',
         'The builder fits small screens better: the top bar stays on one line, long headings wrap.',
         'A tab-only project shows an amber “!” by its name instead of a banner, and leaving it offers to download the .zip first.',
         'The tour now covers review comments.',
@@ -25,6 +26,7 @@ export const RELEASES: Release[] = [
       uk: [
         'Конструктор і сайт тепер доступні французькою та іспанською: мову можна вибрати у верхній панелі.',
         'Коротші адреси: scormly.app/app для конструктора, scormly.app/demo для прикладу курсу. Старі посилання працюють.',
+        'Сайт має окрему адресу для кожної мови: scormly.app/uk, scormly.app/fr і scormly.app/es.',
         'Конструктор зручніший на малих екранах: верхня панель в один рядок, довгі заголовки переносяться.',
         'Проєкт лише у вкладці позначено жовтим «!» біля назви замість смуги, а перед виходом пропонується завантажити .zip.',
         'У турі з’явився крок про коментарі.',

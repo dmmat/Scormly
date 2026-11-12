@@ -10,6 +10,7 @@ import {
 import { DEFAULT_LANGUAGE, LANGUAGES, type Language } from './types'
 import type { Namespace } from './dictionary'
 import { TABLES } from './registry'
+import { parseRoute, ROUTE_EVENT } from '../lib/route'
 
 const STORAGE_KEY = 'scormly-language'
 
@@ -52,8 +53,11 @@ const I18nContext = createContext<I18nContextValue | null>(null)
 const asLanguage = (code: string | null | undefined): Language | undefined =>
   LANGUAGES.find((l) => l.id === code?.toLowerCase().split('-')[0])?.id
 
-// The saved choice, else the first browser language the interface has.
+// The language named in the URL ('/uk'), else the saved choice, else the first
+// browser language the interface has.
 function detectInitial(): Language {
+  const fromUrl = parseRoute(window.location).lang
+  if (fromUrl) return fromUrl
   const stored = LANGUAGES.find((l) => l.id === localStorage.getItem(STORAGE_KEY))
   if (stored) return stored.id
   for (const code of navigator.languages ?? [navigator.language]) {
@@ -76,6 +80,21 @@ export function I18nProvider({ children }: { children: ReactNode }) {
     currentLanguage = lang
     document.documentElement.lang = lang
   }, [lang])
+
+  // Moving to a landing URL that names a language ('/uk': a link, Back /
+  // Forward) switches to it for this visit; the saved choice is left alone.
+  useEffect(() => {
+    const onRoute = () => {
+      const fromUrl = parseRoute(window.location).lang
+      if (fromUrl) setLangState(fromUrl)
+    }
+    window.addEventListener('popstate', onRoute)
+    window.addEventListener(ROUTE_EVENT, onRoute)
+    return () => {
+      window.removeEventListener('popstate', onRoute)
+      window.removeEventListener(ROUTE_EVENT, onRoute)
+    }
+  }, [])
 
   const value = useMemo(() => ({ lang, setLang }), [lang, setLang])
   return <I18nContext.Provider value={value}>{children}</I18nContext.Provider>

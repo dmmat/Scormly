@@ -202,11 +202,16 @@ content (block data) is not localized. Keyboard shortcuts match the physical key
 ## Landing page and routing
 
 `App.tsx` does simple path routing (`useRoute`, URL scheme in `lib/route.ts`):
-`/` renders the SEO landing page (`components/landing/Landing.tsx`), `/app` the
+`/` renders the SEO landing page (`components/landing/Landing.tsx`; `/uk`, `/fr`,
+`/es` are the same page in that language, English stays at `/`), `/app` the
 builder (`components/Builder.tsx`, the open project is `/app?p=<key>`) and
 `/demo` the builder with the sample course. The host is static, so the build
-copies `index.html` to `app.html`, `demo.html` and `404.html`
-(`scripts/seoPrerender.ts`). The old hash routes (`#/app`, `#/app/<key>`,
+copies `index.html` to `app.html`, `demo.html` and `404.html` and writes a
+translated `uk.html` / `fr.html` / `es.html` (own title, description, canonical,
+prerendered copy; hreflang links and the sitemap tie them together —
+`scripts/seoPrerender.ts`, page title / description are the `metaTitle` /
+`metaDescription` landing keys). A URL that names a language wins over the
+saved one for that visit; on the landing the URL follows the language shown. The old hash routes (`#/app`, `#/app/<key>`,
 `#/demo`) still open and are rewritten; a plain `#section` hash is an anchor on
 the landing. Plain `<a href="/app">` links are followed without a page load
 (`useRouteLinks`). The landing is localized, animated

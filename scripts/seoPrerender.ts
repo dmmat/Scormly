@@ -1,20 +1,30 @@
-import { copyFileSync } from 'node:fs'
+import { copyFileSync, readFileSync, writeFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import type { Plugin } from 'vite'
 import landing from '../src/i18n/locales/landing.ts'
 import { RELEASES } from '../src/help/releaseNotes.ts'
 import { CONTACT_EMAIL } from '../src/lib/links.ts'
+import { DEFAULT_LANGUAGE, LANGUAGES, type Language } from '../src/i18n/types.ts'
 import pkg from '../package.json' with { type: 'json' }
 
 // The site is a client-rendered SPA, so the served index.html used to contain an
-// empty <div id="root">. This build-only plugin writes the landing's English copy
-// (the same strings the React landing renders) into #root as plain semantic HTML,
+// empty <div id="root">. This build-only plugin writes the landing's copy (the
+// same strings the React landing renders) into #root as plain semantic HTML,
 // plus FAQPage structured data, so crawlers see real content without running JS.
 // createRoot().render() replaces it on mount.
+//
+// Each interface language gets its own page so it can be found in that
+// language: English at '/', the others at '/uk', '/fr', '/es' (uk.html, …),
+// with their own title, description, canonical URL and copy, tied together by
+// hreflang links and listed in the sitemap.
 
 const GITHUB = 'https://github.com/dmmat/Scormly'
 const SITE = 'https://scormly.app/'
 const RELEASE_DATE = RELEASES.find((r) => r.date)?.date ?? ''
+const OG_LOCALE: Record<Language, string> = { en: 'en_US', uk: 'uk_UA', fr: 'fr_FR', es: 'es_ES' }
+
+const langPath = (lang: Language) => (lang === DEFAULT_LANGUAGE ? '' : lang)
+const pageUrl = (lang: Language) => SITE + langPath(lang)
 
 const esc = (s: string) =>
   s
@@ -29,19 +39,19 @@ function faqKeys(t: Record<string, string>): number[] {
   return out
 }
 
-function staticLanding(): string {
-  const t = landing.en
+function staticLanding(lang: Language): string {
+  const t = landing[lang]
   const list = (items: [string, string][]) =>
     items.map(([h, p]) => `<li><h3>${esc(h)}</h3><p>${esc(p)}</p></li>`).join('')
   const range = (prefix: string, n: number): [string, string][] =>
     Array.from({ length: n }, (_, i) => [t[`${prefix}${i + 1}Title`], t[`${prefix}${i + 1}Text`]])
 
-  const date = new Intl.DateTimeFormat('en', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' })
+  const date = new Intl.DateTimeFormat(lang, { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' })
   const news = RELEASES.filter((r) => r.date)
     .slice(0, 2)
     .map(
       (r) =>
-        `<h3><time datetime="${r.date}">${date.format(new Date(r.date!))}</time></h3><ul>${r.items.en
+        `<h3><time datetime="${r.date}">${date.format(new Date(r.date!))}</time></h3><ul>${r.items[lang]
           .map((item) => `<li>${esc(item)}</li>`)
           .join('')}</ul>`,
     )
@@ -74,12 +84,15 @@ function staticLanding(): string {
 <p>${esc(t.aboutVersion)}: ${esc(pkg.version)} · ${esc(t.aboutReleased)}: <time datetime="${RELEASE_DATE}">${RELEASE_DATE}</time> · ${esc(t.aboutLicense)}: MIT · ${esc(t.aboutRepo)}: <a href="${GITHUB}">github.com/dmmat/Scormly</a> · <a href="#whats-new">${esc(t.aboutNews)}</a></p></section>
 <section><h2>${esc(t.contributeTitle)}</h2><p>${esc(t.contributeText)}</p><p><a href="${GITHUB}">${esc(t.contributeCta)}</a></p></section>
 </main>
-<footer><p>${esc(t.footerTagline)}</p><p><a href="${GITHUB}">${esc(t.navGithub)}</a> · <a href="/demo">${esc(t.footerDemo)}</a> · <a href="/app">${esc(t.openApp)}</a> · <a href="#whats-new">${esc(t.navNews)}</a> · <a href="/llms.txt">llms.txt</a> · <a href="mailto:${CONTACT_EMAIL}">${CONTACT_EMAIL}</a> · <a href="${GITHUB}/issues">${esc(t.footerIssues)}</a> · ${esc(t.footerLicense)}</p></footer>
+<footer><p>${esc(t.footerTagline)}</p><p><a href="${GITHUB}">${esc(t.navGithub)}</a> · <a href="/demo">${esc(t.footerDemo)}</a> · <a href="/app">${esc(t.openApp)}</a> · <a href="#whats-new">${esc(t.navNews)}</a> · <a href="/llms.txt">llms.txt</a> · <a href="mailto:${CONTACT_EMAIL}">${CONTACT_EMAIL}</a> · <a href="${GITHUB}/issues">${esc(t.footerIssues)}</a> · ${esc(t.footerLicense)}</p>
+<nav aria-label="${esc(t.footerLanguages)}">${LANGUAGES.map(
+    (l) => `<a href="/${langPath(l.id)}" hreflang="${l.id}" lang="${l.id}">${esc(l.label)}</a>`,
+  ).join(' · ')}</nav></footer>
 </div>`
 }
 
-function faqJsonLd(): string {
-  const t = landing.en
+function faqJsonLd(lang: Language): string {
+  const t = landing[lang]
   const data = {
     '@context': 'https://schema.org',
     '@type': 'FAQPage',
@@ -106,15 +119,52 @@ const STYLE = `<style>
 @keyframes seo-reveal{to{opacity:1}}
 </style>`
 
-// One page to index: the landing. The builder (/app) and the demo (/demo) are
-// the same app with nothing of their own to index, and the interface language
-// is chosen in the page, so there are no separate language URLs to list.
-const sitemap = (lastmod: string) => `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>${SITE}</loc>
+// The same set on every language page: each version names all the others,
+// and x-default is '/', which opens in the visitor's own language.
+const hreflangLinks = () =>
+  [
+    ...LANGUAGES.map((l) => `<link rel="alternate" hreflang="${l.id}" href="${pageUrl(l.id)}" />`),
+    `<link rel="alternate" hreflang="x-default" href="${SITE}" />`,
+  ].join('\n')
+
+function swap(html: string, from: string | RegExp, to: string): string {
+  const out = typeof from === 'string' ? html.split(from).join(to) : html.replace(from, () => to)
+  if (out === html && from !== to) throw new Error(`seoPrerender: not found in index.html: ${String(from).slice(0, 80)}`)
+  return out
+}
+
+/** The built English page turned into the page of another language. */
+export function localizePage(html: string, lang: Language): string {
+  const en = landing[DEFAULT_LANGUAGE]
+  const t = landing[lang]
+  const locales = [lang, ...LANGUAGES.map((l) => l.id).filter((id) => id !== lang)]
+    .map((id, i) => `<meta property="og:locale${i ? ':alternate' : ''}" content="${OG_LOCALE[id]}" />`)
+    .join('\n    ')
+  let out = swap(html, '<html lang="en">', `<html lang="${lang}">`)
+  // The title and description repeat in the Open Graph and Twitter tags.
+  out = swap(out, esc(en.metaTitle), esc(t.metaTitle))
+  out = swap(out, esc(en.metaDescription), esc(t.metaDescription))
+  out = swap(out, `<link rel="canonical" href="${SITE}" />`, `<link rel="canonical" href="${pageUrl(lang)}" />`)
+  out = swap(out, `<meta property="og:url" content="${SITE}" />`, `<meta property="og:url" content="${pageUrl(lang)}" />`)
+  out = swap(out, /<meta property="og:locale" [^>]*>(\s*<meta property="og:locale:alternate" [^>]*>)*/, locales)
+  out = swap(out, faqJsonLd(DEFAULT_LANGUAGE), faqJsonLd(lang))
+  return swap(out, staticLanding(DEFAULT_LANGUAGE), staticLanding(lang))
+}
+
+// The pages to index: the landing in each language, each listing the other
+// versions. The builder (/app) and the demo (/demo) are the same app with
+// nothing of their own to index.
+export const sitemap = (lastmod: string) => `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+${LANGUAGES.map(
+  (page) => `  <url>
+    <loc>${pageUrl(page.id)}</loc>
     <lastmod>${lastmod}</lastmod>
-  </url>
+${[...LANGUAGES.map((l) => [l.id, pageUrl(l.id)]), ['x-default', SITE]]
+  .map(([code, href]) => `    <xhtml:link rel="alternate" hreflang="${code}" href="${href}" />`)
+  .join('\n')}
+  </url>`,
+).join('\n')}
 </urlset>
 `
 
@@ -127,9 +177,14 @@ export function seoPrerender(): Plugin {
       outDir = resolve(config.root, config.build.outDir)
     },
     // The host is static, so every route needs a file: /app and /demo are
-    // copies of the page (the app picks the view from the URL), and 404.html
-    // lets any other path (e.g. an old /app/<key> link) still open the app.
+    // copies of the page (the app picks the view from the URL), 404.html lets
+    // any other path (e.g. an old /app/<key> link) still open the app, and
+    // each other language gets its own translated page.
     closeBundle() {
+      const html = readFileSync(resolve(outDir, 'index.html'), 'utf8')
+      for (const { id } of LANGUAGES) {
+        if (id !== DEFAULT_LANGUAGE) writeFileSync(resolve(outDir, `${id}.html`), localizePage(html, id))
+      }
       for (const name of ['app.html', 'demo.html', '404.html']) {
         copyFileSync(resolve(outDir, 'index.html'), resolve(outDir, name))
       }
@@ -144,8 +199,8 @@ export function seoPrerender(): Plugin {
       return html
         .replace(/%APP_VERSION%/g, pkg.version)
         .replace(/%RELEASE_DATE%/g, RELEASE_DATE)
-        .replace('</head>', `${STYLE}\n${faqJsonLd()}\n</head>`)
-        .replace(root, `<div id="root">${staticLanding()}</div>`)
+        .replace('</head>', `${hreflangLinks()}\n${STYLE}\n${faqJsonLd(DEFAULT_LANGUAGE)}\n</head>`)
+        .replace(root, `<div id="root">${staticLanding(DEFAULT_LANGUAGE)}</div>`)
     },
   }
 }
