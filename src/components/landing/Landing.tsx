@@ -423,7 +423,7 @@ function Dock({
                   href={l.href}
                   aria-current={active === l.href ? 'true' : undefined}
                   {...linkProps(l)}
-                  className={`flex h-12 flex-col items-center justify-center gap-0.5 whitespace-nowrap rounded-full px-3 text-[11px] font-medium leading-none transition-colors duration-200 ${
+                  className={`flex h-12 flex-col items-center justify-center gap-0.5 whitespace-nowrap rounded-full px-3 text-[11px] max-[359px]:px-1.5 font-medium leading-none transition-colors duration-200 ${
                     active === l.href
                       ? 'bg-brand text-white shadow-md shadow-brand/30'
                       : 'text-gray-600 hover:bg-gray-900/5 hover:text-brand-dark'
