@@ -168,7 +168,10 @@ export default function WelcomeScreen({ onSkip, onSample }: WelcomeScreenProps) 
   return (
     <div className="welcome-bg relative h-full overflow-y-auto" {...dropHandlers}>
       <div className="flex items-center justify-between px-6 py-4">
-        <Logo />
+        {/* No project is open yet, so the logo can lead back to the site. */}
+        <a href="/" title={t('toLanding')} className="rounded-lg">
+          <Logo />
+        </a>
         <LanguagePicker />
       </div>
 

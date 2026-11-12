@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useRef, useState, type ReactNode } from 'react'
+import { lazy, Suspense, useEffect, useRef, useState, type MouseEvent, type ReactNode } from 'react'
 import Logo from '../layout/Logo'
 import LanguagePicker from '../editor/LanguagePicker'
 import { useT } from '../../i18n/I18nProvider'
@@ -7,10 +7,10 @@ import { navigate } from '../../hooks/useRoute'
 import { CONTACT_EMAIL, GITHUB_URL, GITHUB_ISSUES_URL } from '../../lib/links'
 import { RELEASES } from '../../help/releaseNotes'
 import ChatDemo from './demos/ChatDemo'
+import HowSteps from './demos/HowSteps'
 
 // These demos render real learner blocks (the whole preview layer and the
 // sample course), so they load when their section comes near the viewport.
-const Playground = lazy(() => import('./demos/Playground'))
 const DesignShowcase = lazy(() => import('./demos/DesignShowcase'))
 
 function Deferred({ minHeight, children }: { minHeight: number; children: ReactNode }) {
@@ -207,6 +207,11 @@ const ICON_PATHS: Record<string, ReactNode> = {
   sliders: <path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6" />,
   check: <path d="M20 6 9 17l-5-5" />,
   arrow: <path d="M5 12h14M13 6l6 6-6 6" />,
+  external: <path d="M7 17 17 7M8 7h9v9" />,
+  play: <path d="M7 4.5v15l12-7.5z" fill="currentColor" stroke="none" />,
+  github: (
+    <path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6 0 0 0-1.3-3.2 4.2 4.2 0 0 0-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3 0 0 0-6.2 0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2 0 0 0-.1 3.2A4.6 4.6 0 0 0 4 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21" />
+  ),
 }
 
 function Icon({ name, className }: { name: string; className?: string }) {
@@ -240,72 +245,272 @@ function DotGrid({ id, className }: { id: string; className?: string }) {
   )
 }
 
+// A section heading. Every content section starts the same way: the title on
+// the left and, on wide screens, its intro beside it on the right. (The two
+// call-out cards, Privacy and Contribute, are centered on purpose.)
+function SectionHead({ badge, title, subtitle }: { badge?: ReactNode; title: string; subtitle?: string }) {
+  return (
+    <Reveal>
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between lg:gap-16">
+        <div>
+          {badge && (
+            <span className="mb-5 inline-flex items-center gap-2 rounded-full border border-brand/30 bg-brand/10 px-4 py-1.5 text-sm font-medium text-brand-dark">
+              {badge}
+            </span>
+          )}
+          <h2 className="max-w-xl text-3xl font-bold leading-tight tracking-tight sm:text-4xl">{title}</h2>
+        </div>
+        {subtitle && <p className="max-w-md text-lg leading-relaxed text-gray-600">{subtitle}</p>}
+      </div>
+    </Reveal>
+  )
+}
+
 interface NavLink {
   href: string
   label: string
-  primary?: boolean
+  icon: string
   external?: boolean
 }
 
-// The section menu for screens where the full nav doesn't fit (below xl).
-function NavMenu({ links, label }: { links: NavLink[]; label: string }) {
-  const [open, setOpen] = useState(false)
-  const ref = useRef<HTMLDivElement>(null)
+// Scroll to a landing section in place and put it in the address bar without a
+// `hashchange` (which would re-render the landing).
+function scrollToSection(href: string): boolean {
+  const target = document.getElementById(href.slice(1))
+  if (!target) return false
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  target.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' })
+  history.replaceState(null, '', href)
+  return true
+}
+
+// The section nav, which lights up the section the reader is in (it stays on
+// the last one passed, so it never goes blank between sections): labelled
+// items in the top bar on wide screens, a floating dock at the bottom on
+// narrow ones (its row scrolls sideways if it ever doesn't fit).
+function Dock({
+  links,
+  label,
+  placement,
+  newTabLabel,
+}: {
+  links: NavLink[]
+  label: string
+  placement: 'top' | 'bottom'
+  newTabLabel: string
+}) {
+  const [active, setActive] = useState<string | null>(null)
+  const top = placement === 'top'
+  // Bottom dock: slides away while reading down, comes back on the way up.
+  const [hidden, setHidden] = useState(false)
+  const navRef = useRef<HTMLElement>(null)
+  const rowRef = useRef<HTMLUListElement>(null)
+  // While a click scrolls the page, the highlight stays on the target instead
+  // of running through every section on the way.
+  const lockRef = useRef<string | null>(null)
+
   useEffect(() => {
-    if (!open) return
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setOpen(false)
+    const root = navRef.current?.closest<HTMLElement>('[data-landing-scroll]')
+    if (!root) return
+    const hrefs = links.filter((l) => !l.external).map((l) => l.href)
+    let frame = 0
+    let lastY = root.scrollTop
+    let down = 0
+    let up = 0
+    const update = () => {
+      frame = 0
+      const y = root.scrollTop
+      if (!top && !lockRef.current) {
+        if (y > lastY) {
+          down += y - lastY
+          up = 0
+        } else {
+          up += lastY - y
+          down = 0
+        }
+        const atEnd = y + root.clientHeight >= root.scrollHeight - 80
+        if (up > 20 || atEnd || y < 300) setHidden(false)
+        else if (down > 60) setHidden(true)
+      }
+      lastY = y
+      if (lockRef.current) return
+      // The current section is the last one whose top has passed the middle band.
+      const line = root.getBoundingClientRect().top + root.clientHeight * 0.45
+      let current: string | null = null
+      let currentTop = -Infinity
+      for (const href of hrefs) {
+        const sectionTop = document.getElementById(href.slice(1))?.getBoundingClientRect().top
+        if (sectionTop !== undefined && sectionTop <= line && sectionTop > currentTop) {
+          current = href
+          currentTop = sectionTop
+        }
+      }
+      setActive(current)
     }
-    const onPointer = (e: PointerEvent) => {
-      if (!ref.current?.contains(e.target as Node)) setOpen(false)
+    const onScroll = () => {
+      if (!frame) frame = requestAnimationFrame(update)
     }
-    document.addEventListener('keydown', onKey)
-    document.addEventListener('pointerdown', onPointer)
+    update()
+    root.addEventListener('scroll', onScroll, { passive: true })
+    window.addEventListener('resize', onScroll)
     return () => {
-      document.removeEventListener('keydown', onKey)
-      document.removeEventListener('pointerdown', onPointer)
+      cancelAnimationFrame(frame)
+      root.removeEventListener('scroll', onScroll)
+      window.removeEventListener('resize', onScroll)
     }
-  }, [open])
-  return (
-    <div ref={ref} className="xl:hidden">
-      <button
-        type="button"
+  }, [links, top])
+
+  // Bottom dock: keep the current section's item in view as the row scrolls.
+  useEffect(() => {
+    const row = rowRef.current
+    const item = row?.querySelector<HTMLElement>('[aria-current="true"]')
+    if (!row || !item || row.scrollWidth <= row.clientWidth) return
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    row.scrollTo({
+      left: item.offsetLeft - (row.clientWidth - item.offsetWidth) / 2,
+      behavior: reduce ? 'auto' : 'smooth',
+    })
+  }, [active])
+
+  const goTo = (e: MouseEvent, href: string) => {
+    if (!scrollToSection(href)) return
+    e.preventDefault()
+    const root = navRef.current?.closest<HTMLElement>('[data-landing-scroll]')
+    lockRef.current = href
+    setActive(href)
+    let timer = 0
+    const unlock = () => {
+      lockRef.current = null
+      window.clearTimeout(timer)
+      root?.removeEventListener('scrollend', unlock)
+    }
+    root?.addEventListener('scrollend', unlock)
+    // Fallback for browsers without `scrollend`.
+    timer = window.setTimeout(unlock, 1500)
+  }
+
+  const linkProps = (l: NavLink) =>
+    l.external
+      ? { target: '_blank', rel: 'noreferrer' }
+      : { onClick: (e: MouseEvent) => goTo(e, l.href) }
+  // Marks a link that leaves the site in a new tab.
+  const externalMark = (
+    <>
+      <Icon name="external" className="h-3 w-3 shrink-0 opacity-60" />
+      <span className="sr-only">({newTabLabel})</span>
+    </>
+  )
+
+  if (!top) {
+    return (
+      <nav
+        ref={navRef}
         aria-label={label}
-        aria-expanded={open}
-        aria-controls="landing-nav-menu"
-        onClick={() => setOpen((v) => !v)}
-        className="flex h-9 w-9 items-center justify-center rounded-lg text-gray-700 hover:bg-gray-100 hover:text-brand-dark"
+        className="landing-dock fixed inset-x-0 bottom-[calc(env(safe-area-inset-bottom,0px)+0.75rem)] z-30 flex justify-center px-2 sm:bottom-[calc(env(safe-area-inset-bottom,0px)+1.25rem)] lg:hidden"
       >
-        <Icon name={open ? 'close' : 'menu'} className="h-5 w-5" />
-      </button>
-      {open && (
-        <nav
-          id="landing-nav-menu"
-          aria-label={label}
-          className="absolute inset-x-0 top-full border-b border-gray-200 bg-white px-4 py-3 shadow-lg sm:inset-x-auto sm:right-6 sm:mt-2 sm:w-80 sm:rounded-2xl sm:border"
+        {/* The capsule clips the row; the row itself scrolls sideways. */}
+        <div
+          className={`max-w-full overflow-hidden rounded-full border border-white/60 bg-white/90 shadow-[0_12px_40px_-12px_rgb(0_0_0/0.35)] ring-1 ring-gray-900/5 backdrop-blur-xl transition-[translate,opacity] duration-300 motion-reduce:transition-none ${
+            hidden ? 'pointer-events-none translate-y-[150%] opacity-0' : ''
+          }`}
         >
-          <ul className="grid grid-cols-2 gap-x-2 text-sm font-medium text-gray-700">
+          <ul ref={rowRef} className="dock-row flex items-center gap-0.5 overflow-x-auto p-1">
             {links.map((l) => (
-              <li key={l.href}>
+              <li key={l.href} className="shrink-0">
                 <a
                   href={l.href}
-                  {...(l.external ? { target: '_blank', rel: 'noreferrer' } : {})}
-                  onClick={() => setOpen(false)}
-                  className="block rounded-lg px-3 py-2.5 hover:bg-brand/5 hover:text-brand-dark"
+                  aria-current={active === l.href ? 'true' : undefined}
+                  {...linkProps(l)}
+                  className={`flex h-12 flex-col items-center justify-center gap-0.5 whitespace-nowrap rounded-full px-3 text-[11px] font-medium leading-none transition-colors duration-200 ${
+                    active === l.href
+                      ? 'bg-brand text-white shadow-md shadow-brand/30'
+                      : 'text-gray-600 hover:bg-gray-900/5 hover:text-brand-dark'
+                  }`}
                 >
-                  {l.label}
+                  <Icon name={l.icon} className="h-5 w-5 shrink-0" />
+                  <span className="flex items-center gap-0.5">
+                    {l.label}
+                    {l.external && externalMark}
+                  </span>
                 </a>
               </li>
             ))}
           </ul>
-        </nav>
-      )}
-    </div>
+        </div>
+      </nav>
+    )
+  }
+
+  return (
+    <nav ref={navRef} aria-label={label} className="hidden min-w-0 flex-1 justify-center lg:flex">
+      <ul className="flex items-center gap-1">
+        {links.map((l) => (
+          <li key={l.href} className={l.external ? 'flex items-center' : undefined}>
+            {l.external && <span aria-hidden className="mx-2 h-5 w-px bg-gray-200" />}
+            <a
+              href={l.href}
+              aria-current={active === l.href ? 'true' : undefined}
+              {...linkProps(l)}
+              className={`flex h-9 items-center gap-1.5 whitespace-nowrap rounded-full px-3 text-sm font-medium transition-colors duration-200 ${
+                active === l.href
+                  ? 'bg-brand text-white shadow-md shadow-brand/30'
+                  : 'text-gray-600 hover:bg-gray-900/5 hover:text-brand-dark'
+              }`}
+            >
+              <Icon name={l.icon} className="h-[18px] w-[18px] shrink-0" />
+              <span>{l.label}</span>
+              {l.external && externalMark}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  )
+}
+
+// A thin reading-progress line along the bottom edge of the top bar.
+function ScrollProgress() {
+  const ref = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    const bar = ref.current
+    const root = bar?.closest<HTMLElement>('[data-landing-scroll]')
+    if (!bar || !root) return
+    let frame = 0
+    const update = () => {
+      frame = 0
+      const max = root.scrollHeight - root.clientHeight
+      bar.style.transform = `scaleX(${max > 0 ? Math.min(1, root.scrollTop / max) : 0})`
+    }
+    const onScroll = () => {
+      if (!frame) frame = requestAnimationFrame(update)
+    }
+    update()
+    root.addEventListener('scroll', onScroll, { passive: true })
+    window.addEventListener('resize', onScroll)
+    return () => {
+      cancelAnimationFrame(frame)
+      root.removeEventListener('scroll', onScroll)
+      window.removeEventListener('resize', onScroll)
+    }
+  }, [])
+  return (
+    <div
+      ref={ref}
+      aria-hidden
+      className="absolute inset-x-0 -bottom-px h-0.5 origin-left bg-brand"
+      style={{ transform: 'scaleX(0)' }}
+    />
   )
 }
 
 export default function Landing() {
   const { t, lang } = useT('landing')
+
+  // A link to a section (…#features) opens the landing at that section.
+  useEffect(() => {
+    const id = window.location.hash.slice(1)
+    if (id && !id.startsWith('/')) document.getElementById(id)?.scrollIntoView()
+  }, [])
 
   return (
     <div data-landing-scroll className="h-full overflow-y-auto overflow-x-hidden bg-white text-gray-900">
@@ -314,15 +519,14 @@ export default function Landing() {
         <Hero />
         <Pillars />
         <Audience />
-        <Demo />
-        <Design />
         <Features />
-        <Accessibility />
-        <AiReady />
-        <Privacy />
         <HowItWorks />
-        <WhatsNew />
+        <Design />
+        <AiReady />
+        <Accessibility />
+        <Privacy />
         <Faq />
+        <WhatsNew />
         <About />
         <Contribute />
       </main>
@@ -331,51 +535,57 @@ export default function Landing() {
   )
 
   function Nav() {
-    // `primary` links stay in the bar on mid-size screens; the menu button
-    // (shown below xl) always lists everything.
     const links: NavLink[] = [
-      { href: '#demo', label: t('navDemo'), primary: true },
-      { href: '#design', label: t('navDesign') },
-      { href: '#features', label: t('navFeatures'), primary: true },
-      { href: '#accessibility', label: t('navA11y') },
-      { href: '#ai', label: t('navAi') },
-      { href: '#how', label: t('navHow'), primary: true },
-      { href: '#whats-new', label: t('navNews') },
-      { href: '#faq', label: t('navFaq'), primary: true },
-      { href: GITHUB_URL, label: t('navGithub'), primary: true, external: true },
+      { href: '#features', label: t('navFeatures'), icon: 'blocks' },
+      { href: '#how', label: t('navHow'), icon: 'route' },
+      { href: '#ai', label: t('navAi'), icon: 'sparkles' },
+      { href: '#faq', label: t('navFaq'), icon: 'help' },
     ]
+    const dockLabels = { newTabLabel: t('navNewTab') }
     return (
-      <header className="sticky top-0 z-30 border-b border-gray-100 bg-white/80 backdrop-blur">
-        <div className="relative mx-auto flex h-16 max-w-6xl items-center justify-between gap-2 px-4 sm:px-6">
-          {/* On the narrowest phones only the logo mark shows, so the bar fits. */}
-          <a href="#/" aria-label="Scormly" className="shrink-0 max-[359px]:[&_span]:hidden">
-            <Logo />
-          </a>
-          <nav className="hidden items-center gap-5 whitespace-nowrap text-sm font-medium text-gray-600 lg:flex">
-            {links.map((l) => (
-              <a
-                key={l.href}
-                href={l.href}
-                {...(l.external ? { target: '_blank', rel: 'noreferrer' } : {})}
-                className={`hover:text-brand${l.primary ? '' : ' hidden xl:inline'}`}
-              >
-                {l.label}
-              </a>
-            ))}
-          </nav>
-          <div className="flex items-center gap-1.5 sm:gap-2">
-            <LanguagePicker />
-            <button
-              type="button"
-              onClick={() => navigate('app')}
-              className="btn-primary px-3 text-sm sm:px-4 sm:whitespace-nowrap"
+      <>
+        <header className="sticky top-0 z-30 border-b border-gray-100 bg-white/80 backdrop-blur">
+          {/* Logo | section nav (wide screens) | language + the builder. */}
+          <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-3 px-4 sm:px-6">
+            {/* On the narrowest phones only the logo mark shows, so the bar fits. */}
+            <a
+              href="/"
+              aria-label="Scormly"
+              onClick={(e) => {
+                // Already on the landing: the logo takes the reader back to the top.
+                e.preventDefault()
+                const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+                e.currentTarget
+                  .closest('[data-landing-scroll]')
+                  ?.scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' })
+                history.replaceState(null, '', '/')
+              }}
+              className="shrink-0 max-[359px]:[&_span]:hidden"
             >
-              {t('openApp')}
-            </button>
-            <NavMenu links={links} label={t('navMenu')} />
+              <Logo />
+            </a>
+            <Dock links={links} label={t('navMenu')} placement="top" {...dockLabels} />
+            <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
+              <LanguagePicker />
+              <button type="button" onClick={() => navigate('app')} className="launch-btn group">
+                <span className="launch-btn-inner">
+                  <Icon
+                    name="sparkles"
+                    className="h-4 w-4 shrink-0 max-sm:hidden transition-transform duration-500 group-hover:rotate-[20deg] group-hover:scale-110"
+                  />
+                  <span className="whitespace-nowrap">{t('openApp')}</span>
+                  <Icon
+                    name="arrow"
+                    className="hidden h-4 w-4 shrink-0 transition-transform duration-300 group-hover:translate-x-1 sm:block"
+                  />
+                </span>
+              </button>
+            </div>
           </div>
-        </div>
-      </header>
+          <ScrollProgress />
+        </header>
+        <Dock links={links} label={t('navMenu')} placement="bottom" {...dockLabels} />
+      </>
     )
   }
 
@@ -401,25 +611,40 @@ export default function Landing() {
             <p className="reveal-visible mx-auto mt-6 max-w-xl text-lg leading-relaxed text-gray-600 lg:mx-0">
               {t('heroSubtitle')}
             </p>
-            <div className="reveal-visible mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row sm:flex-wrap lg:justify-start">
+            {/* One glowing main action, then two lighter chips for the side paths. */}
+            <div className="reveal-visible mt-10 flex flex-col items-center gap-4 lg:items-start">
               <button
                 type="button"
                 onClick={() => navigate('app')}
-                className="btn-primary px-7 py-3 text-base"
+                className="launch-btn launch-btn-lg group w-full max-w-sm sm:w-auto"
               >
-                {t('heroCtaPrimary')}
+                <span className="launch-btn-inner">
+                  <Icon
+                    name="sparkles"
+                    className="h-5 w-5 shrink-0 transition-transform duration-500 group-hover:rotate-[20deg] group-hover:scale-110"
+                  />
+                  <span>{t('heroCtaPrimary')}</span>
+                  <Icon
+                    name="arrow"
+                    className="h-5 w-5 shrink-0 transition-transform duration-300 group-hover:translate-x-1"
+                  />
+                </span>
               </button>
-              <a href="#/demo" className="btn-secondary px-7 py-3 text-base">
-                {t('heroCtaDemo')}
-              </a>
-              <a
-                href={GITHUB_URL}
-                target="_blank"
-                rel="noreferrer"
-                className="btn-secondary px-7 py-3 text-base"
-              >
-                {t('heroCtaSecondary')}
-              </a>
+              <div className="flex flex-wrap items-center justify-center gap-2 lg:justify-start">
+                <a href="/demo" className="hero-chip group">
+                  <span className="hero-chip-icon">
+                    <Icon name="play" className="h-3.5 w-3.5" />
+                  </span>
+                  {t('heroCtaDemo')}
+                </a>
+                <a href={GITHUB_URL} target="_blank" rel="noreferrer" className="hero-chip group">
+                  <span className="hero-chip-icon">
+                    <Icon name="github" className="h-3.5 w-3.5" />
+                  </span>
+                  {t('heroCtaSecondary')}
+                  <Icon name="external" className="h-3 w-3 shrink-0 opacity-50" />
+                </a>
+              </div>
             </div>
             <p className="reveal-visible mt-5 text-sm text-gray-500">{t('heroNote')}</p>
           </div>
@@ -480,12 +705,7 @@ export default function Landing() {
     return (
       <section id="who" className="scroll-mt-20 py-20 sm:py-24">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
-          <Reveal>
-            <div className="mx-auto max-w-2xl text-center">
-              <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">{t('whoTitle')}</h2>
-              <p className="mt-4 text-lg leading-relaxed text-gray-600">{t('whoSubtitle')}</p>
-            </div>
-          </Reveal>
+          <SectionHead title={t('whoTitle')} subtitle={t('whoSubtitle')} />
           <ul className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {cards.map((c, i) => (
               <li key={c.title}>
@@ -507,46 +727,6 @@ export default function Landing() {
   }
 
   // Interactive "play with the real blocks" section.
-  function Demo() {
-    const { t: td } = useT('demo')
-    return (
-      <section
-        id="demo"
-        className="relative scroll-mt-20 overflow-hidden py-24"
-      >
-        <div className="pointer-events-none absolute inset-0 -z-10">
-          <div className="absolute left-[-10%] top-10 h-72 w-72 rounded-full bg-brand/10 blur-3xl" />
-          <div className="absolute bottom-0 right-[-5%] h-72 w-72 rounded-full bg-brand/5 blur-3xl" />
-        </div>
-        <div className="mx-auto max-w-6xl px-4 sm:px-6">
-          <Reveal>
-            <div className="mx-auto max-w-2xl text-center">
-              <span className="inline-flex items-center gap-2 rounded-full border border-brand/30 bg-brand/10 px-4 py-1.5 text-sm font-medium text-brand-dark">
-                <span className="chatd-dot" /> {td('badge')}
-              </span>
-              <h2 className="mt-5 text-3xl font-bold tracking-tight sm:text-4xl">
-                {td('title')}
-              </h2>
-              <p className="mt-4 text-lg text-gray-600">{td('subtitle')}</p>
-            </div>
-          </Reveal>
-          <Reveal delay={120}>
-            <div className="mt-12">
-              <Deferred minHeight={520}>
-                <Playground />
-              </Deferred>
-            </div>
-            <div className="mt-10 text-center">
-              <a href="#/demo" className="btn-primary px-7 py-3 text-base">
-                {t('demoCourseCta')}
-              </a>
-            </div>
-          </Reveal>
-        </div>
-      </section>
-    )
-  }
-
   // Visual design: cover pages, themed block panels, image/quote layouts,
   // carousels, downloads and motion — shown with the real learner components.
   function Design() {
@@ -562,23 +742,16 @@ export default function Landing() {
           <div className="absolute right-[-10%] top-10 h-96 w-96 rounded-full bg-brand/10 blur-3xl" />
           <div className="absolute bottom-0 left-[-6%] h-72 w-72 rounded-full bg-brand/5 blur-3xl" />
         </div>
-        <div className="mx-auto max-w-6xl px-4 sm:px-6">
-          <Reveal>
-            <div className="mx-auto max-w-2xl text-center">
+        <div className="mx-auto grid max-w-6xl items-center gap-14 px-4 sm:px-6 lg:grid-cols-[5fr_7fr] lg:gap-12">
+          <div>
+            <Reveal>
               <span className="inline-flex items-center gap-2 rounded-full border border-brand/30 bg-brand/10 px-4 py-1.5 text-sm font-medium text-brand-dark">
                 <span aria-hidden>✦</span> {t('designBadge')}
               </span>
               <h2 className="mt-5 text-3xl font-bold tracking-tight sm:text-4xl">{t('designTitle')}</h2>
               <p className="mt-4 text-lg leading-relaxed text-gray-600">{t('designSubtitle')}</p>
-            </div>
-          </Reveal>
-          <div className="mt-14 grid items-center gap-12 lg:grid-cols-[7fr_5fr]">
-            <Reveal>
-              <Deferred minHeight={480}>
-                <DesignShowcase />
-              </Deferred>
             </Reveal>
-            <div className="grid gap-6">
+            <div className="mt-8 grid gap-6">
               {points.map((pt, i) => (
                 <Reveal key={pt.title} delay={i * 90}>
                   <div className="flex gap-4">
@@ -594,6 +767,11 @@ export default function Landing() {
               ))}
             </div>
           </div>
+          <Reveal delay={120}>
+            <Deferred minHeight={480}>
+              <DesignShowcase />
+            </Deferred>
+          </Reveal>
         </div>
       </section>
     )
@@ -649,14 +827,7 @@ export default function Landing() {
       >
         <div className="pointer-events-none absolute left-1/2 top-0 -z-0 h-80 w-80 -translate-x-1/2 rounded-full bg-brand/5 blur-3xl" />
         <div className="relative mx-auto max-w-6xl px-4 sm:px-6">
-          <Reveal>
-            <div className="mx-auto max-w-2xl text-center">
-              <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
-                {t('featuresTitle')}
-              </h2>
-              <p className="mt-4 text-lg text-gray-600">{t('featuresSubtitle')}</p>
-            </div>
-          </Reveal>
+          <SectionHead title={t('featuresTitle')} subtitle={t('featuresSubtitle')} />
           <div className="mt-14 grid gap-4 sm:auto-rows-fr sm:grid-cols-2 lg:grid-cols-3">
             {features.map((f, i) => (
               <Reveal key={f.title} delay={(i % 3) * 90} className={f.anchor ? 'sm:col-span-2' : undefined}>
@@ -708,62 +879,16 @@ export default function Landing() {
         <div className="pointer-events-none absolute inset-0 -z-10">
           <div className="absolute left-[-8%] top-16 h-80 w-80 rounded-full bg-brand/10 blur-3xl" />
         </div>
-        <div className="mx-auto max-w-6xl px-4 sm:px-6">
-          <Reveal>
-            <div className="mx-auto max-w-2xl text-center">
+        <div className="mx-auto grid max-w-6xl items-center gap-14 px-4 sm:px-6 lg:grid-cols-[7fr_5fr] lg:gap-12">
+          <div>
+            <Reveal>
               <span className="inline-flex items-center gap-2 rounded-full border border-brand/30 bg-brand/10 px-4 py-1.5 text-sm font-medium text-brand-dark">
                 <Icon name="a11y" className="h-4 w-4" /> {t('a11yBadge')}
               </span>
               <h2 className="mt-5 text-3xl font-bold tracking-tight sm:text-4xl">{t('a11yTitle')}</h2>
               <p className="mt-4 text-lg leading-relaxed text-gray-600">{t('a11ySubtitle')}</p>
-            </div>
-          </Reveal>
-          <div className="mt-14 grid items-center gap-12 lg:grid-cols-[5fr_7fr]">
-            {/* Illustrative visual of the learner menu. Static on purpose. */}
-            <Reveal>
-              <div role="img" aria-label={t('a11yVisualLabel')} className="relative mx-auto w-full max-w-sm">
-                <div className="rounded-3xl border border-gray-200 bg-white p-5 shadow-xl shadow-gray-900/10">
-                  <div className="flex items-center gap-3 border-b border-gray-100 pb-4">
-                    <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand text-sm font-bold text-white">
-                      Aa
-                    </span>
-                    <span className="font-semibold">{t('a11yMockTitle')}</span>
-                  </div>
-                  <p className="mt-4 text-sm font-medium text-gray-700">{t('a11yMockTextSize')}</p>
-                  <div className="mt-2 grid grid-cols-3 gap-1 rounded-xl bg-gray-100 p-1 text-center text-xs font-medium">
-                    {sizes.map((size, i) => (
-                      <span
-                        key={size}
-                        className={`rounded-lg px-1 py-1.5 ${i === 1 ? 'bg-brand-dark text-white shadow-sm' : 'text-gray-600'}`}
-                      >
-                        {size}
-                      </span>
-                    ))}
-                  </div>
-                  <ul className="mt-4 space-y-3">
-                    {toggles.map((tg) => (
-                      <li key={tg.label} className="flex items-center justify-between gap-3 text-sm text-gray-700">
-                        {tg.label}
-                        <span
-                          className={`relative h-5 w-9 shrink-0 rounded-full transition-colors ${tg.on ? 'bg-brand-dark' : 'bg-gray-300'}`}
-                        >
-                          <span
-                            className={`absolute top-0.5 h-4 w-4 rounded-full bg-white shadow ${tg.on ? 'left-[1.125rem]' : 'left-0.5'}`}
-                          />
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-                <div className="relative -mt-3 ml-6 flex items-center gap-2.5 rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-700 shadow-lg shadow-gray-900/10 sm:ml-10">
-                  <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-brand/10 text-brand-dark">
-                    <Icon name="check" className="h-3 w-3" />
-                  </span>
-                  {t('a11yMockLms')}
-                </div>
-              </div>
             </Reveal>
-            <div>
+            <div className="mt-8">
               <ul className="grid gap-x-8 gap-y-7 sm:grid-cols-2">
                 {points.map((p, i) => (
                   <li key={p.title}>
@@ -786,6 +911,50 @@ export default function Landing() {
               </Reveal>
             </div>
           </div>
+          {/* Illustrative visual of the learner menu. Static on purpose. */}
+          <Reveal delay={120}>
+            <div role="img" aria-label={t('a11yVisualLabel')} className="relative mx-auto w-full max-w-sm">
+              <div className="rounded-3xl border border-gray-200 bg-white p-5 shadow-xl shadow-gray-900/10">
+                <div className="flex items-center gap-3 border-b border-gray-100 pb-4">
+                  <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand text-sm font-bold text-white">
+                    Aa
+                  </span>
+                  <span className="font-semibold">{t('a11yMockTitle')}</span>
+                </div>
+                <p className="mt-4 text-sm font-medium text-gray-700">{t('a11yMockTextSize')}</p>
+                <div className="mt-2 grid grid-cols-3 gap-1 rounded-xl bg-gray-100 p-1 text-center text-xs font-medium">
+                  {sizes.map((size, i) => (
+                    <span
+                      key={size}
+                      className={`rounded-lg px-1 py-1.5 ${i === 1 ? 'bg-brand-dark text-white shadow-sm' : 'text-gray-600'}`}
+                    >
+                      {size}
+                    </span>
+                  ))}
+                </div>
+                <ul className="mt-4 space-y-3">
+                  {toggles.map((tg) => (
+                    <li key={tg.label} className="flex items-center justify-between gap-3 text-sm text-gray-700">
+                      {tg.label}
+                      <span
+                        className={`relative h-5 w-9 shrink-0 rounded-full transition-colors ${tg.on ? 'bg-brand-dark' : 'bg-gray-300'}`}
+                      >
+                        <span
+                          className={`absolute top-0.5 h-4 w-4 rounded-full bg-white shadow ${tg.on ? 'left-[1.125rem]' : 'left-0.5'}`}
+                        />
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div className="relative -mt-3 ml-6 flex items-center gap-2.5 rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-700 shadow-lg shadow-gray-900/10 sm:ml-10">
+                <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-brand/10 text-brand-dark">
+                  <Icon name="check" className="h-3 w-3" />
+                </span>
+                {t('a11yMockLms')}
+              </div>
+            </div>
+          </Reveal>
         </div>
       </section>
     )
@@ -891,15 +1060,15 @@ export default function Landing() {
     return (
       <section id="whats-new" className="scroll-mt-20 border-t border-gray-100 py-24">
         <div className="mx-auto max-w-4xl px-4 sm:px-6">
-          <Reveal>
-            <div className="mx-auto max-w-2xl text-center">
-              <span className="inline-flex items-center gap-2 rounded-full border border-brand/30 bg-brand/10 px-4 py-1.5 text-sm font-medium text-brand-dark">
+          <SectionHead
+            badge={
+              <>
                 <span className="chatd-dot" /> {t('newsBadge')}
-              </span>
-              <h2 className="mt-5 text-3xl font-bold tracking-tight sm:text-4xl">{t('newsTitle')}</h2>
-              <p className="mt-4 text-lg text-gray-600">{t('newsSubtitle')}</p>
-            </div>
-          </Reveal>
+              </>
+            }
+            title={t('newsTitle')}
+            subtitle={t('newsSubtitle')}
+          />
           <div className="relative mt-12">
             <div className="pointer-events-none absolute bottom-4 left-[11.25rem] top-4 hidden border-l-2 border-dashed border-brand/20 md:block" />
             <ol className="space-y-8">
@@ -937,7 +1106,7 @@ export default function Landing() {
             </ol>
           </div>
           <Reveal>
-            <div className="mt-10 text-center">
+            <div className="mt-10">
               <a
                 href={GITHUB_URL}
                 target="_blank"
@@ -955,42 +1124,20 @@ export default function Landing() {
 
   function HowItWorks() {
     const steps = [
-      { n: 1, title: t('how1Title'), text: t('how1Text') },
-      { n: 2, title: t('how2Title'), text: t('how2Text') },
-      { n: 3, title: t('how3Title'), text: t('how3Text') },
+      { title: t('how1Title'), text: t('how1Text') },
+      { title: t('how2Title'), text: t('how2Text') },
+      { title: t('how3Title'), text: t('how3Text') },
     ]
     return (
-      <section id="how" className="scroll-mt-20 py-24">
+      <section
+        id="how"
+        className="relative scroll-mt-20 overflow-hidden border-y border-gray-100 bg-gradient-to-b from-gray-50/80 to-white py-24"
+      >
+
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
-          <Reveal>
-            <h2 className="text-center text-3xl font-bold tracking-tight sm:text-4xl">
-              {t('howTitle')}
-            </h2>
-          </Reveal>
-          <div className="relative mt-14 grid gap-8 md:grid-cols-3">
-            <div className="pointer-events-none absolute left-[16%] right-[16%] top-7 hidden border-t-2 border-dashed border-brand/25 md:block" />
-            {steps.map((s, i) => (
-              <Reveal key={s.n} delay={i * 120}>
-                <div className="relative text-center">
-                  <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-brand text-xl font-bold text-white shadow-lg shadow-brand/30 ring-4 ring-white">
-                    {s.n}
-                  </div>
-                  <h3 className="mt-5 text-xl font-semibold">{s.title}</h3>
-                  <p className="mt-2 leading-relaxed text-gray-600">{s.text}</p>
-                </div>
-              </Reveal>
-            ))}
-          </div>
-          <Reveal>
-            <div className="mt-14 text-center">
-              <button
-                type="button"
-                onClick={() => navigate('app')}
-                className="btn-primary px-7 py-3 text-base"
-              >
-                {t('heroCtaPrimary')}
-              </button>
-            </div>
+          <SectionHead title={t('howTitle')} />
+          <Reveal delay={120} className="mt-12">
+            <HowSteps steps={steps} />
           </Reveal>
         </div>
       </section>
@@ -1062,13 +1209,11 @@ export default function Landing() {
     for (let i = 1; t(`faqQ${i}`) !== `faqQ${i}`; i++) items.push({ q: t(`faqQ${i}`), a: t(`faqA${i}`) })
     return (
       <section id="faq" className="scroll-mt-20 border-t border-gray-100 bg-gray-50/60 py-24">
-        <div className="mx-auto max-w-3xl px-4 sm:px-6">
-          <Reveal>
-            <h2 className="text-center text-3xl font-bold tracking-tight sm:text-4xl">
-              {t('faqTitle')}
-            </h2>
-          </Reveal>
-          <div className="mt-12 space-y-3">
+        <div className="mx-auto grid max-w-6xl gap-10 px-4 sm:px-6 lg:grid-cols-[1fr_2fr] lg:gap-16">
+          <div className="lg:sticky lg:top-28 lg:self-start">
+            <SectionHead title={t('faqTitle')} />
+          </div>
+          <div className="space-y-3">
             {items.map((item, i) => (
               <Reveal key={i} delay={(i % 3) * 80}>
                 <FaqItem question={item.q} answer={item.a} />
@@ -1125,7 +1270,7 @@ export default function Landing() {
 
   function Footer() {
     return (
-      <footer className="border-t border-gray-100 bg-white py-12">
+      <footer className="border-t border-gray-100 bg-white pb-32 pt-12 lg:pb-12">
         <div className="mx-auto flex max-w-6xl flex-col items-center gap-4 px-4 sm:px-6 text-center">
           <Logo />
           <p className="text-sm text-gray-500">{t('footerTagline')}</p>
@@ -1138,10 +1283,10 @@ export default function Landing() {
             >
               {t('navGithub')}
             </a>
-            <a href="#/demo" className="hover:text-brand">
+            <a href="/demo" className="hover:text-brand">
               {t('footerDemo')}
             </a>
-            <a href="#/app" className="hover:text-brand">
+            <a href="/app" className="hover:text-brand">
               {t('openApp')}
             </a>
             <a href="#whats-new" className="hover:text-brand">

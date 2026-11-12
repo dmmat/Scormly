@@ -8,7 +8,7 @@
 const ROOT = 'projects'
 const PROJECT_FILE = 'project.json'
 
-/** URL key prefix (#/app/browser:<id>) that marks a project in this browser. */
+/** URL key prefix (/app?p=browser:<id>) that marks a project in this browser. */
 export const BROWSER_KEY_PREFIX = 'browser:'
 
 export interface BrowserProject {

@@ -58,7 +58,7 @@ Legend: `[ ]` planned · `[~]` in progress · `[x]` done
 - [x] Sections: hero, trust pillars, privacy callout, features, how-it-works, FAQ, footer
 - [x] Emphasizes open source / free / 100% local (no data stored or transmitted)
 - [x] Scroll-reveal animations (`useReveal` + CSS keyframes), `prefers-reduced-motion` safe
-- [x] Hash routing (`useRoute`): landing → `#/app` builder; SEO meta tags in `index.html`
+- [x] Path routing (`useRoute`, `lib/route.ts`): landing `/` → builder `/app` (`/demo` for the sample course; old `#/app` links still open); SEO meta tags in `index.html`
 
 ## Documentation & open source (done)
 
@@ -570,3 +570,15 @@ captions and larger text, in the builder preview and in the exported player alik
   AGENTS.md documents the file so an assistant can work through the comments; the
   Q&A (two new answers), Project settings → AI assistant and a hint in the panel
   tell authors they can ask for that.
+- 2026-11-12 — **Landing navigation and order**: the section nav sits in the top bar on wide
+  screens and in a floating bottom dock on narrow ones, with only the key sections (Features,
+  How it works, FAQ, GitHub); it highlights the current section, scrolls in place and keeps
+  `#section` links shareable (routes are `#/…` only, so `#demo`-style anchors never open the
+  builder). The "Play with the real blocks" playground section was removed; sections now run
+  Hero → Pillars → Audience → Features → How it works → Design → AI → Accessibility → Privacy →
+  FAQ → What's new → About → Contribute. Builder header: one line at every width, the
+  "tab only" warning is an amber badge next to the project name, headings and lesson titles wrap.
+  "How it works" became a self-playing three-step walkthrough with a mock per step (`HowSteps`).
+- 2026-11-12 — **Path URLs**: `/app`, `/app?p=<key>` and `/demo` replace the `#/app` hash routes
+  (still accepted and rewritten). The build writes `app.html`, `demo.html` and `404.html` copies
+  of the page for the static host.

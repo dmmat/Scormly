@@ -56,7 +56,7 @@
          scripts/seoPrerender.ts); with JS it stays hidden until React mounts. -->
     <script>
       document.documentElement.classList.add('js')
-      if (/^#\/?(app|demo)/.test(location.hash)) document.documentElement.classList.add('route-app')
+      if (/^\/(app|demo)(\/|$)/.test(location.pathname) || /^#\/(app|demo)/.test(location.hash)) document.documentElement.classList.add('route-app')
     </script>
 
     <!-- Structured data: helps search engines and AI assistants understand the project.
@@ -78,7 +78,7 @@
         "softwareVersion": "%APP_VERSION%",
         "dateModified": "%RELEASE_DATE%",
         "screenshot": "https://scormly.app/screenshot-builder.png",
-        "installUrl": "https://scormly.app/#/app",
+        "installUrl": "https://scormly.app/app",
         "codeRepository": "https://github.com/dmmat/Scormly",
         "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
         "featureList": [

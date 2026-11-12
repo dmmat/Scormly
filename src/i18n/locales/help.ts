@@ -35,6 +35,9 @@ const help: LocaleTable = {
       'Choose when the course counts as complete, whether it is scored with a passing mark, free or step-by-step navigation, and the theme.',
     tourPreviewTitle: 'Preview',
     tourPreviewText: 'See the course exactly as a learner will, with working quizzes and navigation.',
+    tourCommentsTitle: 'Review comments',
+    tourCommentsText:
+      'Leave notes on any block — here or in Preview — for colleagues or for yourself. They travel with the project .zip and never reach the exported course.',
     tourExportTitle: 'Export to your LMS',
     tourExportText:
       'Download a SCORM 2004, SCORM 1.2 or cmi5 package and upload it to your LMS. Scormly checks the course for common problems first.',
@@ -118,6 +121,9 @@ const help: LocaleTable = {
       'Оберіть, коли курс вважається завершеним, чи є прохідний бал, вільна чи покрокова навігація, і тему.',
     tourPreviewTitle: 'Перегляд',
     tourPreviewText: 'Подивіться на курс очима слухача — з робочими тестами й навігацією.',
+    tourCommentsTitle: 'Коментарі',
+    tourCommentsText:
+      'Залишайте нотатки до будь-якого блоку — тут або в Перегляді — для колег чи для себе. Вони передаються разом із .zip проєкту й ніколи не потрапляють в експортований курс.',
     tourExportTitle: 'Експорт у LMS',
     tourExportText:
       'Завантажте пакет SCORM 2004, SCORM 1.2 або cmi5 і додайте його у свою LMS. Перед цим Scormly перевірить курс на типові проблеми.',

@@ -135,7 +135,7 @@ For more detail, see [docs/architecture.md](docs/architecture.md).
 ```
 src/
 ├── main.tsx                  # React entry point (I18nProvider)
-├── App.tsx                   # hash router: landing vs. builder
+├── App.tsx                   # router: landing vs. builder
 ├── index.css                 # Tailwind + theme tokens + landing animations
 ├── types/course.ts           # data model (discriminated union of blocks)
 ├── store/courseStore.ts      # Zustand store: CRUD + undo/redo + UI state
@@ -150,7 +150,7 @@ src/
 ├── export/                   # SCORM + cmi5 manifests and packaging
 ├── hooks/                    # keyboard shortcuts, autosave, asset URLs
 └── components/
-    ├── Builder.tsx           # editor shell (route #/app)
+    ├── Builder.tsx           # editor shell (route /app)
     ├── landing/              # SEO marketing landing (default route)
     ├── layout/               # Header, Sidebar, Workspace, Logo
     ├── editor/               # BlockShell, AddBlockMenu, ProjectSettings, …

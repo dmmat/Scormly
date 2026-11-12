@@ -3,7 +3,7 @@
   "short_name": "Scormly",
   "description": "Free, open-source course builder that exports SCORM 1.2 / 2004 and cmi5 — runs entirely in your browser, no backend, your data stays on your device.",
   "id": "/",
-  "start_url": "/#/app",
+  "start_url": "/app",
   "scope": "/",
   "display": "standalone",
   "display_override": ["standalone", "minimal-ui"],

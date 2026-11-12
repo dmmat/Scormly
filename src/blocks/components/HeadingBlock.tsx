@@ -2,6 +2,7 @@ import type { BlockComponentProps } from '../types'
 import type { BlockOfType, HeadingLevel, TextAlign } from '../../types/course'
 import { useCourseStore } from '../../store/courseStore'
 import { useT } from '../../i18n/I18nProvider'
+import { AutoTextarea } from '../../components/editor/controls'
 
 const LEVELS: HeadingLevel[] = [1, 2, 3]
 
@@ -66,19 +67,18 @@ export default function HeadingBlock({
         </div>
       )}
       <Tag className={LEVEL_CLASS[level]} style={{ textAlign: align }}>
-        <input
-          type="text"
+        <AutoTextarea
           value={text}
           placeholder={t('headingPlaceholder')}
           onChange={(e) =>
             update(
               lessonId,
               block.id,
-              { text: e.target.value },
+              { text: e.target.value.replace(/\n/g, ' ') },
               `heading-text-${block.id}`,
             )
           }
-          className="w-full bg-transparent text-gray-900 placeholder-gray-300 outline-none"
+          className="block w-full bg-transparent text-gray-900 placeholder-gray-300 outline-none"
           style={{ textAlign: align }}
         />
       </Tag>

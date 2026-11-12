@@ -27,7 +27,7 @@ export default function ExportMenu() {
         aria-haspopup="menu"
         aria-expanded={open}
         disabled={exporting}
-        className="btn-primary flex items-center gap-1 text-sm disabled:opacity-50"
+        className="btn-primary flex items-center gap-1 whitespace-nowrap text-sm disabled:opacity-50"
       >
         {exporting ? t('exporting') : t('export')}
         <span aria-hidden>▾</span>

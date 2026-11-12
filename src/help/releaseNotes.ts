@@ -12,6 +12,24 @@ export interface Release {
 
 export const RELEASES: Release[] = [
   {
+    id: '2026-11-12',
+    date: '2026-11-12',
+    items: {
+      en: [
+        'Shorter addresses: scormly.app/app for the builder, scormly.app/demo for the sample course. Old links still work.',
+        'The builder fits small screens better: the top bar stays on one line, long headings wrap.',
+        'A tab-only project shows an amber “!” by its name instead of a banner, and leaving it offers to download the .zip first.',
+        'The tour now covers review comments.',
+      ],
+      uk: [
+        'Коротші адреси: scormly.app/app для конструктора, scormly.app/demo для прикладу курсу. Старі посилання працюють.',
+        'Конструктор зручніший на малих екранах: верхня панель в один рядок, довгі заголовки переносяться.',
+        'Проєкт лише у вкладці позначено жовтим «!» біля назви замість смуги, а перед виходом пропонується завантажити .zip.',
+        'У турі з’явився крок про коментарі.',
+      ],
+    },
+  },
+  {
     // Bumped from '2026-11-09' when review comments joined this release, so
     // authors who saw its first items get the badge again.
     id: '2026-11-09-review',

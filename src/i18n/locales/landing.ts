@@ -4,10 +4,10 @@ import type { LocaleTable } from '../types.ts'
 const landing: LocaleTable = {
   en: {
     // Nav
-    navDemo: 'Demo',
     navFeatures: 'Features',
     navHow: 'How it works',
     navFaq: 'FAQ',
+    navAi: 'AI',
     navGithub: 'GitHub',
     openApp: 'Open the builder',
 
@@ -20,7 +20,6 @@ const landing: LocaleTable = {
     heroCtaPrimary: 'Start building — free',
     heroCtaSecondary: 'View on GitHub',
     heroCtaDemo: 'Open the demo course',
-    demoCourseCta: 'Open the full demo course in the builder',
     heroNote: 'Runs entirely in your browser. Nothing to install.',
 
     // Trust pillars
@@ -63,7 +62,6 @@ const landing: LocaleTable = {
       'Scormly has no backend. Your project stays on your device: in the browser’s private storage, in a folder on your disk (Chrome and Edge), or as a project .zip you can back up and share. SCORM packaging happens inside the browser. No accounts, no analytics on your content, no uploads. Privacy by architecture, not by promise.',
 
     // Features
-    navDesign: 'Design',
     designBadge: 'Design',
     designTitle: 'Courses that look designed, not assembled',
     designSubtitle: 'A cover page, block styles from your theme, image and quote layouts, carousels and smooth motion — polished courses without a designer.',
@@ -100,7 +98,6 @@ const landing: LocaleTable = {
     f10Text: 'Use the builder in English or Ukrainian, with more languages on the way.',
 
     // Accessibility section
-    navA11y: 'Accessibility',
     a11yBadge: 'Accessible by design',
     a11yTitle: 'Courses every learner can use',
     a11ySubtitle:
@@ -138,7 +135,6 @@ const landing: LocaleTable = {
     a11yMockLms: 'Captions preference from LMS applied',
 
     // AI-ready section
-    navAi: 'AI',
     aiBadge: 'AI-ready',
     aiTitle: 'Build courses together with your AI assistant',
     aiSubtitle:
@@ -165,6 +161,7 @@ const landing: LocaleTable = {
     // What's new
     navNews: 'What’s new',
     navMenu: 'Menu',
+    navNewTab: 'opens in a new tab',
     newsBadge: 'Changelog',
     newsTitle: 'What’s new',
     newsSubtitle: 'Scormly ships often. Here are the latest updates to the builder.',
@@ -260,10 +257,10 @@ const landing: LocaleTable = {
   },
   uk: {
     // Nav
-    navDemo: 'Демо',
     navFeatures: 'Можливості',
     navHow: 'Як це працює',
     navFaq: 'FAQ',
+    navAi: 'AI',
     navGithub: 'GitHub',
     openApp: 'Відкрити конструктор',
 
@@ -276,7 +273,6 @@ const landing: LocaleTable = {
     heroCtaPrimary: 'Почати безкоштовно',
     heroCtaSecondary: 'Подивитися на GitHub',
     heroCtaDemo: 'Відкрити демо-курс',
-    demoCourseCta: 'Відкрити повний демо-курс у конструкторі',
     heroNote: 'Працює повністю в браузері. Нічого не треба встановлювати.',
 
     // Trust pillars
@@ -319,7 +315,6 @@ const landing: LocaleTable = {
       'У Scormly немає бекенду. Проєкт залишається на вашому пристрої: у приватному сховищі браузера, у папці на диску (Chrome і Edge) або як .zip проєкту, який можна зберегти як копію чи передати колегам. SCORM-пакет збирається в браузері. Жодних акаунтів, жодної аналітики вашого контенту, жодних завантажень на сервер. Приватність на рівні архітектури, а не обіцянок.',
 
     // Features
-    navDesign: 'Дизайн',
     designBadge: 'Дизайн',
     designTitle: 'Курси, що виглядають задизайненими, а не зібраними',
     designSubtitle: 'Титульна сторінка, стилі блоків із вашої теми, макети зображень і цитат, каруселі та плавна анімація — гарні курси без дизайнера.',
@@ -356,7 +351,6 @@ const landing: LocaleTable = {
     f10Text: 'Користуйтеся конструктором англійською чи українською, інші мови — на підході.',
 
     // Accessibility section
-    navA11y: 'Доступність',
     a11yBadge: 'Доступність за замовчуванням',
     a11yTitle: 'Курси, якими може користуватися кожен',
     a11ySubtitle:
@@ -394,7 +388,6 @@ const landing: LocaleTable = {
     a11yMockLms: 'Застосовано налаштування субтитрів з LMS',
 
     // AI-ready section
-    navAi: 'AI',
     aiBadge: 'Готовий до AI',
     aiTitle: 'Створюйте курси разом з AI-асистентом',
     aiSubtitle:
@@ -421,6 +414,7 @@ const landing: LocaleTable = {
     // What's new
     navNews: 'Що нового',
     navMenu: 'Меню',
+    navNewTab: 'відкриється в новій вкладці',
     newsBadge: 'Журнал змін',
     newsTitle: 'Що нового',
     newsSubtitle: 'Scormly оновлюється часто. Ось останні зміни в конструкторі.',
