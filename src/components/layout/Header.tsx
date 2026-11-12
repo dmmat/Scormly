@@ -4,6 +4,7 @@ import Logo from './Logo'
 import ThemePicker from '../editor/ThemePicker'
 import LanguagePicker from '../editor/LanguagePicker'
 import ProjectMenu from '../editor/ProjectMenu'
+import TabOnlyNotice from '../editor/TabOnlyNotice'
 import { useCourseStore } from '../../store/courseStore'
 import { useT, useLang } from '../../i18n/I18nProvider'
 import { saveProject } from '../../lib/projectService'
@@ -74,14 +75,16 @@ export default function Header() {
         >
           ☰
         </button>
-        <div className="shrink-0">
+        {/* Phones show only the logo mark, leaving room for the project name. */}
+        <div className="shrink-0 max-sm:[&_span]:hidden">
           <Logo />
         </div>
         <ProjectMenu />
+        {!directoryHandle && <TabOnlyNotice />}
       </div>
 
       {/* Desktop controls */}
-      <div className="hidden items-center gap-2 md:flex">
+      <div className="hidden shrink-0 items-center gap-1 whitespace-nowrap md:flex lg:gap-2">
         <div className="flex items-center gap-0.5">
           <button
             type="button"
@@ -115,6 +118,7 @@ export default function Header() {
         <button
           type="button"
           onClick={() => setReviewOpen(!reviewOpen)}
+          data-tour="comments"
           aria-pressed={reviewOpen}
           aria-label={commentsLabel}
           title={tr('buttonTitle')}
@@ -162,10 +166,11 @@ export default function Header() {
             onClick={() => void runExport('project')}
             disabled={exporting}
             title={`${tw('saveZipTitle')} (${KEYS.save})`}
+            aria-label={tw('saveZip')}
             className={zipButton}
           >
             <DownloadIcon />
-            {tw('saveZip')}
+            <span className="hidden lg:inline">{tw('saveZip')}</span>
           </button>
         )}
         {inBrowser && (
@@ -174,17 +179,18 @@ export default function Header() {
             onClick={() => void runExport('project')}
             disabled={exporting}
             title={tw('downloadZipBrowserTitle')}
+            aria-label={tw('downloadZip')}
             className={zipButton}
           >
             <DownloadIcon />
-            {tw('downloadZip')}
+            <span className="hidden lg:inline">{tw('downloadZip')}</span>
           </button>
         )}
         <ExportMenu />
       </div>
 
       {/* Mobile controls */}
-      <div className="flex items-center gap-1.5 md:hidden">
+      <div className="flex shrink-0 items-center gap-1.5 md:hidden">
         <button
           type="button"
           onClick={() => setPreviewOpen(true)}

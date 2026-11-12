@@ -32,13 +32,14 @@ export default function ThemePicker() {
         type="button"
         onClick={() => setOpen((v) => !v)}
         title={t('projectTheme')}
+        aria-label={`${t('projectTheme')}: ${label}`}
         className="flex items-center gap-2 rounded-md px-2.5 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-100"
       >
         <span
           className="h-4 w-4 rounded-full ring-1 ring-black/10"
           style={{ backgroundColor: accent }}
         />
-        <span className="hidden sm:inline">{label}</span>
+        <span className="hidden whitespace-nowrap lg:inline">{label}</span>
       </button>
 
       {open && (

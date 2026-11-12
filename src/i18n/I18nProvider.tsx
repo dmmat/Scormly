@@ -8,7 +8,8 @@ import {
   type ReactNode,
 } from 'react'
 import { DEFAULT_LANGUAGE, type Language } from './types'
-import { DICTIONARY, type Namespace } from './dictionary'
+import type { Namespace } from './dictionary'
+import { TABLES } from './registry'
 
 const STORAGE_KEY = 'scormly-language'
 
@@ -38,8 +39,7 @@ export function translate(
   key: string,
   vars?: Record<string, string | number>,
 ): string {
-  const table = DICTIONARY[namespace][currentLanguage]
-  return interpolate(table[key] ?? key, vars)
+  return interpolate(TABLES[namespace]?.[currentLanguage][key] ?? key, vars)
 }
 
 interface I18nContextValue {
@@ -87,7 +87,7 @@ export type TFunction = (key: string, vars?: Record<string, string | number>) =>
 // language (falling back to the key itself) and the current language. Supports {var} substitution.
 export function useT(namespace: Namespace): { t: TFunction; lang: Language } {
   const { lang } = useLang()
-  const table = DICTIONARY[namespace][lang]
+  const table = TABLES[namespace]?.[lang] ?? {}
 
   const t = useCallback<TFunction>(
     (key, vars) => {

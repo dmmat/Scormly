@@ -36,7 +36,7 @@ npm run preview  # local preview of the production build
 ```
 src/
 ├── main.tsx                  # React entry point (wraps App in I18nProvider)
-├── App.tsx                   # hash router: landing vs. builder
+├── App.tsx                   # router: landing vs. builder
 ├── index.css                 # Tailwind + theme tokens + landing animations
 ├── styles/blocks.css         # learner block design shared with the SCORM player
 ├── types/course.ts           # data model (discriminated union of blocks)
@@ -67,7 +67,7 @@ src/
 │   └── components/           # one editor component per block type
 ├── hooks/                    # useUndoRedoShortcuts, useRoute, useReveal
 └── components/
-    ├── Builder.tsx           # the editor shell (route #/app)
+    ├── Builder.tsx           # the editor shell (route /app)
     ├── landing/Landing.tsx   # SEO marketing landing (default route)
     ├── layout/               # Header, Sidebar, Workspace, Logo
     └── editor/               # BlockShell, AddBlockMenu, ThemePicker, LanguagePicker
@@ -145,7 +145,7 @@ Keyboard shortcuts (Ctrl/Cmd+Z / Y) are wired by `useUndoRedoShortcuts`. See
 
 - **Where a project lives:** a folder (File System Access API, Chrome / Edge),
   a folder in the browser's storage (OPFS, `browserProjects.ts`; Chrome, Edge,
-  Firefox; URL `#/app/browser:<id>`), or only the tab. The first two give the
+  Firefox; URL `/app?p=browser:<id>`), or only the tab. The first two give the
   store a `directoryHandle`, so saving, media, history and export share one
   path. Without one, media lives in memory (`putMemoryAsset`) and Save /
   Ctrl+S download the .zip.
@@ -199,9 +199,15 @@ content (block data) is not localized. Keyboard shortcuts match the physical key
 
 ## Landing page and routing
 
-`App.tsx` does simple hash-based routing (`useRoute`): the default route renders
-the SEO landing page (`components/landing/Landing.tsx`); `#/app` renders the
-builder (`components/Builder.tsx`). The landing is bilingual, animated
+`App.tsx` does simple path routing (`useRoute`, URL scheme in `lib/route.ts`):
+`/` renders the SEO landing page (`components/landing/Landing.tsx`), `/app` the
+builder (`components/Builder.tsx`, the open project is `/app?p=<key>`) and
+`/demo` the builder with the sample course. The host is static, so the build
+copies `index.html` to `app.html`, `demo.html` and `404.html`
+(`scripts/seoPrerender.ts`). The old hash routes (`#/app`, `#/app/<key>`,
+`#/demo`) still open and are rewritten; a plain `#section` hash is an anchor on
+the landing. Plain `<a href="/app">` links are followed without a page load
+(`useRouteLinks`). The landing is bilingual, animated
 (`useReveal` + CSS keyframes), and emphasizes that Scormly is open source, free,
 and fully local (no data stored or transmitted). SEO meta tags are in
 `index.html`.

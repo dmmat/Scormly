@@ -1,4 +1,4 @@
-import JSZip from 'jszip'
+import { loadJSZip } from '../lib/zip'
 import { useCourseStore } from '../store/courseStore'
 import { buildCmi5Manifest } from './cmi5Manifest'
 import { addAssets, addPlayer, downloadZip, sanitize } from './packageCommon'
@@ -8,7 +8,7 @@ import { addAssets, addPlayer, downloadZip, sanitize } from './packageCommon'
 // course structure instead of imsmanifest.xml.
 export async function exportCmi5(): Promise<string> {
   const { course, directoryHandle } = useCourseStore.getState()
-  const zip = new JSZip()
+  const zip = new (await loadJSZip())()
 
   await addPlayer(zip, course, 'xapi.js')
   await addAssets(zip, directoryHandle, course)

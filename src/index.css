@@ -273,6 +273,203 @@ body {
   }
 }
 
+/*
+ * Landing header: "Open the builder" — a glowing pill. The gradient rim
+ * turns only on hover / focus and the shine passes once in a while, so the
+ * button doesn't pull the eye from the page all the time.
+ */
+@property --launch-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+@keyframes launch-spin {
+  to {
+    --launch-angle: 360deg;
+  }
+}
+@keyframes launch-shine {
+  0%,
+  88% {
+    transform: translateX(-120%) skewX(-20deg);
+  }
+  100% {
+    transform: translateX(220%) skewX(-20deg);
+  }
+}
+.launch-btn {
+  position: relative;
+  border-radius: 9999px;
+  padding: 2px;
+  background: conic-gradient(
+    from var(--launch-angle),
+    var(--color-brand-dark),
+    var(--color-brand-light),
+    var(--color-brand),
+    var(--color-brand-dark)
+  );
+  box-shadow: 0 8px 28px -8px color-mix(in srgb, var(--color-brand) 70%, transparent);
+  animation: launch-spin 4s linear infinite paused;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.launch-btn:hover,
+.launch-btn:focus-visible {
+  animation-play-state: running;
+}
+.launch-btn:hover {
+  transform: translateY(-1px) scale(1.03);
+  box-shadow: 0 12px 34px -8px color-mix(in srgb, var(--color-brand) 85%, transparent);
+}
+.launch-btn:active {
+  transform: scale(0.98);
+}
+.launch-btn:focus-visible {
+  outline: 3px solid var(--color-brand-light);
+  outline-offset: 3px;
+}
+.launch-btn-inner {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  overflow: hidden;
+  border-radius: 9999px;
+  background: linear-gradient(135deg, var(--color-brand), var(--color-brand-dark));
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #fff;
+}
+.launch-btn-inner::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  width: 40%;
+  background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.35), transparent);
+  animation: launch-shine 9s ease-in-out infinite;
+  pointer-events: none;
+}
+@media (max-width: 400px) {
+  .launch-btn-inner {
+    padding: 0.45rem 0.8rem;
+    font-size: 0.8125rem;
+  }
+}
+
+/* "How it works" walkthrough: the timer line under the active step, the mock
+   swapping in, and the upload bar of the last step. */
+@keyframes how-progress {
+  from {
+    width: 0;
+  }
+  to {
+    width: 100%;
+  }
+}
+.how-progress {
+  animation: how-progress 5s linear both;
+}
+.how-steps:hover .how-progress,
+.how-steps:focus-within .how-progress {
+  animation-play-state: paused;
+}
+.how-swap {
+  animation: demo-pop 0.35s ease both;
+}
+.how-upload {
+  animation: how-progress 1.2s 1s ease-out both;
+}
+
+/* The hero's main action: the same glowing pill, larger. */
+.launch-btn-lg .launch-btn-inner {
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 0.9rem 1.75rem;
+  font-size: 1.0625rem;
+}
+
+/* The hero's side actions: light glass chips with a round icon. */
+.hero-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 9999px;
+  border: 1px solid rgb(17 24 39 / 0.1);
+  background: rgb(255 255 255 / 0.75);
+  padding: 0.35rem 0.9rem 0.35rem 0.35rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #1f2937;
+  box-shadow: 0 1px 2px rgb(17 24 39 / 0.06);
+  backdrop-filter: blur(8px);
+  transition: transform 0.2s ease, border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+}
+.hero-chip:hover {
+  transform: translateY(-2px);
+  border-color: color-mix(in srgb, var(--color-brand) 45%, transparent);
+  color: var(--color-brand-dark);
+  box-shadow: 0 8px 20px -10px color-mix(in srgb, var(--color-brand) 60%, transparent);
+}
+.hero-chip-icon {
+  display: flex;
+  height: 1.75rem;
+  width: 1.75rem;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  background: color-mix(in srgb, var(--color-brand) 12%, white);
+  color: var(--color-brand-dark);
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+.hero-chip:hover .hero-chip-icon {
+  background: var(--color-brand);
+  color: #fff;
+}
+
+/* The landing's bottom dock row scrolls sideways without a scrollbar. */
+.dock-row {
+  scrollbar-width: none;
+  overscroll-behavior-x: contain;
+}
+.dock-row::-webkit-scrollbar {
+  display: none;
+}
+
+/* The landing's bottom dock slides up once the page has loaded. */
+@keyframes dock-in {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+}
+.landing-dock {
+  animation: dock-in 0.6s 0.3s cubic-bezier(0.22, 1, 0.36, 1) both;
+  pointer-events: none;
+}
+.landing-dock > * {
+  pointer-events: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .launch-btn,
+  .launch-btn-inner::after,
+  .landing-dock {
+    animation: none;
+  }
+  .hero-chip {
+    transition: none;
+  }
+  .how-progress,
+  .how-swap {
+    animation: none;
+  }
+  .how-upload {
+    animation: none;
+    width: 100%;
+  }
+}
+
 /* ──────────────────────────────────────────────────────────────────────────
  * Interactive landing demos (chat trainer, flashcards, tab swap).
  * ────────────────────────────────────────────────────────────────────────── */
@@ -355,10 +552,9 @@ body {
 .fcard-front { background: linear-gradient(140deg, var(--color-brand), var(--color-brand-dark)); color: #fff; font-weight: 700; font-size: 1.05rem; }
 .fcard-back { background: #fff; color: #374151; font-size: 0.85rem; line-height: 1.4; border: 1px solid #e5e7eb; transform: rotateY(180deg); }
 
-.demo-swap { animation: demo-pop 0.35s ease both; }
 
 @media (prefers-reduced-motion: reduce) {
-  .chatd-in, .chatd-chip, .demo-swap { animation: none; }
+  .chatd-in, .chatd-chip { animation: none; }
   .chatd-typing i { animation: none; }
   .fcard-inner { transition: none; }
 }

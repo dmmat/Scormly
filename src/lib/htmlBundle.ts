@@ -5,7 +5,8 @@
 // so its frame gets one document with the files inlined as data: URLs (see
 // buildHtmlDocument), in a sandbox that keeps the page away from the app.
 
-import JSZip from 'jszip'
+import type JSZip from 'jszip'
+import { loadJSZip } from './zip'
 import { useCourseStore } from '../store/courseStore'
 import { getSubdirectory, writeBlobToSubdir } from './fileSystem'
 import { getMemoryAsset, memoryAssetPaths, putMemoryAsset } from './assets'
@@ -85,7 +86,7 @@ export async function saveHtmlUpload(file: File): Promise<string> {
   if (!/\.zip$/i.test(file.name)) throw new HtmlUploadError('format')
   let zip: JSZip
   try {
-    zip = await JSZip.loadAsync(file)
+    zip = await (await loadJSZip()).loadAsync(file)
   } catch {
     throw new HtmlUploadError('format')
   }

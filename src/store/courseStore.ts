@@ -19,6 +19,7 @@ import type { Language } from '../i18n/types'
 import { makeSampleCourse } from '../lib/sampleCourse'
 import { repairCourse, type RepairFix } from '../lib/repairCourse'
 import { useReviewStore } from './reviewStore'
+import { clearProjectKey } from '../lib/route'
 
 const HISTORY_LIMIT = 50
 
@@ -360,7 +361,7 @@ export const useCourseStore = create<CourseState>((set, get) => {
 
     closeProject: () => {
       // Drop the project key from the URL.
-      if (window.location.hash.startsWith('#/app/')) window.location.hash = '/app'
+      clearProjectKey()
       set({ directoryHandle: null, projectName: null, tabOnly: false, saveState: 'idle' })
     },
 

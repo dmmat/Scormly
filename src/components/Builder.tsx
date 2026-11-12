@@ -1,3 +1,4 @@
+import '../i18n/dictionary'
 import { useEffect, useState } from 'react'
 import Header from './layout/Header'
 import Sidebar from './layout/Sidebar'
@@ -11,7 +12,7 @@ import ShortcutsHelp from './editor/ShortcutsHelp'
 import ExportCheckDialog from './editor/ExportCheckDialog'
 import HelpLayer from './help/HelpLayer'
 import ReviewPanel from './review/ReviewPanel'
-import { runExport, useExportStore } from '../export/runExport'
+import { useExportStore } from '../export/runExport'
 import ThemeProvider from '../theme/ThemeProvider'
 import { useUndoRedoShortcuts } from '../hooks/useUndoRedoShortcuts'
 import { useEditorShortcuts } from '../hooks/useEditorShortcuts'
@@ -23,7 +24,7 @@ import { useT, useLang } from '../i18n/I18nProvider'
 import { hasUnsavedZipChanges } from '../lib/exportProjectZip'
 import { setMemoryUserInstructions } from '../lib/userInstructions'
 
-// Course builder (editor). Rendered on the #/app route. Shows the welcome screen
+// Course builder (editor). Rendered on the /app route. Shows the welcome screen
 // until a project folder is opened (or the user opts to continue without saving).
 export default function Builder() {
   useUndoRedoShortcuts()
@@ -40,14 +41,13 @@ export default function Builder() {
   const { projectKey, demo } = useRoute()
   const { lang } = useLang()
   const { t } = useT('common')
-  const { t: tw } = useT('welcome')
   const skipped = useCourseStore((s) => s.tabOnly)
   const openSample = () => {
     useCourseStore.getState().loadSampleCourse(lang)
     useCourseStore.getState().setTabOnly(true)
   }
 
-  // #/demo (from the landing page) opens the sample course directly, unless a
+  // /demo (from the landing page) opens the sample course directly, unless a
   // project folder is already open in this tab.
   useEffect(() => {
     if (demo && !useCourseStore.getState().directoryHandle) openSample()
@@ -59,7 +59,7 @@ export default function Builder() {
   useEffect(() => {
     let active = true
     void restoreOpenProject(projectKey).then((ok) => {
-      // No project could be restored — fall back to a clean /#/app URL.
+      // No project could be restored — fall back to a clean /app URL.
       if (!ok && projectKey) navigate('app')
       if (active) setRestoring(false)
     })
@@ -121,18 +121,6 @@ export default function Builder() {
     <ThemeProvider>
       <ZipUpdateDialog />
       <Header />
-      {!directoryHandle && (
-        <div className="flex shrink-0 flex-wrap items-center justify-center gap-x-3 gap-y-1 border-b border-amber-200 bg-amber-50 px-4 py-2 text-center text-xs text-amber-900 sm:text-sm">
-          <span>{tw('noFolderBanner')}</span>
-          <button
-            type="button"
-            onClick={() => void runExport('project')}
-            className="font-semibold underline underline-offset-2 hover:text-amber-700"
-          >
-            {t('downloadProject')}
-          </button>
-        </div>
-      )}
       <div className="flex min-h-0 flex-1">
         <Sidebar />
         <Workspace />

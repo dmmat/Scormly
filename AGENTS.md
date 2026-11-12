@@ -10,7 +10,7 @@ Vite + Tailwind v4 + Zustand). No backend: a project lives in a folder (File
 System Access API), in the browser's storage (OPFS) or only in the tab, and
 travels as a project .zip; packages are built in the browser via JSZip. The app
 UI is bilingual (English / Ukrainian) via i18n, and a marketing landing page is
-the default route (the builder lives at `#/app`).
+the default route (the builder lives at `/app`).
 
 ## Before you start
 

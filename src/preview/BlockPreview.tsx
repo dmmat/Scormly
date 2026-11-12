@@ -1,3 +1,4 @@
+import '../i18n/dictionary'
 import { useId } from 'react'
 import type { Block } from '../types/course'
 import { useT } from '../i18n/I18nProvider'

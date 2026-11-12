@@ -1,6 +1,4 @@
 import { create } from 'zustand'
-import { exportScorm } from './exportScorm'
-import { exportCmi5 } from './exportCmi5'
 import { downloadProjectZip } from '../lib/exportProjectZip'
 import { toast } from '../store/toastStore'
 import { translate } from '../i18n/I18nProvider'
@@ -19,9 +17,10 @@ export const useExportStore = create<{
 }>()(() => ({ exporting: false, pending: null }))
 
 const RUN: Record<ExportTarget, () => Promise<string>> = {
-  scorm2004: () => exportScorm('2004'),
-  scorm12: () => exportScorm('1.2'),
-  cmi5: exportCmi5,
+  // The packagers load on the first export, not with the editor.
+  scorm2004: async () => (await import('./exportScorm')).exportScorm('2004'),
+  scorm12: async () => (await import('./exportScorm')).exportScorm('1.2'),
+  cmi5: async () => (await import('./exportCmi5')).exportCmi5(),
   project: downloadProjectZip,
 }
 

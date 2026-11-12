@@ -29,6 +29,7 @@ import { usePageWidthVar } from '../../hooks/usePageWidthVar'
 import BlockShell from '../editor/BlockShell'
 import AddBlockMenu from '../editor/AddBlockMenu'
 import { useT } from '../../i18n/I18nProvider'
+import { AutoTextarea } from '../editor/controls'
 
 export default function Workspace() {
   const activeLesson = useCourseStore(selectActiveLesson)
@@ -69,12 +70,12 @@ export default function Workspace() {
               <p className="mb-2 text-xs font-semibold uppercase tracking-[0.14em] text-brand-dark">
                 {t('lesson')} {lessonIndex + 1}
               </p>
-              <input
+              <AutoTextarea
                 value={activeLesson.title}
                 aria-label={t('lessonTitle')}
                 placeholder={t('lessonTitle')}
-                onChange={(e) => renameLesson(activeLesson.id, e.target.value)}
-                className="lesson-title-input -mx-2 w-[calc(100%+1rem)] rounded-lg bg-transparent px-2 py-1 text-4xl font-bold tracking-tight text-gray-900 outline-none transition hover:bg-white/60 focus:bg-white focus:ring-2 focus:ring-brand/30"
+                onChange={(e) => renameLesson(activeLesson.id, e.target.value.replace(/\n/g, ' '))}
+                className="lesson-title-input block -mx-2 w-[calc(100%+1rem)] rounded-lg bg-transparent px-2 py-1 text-4xl font-bold tracking-tight text-gray-900 outline-none transition hover:bg-white/60 focus:bg-white focus:ring-2 focus:ring-brand/30"
               />
             </header>
 

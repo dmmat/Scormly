@@ -1,6 +1,10 @@
+import { copyFileSync } from 'node:fs'
+import { resolve } from 'node:path'
 import type { Plugin } from 'vite'
 import landing from '../src/i18n/locales/landing.ts'
-import demo from '../src/i18n/locales/demo.ts'
+import { RELEASES } from '../src/help/releaseNotes.ts'
+import { CONTACT_EMAIL } from '../src/lib/links.ts'
+import pkg from '../package.json' with { type: 'json' }
 
 // The site is a client-rendered SPA, so the served index.html used to contain an
 // empty <div id="root">. This build-only plugin writes the landing's English copy
@@ -9,6 +13,8 @@ import demo from '../src/i18n/locales/demo.ts'
 // createRoot().render() replaces it on mount.
 
 const GITHUB = 'https://github.com/dmmat/Scormly'
+const SITE = 'https://scormly.app/'
+const RELEASE_DATE = RELEASES.find((r) => r.date)?.date ?? ''
 
 const esc = (s: string) =>
   s
@@ -25,37 +31,50 @@ function faqKeys(t: Record<string, string>): number[] {
 
 function staticLanding(): string {
   const t = landing.en
-  const d = demo.en
   const list = (items: [string, string][]) =>
     items.map(([h, p]) => `<li><h3>${esc(h)}</h3><p>${esc(p)}</p></li>`).join('')
   const range = (prefix: string, n: number): [string, string][] =>
     Array.from({ length: n }, (_, i) => [t[`${prefix}${i + 1}Title`], t[`${prefix}${i + 1}Text`]])
 
+  const date = new Intl.DateTimeFormat('en', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' })
+  const news = RELEASES.filter((r) => r.date)
+    .slice(0, 2)
+    .map(
+      (r) =>
+        `<h3><time datetime="${r.date}">${date.format(new Date(r.date!))}</time></h3><ul>${r.items.en
+          .map((item) => `<li>${esc(item)}</li>`)
+          .join('')}</ul>`,
+    )
+    .join('')
+
   return `<div id="seo-static">
 <header><strong>Scormly</strong>
-<nav><a href="#demo">${esc(t.navDemo)}</a> <a href="#features">${esc(t.navFeatures)}</a> <a href="#how">${esc(t.navHow)}</a> <a href="#faq">${esc(t.navFaq)}</a> <a href="${GITHUB}">${esc(t.navGithub)}</a> <a href="#/app">${esc(t.openApp)}</a></nav>
+<nav><a href="#features">${esc(t.navFeatures)}</a> <a href="#how">${esc(t.navHow)}</a> <a href="#faq">${esc(t.navFaq)}</a> <a href="${GITHUB}">${esc(t.navGithub)}</a> <a href="/app">${esc(t.openApp)}</a></nav>
 </header>
 <main>
 <section><p>${esc(t.heroBadge)}</p><h1>${esc(t.heroTitle)}</h1><p>${esc(t.heroSubtitle)}</p>
-<p><a href="#/app">${esc(t.heroCtaPrimary)}</a> · <a href="#/demo">${esc(t.heroCtaDemo)}</a> · <a href="${GITHUB}">${esc(t.heroCtaSecondary)}</a></p><p>${esc(t.heroNote)}</p></section>
+<p><a href="/app">${esc(t.heroCtaPrimary)}</a> · <a href="/demo">${esc(t.heroCtaDemo)}</a> · <a href="${GITHUB}">${esc(t.heroCtaSecondary)}</a></p><p>${esc(t.heroNote)}</p></section>
 <section><h2>${esc(t.pillarsTitle)}</h2><ul>${list([
     [t.pillarOpenTitle, t.pillarOpenText],
     [t.pillarFreeTitle, t.pillarFreeText],
     [t.pillarLocalTitle, t.pillarLocalText],
   ])}</ul></section>
-<section id="demo"><h2>${esc(d.title)}</h2><p>${esc(d.badge)}. ${esc(d.subtitle)}</p><p><a href="#/demo">${esc(t.demoCourseCta)}</a></p></section>
-<section><h2>${esc(t.privacyTitle)}</h2><p>${esc(t.privacyText)}</p></section>
-<section id="design"><h2>${esc(t.designTitle)}</h2><p>${esc(t.designSubtitle)}</p><ul>${list(range('designPoint', 4))}</ul></section>
+<section id="who"><h2>${esc(t.whoTitle)}</h2><p>${esc(t.whoSubtitle)}</p><ul>${list(range('who', 4))}</ul></section>
 <section id="features"><h2>${esc(t.featuresTitle)}</h2><p>${esc(t.featuresSubtitle)}</p><ul>${list(range('f', 10))}</ul></section>
-<section id="accessibility"><h2>${esc(t.a11yTitle)}</h2><p>${esc(t.a11ySubtitle)}</p><ul>${list(range('a11yPoint', 6))}</ul><p>${esc(t.a11yNote)}</p></section>
-<section id="ai"><h2>${esc(t.aiTitle)}</h2><p>${esc(t.aiSubtitle)}</p><ul>${list(range('aiPoint', 3))}</ul></section>
 <section id="how"><h2>${esc(t.howTitle)}</h2><ol>${list(range('how', 3))}</ol></section>
+<section id="design"><h2>${esc(t.designTitle)}</h2><p>${esc(t.designSubtitle)}</p><ul>${list(range('designPoint', 4))}</ul></section>
+<section id="ai"><h2>${esc(t.aiTitle)}</h2><p>${esc(t.aiSubtitle)}</p><ul>${list(range('aiPoint', 3))}</ul></section>
+<section id="accessibility"><h2>${esc(t.a11yTitle)}</h2><p>${esc(t.a11ySubtitle)}</p><ul>${list(range('a11yPoint', 6))}</ul><p>${esc(t.a11yNote)}</p></section>
+<section><h2>${esc(t.privacyTitle)}</h2><p>${esc(t.privacyText)}</p></section>
 <section id="faq"><h2>${esc(t.faqTitle)}</h2>${faqKeys(t)
     .map((i) => `<h3>${esc(t[`faqQ${i}`])}</h3><p>${esc(t[`faqA${i}`])}</p>`)
     .join('')}</section>
+<section id="whats-new"><h2>${esc(t.newsTitle)}</h2><p>${esc(t.newsSubtitle)}</p>${news}</section>
+<section id="about"><h2>${esc(t.aboutTitle)}</h2><p>${esc(t.aboutText)} <a href="${GITHUB}">${esc(t.navGithub)}</a> · <a href="mailto:${CONTACT_EMAIL}">${CONTACT_EMAIL}</a></p>
+<p>${esc(t.aboutVersion)}: ${esc(pkg.version)} · ${esc(t.aboutReleased)}: <time datetime="${RELEASE_DATE}">${RELEASE_DATE}</time> · ${esc(t.aboutLicense)}: MIT · ${esc(t.aboutRepo)}: <a href="${GITHUB}">github.com/dmmat/Scormly</a> · <a href="#whats-new">${esc(t.aboutNews)}</a></p></section>
 <section><h2>${esc(t.contributeTitle)}</h2><p>${esc(t.contributeText)}</p><p><a href="${GITHUB}">${esc(t.contributeCta)}</a></p></section>
 </main>
-<footer><p>${esc(t.footerTagline)}</p><p>${esc(t.footerLicense)} · <a href="${GITHUB}/issues">${esc(t.footerIssues)}</a></p></footer>
+<footer><p>${esc(t.footerTagline)}</p><p><a href="${GITHUB}">${esc(t.navGithub)}</a> · <a href="/demo">${esc(t.footerDemo)}</a> · <a href="/app">${esc(t.openApp)}</a> · <a href="#whats-new">${esc(t.navNews)}</a> · <a href="/llms.txt">llms.txt</a> · <a href="mailto:${CONTACT_EMAIL}">${CONTACT_EMAIL}</a> · <a href="${GITHUB}/issues">${esc(t.footerIssues)}</a> · ${esc(t.footerLicense)}</p></footer>
 </div>`
 }
 
@@ -87,14 +106,44 @@ const STYLE = `<style>
 @keyframes seo-reveal{to{opacity:1}}
 </style>`
 
+// One page to index: the landing. The builder (/app) and the demo (/demo) are
+// the same app with nothing of their own to index, and the Ukrainian interface
+// is chosen in the page, so there are no separate language URLs to list.
+const sitemap = (lastmod: string) => `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>${SITE}</loc>
+    <lastmod>${lastmod}</lastmod>
+  </url>
+</urlset>
+`
+
 export function seoPrerender(): Plugin {
+  let outDir = 'dist'
   return {
     name: 'scormly-seo-prerender',
     apply: 'build',
+    configResolved(config) {
+      outDir = resolve(config.root, config.build.outDir)
+    },
+    // The host is static, so every route needs a file: /app and /demo are
+    // copies of the page (the app picks the view from the URL), and 404.html
+    // lets any other path (e.g. an old /app/<key> link) still open the app.
+    closeBundle() {
+      for (const name of ['app.html', 'demo.html', '404.html']) {
+        copyFileSync(resolve(outDir, 'index.html'), resolve(outDir, name))
+      }
+    },
+    // The page changes with every deploy, so the sitemap carries the build date.
+    generateBundle() {
+      this.emitFile({ type: 'asset', fileName: 'sitemap.xml', source: sitemap(new Date().toISOString().slice(0, 10)) })
+    },
     transformIndexHtml(html) {
       const root = '<div id="root"></div>'
       if (!html.includes(root)) throw new Error('seoPrerender: #root not found in index.html')
       return html
+        .replace(/%APP_VERSION%/g, pkg.version)
+        .replace(/%RELEASE_DATE%/g, RELEASE_DATE)
         .replace('</head>', `${STYLE}\n${faqJsonLd()}\n</head>`)
         .replace(root, `<div id="root">${staticLanding()}</div>`)
     },

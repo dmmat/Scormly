@@ -12,6 +12,7 @@ const STEPS: { target: string | null; key: string }[] = [
   { target: 'add-block', key: 'Add' },
   { target: 'settings', key: 'Settings' },
   { target: 'preview', key: 'Preview' },
+  { target: 'comments', key: 'Comments' },
   { target: 'export', key: 'Export' },
   { target: 'save', key: 'Save' },
   { target: 'help', key: 'Help' },

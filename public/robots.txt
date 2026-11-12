@@ -3,8 +3,12 @@
 # server data. Search engines and AI assistants are welcome; for a summary
 # written for language models, see https://scormly.app/llms.txt
 
+# /scorm-player/ is the template of the exported course player, not a page.
+# It is repeated in the second group because a crawler named there reads only
+# its own group.
 User-agent: *
 Allow: /
+Disallow: /scorm-player/
 
 # AI crawlers and assistants, allowed explicitly so the intent is clear.
 # OpenAI
@@ -24,5 +28,6 @@ User-agent: Applebot-Extended
 User-agent: meta-externalagent
 User-agent: CCBot
 Allow: /
+Disallow: /scorm-player/
 
 Sitemap: https://scormly.app/sitemap.xml

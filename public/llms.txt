@@ -83,7 +83,7 @@ merge into the author's.
 ## Links
 
 - [Scormly](https://scormly.app/): the app and the landing page, with a live demo course
-- [Demo course](https://scormly.app/#/demo): opens a sample course with every kind of block
+- [Demo course](https://scormly.app/demo): opens a sample course with every kind of block
 - [Source code](https://github.com/dmmat/Scormly): MIT-licensed, React + TypeScript
 - [Issues](https://github.com/dmmat/Scormly/issues): bug reports and feature requests
 

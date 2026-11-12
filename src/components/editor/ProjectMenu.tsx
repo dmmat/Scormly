@@ -1,10 +1,12 @@
 import { useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { useMenu } from '../../hooks/useMenu'
 import { useCourseStore } from '../../store/courseStore'
 import { useT } from '../../i18n/I18nProvider'
 import { flushSave } from '../../lib/projectService'
 import { hasUnsavedZipChanges } from '../../lib/exportProjectZip'
 import { runExport } from '../../export/runExport'
+import { useDialog } from '../../hooks/useDialog'
 
 // Dropdown on the project name: back to the projects screen (to create, open
 // or switch projects — see WelcomeScreen), or download this one as a .zip.
@@ -21,19 +23,24 @@ export default function ProjectMenu() {
 
   useMenu({ open, onClose: () => setOpen(false), rootRef, triggerRef })
 
+  // Why leaving needs an answer first: 'zip' — no folder and edits since the
+  // last .zip download; 'folder' — the last write to the folder failed.
+  const [leaveAsk, setLeaveAsk] = useState<'zip' | 'folder' | null>(null)
+
   // Leaving the project: write pending edits first, and ask before discarding
-  // them if the write failed — or, without a folder, if there are edits since
-  // the last .zip download.
-  async function leave(): Promise<boolean> {
+  // any that would be lost.
+  async function leave() {
     if (!hasFolder) {
-      return !hasUnsavedZipChanges() || window.confirm(tw('leaveUnsavedZip'))
+      if (hasUnsavedZipChanges()) setLeaveAsk('zip')
+      else closeProject()
+      return
     }
-    if (await flushSave()) return true
-    return window.confirm(t('leaveUnsaved'))
+    if (await flushSave()) closeProject()
+    else setLeaveAsk('folder')
   }
 
   return (
-    <div ref={rootRef} className="relative">
+    <div ref={rootRef} className="relative min-w-0">
       <button
         ref={triggerRef}
         type="button"
@@ -41,7 +48,7 @@ export default function ProjectMenu() {
         aria-haspopup="menu"
         aria-expanded={open}
         title={t('manageProject')}
-        className={`flex max-w-[14rem] items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-sm transition-colors ${
+        className={`flex min-w-0 max-w-[min(14rem,100%)] items-center whitespace-nowrap gap-1.5 rounded-md border px-2.5 py-1.5 text-sm transition-colors ${
           open
             ? 'border-brand bg-brand/5 text-gray-900'
             : 'border-gray-200 text-gray-700 hover:border-gray-300 hover:bg-gray-50'
@@ -64,7 +71,7 @@ export default function ProjectMenu() {
             hint={t('allProjectsHint')}
             onClick={() => {
               setOpen(false)
-              void leave().then((ok) => ok && closeProject())
+              void leave()
             }}
           >
             {t('allProjects')}
@@ -78,6 +85,88 @@ export default function ProjectMenu() {
           </MenuItem>
         </div>
       )}
+      {/* Portalled to the themed builder root: the header's backdrop filter
+          would otherwise confine a fixed overlay to the header. */}
+      {leaveAsk &&
+        createPortal(
+        <LeaveDialog
+          title={tw('leaveTitle')}
+          text={leaveAsk === 'zip' ? tw('leaveUnsavedZip') : t('leaveUnsaved')}
+          stay={tw('leaveStay')}
+          discard={tw('leaveDiscard')}
+          download={leaveAsk === 'zip' ? tw('leaveDownload') : undefined}
+          onStay={() => setLeaveAsk(null)}
+          onDiscard={() => {
+            setLeaveAsk(null)
+            closeProject()
+          }}
+          onDownload={() => {
+            setLeaveAsk(null)
+            // Leave only if the download went through (a failure is toasted).
+            void runExport('project').then(() => {
+              if (!hasUnsavedZipChanges()) closeProject()
+            })
+          }}
+        />,
+          rootRef.current?.closest('[data-theme]') ?? document.body,
+        )}
+    </div>
+  )
+}
+
+// Asks before leaving a project whose latest changes would be lost.
+function LeaveDialog({
+  title,
+  text,
+  stay,
+  discard,
+  download,
+  onStay,
+  onDiscard,
+  onDownload,
+}: {
+  title: string
+  text: string
+  stay: string
+  discard: string
+  download?: string
+  onStay: () => void
+  onDiscard: () => void
+  onDownload: () => void
+}) {
+  const ref = useRef<HTMLDivElement>(null)
+  useDialog(ref, onStay)
+  return (
+    <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/40 p-4" onClick={onStay}>
+      <div
+        ref={ref}
+        role="alertdialog"
+        aria-modal="true"
+        aria-labelledby="leave-title"
+        aria-describedby="leave-text"
+        onClick={(e) => e.stopPropagation()}
+        className="w-full max-w-lg whitespace-normal rounded-2xl bg-white p-6 shadow-xl"
+      >
+        <h2 id="leave-title" className="text-lg font-semibold text-gray-900">
+          {title}
+        </h2>
+        <p id="leave-text" className="mt-2 text-sm leading-relaxed text-gray-600">
+          {text}
+        </p>
+        <div className="mt-5 flex flex-wrap justify-end gap-2">
+          <button type="button" onClick={onStay} className="rounded-md px-3 py-2 text-sm text-gray-600 hover:bg-gray-100">
+            {stay}
+          </button>
+          <button type="button" onClick={onDiscard} className={download ? 'btn-secondary text-sm' : 'btn-primary text-sm'}>
+            {discard}
+          </button>
+          {download && (
+            <button type="button" onClick={onDownload} className="btn-primary text-sm">
+              {download}
+            </button>
+          )}
+        </div>
+      </div>
     </div>
   )
 }
