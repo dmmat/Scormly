@@ -1,11 +1,21 @@
 import { LOGO_GLYPH } from './logoMark'
-import { useT } from '../../i18n/I18nProvider'
+import { useLang } from '../../i18n/I18nProvider'
+import type { Language } from '../../i18n/types'
+
+// Its own text: this screen shows while the interface strings are still loading.
+const LOADING: Record<Language, string> = {
+  en: 'Loading the editor…',
+  uk: 'Завантажуємо редактор…',
+  fr: 'Chargement de l’éditeur…',
+  es: 'Cargando el editor…',
+  de: 'Der Editor wird geladen …',
+}
 
 // Shown while the builder's code downloads (App.tsx). /app and /demo ship the
 // same screen in their HTML (scripts/seoPrerender.ts), so the page doesn't
 // change between the first paint and this one: keep the markup in step.
 export default function AppLoader() {
-  const { t } = useT('common')
+  const { lang } = useLang()
   return (
     <div className="app-loader" role="status">
       <div className="app-loader-mark">
@@ -24,7 +34,7 @@ export default function AppLoader() {
         <i className="app-loader-image" />
         <i className="app-loader-btn" />
       </div>
-      <span className="sr-only">{t('loadingApp')}</span>
+      <span className="sr-only">{LOADING[lang]}</span>
     </div>
   )
 }

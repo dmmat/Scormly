@@ -53,7 +53,7 @@ export const DICTIONARY = {
 
 export type Namespace = keyof typeof DICTIONARY
 
-// Importing this module is what makes every namespace available to
-// translate() / useT(): code that renders outside the landing page must
-// import it (the builder and the block previews do).
+// Importing this module registers every namespace in every language at once.
+// That is for tests and build scripts: the app must NOT import it (it would
+// ship all the languages), it loads the strings it needs through ./load.
 registerTables(DICTIONARY)

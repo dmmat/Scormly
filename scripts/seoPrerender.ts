@@ -4,7 +4,7 @@ import type { Plugin } from 'vite'
 import landing from '../src/i18n/locales/landing.ts'
 import { RELEASES } from '../src/help/releaseNotes.ts'
 import { CONTACT_EMAIL } from '../src/lib/links.ts'
-import { DEFAULT_LANGUAGE, LANGUAGES, type Language } from '../src/i18n/types.ts'
+import { DEFAULT_LANGUAGE, LANGUAGES, LANGUAGE_STORAGE_KEY, type Language } from '../src/i18n/types.ts'
 import { LD } from './seoLd.ts'
 import { LOGO_GLYPH } from '../src/components/layout/logoMark.ts'
 import pkg from '../package.json' with { type: 'json' }
@@ -180,6 +180,22 @@ export function appShell(html: string, preloads: string[]): string {
   return withPreloads(swap(html, staticLanding(DEFAULT_LANGUAGE), APP_LOADER), preloads)
 }
 
+/** Preloads a view's interface strings (src/i18n/load.ts): English always (the
+ *  fallback), and the page's language. A page with a fixed language names its
+ *  chunk; the others (/, /app, /demo) pick it with a small inline script that
+ *  repeats the app's own rule: the saved choice, else the first browser
+ *  language the interface has. Without it the strings would start downloading
+ *  only after the main script ran. */
+export function withLocalePreload(html: string, chunks: Partial<Record<Language, string>>, fixed?: Language): string {
+  const english = chunks[DEFAULT_LANGUAGE]
+  const out = withPreloads(html, [english, fixed && fixed !== DEFAULT_LANGUAGE ? chunks[fixed] : undefined].filter((h): h is string => !!h))
+  if (fixed) return out
+  const others = Object.fromEntries(Object.entries(chunks).filter(([lang]) => lang !== DEFAULT_LANGUAGE))
+  if (!Object.keys(others).length) return out
+  const script = `<script>(function(){try{var m=${JSON.stringify(others)},l=localStorage.getItem(${JSON.stringify(LANGUAGE_STORAGE_KEY)});if(!m[l]&&l!==${JSON.stringify(DEFAULT_LANGUAGE)}){l='';var n=navigator.languages||[navigator.language];for(var i=0;i<n.length&&!l;i++){var c=String(n[i]||'').toLowerCase().split('-')[0];if(m[c]||c===${JSON.stringify(DEFAULT_LANGUAGE)})l=c}}if(m[l]){var k=document.createElement('link');k.rel='modulepreload';k.crossOrigin='';k.href=m[l];document.head.appendChild(k)}}catch(e){}})()</script>`
+  return swap(out, '</head>', `    ${script}\n  </head>`)
+}
+
 /** A chunk and every chunk it imports statically (file names in `assets/`). */
 export function chunkClosure(entry: string | undefined, read: (file: string) => string, skip: Set<string>): string[] {
   const out: string[] = []
@@ -239,16 +255,23 @@ export function seoPrerender(): Plugin {
         )
           .filter((f) => assets.includes(f))
           .map((f) => `${base}assets/${f}`)
+      const strings = (group: string) =>
+        Object.fromEntries(
+          LANGUAGES.map((l) => [l.id, assets.find((f) => f.startsWith(`_locale-${group}-${l.id}-`))] as const)
+            .filter(([, f]) => f)
+            .map(([id, f]) => [id, `${base}assets/${f}`]),
+        ) as Partial<Record<Language, string>>
       const builder = chunksOf('Builder')
-      const html = withPreloads(built, chunksOf('Landing'))
-      writeFileSync(resolve(outDir, 'index.html'), html)
+      const landingPage = withPreloads(built, chunksOf('Landing'))
+      writeFileSync(resolve(outDir, 'index.html'), withLocalePreload(landingPage, strings('landing')))
       for (const { id } of LANGUAGES) {
-        if (id !== DEFAULT_LANGUAGE) writeFileSync(resolve(outDir, `${id}.html`), localizePage(html, id))
+        if (id === DEFAULT_LANGUAGE) continue
+        writeFileSync(resolve(outDir, `${id}.html`), withLocalePreload(localizePage(landingPage, id), strings('landing'), id))
       }
-      writeFileSync(resolve(outDir, 'app.html'), appShell(built, builder))
+      writeFileSync(resolve(outDir, 'app.html'), withLocalePreload(appShell(built, builder), strings('app')))
       // The demo also opens the sample course straight away.
       const sample = chunksOf('sampleCourse').filter((href) => !builder.includes(href))
-      writeFileSync(resolve(outDir, 'demo.html'), appShell(built, [...builder, ...sample]))
+      writeFileSync(resolve(outDir, 'demo.html'), withLocalePreload(appShell(built, [...builder, ...sample]), strings('app')))
       copyFileSync(resolve(outDir, 'index.html'), resolve(outDir, '404.html'))
     },
     // The page changes with every deploy, so the sitemap carries the build date.

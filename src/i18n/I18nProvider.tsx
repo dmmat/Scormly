@@ -4,19 +4,19 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
 } from 'react'
-import { DEFAULT_LANGUAGE, LANGUAGES, type Language } from './types'
+import { DEFAULT_LANGUAGE, LANGUAGES, LANGUAGE_STORAGE_KEY as STORAGE_KEY, type Language } from './types'
 import type { Namespace } from './dictionary'
 import { TABLES } from './registry'
+import { loadLanguage } from './load'
 import { parseRoute, ROUTE_EVENT } from '../lib/route'
 
-const STORAGE_KEY = 'scormly-language'
-
-// Current UI language mirrored at module scope so non-React code (the store,
-// services) can localize default content via translate().
-let currentLanguage: Language = DEFAULT_LANGUAGE
+// A string in `lang`, else in English (always loaded beside it), else undefined.
+const lookup = (namespace: string, lang: Language, key: string): string | undefined =>
+  TABLES[namespace]?.[lang]?.[key] ?? TABLES[namespace]?.[DEFAULT_LANGUAGE]?.[key]
 
 export function getCurrentLanguage(): Language {
   return currentLanguage
@@ -40,7 +40,7 @@ export function translate(
   key: string,
   vars?: Record<string, string | number>,
 ): string {
-  return interpolate(TABLES[namespace]?.[currentLanguage][key] ?? key, vars)
+  return interpolate(lookup(namespace, currentLanguage, key) ?? key, vars)
 }
 
 interface I18nContextValue {
@@ -67,14 +67,30 @@ function detectInitial(): Language {
   return DEFAULT_LANGUAGE
 }
 
-export function I18nProvider({ children }: { children: ReactNode }) {
-  const [lang, setLangState] = useState<Language>(detectInitial)
+// Current UI language mirrored at module scope so non-React code (the store,
+// services) can localize default content via translate(), and so the first
+// view knows which strings to load before anything renders (App.tsx).
+let currentLanguage: Language = typeof window === 'undefined' ? DEFAULT_LANGUAGE : detectInitial()
 
-  const setLang = useCallback((next: Language) => {
-    setLangState(next)
-    currentLanguage = next
-    localStorage.setItem(STORAGE_KEY, next)
+export function I18nProvider({ children }: { children: ReactNode }) {
+  const [lang, setLangState] = useState<Language>(currentLanguage)
+
+  // Switching waits for the new language's strings (a small chunk per view in
+  // use); the last request wins, and a failed download leaves the language as is.
+  const pending = useRef<Language | null>(null)
+  const switchTo = useCallback((next: Language, remember: boolean) => {
+    pending.current = next
+    loadLanguage(next).then(
+      () => {
+        if (pending.current !== next) return
+        currentLanguage = next
+        setLangState(next)
+        if (remember) localStorage.setItem(STORAGE_KEY, next)
+      },
+      () => {},
+    )
   }, [])
+  const setLang = useCallback((next: Language) => switchTo(next, true), [switchTo])
 
   useEffect(() => {
     currentLanguage = lang
@@ -86,7 +102,7 @@ export function I18nProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const onRoute = () => {
       const fromUrl = parseRoute(window.location).lang
-      if (fromUrl) setLangState(fromUrl)
+      if (fromUrl) switchTo(fromUrl, false)
     }
     window.addEventListener('popstate', onRoute)
     window.addEventListener(ROUTE_EVENT, onRoute)
@@ -94,7 +110,7 @@ export function I18nProvider({ children }: { children: ReactNode }) {
       window.removeEventListener('popstate', onRoute)
       window.removeEventListener(ROUTE_EVENT, onRoute)
     }
-  }, [])
+  }, [switchTo])
 
   const value = useMemo(() => ({ lang, setLang }), [lang, setLang])
   return <I18nContext.Provider value={value}>{children}</I18nContext.Provider>
@@ -112,11 +128,9 @@ export type TFunction = (key: string, vars?: Record<string, string | number>) =>
 // language (falling back to the key itself) and the current language. Supports {var} substitution.
 export function useT(namespace: Namespace): { t: TFunction; lang: Language } {
   const { lang } = useLang()
-  const table = TABLES[namespace]?.[lang] ?? {}
-
   const t = useCallback<TFunction>(
     (key, vars) => {
-      let str = table[key] ?? key
+      let str = lookup(namespace, lang, key) ?? key
       if (vars) {
         for (const [k, v] of Object.entries(vars)) {
           str = str.replace(new RegExp(`\\{${k}\\}`, 'g'), String(v))
@@ -124,7 +138,7 @@ export function useT(namespace: Namespace): { t: TFunction; lang: Language } {
       }
       return str
     },
-    [table],
+    [namespace, lang],
   )
 
   return { t, lang }
