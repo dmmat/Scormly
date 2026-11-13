@@ -60,7 +60,7 @@ exported as a **SCORM 1.2 / 2004** or **cmi5 (xAPI)** package for any LMS.
   reduced motion). The pre-export check flags missing alt text, captions,
   transcripts, embed titles and content language, and the exported player
   respects the LMS learner's caption and language preferences.
-- **Bilingual UI** (English / Ukrainian) and an SEO landing page.
+- **Interface in five languages** (English, Ukrainian, French, Spanish, German) and an SEO landing page.
 - **Undo / Redo** with history and keyboard shortcuts (Ctrl/Cmd + Z / Y),
   persisted alongside the project.
 - **Local-first** — the project and media are saved to your own folder via the
@@ -139,7 +139,7 @@ src/
 ├── index.css                 # Tailwind + theme tokens + landing animations
 ├── types/course.ts           # data model (discriminated union of blocks)
 ├── store/courseStore.ts      # Zustand store: CRUD + undo/redo + UI state
-├── i18n/                     # internationalization (EN / UK)
+├── i18n/                     # internationalization (EN / UK / FR / ES)
 ├── theme/                    # global project themes
 ├── lib/                      # file system, assets, project service, agent guide
 ├── blocks/
@@ -176,7 +176,7 @@ public/scorm-player/          # vanilla runtime shipped in every export
 - [x] Editor foundation: model, store, undo/redo, block rendering
 - [x] All content & interactive block types (+ rich-text editor, course outline)
 - [x] Global project themes
-- [x] Bilingual UI (English / Ukrainian) and an SEO landing page
+- [x] Interface in English, Ukrainian, French, Spanish and German, and an SEO landing page
 - [x] Drag-and-drop reordering, right-click context menu, keyboard shortcuts
 - [x] Local saving via the File System Access API (`project.json`, `assets/`,
       autosave, history, recent projects)

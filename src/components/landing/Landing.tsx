@@ -1,9 +1,11 @@
 import { lazy, Suspense, useEffect, useRef, useState, type MouseEvent, type ReactNode } from 'react'
 import Logo from '../layout/Logo'
 import LanguagePicker from '../editor/LanguagePicker'
-import { useT } from '../../i18n/I18nProvider'
+import { useLang, useT } from '../../i18n/I18nProvider'
+import { LANGUAGES } from '../../i18n/types'
 import { useReveal } from '../../hooks/useReveal'
-import { navigate } from '../../hooks/useRoute'
+import { navigate, useRoute } from '../../hooks/useRoute'
+import { landingUrl, ROUTE_EVENT } from '../../lib/route'
 import { CONTACT_EMAIL, GITHUB_URL, GITHUB_ISSUES_URL } from '../../lib/links'
 import { RELEASES } from '../../help/releaseNotes'
 import ChatDemo from './demos/ChatDemo'
@@ -421,7 +423,7 @@ function Dock({
                   href={l.href}
                   aria-current={active === l.href ? 'true' : undefined}
                   {...linkProps(l)}
-                  className={`flex h-12 flex-col items-center justify-center gap-0.5 whitespace-nowrap rounded-full px-3 text-[11px] font-medium leading-none transition-colors duration-200 ${
+                  className={`flex h-12 flex-col items-center justify-center gap-0.5 whitespace-nowrap rounded-full px-3 text-[11px] max-[359px]:px-1.5 font-medium leading-none transition-colors duration-200 ${
                     active === l.href
                       ? 'bg-brand text-white shadow-md shadow-brand/30'
                       : 'text-gray-600 hover:bg-gray-900/5 hover:text-brand-dark'
@@ -505,6 +507,22 @@ function ScrollProgress() {
 
 export default function Landing() {
   const { t, lang } = useT('landing')
+  const { setLang } = useLang()
+  const { lang: urlLang } = useRoute()
+
+  // Each language has its own address ('/', '/uk', …) so it can be found and
+  // shared; keep the address on the language being shown.
+  useEffect(() => {
+    const url = landingUrl(lang)
+    if ((window.location.pathname.replace(/\/+$/, '') || '/') === url) return
+    history.replaceState(null, '', url + window.location.hash)
+    window.dispatchEvent(new Event(ROUTE_EVENT))
+  }, [lang, urlLang])
+
+  useEffect(() => {
+    document.title = t('metaTitle')
+    document.querySelector('meta[name="description"]')?.setAttribute('content', t('metaDescription'))
+  }, [t])
 
   // A link to a section (…#features) opens the landing at that section.
   useEffect(() => {
@@ -549,7 +567,7 @@ export default function Landing() {
           <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-3 px-4 sm:px-6">
             {/* On the narrowest phones only the logo mark shows, so the bar fits. */}
             <a
-              href="/"
+              href={landingUrl(lang)}
               aria-label="Scormly"
               onClick={(e) => {
                 // Already on the landing: the logo takes the reader back to the top.
@@ -558,7 +576,7 @@ export default function Landing() {
                 e.currentTarget
                   .closest('[data-landing-scroll]')
                   ?.scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' })
-                history.replaceState(null, '', '/')
+                history.replaceState(null, '', landingUrl(lang))
               }}
               className="shrink-0 max-[359px]:[&_span]:hidden"
             >
@@ -1308,6 +1326,30 @@ export default function Landing() {
             </a>
             <span>{t('footerLicense')}</span>
           </div>
+          {/* Real links, so each language page is reachable by crawlers; a
+              click switches the language like the picker in the top bar. */}
+          <nav
+            aria-label={t('footerLanguages')}
+            className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-sm text-gray-500"
+          >
+            {LANGUAGES.map((l) => (
+              <a
+                key={l.id}
+                href={landingUrl(l.id)}
+                hrefLang={l.id}
+                lang={l.id}
+                aria-current={l.id === lang ? 'page' : undefined}
+                onClick={(e) => {
+                  if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return
+                  e.preventDefault()
+                  setLang(l.id)
+                }}
+                className={l.id === lang ? 'font-medium text-gray-900' : 'hover:text-brand'}
+              >
+                {l.label}
+              </a>
+            ))}
+          </nav>
           <p className="text-xs text-gray-500">{t('footerMade')}</p>
         </div>
       </footer>

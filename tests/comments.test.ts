@@ -155,10 +155,10 @@ describe('review store', () => {
     expect(useReviewStore.getState().threads).toEqual([])
   })
 
-  test('opening another course drops the comments of the last one', () => {
+  test('opening another course drops the comments of the last one', async () => {
     useReviewStore.getState().setReviewer('Olena')
     useReviewStore.getState().addThread('b1', 'Hi')
-    useCourseStore.getState().loadSampleCourse('en')
+    await useCourseStore.getState().loadSampleCourse('en')
     expect(useReviewStore.getState().threads).toEqual([])
   })
 })

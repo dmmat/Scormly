@@ -2381,6 +2381,7 @@
 
   function renderScenario(b) {
     if ((b.data.layout || 'classic') === 'chat') return renderScenarioChat(b);
+    if (b.data.layout === 'scene') return renderScenarioScene(b);
     var data = b.data;
     var wrap = h('div', { class: 'scenario' });
     function go(nodeId, emotion, moveFocus) {
@@ -2397,6 +2398,11 @@
           choices.appendChild(h('button', { class: 'btn btn-outline', text: c.text, style: 'text-align:left',
             onclick: function () { go(c.nextNodeId, c.setEmotion, true); } }));
         });
+        // A line without answers ends the dialogue: offer to start over.
+        if (!(node.choices || []).length) {
+          choices.appendChild(h('button', { class: 'btn btn-outline', text: t('restart'), style: 'align-self:flex-start',
+            onclick: function () { go(data.startNodeId, null, true); } }));
+        }
         col.appendChild(choices);
       } else {
         col.appendChild(h('p', { class: 'empty scenario-text', tabindex: '-1', text: t('end') }));
@@ -2413,6 +2419,51 @@
       if (moveFocus) {
         var said = wrap.querySelector('.scenario-text');
         if (said) said.focus();
+        announce((data.characterName ? data.characterName + ': ' : '') + (node ? node.text : t('end')));
+      }
+    }
+    go(data.startNodeId);
+    return wrap;
+  }
+
+  // Scene scenario: background picture, a waist-up character and the line in
+  // a bubble; the choices sit under the stage. Mirrors ScenarioPreview.
+  function renderScenarioScene(b) {
+    var data = b.data;
+    var nodes = data.nodes || [];
+    var poses = data.sceneImages || {};
+    var wrap = h('div', { class: 'sc-scene' });
+    var emotion = 'neutral';
+    function findNode(id) { return id ? nodes.find(function (n) { return n.id === id; }) : null; }
+    function go(nodeId, setEmotion, moveFocus) {
+      wrap.innerHTML = '';
+      var node = findNode(nodeId);
+      emotion = setEmotion || (node ? node.emotion : emotion);
+      var pose = poses[emotion];
+      var bubble = h('p', { class: 'sc-scene-bubble', tabindex: '-1', text: node ? node.text : t('end') });
+      var stage = h('div', { class: 'sc-scene-stage' }, [
+        data.background ? h('img', { class: 'sc-scene-bg', src: data.background, alt: '' }) : null,
+        pose ? h('img', { class: 'sc-scene-char', src: pose, alt: data.characterName || '' }) : null,
+        data.characterName ? h('span', { class: 'sc-scene-name', text: data.characterName }) : null,
+        bubble,
+      ]);
+      var choices = h('div', { class: 'sc-scene-choices' });
+      var options = h('div', { class: 'sc-scene-options' });
+      choices.appendChild(options);
+      if (node && (node.choices || []).length) {
+        (node.choices || []).forEach(function (c) {
+          options.appendChild(h('button', { class: 'btn btn-outline', text: c.text, style: 'text-align:left',
+            onclick: function () { go(c.nextNodeId, c.setEmotion, true); } }));
+        });
+      } else {
+        options.appendChild(h('button', { class: 'btn btn-outline sc-scene-restart', text: t('restart'),
+          onclick: function () { emotion = 'neutral'; go(data.startNodeId, null, true); } }));
+      }
+      wrap.appendChild(stage);
+      wrap.appendChild(choices);
+      // The clicked choice is gone; move focus to the new line and announce it.
+      if (moveFocus) {
+        bubble.focus();
         announce((data.characterName ? data.characterName + ': ' : '') + (node ? node.text : t('end')));
       }
     }
@@ -2466,7 +2517,7 @@
     function renderReplies(moveFocus) {
       replies.innerHTML = '';
       var node = findNode(currentId);
-      if (node) {
+      if (node && (node.choices || []).length) {
         (node.choices || []).forEach(function (c) {
           replies.appendChild(h('button', { class: 'chat-reply', text: c.text, onclick: function () { choose(c); } }));
         });

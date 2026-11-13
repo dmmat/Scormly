@@ -49,7 +49,7 @@ Legend: `[ ]` planned · `[~]` in progress · `[x]` done
 ## Phase 2.5 — Internationalization (done)
 
 - [x] i18n core: `I18nProvider`, `useT` / `useLang`, per-namespace locale files
-- [x] Bilingual EN / UK; default English, auto UK for `uk` browsers, persisted
+- [x] EN / UK / FR / ES; default English, auto-picks the first browser language it has, persisted
 - [x] Whole UI localized (chrome + all 13 blocks); `LanguagePicker` in the Header
 
 ## Phase 2.6 — SEO landing page (done)
@@ -96,7 +96,7 @@ Legend: `[ ]` planned · `[~]` in progress · `[x]` done
 Added by the user during development. The original `.txt` spec has a corrupted
 encoding, so these requirements are tracked here as the living list.
 
-- [x] Bilingual EN/UK interface (i18n + language switcher)
+- [x] Interface in EN / UK / FR / ES (i18n + language switcher)
 - [x] Global project themes
 - [x] SEO landing page before the builder (FAQ, animations, open-source/free/local messaging)
 - [x] Editor keyboard shortcuts (undo/redo, save, add/delete/duplicate block, navigation)
@@ -582,3 +582,17 @@ captions and larger text, in the builder preview and in the exported player alik
 - 2026-11-12 — **Path URLs**: `/app`, `/app?p=<key>` and `/demo` replace the `#/app` hash routes
   (still accepted and rewritten). The build writes `app.html`, `demo.html` and `404.html` copies
   of the page for the static host.
+- 2026-11-12 — **French and Spanish interface**: the builder and the landing are in EN / UK / FR / ES
+  (`LANGUAGES` in `i18n/types.ts`). Every locale namespace, the release notes, the landing chat
+  scenarios and the sample course gained `fr` / `es`; the initial language is the first browser
+  language the interface has. `tests/i18n.test.ts` keeps all languages complete (same keys,
+  `{placeholders}` and HTML tags as English).
+
+- 2026-11-12 — **Landing URL per language**: `/uk`, `/fr`, `/es` (English at `/`). The build writes a
+  translated page for each (`uk.html`, …: `<html lang>`, title, description, canonical, Open Graph
+  locale, prerendered copy and FAQ JSON-LD), every page carries hreflang links (x-default = `/`) and
+  `sitemap.xml` lists all four with their alternates. In the app a language in the URL wins for the
+  visit without touching the saved choice; the landing keeps its URL on the language shown, and the
+  footer has plain language links. Builder routes are unchanged.
+- 2026-11-13 — **German interface**: `de` added to `LANGUAGES` (builder, landing at `/de`, release notes,
+  chat scenarios, sample course); `tests/i18n.test.ts` covers it like the other languages.

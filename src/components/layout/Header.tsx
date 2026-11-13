@@ -7,6 +7,7 @@ import ProjectMenu from '../editor/ProjectMenu'
 import TabOnlyNotice from '../editor/TabOnlyNotice'
 import { useCourseStore } from '../../store/courseStore'
 import { useT, useLang } from '../../i18n/I18nProvider'
+import { LANGUAGES } from '../../i18n/types'
 import { saveProject } from '../../lib/projectService'
 import ExportMenu from '../editor/ExportMenu'
 import { requestExport, runExport, useExportStore } from '../../export/runExport'
@@ -281,7 +282,7 @@ export default function Header() {
               <MoreItem
                 label={`${t('language')}: ${lang.toUpperCase()}`}
                 onClick={() => {
-                  setLang(lang === 'en' ? 'uk' : 'en')
+                  setLang(LANGUAGES[(LANGUAGES.findIndex((l) => l.id === lang) + 1) % LANGUAGES.length].id)
                   setMoreOpen(false)
                 }}
               />

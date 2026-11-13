@@ -7,7 +7,7 @@
 
 Scormly is a block-based authoring tool: an author builds a course out of lessons, and each
 lesson out of blocks, editing them in place (WYSIWYG) with drag-and-drop and undo/redo. The
-interface is in English and Ukrainian. It works in current desktop browsers; Chrome and Edge
+interface is in English, Ukrainian, French, Spanish and German. It works in current desktop browsers; Chrome and Edge
 can also save a project straight to a folder on disk.
 
 ## Where a project lives
@@ -34,12 +34,22 @@ can also save a project straight to a folder on disk.
   slider, tabs, accordion, flashcards, image hotspots.
 - **Practice and assessment:** quiz (single choice, multiple choice, matching, ordering and
   fill-in-the-blanks questions mixed under one Submit, with feedback and a passing score),
-  sort-the-order and fill-in-the-blanks exercises, branching dialogue scenario (classic or
-  chat / messenger layout), reflection.
+  sort-the-order and fill-in-the-blanks exercises, branching dialogue scenario (classic,
+  chat / messenger or scene layout), reflection.
 - **Navigation:** Continue (reveals the rest of a lesson, optionally only after the tasks
   above it are done), divider, course outline.
 - Ready-made block templates and per-block styles (theme or photo backgrounds, spacing,
   full-width bands).
+
+## Dialogue scenarios and the picture library
+
+A dialogue scenario has a character, branching lines and answer options, shown in one of three
+layouts: classic (avatar, line and buttons), chat (a messenger conversation) or scene (a
+background picture with a large character, the line in a speech bubble and the answers as one
+numbered bubble). Scormly ships a built-in library of illustrated characters (eight people with
+three emotions each, as busts and as waist-up scene poses), learner avatars and ten office
+backgrounds; picking one copies the pictures into the project, so exports need nothing else.
+A setup wizard walks an author through the layout, character, place and first exchange.
 
 ## Course design and export
 

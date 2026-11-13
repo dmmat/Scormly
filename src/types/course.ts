@@ -376,6 +376,8 @@ export type ScenarioLayout =
   | 'classic'
   /** Phone-style messenger: an accumulating chat with reply bubbles. */
   | 'chat'
+  /** A stage: background picture, a large waist-up character on it, the line in a bubble. */
+  | 'scene'
 
 export interface ScenarioData {
   /** Character images by emotion (relative paths). */
@@ -387,6 +389,10 @@ export interface ScenarioData {
   layout?: ScenarioLayout
   /** Learner's avatar in chat layout (relative path); shown on their replies. */
   userAvatar?: string
+  /** Scene layout: waist-up character poses by emotion (relative paths). */
+  sceneImages?: Partial<Record<ScenarioEmotion, string>>
+  /** Scene layout: background picture (relative path). */
+  background?: string
 }
 
 // ── Quizzes (spec §5.1) ─────────────────────────────────────────────────────

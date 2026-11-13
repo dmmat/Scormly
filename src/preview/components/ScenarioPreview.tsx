@@ -16,6 +16,26 @@ export default function ScenarioPreview({ block }: PreviewProps<'scenario'>) {
     concerned: useAssetUrl(characterImages.concerned ?? ''),
   }
   const userAvatar = useAssetUrl(data.userAvatar ?? '')
+  const poses: Record<ScenarioEmotion, string> = {
+    neutral: useAssetUrl(data.sceneImages?.neutral ?? ''),
+    happy: useAssetUrl(data.sceneImages?.happy ?? ''),
+    concerned: useAssetUrl(data.sceneImages?.concerned ?? ''),
+  }
+  const background = useAssetUrl(data.background ?? '')
+
+  if (data.layout === 'scene') {
+    return (
+      <SceneScenario
+        nodes={nodes}
+        startNodeId={startNodeId}
+        characterName={characterName}
+        avatars={poses}
+        background={background}
+        endLabel={t('end')}
+        restartLabel={t('restart')}
+      />
+    )
+  }
 
   if ((data.layout ?? 'classic') === 'chat') {
     return (
@@ -62,8 +82,10 @@ interface ScenarioViewProps {
   nodes: PreviewProps<'scenario'>['block']['data']['nodes']
   startNodeId: string
   characterName: string
+  /** Per-emotion picture: an avatar (classic / chat) or a waist-up pose (scene). */
   avatars: Record<ScenarioEmotion, string>
   userAvatar?: string
+  background?: string
   endLabel: string
   restartLabel: string
 }
@@ -126,6 +148,11 @@ function ClassicScenario({
                     {c.text}
                   </button>
                 ))}
+                {node.choices.length === 0 && (
+                  <button type="button" onClick={restart} className="btn-secondary self-start text-sm">
+                    {restartLabel}
+                  </button>
+                )}
               </div>
             </>
           ) : (
@@ -137,6 +164,64 @@ function ClassicScenario({
                 {restartLabel}
               </button>
             </div>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// Same markup/classes as the player's renderScenarioScene (shared CSS in blocks.css).
+function SceneScenario({
+  nodes,
+  startNodeId,
+  characterName,
+  avatars,
+  background,
+  endLabel,
+  restartLabel,
+}: ScenarioViewProps) {
+  const [nodeId, setNodeId] = useState<string | null>(startNodeId)
+  const [emotion, setEmotion] = useState<ScenarioEmotion>(
+    () => nodes.find((n) => n.id === startNodeId)?.emotion ?? 'neutral',
+  )
+  const node = nodeId ? nodes.find((n) => n.id === nodeId) : undefined
+  const pose = avatars[emotion]
+  const actionsRef = useFocusAfterChoice(nodeId)
+
+  function choose(c: ScenarioChoice) {
+    const next = c.nextNodeId ? nodes.find((n) => n.id === c.nextNodeId) : undefined
+    setEmotion(c.setEmotion ?? next?.emotion ?? emotion)
+    setNodeId(c.nextNodeId)
+  }
+
+  function restart() {
+    setNodeId(startNodeId)
+    setEmotion(nodes.find((n) => n.id === startNodeId)?.emotion ?? 'neutral')
+  }
+
+  return (
+    <div className="sc-scene">
+      <div className="sc-scene-stage">
+        {background && <img src={background} alt="" className="sc-scene-bg" />}
+        {pose && <img src={pose} alt={characterName} className="sc-scene-char" />}
+        {characterName && <span className="sc-scene-name">{characterName}</span>}
+        <p aria-live="polite" className="sc-scene-bubble">
+          {node ? node.text : endLabel}
+        </p>
+      </div>
+      <div className="sc-scene-choices">
+        <div ref={actionsRef} className="sc-scene-options">
+          {node && node.choices.length > 0 ? (
+            node.choices.map((c) => (
+              <button key={c.id} type="button" onClick={() => choose(c)} className="btn-secondary text-left">
+                {c.text}
+              </button>
+            ))
+          ) : (
+            <button type="button" onClick={restart} className="btn-secondary sc-scene-restart text-sm">
+              {restartLabel}
+            </button>
           )}
         </div>
       </div>
@@ -234,7 +319,7 @@ function ChatScenario({
       </div>
 
       <div ref={actionsRef} className="flex flex-col gap-2 border-t border-gray-200 bg-white p-3">
-        {node ? (
+        {node && node.choices.length > 0 ? (
           node.choices.map((c) => (
             <button
               key={c.id}

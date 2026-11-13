@@ -98,7 +98,9 @@ const BLOCK_DOCS: Record<BlockType, BlockDoc> = {
     data: `{
     characterName: string,
     startNodeId: string,
-    layout?: 'classic' | 'chat',  // 'chat' = phone-messenger style (default 'classic')
+    layout?: 'classic' | 'chat' | 'scene',  // 'chat' = phone-messenger style; 'scene' = background picture with a large character and the line in a bubble (default 'classic')
+    background?: string,          // scene layout: background picture (assets/ path, 16:9 works best)
+    sceneImages?: { neutral?: string, happy?: string, concerned?: string },  // scene layout: waist-up poses (3:4, transparent) instead of characterImages
     userAvatar?: string,          // chat layout: learner's avatar on their replies (assets/ path)
     characterImages: { neutral?: string, happy?: string, concerned?: string },
     nodes: {

@@ -17,6 +17,7 @@ import { uid } from '../lib/id'
 import { translate } from '../i18n/I18nProvider'
 import type { Language } from '../i18n/types'
 import { makeSampleCourse } from '../lib/sampleCourse'
+import { preloadSampleAssets } from '../lib/sampleAssets'
 import { repairCourse, type RepairFix } from '../lib/repairCourse'
 import { useReviewStore } from './reviewStore'
 import { clearProjectKey } from '../lib/route'
@@ -114,7 +115,8 @@ export interface CourseState {
   /** Reset to a fresh in-memory demo course, localized to the current UI language. */
   newDemoCourse: () => void
   /** Load the built-in sample course (in memory) in the given language. */
-  loadSampleCourse: (lang: Language) => void
+  /** Opens the built-in sample course (its library pictures load first). */
+  loadSampleCourse: (lang: Language) => Promise<void>
 
   // ── Project ──
   openProject: (
@@ -313,7 +315,8 @@ export const useCourseStore = create<CourseState>((set, get) => {
       })
     },
 
-    loadSampleCourse: (lang) => {
+    loadSampleCourse: async (lang) => {
+      await preloadSampleAssets()
       const course = makeSampleCourse(lang)
       useReviewStore.getState().reset()
       set({

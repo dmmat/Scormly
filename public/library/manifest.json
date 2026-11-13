@@ -1,0 +1,331 @@
+{
+  "version": 1,
+  "characters": [
+    {
+      "id": "ksiu",
+      "name": {
+        "en": "Ksenia",
+        "uk": "Ксюша",
+        "fr": "Ksenia",
+        "es": "Ksenia",
+        "de": "Ksenia"
+      },
+      "role": {
+        "en": "HR / onboarding",
+        "uk": "HR / онбординг",
+        "fr": "RH / intégration",
+        "es": "RR. HH. / incorporación",
+        "de": "HR / Onboarding"
+      },
+      "emotions": [
+        "neutral",
+        "happy",
+        "concerned"
+      ],
+      "scene": [
+        "neutral",
+        "happy",
+        "concerned"
+      ]
+    },
+    {
+      "id": "nazar",
+      "name": {
+        "en": "Nazar",
+        "uk": "Назар",
+        "fr": "Nazar",
+        "es": "Nazar",
+        "de": "Nazar"
+      },
+      "role": {
+        "en": "Team lead",
+        "uk": "Керівник команди",
+        "fr": "Chef d’équipe",
+        "es": "Responsable de equipo",
+        "de": "Teamleiter"
+      },
+      "emotions": [
+        "neutral",
+        "happy",
+        "concerned"
+      ],
+      "scene": [
+        "neutral",
+        "happy",
+        "concerned"
+      ]
+    },
+    {
+      "id": "max",
+      "name": {
+        "en": "Max",
+        "uk": "Макс",
+        "fr": "Max",
+        "es": "Max",
+        "de": "Max"
+      },
+      "role": {
+        "en": "New employee",
+        "uk": "Новий працівник",
+        "fr": "Nouvel employé",
+        "es": "Empleado nuevo",
+        "de": "Neuer Mitarbeiter"
+      },
+      "emotions": [
+        "neutral",
+        "happy",
+        "concerned"
+      ],
+      "scene": [
+        "neutral",
+        "happy",
+        "concerned"
+      ]
+    },
+    {
+      "id": "anna",
+      "name": {
+        "en": "Anna",
+        "uk": "Аня",
+        "fr": "Anna",
+        "es": "Anna",
+        "de": "Anna"
+      },
+      "role": {
+        "en": "Colleague",
+        "uk": "Колега",
+        "fr": "Collègue",
+        "es": "Colega",
+        "de": "Kollegin"
+      },
+      "emotions": [
+        "neutral",
+        "happy",
+        "concerned"
+      ],
+      "scene": [
+        "neutral",
+        "happy",
+        "concerned"
+      ]
+    },
+    {
+      "id": "sergio",
+      "name": {
+        "en": "Sergio",
+        "uk": "Серджіо",
+        "fr": "Sergio",
+        "es": "Sergio",
+        "de": "Sergio"
+      },
+      "role": {
+        "en": "Customer",
+        "uk": "Клієнт",
+        "fr": "Client",
+        "es": "Cliente",
+        "de": "Kunde"
+      },
+      "emotions": [
+        "neutral",
+        "happy",
+        "concerned"
+      ],
+      "scene": [
+        "neutral",
+        "happy",
+        "concerned"
+      ]
+    },
+    {
+      "id": "dmytro",
+      "name": {
+        "en": "Dmytro",
+        "uk": "Дмитро",
+        "fr": "Dmytro",
+        "es": "Dmytro",
+        "de": "Dmytro"
+      },
+      "role": {
+        "en": "IT support",
+        "uk": "IT-підтримка",
+        "fr": "Support informatique",
+        "es": "Soporte informático",
+        "de": "IT-Support"
+      },
+      "emotions": [
+        "neutral",
+        "happy",
+        "concerned"
+      ],
+      "scene": [
+        "neutral",
+        "happy",
+        "concerned"
+      ]
+    },
+    {
+      "id": "jisu",
+      "name": {
+        "en": "Jisu",
+        "uk": "Дзісу",
+        "fr": "Jisu",
+        "es": "Jisu",
+        "de": "Jisu"
+      },
+      "role": {
+        "en": "Marketing / design",
+        "uk": "Маркетинг / дизайн",
+        "fr": "Marketing / design",
+        "es": "Marketing / diseño",
+        "de": "Marketing / Design"
+      },
+      "emotions": [
+        "neutral",
+        "happy",
+        "concerned"
+      ],
+      "scene": [
+        "neutral",
+        "happy",
+        "concerned"
+      ]
+    },
+    {
+      "id": "layla",
+      "name": {
+        "en": "Layla",
+        "uk": "Лейла",
+        "fr": "Layla",
+        "es": "Layla",
+        "de": "Layla"
+      },
+      "role": {
+        "en": "Legal / compliance",
+        "uk": "Юристка / комплаєнс",
+        "fr": "Juridique / conformité",
+        "es": "Legal / cumplimiento",
+        "de": "Recht / Compliance"
+      },
+      "emotions": [
+        "neutral",
+        "happy",
+        "concerned"
+      ],
+      "scene": [
+        "neutral",
+        "happy",
+        "concerned"
+      ]
+    }
+  ],
+  "avatars": [
+    "learner-01",
+    "learner-02",
+    "learner-03",
+    "learner-04",
+    "learner-05",
+    "learner-06"
+  ],
+  "backgrounds": [
+    {
+      "id": "office-open-space",
+      "name": {
+        "en": "Open-plan office",
+        "uk": "Open-space офіс",
+        "fr": "Open space",
+        "es": "Oficina diáfana",
+        "de": "Großraumbüro"
+      }
+    },
+    {
+      "id": "meeting-room",
+      "name": {
+        "en": "Meeting room",
+        "uk": "Переговорна",
+        "fr": "Salle de réunion",
+        "es": "Sala de reuniones",
+        "de": "Besprechungsraum"
+      }
+    },
+    {
+      "id": "whiteboard",
+      "name": {
+        "en": "Whiteboard",
+        "uk": "Біля дошки",
+        "fr": "Tableau blanc",
+        "es": "Pizarra",
+        "de": "Whiteboard"
+      }
+    },
+    {
+      "id": "manager-office",
+      "name": {
+        "en": "Manager's office",
+        "uk": "Кабінет керівника",
+        "fr": "Bureau du responsable",
+        "es": "Despacho del responsable",
+        "de": "Büro der Führungskraft"
+      }
+    },
+    {
+      "id": "reception-desk",
+      "name": {
+        "en": "Reception",
+        "uk": "Рецепція",
+        "fr": "Accueil",
+        "es": "Recepción",
+        "de": "Empfang"
+      }
+    },
+    {
+      "id": "retail-floor",
+      "name": {
+        "en": "Retail floor",
+        "uk": "Торговий зал",
+        "fr": "Espace de vente",
+        "es": "Sala de ventas",
+        "de": "Verkaufsfläche"
+      }
+    },
+    {
+      "id": "call-center",
+      "name": {
+        "en": "Call center",
+        "uk": "Колл-центр",
+        "fr": "Centre d’appels",
+        "es": "Centro de llamadas",
+        "de": "Callcenter"
+      }
+    },
+    {
+      "id": "it-corner",
+      "name": {
+        "en": "IT corner",
+        "uk": "IT-куток",
+        "fr": "Coin informatique",
+        "es": "Rincón de TI",
+        "de": "IT-Ecke"
+      }
+    },
+    {
+      "id": "break-room",
+      "name": {
+        "en": "Break room",
+        "uk": "Кухня / кав’ярня",
+        "fr": "Salle de pause",
+        "es": "Sala de descanso",
+        "de": "Pausenraum"
+      }
+    },
+    {
+      "id": "home-office",
+      "name": {
+        "en": "Home office",
+        "uk": "Домашній офіс",
+        "fr": "Télétravail",
+        "es": "Oficina en casa",
+        "de": "Homeoffice"
+      }
+    }
+  ]
+}

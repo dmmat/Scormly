@@ -78,6 +78,120 @@ const quiz: LocaleTable = {
     removePair: 'Видалити пару',
     correctOption: 'Правильний варіант',
   },
+  fr: {
+    passingScore: 'Score de réussite, %',
+    showAnswers: 'Afficher les bonnes réponses',
+    showAnswersHelp: 'Après validation, indique quelles réponses étaient justes et affiche le feedback. Désactivé : seul le score est affiché.',
+    questionN: 'Question {n}',
+
+    typeSingle: 'Réponse unique',
+    typeMultiple: 'Réponses multiples',
+    typeMatching: 'Association',
+    typeSequence: 'Remettre dans l’ordre',
+    typeFillBlanks: 'Texte à trous',
+    typeSingleDesc: 'Une seule bonne option',
+    typeMultipleDesc: 'Plusieurs bonnes options',
+    typeMatchingDesc: 'Associer des éléments à leurs réponses, ou les classer par catégories',
+    typeSequenceDesc: 'Remettre les étapes dans le bon ordre',
+    typeFillBlanksDesc: 'Saisir ou choisir les mots manquants',
+    questionType: 'Type de question',
+
+    promptLabel: 'Question',
+    promptPlaceholder: 'Texte de la question…',
+
+    questionFeedback: 'Feedback général',
+    questionFeedbackPlaceholder: 'Explication affichée après la réponse (facultatif)',
+
+    optionPlaceholder: 'Texte de l’option',
+    optionFeedbackPlaceholder: 'Feedback',
+    pairLeftPlaceholder: 'Gauche',
+    pairRightPlaceholder: 'Droite',
+
+    addOption: '+ Option',
+    addPair: '+ Paire',
+    addQuestion: '+ Ajouter une question',
+
+    removeQuestion: 'Supprimer la question',
+    removeOption: 'Supprimer l’option',
+    removePair: 'Supprimer la paire',
+    correctOption: 'Bonne option',
+  },
+  es: {
+    passingScore: 'Puntuación mínima, %',
+    showAnswers: 'Mostrar las respuestas correctas',
+    showAnswersHelp: 'Tras enviar, muestra qué respuestas eran correctas y la retroalimentación. Si está desactivado, solo se muestra la puntuación.',
+    questionN: 'Pregunta {n}',
+
+    typeSingle: 'Respuesta única',
+    typeMultiple: 'Respuestas múltiples',
+    typeMatching: 'Emparejar',
+    typeSequence: 'Poner en orden',
+    typeFillBlanks: 'Rellenar huecos',
+    typeSingleDesc: 'Una sola opción correcta',
+    typeMultipleDesc: 'Varias opciones correctas',
+    typeMatchingDesc: 'Emparejar elementos con sus respuestas o clasificarlos en categorías',
+    typeSequenceDesc: 'Colocar los pasos en el orden correcto',
+    typeFillBlanksDesc: 'Escribir o elegir las palabras que faltan',
+    questionType: 'Tipo de pregunta',
+
+    promptLabel: 'Pregunta',
+    promptPlaceholder: 'Texto de la pregunta…',
+
+    questionFeedback: 'Retroalimentación general',
+    questionFeedbackPlaceholder: 'Explicación que se muestra tras responder (opcional)',
+
+    optionPlaceholder: 'Texto de la opción',
+    optionFeedbackPlaceholder: 'Retroalimentación',
+    pairLeftPlaceholder: 'Izquierda',
+    pairRightPlaceholder: 'Derecha',
+
+    addOption: '+ Opción',
+    addPair: '+ Par',
+    addQuestion: '+ Añadir pregunta',
+
+    removeQuestion: 'Quitar pregunta',
+    removeOption: 'Quitar opción',
+    removePair: 'Quitar par',
+    correctOption: 'Opción correcta',
+  },
+  de: {
+    passingScore: 'Bestehensgrenze, %',
+    showAnswers: 'Richtige Antworten anzeigen',
+    showAnswersHelp: 'Zeigt nach dem Absenden, welche Antworten richtig waren, samt Feedback. Ist die Option aus, wird nur das Ergebnis angezeigt.',
+    questionN: 'Frage {n}',
+
+    typeSingle: 'Einzelantwort',
+    typeMultiple: 'Mehrfachantwort',
+    typeMatching: 'Zuordnen',
+    typeSequence: 'In Reihenfolge bringen',
+    typeFillBlanks: 'Lückentext',
+    typeSingleDesc: 'Eine richtige Option',
+    typeMultipleDesc: 'Mehrere richtige Optionen',
+    typeMatchingDesc: 'Elemente Antworten zuordnen oder in Kategorien sortieren',
+    typeSequenceDesc: 'Die Schritte in die richtige Reihenfolge bringen',
+    typeFillBlanksDesc: 'Fehlende Wörter eingeben oder auswählen',
+    questionType: 'Fragetyp',
+
+    promptLabel: 'Frage',
+    promptPlaceholder: 'Fragetext…',
+
+    questionFeedback: 'Allgemeines Feedback',
+    questionFeedbackPlaceholder: 'Erklärung, die nach der Antwort angezeigt wird (optional)',
+
+    optionPlaceholder: 'Text der Option',
+    optionFeedbackPlaceholder: 'Feedback',
+    pairLeftPlaceholder: 'Links',
+    pairRightPlaceholder: 'Rechts',
+
+    addOption: '+ Option',
+    addPair: '+ Paar',
+    addQuestion: '+ Frage hinzufügen',
+
+    removeQuestion: 'Frage entfernen',
+    removeOption: 'Option entfernen',
+    removePair: 'Paar entfernen',
+    correctOption: 'Richtige Option',
+  },
 }
 
 export default quiz

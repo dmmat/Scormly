@@ -55,10 +55,10 @@ src/
 │   └── projectComments.ts    # comments.json in the project folder (load / save)
 ├── export/                   # SCORM / cmi5 packaging, pre-export check
 ├── preview/                  # in-app learner preview (BlockPreview + components)
-├── i18n/                     # internationalization (EN/UK)
+├── i18n/                     # internationalization (EN/UK/FR/ES)
 │   ├── I18nProvider.tsx      # provider + useT / useLang hooks
 │   ├── dictionary.ts         # combines all namespaces
-│   └── locales/              # one file per namespace (en + uk)
+│   └── locales/              # one file per namespace (en, uk, fr, es)
 ├── theme/                    # global project themes
 ├── blocks/
 │   ├── registry.ts           # block metadata, categories, style variants, factory
@@ -188,11 +188,13 @@ CSS variables (`themeStyle`), and exports embed the resolved palette as
 
 ## Internationalization (i18n)
 
-The app UI is bilingual **English / Ukrainian** (default English; auto-selects
-Ukrainian for `uk` browsers; the manual switch persists to localStorage). Strings
-live in `src/i18n/locales/<namespace>.ts` (each exports `{ en, uk }`). Read them
+The app UI is in **English, Ukrainian, French, Spanish and German** (`LANGUAGES` in
+`src/i18n/types.ts`; default English; auto-selects the first browser language
+it has; the manual switch persists to localStorage). Strings
+live in `src/i18n/locales/<namespace>.ts` (each exports `{ en, uk, fr, es, de }`;
+`tests/i18n.test.ts` checks every language has every key, placeholder and tag). Read them
 with `const { t } = useT('<namespace>')`. Do **not** hardcode user-facing text —
-add keys to the appropriate namespace in both languages. Author-edited course
+add keys to the appropriate namespace in every language. Author-edited course
 content (block data) is not localized. Keyboard shortcuts match the physical key
 (`event.code`) so they work on any layout; hints come from `KEYS` in
 `src/lib/keyboard.ts`.
@@ -200,14 +202,19 @@ content (block data) is not localized. Keyboard shortcuts match the physical key
 ## Landing page and routing
 
 `App.tsx` does simple path routing (`useRoute`, URL scheme in `lib/route.ts`):
-`/` renders the SEO landing page (`components/landing/Landing.tsx`), `/app` the
+`/` renders the SEO landing page (`components/landing/Landing.tsx`; `/uk`, `/fr`, `/de`,
+`/es` are the same page in that language, English stays at `/`), `/app` the
 builder (`components/Builder.tsx`, the open project is `/app?p=<key>`) and
 `/demo` the builder with the sample course. The host is static, so the build
-copies `index.html` to `app.html`, `demo.html` and `404.html`
-(`scripts/seoPrerender.ts`). The old hash routes (`#/app`, `#/app/<key>`,
+copies `index.html` to `app.html`, `demo.html` and `404.html` and writes a
+translated `uk.html` / `fr.html` / `es.html` / `de.html` (own title, description, canonical,
+prerendered copy; hreflang links and the sitemap tie them together —
+`scripts/seoPrerender.ts`, page title / description are the `metaTitle` /
+`metaDescription` landing keys). A URL that names a language wins over the
+saved one for that visit; on the landing the URL follows the language shown. The old hash routes (`#/app`, `#/app/<key>`,
 `#/demo`) still open and are rewritten; a plain `#section` hash is an anchor on
 the landing. Plain `<a href="/app">` links are followed without a page load
-(`useRouteLinks`). The landing is bilingual, animated
+(`useRouteLinks`). The landing is localized, animated
 (`useReveal` + CSS keyframes), and emphasizes that Scormly is open source, free,
 and fully local (no data stored or transmitted). SEO meta tags are in
 `index.html`.
@@ -224,7 +231,7 @@ and fully local (no data stored or transmitted). SEO meta tags are in
   (HMR may have given it a `?t=` suffix). Stop test browsers / servers by PID —
   `pkill -f <pattern>` also matches your own shell command.
 - **All code comments and documentation are in English.** UI strings go through
-  i18n (EN + UK). Comment only where the "why" is non-obvious.
+  i18n (every language in `LANGUAGES`). Comment only where the "why" is non-obvious.
 - Don't add dependencies or abstractions beyond what the task needs.
 
 ## Deployment

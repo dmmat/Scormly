@@ -1,6 +1,7 @@
 // Ready-made blocks in the "+ Add block" menu (src/blocks/templates.ts).
 
 import { describe, test, expect } from 'vitest'
+import { LANGUAGES } from '../src/i18n/types'
 import { BLOCK_TEMPLATES, TEMPLATE_GROUPS } from '../src/blocks/templates'
 import design from '../src/i18n/locales/design'
 import content from '../src/i18n/locales/content'
@@ -13,7 +14,7 @@ describe('block templates', () => {
   })
 
   test('every template and group has a label and description in both languages', () => {
-    for (const lang of ['en', 'uk'] as const) {
+    for (const { id: lang } of LANGUAGES) {
       for (const t of BLOCK_TEMPLATES) {
         expect(design[lang][`tpl_${t.id}`], `${lang} tpl_${t.id}`).toBeTruthy()
         expect(design[lang][`tpl_${t.id}Desc`], `${lang} tpl_${t.id}Desc`).toBeTruthy()
