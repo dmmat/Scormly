@@ -1,4 +1,5 @@
 import type { ScenarioEmotion } from '../types/course'
+import type { Language } from '../i18n/types'
 import { saveAsset } from './assets'
 
 // The built-in picture library (public/library/, listed in manifest.json —
@@ -6,7 +7,7 @@ import { saveAsset } from './assets'
 // files into the project's assets/, so the project stays self-contained and
 // exports / offline preview need nothing from the app.
 
-export type Localized = { en: string; uk: string }
+export type Localized = Record<Language, string>
 
 export interface LibraryCharacter {
   id: string

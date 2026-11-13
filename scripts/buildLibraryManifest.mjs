@@ -7,32 +7,35 @@ import { fileURLToPath } from 'node:url'
 const root = fileURLToPath(new URL('..', import.meta.url))
 const EMOTIONS = ['neutral', 'happy', 'concerned', 'surprised', 'frustrated', 'thinking']
 
-// Display order and names (the picture folder / file name is the id).
+// Display order and names (the picture folder / file name is the id). Names and
+// roles are shown in the library picker, in every interface language.
+const tr = (en, uk, fr, es, de) => ({ en, uk, fr, es, de })
+const same = (n, uk) => tr(n, uk, n, n, n)
 const CHARACTERS = {
-  ksiu: { name: { en: 'Ksenia', uk: 'Ксюша' }, role: { en: 'HR / onboarding', uk: 'HR / онбординг' } },
-  nazar: { name: { en: 'Nazar', uk: 'Назар' }, role: { en: 'Team lead', uk: 'Керівник команди' } },
-  max: { name: { en: 'Max', uk: 'Макс' }, role: { en: 'New employee', uk: 'Новий працівник' } },
-  anna: { name: { en: 'Anna', uk: 'Аня' }, role: { en: 'Colleague', uk: 'Колега' } },
-  sergio: { name: { en: 'Sergio', uk: 'Серджіо' }, role: { en: 'Customer', uk: 'Клієнт' } },
-  dmytro: { name: { en: 'Dmytro', uk: 'Дмитро' }, role: { en: 'IT support', uk: 'IT-підтримка' } },
-  jisu: { name: { en: 'Jisu', uk: 'Дзісу' }, role: { en: 'Marketing / design', uk: 'Маркетинг / дизайн' } },
-  layla: { name: { en: 'Layla', uk: 'Лейла' }, role: { en: 'Legal / compliance', uk: 'Юристка / комплаєнс' } },
+  ksiu: { name: same('Ksenia', 'Ксюша'), role: tr('HR / onboarding', 'HR / онбординг', 'RH / intégration', 'RR. HH. / incorporación', 'HR / Onboarding') },
+  nazar: { name: same('Nazar', 'Назар'), role: tr('Team lead', 'Керівник команди', 'Chef d’équipe', 'Responsable de equipo', 'Teamleiter') },
+  max: { name: same('Max', 'Макс'), role: tr('New employee', 'Новий працівник', 'Nouvel employé', 'Empleado nuevo', 'Neuer Mitarbeiter') },
+  anna: { name: same('Anna', 'Аня'), role: tr('Colleague', 'Колега', 'Collègue', 'Colega', 'Kollegin') },
+  sergio: { name: same('Sergio', 'Серджіо'), role: tr('Customer', 'Клієнт', 'Client', 'Cliente', 'Kunde') },
+  dmytro: { name: same('Dmytro', 'Дмитро'), role: tr('IT support', 'IT-підтримка', 'Support informatique', 'Soporte informático', 'IT-Support') },
+  jisu: { name: same('Jisu', 'Дзісу'), role: tr('Marketing / design', 'Маркетинг / дизайн', 'Marketing / design', 'Marketing / diseño', 'Marketing / Design') },
+  layla: { name: same('Layla', 'Лейла'), role: tr('Legal / compliance', 'Юристка / комплаєнс', 'Juridique / conformité', 'Legal / cumplimiento', 'Recht / Compliance') },
 }
 const BACKGROUNDS = {
-  'office-open-space': { en: 'Open-plan office', uk: 'Open-space офіс' },
-  'meeting-room': { en: 'Meeting room', uk: 'Переговорна' },
-  whiteboard: { en: 'Whiteboard', uk: 'Біля дошки' },
-  'manager-office': { en: "Manager's office", uk: 'Кабінет керівника' },
-  'reception-desk': { en: 'Reception', uk: 'Рецепція' },
-  'retail-floor': { en: 'Retail floor', uk: 'Торговий зал' },
-  'call-center': { en: 'Call center', uk: 'Колл-центр' },
-  'it-corner': { en: 'IT corner', uk: 'IT-куток' },
-  'break-room': { en: 'Break room', uk: 'Кухня / кав\'ярня' },
-  'home-office': { en: 'Home office', uk: 'Домашній офіс' },
-  'warehouse-office': { en: 'Warehouse office', uk: 'Офіс на складі' },
-  'street-entrance': { en: 'Entrance', uk: 'Вхід до офісу' },
-  'abstract-light': { en: 'Plain light', uk: 'Нейтральний світлий' },
-  'abstract-dark': { en: 'Plain dark', uk: 'Нейтральний темний' },
+  'office-open-space': tr('Open-plan office', 'Open-space офіс', 'Open space', 'Oficina diáfana', 'Großraumbüro'),
+  'meeting-room': tr('Meeting room', 'Переговорна', 'Salle de réunion', 'Sala de reuniones', 'Besprechungsraum'),
+  whiteboard: tr('Whiteboard', 'Біля дошки', 'Tableau blanc', 'Pizarra', 'Whiteboard'),
+  'manager-office': tr("Manager's office", 'Кабінет керівника', 'Bureau du responsable', 'Despacho del responsable', 'Büro der Führungskraft'),
+  'reception-desk': tr('Reception', 'Рецепція', 'Accueil', 'Recepción', 'Empfang'),
+  'retail-floor': tr('Retail floor', 'Торговий зал', 'Espace de vente', 'Sala de ventas', 'Verkaufsfläche'),
+  'call-center': tr('Call center', 'Колл-центр', 'Centre d’appels', 'Centro de llamadas', 'Callcenter'),
+  'it-corner': tr('IT corner', 'IT-куток', 'Coin informatique', 'Rincón de TI', 'IT-Ecke'),
+  'break-room': tr('Break room', 'Кухня / кав’ярня', 'Salle de pause', 'Sala de descanso', 'Pausenraum'),
+  'home-office': tr('Home office', 'Домашній офіс', 'Télétravail', 'Oficina en casa', 'Homeoffice'),
+  'warehouse-office': tr('Warehouse office', 'Офіс на складі', 'Bureau d’entrepôt', 'Oficina de almacén', 'Lagerbüro'),
+  'street-entrance': tr('Entrance', 'Вхід до офісу', 'Entrée', 'Entrada', 'Eingang'),
+  'abstract-light': tr('Plain light', 'Нейтральний світлий', 'Fond clair uni', 'Fondo claro liso', 'Hell, schlicht'),
+  'abstract-dark': tr('Plain dark', 'Нейтральний темний', 'Fond sombre uni', 'Fondo oscuro liso', 'Dunkel, schlicht'),
 }
 
 const names = (dir) => (existsSync(dir) ? readdirSync(dir) : [])
