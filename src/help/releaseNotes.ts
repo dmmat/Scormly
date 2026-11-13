@@ -12,6 +12,17 @@ export interface Release {
 
 export const RELEASES: Release[] = [
   {
+    id: '2026-11-13',
+    date: '2026-11-13',
+    items: {
+      en: ['New interface language: German. The builder and the site (scormly.app/de) now speak English, Ukrainian, French, Spanish and German; pick the language in the top bar.'],
+      uk: ['Нова мова інтерфейсу: німецька. Конструктор і сайт (scormly.app/de) тепер доступні англійською, українською, французькою, іспанською та німецькою; мову можна вибрати у верхній панелі.'],
+      fr: ['Nouvelle langue d’interface : l’allemand. Le constructeur et le site (scormly.app/de) existent désormais en anglais, ukrainien, français, espagnol et allemand ; choisissez la langue dans la barre du haut.'],
+      es: ['Nuevo idioma de la interfaz: alemán. El constructor y el sitio (scormly.app/de) ya están en inglés, ucraniano, francés, español y alemán; elige el idioma en la barra superior.'],
+      de: ['Neue Oberflächensprache: Deutsch. Der Builder und die Website (scormly.app/de) sprechen jetzt Englisch, Ukrainisch, Französisch, Spanisch und Deutsch; die Sprache wählen Sie in der oberen Leiste.'],
+    },
+  },
+  {
     id: '2026-11-12',
     date: '2026-11-12',
     items: {
