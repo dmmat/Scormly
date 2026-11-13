@@ -10,3 +10,12 @@ describe('library manifest', () => {
     expect(readFileSync('public/library/manifest.json', 'utf8')).toBe(manifestJson(buildManifest()))
   })
 })
+
+describe('library thumbnails', () => {
+  test('every character has the small portrait the picker and the landing use', async () => {
+    const { existsSync } = await import('node:fs')
+    for (const c of buildManifest().characters) {
+      expect(existsSync(`public/library/characters/${c.id}/thumb.webp`), c.id).toBe(true)
+    }
+  })
+})

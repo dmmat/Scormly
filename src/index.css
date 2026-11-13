@@ -474,6 +474,44 @@ body {
  * Interactive landing demos (chat trainer, flashcards, tab swap).
  * ────────────────────────────────────────────────────────────────────────── */
 
+/* Loading screen of /app and /demo: in the page's HTML and in App.tsx's Suspense
+ * fallback (components/layout/AppLoader.tsx) — keep the two in step. */
+.app-loader {
+  min-height: 100vh; min-height: 100dvh; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 1.6rem; background: #f9fafb;
+}
+.app-loader-mark { display: flex; align-items: center; gap: 0.65rem; }
+.app-loader-mark svg { animation: app-loader-hop 2.6s ease-in-out infinite; }
+.app-loader-brand { font-size: 1.6rem; font-weight: 700; letter-spacing: -0.02em; color: #111827; }
+.app-loader-brand span { color: var(--color-brand); }
+/* A little page that builds itself, block by block, and starts over. */
+.app-loader-page {
+  display: flex; flex-direction: column; gap: 0.55rem; width: 13rem; padding: 0.95rem; border-radius: 1rem; background: #fff;
+  box-shadow: 0 14px 30px -14px rgba(17, 24, 39, 0.3), 0 0 0 1px rgba(17, 24, 39, 0.06);
+}
+.app-loader-page i { display: block; border-radius: 0.4rem; animation: app-loader-drop 2.6s cubic-bezier(0.22, 1, 0.36, 1) infinite both; }
+.app-loader-page i:nth-child(2) { animation-delay: 0.18s; }
+.app-loader-page i:nth-child(3) { animation-delay: 0.36s; }
+.app-loader-page i:nth-child(4) { animation-delay: 0.54s; }
+.app-loader-page i:nth-child(5) { animation-delay: 0.78s; }
+.app-loader-title { width: 58%; height: 0.8rem; background: var(--color-brand); }
+.app-loader-line { height: 0.5rem; background: #e5e7eb; }
+.app-loader-line.short { width: 72%; }
+.app-loader-image {
+  height: 3.4rem; border-radius: 0.6rem !important;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--color-brand) 28%, #fff), #dbeafe);
+}
+.app-loader-btn { width: 4.4rem; height: 1.15rem; border-radius: 9999px !important; background: var(--color-brand); }
+@keyframes app-loader-drop {
+  0% { opacity: 0; transform: translateY(-16px) scale(0.94); }
+  16%, 76% { opacity: 1; transform: none; }
+  92%, 100% { opacity: 0; transform: none; }
+}
+@keyframes app-loader-hop { 0%, 100% { transform: translateY(0); } 8% { transform: translateY(-5px); } 16% { transform: translateY(0); } }
+@media (prefers-reduced-motion: reduce) {
+  .app-loader-mark svg, .app-loader-page i { animation: none; }
+}
+
 /* Phone frame for the auto-playing dialogue trainer. */
 .phone {
   width: 100%; max-width: 21rem; margin: 0 auto; position: relative;

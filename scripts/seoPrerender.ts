@@ -1,11 +1,12 @@
-import { copyFileSync, readFileSync, writeFileSync } from 'node:fs'
+import { copyFileSync, readdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import type { Plugin } from 'vite'
 import landing from '../src/i18n/locales/landing.ts'
 import { RELEASES } from '../src/help/releaseNotes.ts'
 import { CONTACT_EMAIL } from '../src/lib/links.ts'
-import { DEFAULT_LANGUAGE, LANGUAGES, type Language } from '../src/i18n/types.ts'
+import { DEFAULT_LANGUAGE, LANGUAGES, LANGUAGE_STORAGE_KEY, type Language } from '../src/i18n/types.ts'
 import { LD } from './seoLd.ts'
+import { LOGO_GLYPH } from '../src/components/layout/logoMark.ts'
 import pkg from '../package.json' with { type: 'json' }
 
 // The site is a client-rendered SPA, so the served index.html used to contain an
@@ -40,7 +41,7 @@ function faqKeys(t: Record<string, string>): number[] {
   return out
 }
 
-function staticLanding(lang: Language): string {
+export function staticLanding(lang: Language): string {
   const t = landing[lang]
   const list = (items: [string, string][]) =>
     items.map(([h, p]) => `<li><h3>${esc(h)}</h3><p>${esc(p)}</p></li>`).join('')
@@ -161,6 +162,53 @@ export function localizePage(html: string, lang: Language): string {
   return swap(out, staticLanding(DEFAULT_LANGUAGE), staticLanding(lang))
 }
 
+// The screen /app and /demo show until the builder's code has arrived, instead
+// of the landing page they are a copy of. Same markup as components/layout/AppLoader.tsx.
+const APP_LOADER = `<div class="app-loader" role="status"><div class="app-loader-mark"><svg width="40" height="40" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect width="32" height="32" rx="7" fill="#EC4899"/><path d="${LOGO_GLYPH}" fill="#fff"/></svg><span class="app-loader-brand">Scorm<span>ly</span></span></div><div class="app-loader-page" aria-hidden="true"><i class="app-loader-title"></i><i class="app-loader-line"></i><i class="app-loader-line short"></i><i class="app-loader-image"></i><i class="app-loader-btn"></i></div><span class="sr-only">Loading the editor…</span></div>`
+
+/** Adds `<link rel="modulepreload">` for chunks a page is about to ask for, so
+ *  they download beside the main script instead of after it has run. */
+export function withPreloads(html: string, hrefs: string[]): string {
+  if (!hrefs.length) return html
+  const links = hrefs.map((href) => `<link rel="modulepreload" crossorigin href="${href}">`).join('\n    ')
+  return swap(html, '</head>', `    ${links}\n  </head>`)
+}
+
+/** The built landing page turned into the page of /app and /demo: the loading
+ *  screen in place of the landing's copy, and the builder's chunks preloaded. */
+export function appShell(html: string, preloads: string[]): string {
+  return withPreloads(swap(html, staticLanding(DEFAULT_LANGUAGE), APP_LOADER), preloads)
+}
+
+/** Preloads a view's interface strings (src/i18n/load.ts): English always (the
+ *  fallback), and the page's language. A page with a fixed language names its
+ *  chunk; the others (/, /app, /demo) pick it with a small inline script that
+ *  repeats the app's own rule: the saved choice, else the first browser
+ *  language the interface has. Without it the strings would start downloading
+ *  only after the main script ran. */
+export function withLocalePreload(html: string, chunks: Partial<Record<Language, string>>, fixed?: Language): string {
+  const english = chunks[DEFAULT_LANGUAGE]
+  const out = withPreloads(html, [english, fixed && fixed !== DEFAULT_LANGUAGE ? chunks[fixed] : undefined].filter((h): h is string => !!h))
+  if (fixed) return out
+  const others = Object.fromEntries(Object.entries(chunks).filter(([lang]) => lang !== DEFAULT_LANGUAGE))
+  if (!Object.keys(others).length) return out
+  const script = `<script>(function(){try{var m=${JSON.stringify(others)},l=localStorage.getItem(${JSON.stringify(LANGUAGE_STORAGE_KEY)});if(!m[l]&&l!==${JSON.stringify(DEFAULT_LANGUAGE)}){l='';var n=navigator.languages||[navigator.language];for(var i=0;i<n.length&&!l;i++){var c=String(n[i]||'').toLowerCase().split('-')[0];if(m[c]||c===${JSON.stringify(DEFAULT_LANGUAGE)})l=c}}if(m[l]){var k=document.createElement('link');k.rel='modulepreload';k.crossOrigin='';k.href=m[l];document.head.appendChild(k)}}catch(e){}})()</script>`
+  return swap(out, '</head>', `    ${script}\n  </head>`)
+}
+
+/** A chunk and every chunk it imports statically (file names in `assets/`). */
+export function chunkClosure(entry: string | undefined, read: (file: string) => string, skip: Set<string>): string[] {
+  const out: string[] = []
+  const visit = (file: string) => {
+    if (skip.has(file) || out.includes(file)) return
+    out.push(file)
+    // Static imports only: `from"./x.js"` / `import"./x.js"`, not `import("./x.js")`.
+    for (const m of read(file).matchAll(/(?:from|import)\s*"\.\/([^"]+\.js)"/g)) visit(m[1])
+  }
+  if (entry) visit(entry)
+  return out
+}
+
 // The pages to index: the landing in each language, each listing the other
 // versions. The builder (/app) and the demo (/demo) are the same app with
 // nothing of their own to index.
@@ -191,13 +239,40 @@ export function seoPrerender(): Plugin {
     // any other path (e.g. an old /app/<key> link) still open the app, and
     // each other language gets its own translated page.
     closeBundle() {
-      const html = readFileSync(resolve(outDir, 'index.html'), 'utf8')
+      const built = readFileSync(resolve(outDir, 'index.html'), 'utf8')
+      // Each page preloads the chunks of its own view (see App.tsx): they are
+      // dynamic imports, which would otherwise start only once the main script ran.
+      const assetsDir = resolve(outDir, 'assets')
+      const assets = readdirSync(assetsDir)
+      const base = /src="([^"]*)assets\/index-/.exec(built)?.[1] ?? '/'
+      const loaded = new Set([...built.matchAll(/assets\/([^"]+\.js)"/g)].map((m) => m[1]))
+      const chunksOf = (name: string) =>
+        chunkClosure(
+          assets.find((f) => f.startsWith(`${name}-`) && f.endsWith('.js')),
+          // A chunk's text may quote an import that is not one of ours (sample code).
+          (file) => (assets.includes(file) ? readFileSync(resolve(assetsDir, file), 'utf8') : ''),
+          loaded,
+        )
+          .filter((f) => assets.includes(f))
+          .map((f) => `${base}assets/${f}`)
+      const strings = (group: string) =>
+        Object.fromEntries(
+          LANGUAGES.map((l) => [l.id, assets.find((f) => f.startsWith(`_locale-${group}-${l.id}-`))] as const)
+            .filter(([, f]) => f)
+            .map(([id, f]) => [id, `${base}assets/${f}`]),
+        ) as Partial<Record<Language, string>>
+      const builder = chunksOf('Builder')
+      const landingPage = withPreloads(built, chunksOf('Landing'))
+      writeFileSync(resolve(outDir, 'index.html'), withLocalePreload(landingPage, strings('landing')))
       for (const { id } of LANGUAGES) {
-        if (id !== DEFAULT_LANGUAGE) writeFileSync(resolve(outDir, `${id}.html`), localizePage(html, id))
+        if (id === DEFAULT_LANGUAGE) continue
+        writeFileSync(resolve(outDir, `${id}.html`), withLocalePreload(localizePage(landingPage, id), strings('landing'), id))
       }
-      for (const name of ['app.html', 'demo.html', '404.html']) {
-        copyFileSync(resolve(outDir, 'index.html'), resolve(outDir, name))
-      }
+      writeFileSync(resolve(outDir, 'app.html'), withLocalePreload(appShell(built, builder), strings('app')))
+      // The demo also opens the sample course straight away.
+      const sample = chunksOf('sampleCourse').filter((href) => !builder.includes(href))
+      writeFileSync(resolve(outDir, 'demo.html'), withLocalePreload(appShell(built, [...builder, ...sample]), strings('app')))
+      copyFileSync(resolve(outDir, 'index.html'), resolve(outDir, '404.html'))
     },
     // The page changes with every deploy, so the sitemap carries the build date.
     generateBundle() {

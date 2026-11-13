@@ -194,7 +194,14 @@ it has; the manual switch persists to localStorage). Strings
 live in `src/i18n/locales/<namespace>.ts` (each exports `{ en, uk, fr, es, de }`;
 `tests/i18n.test.ts` checks every language has every key, placeholder and tag). Read them
 with `const { t } = useT('<namespace>')`. Do **not** hardcode user-facing text —
-add keys to the appropriate namespace in every language. Author-edited course
+add keys to the appropriate namespace in every language. The app loads one
+language at a time: `scripts/localeChunks.ts` cuts the locale files into a chunk
+per group of namespaces (`src/i18n/groups.ts`: `landing`, `app`) and language,
+and `src/i18n/load.ts` fetches the current language plus English (the
+fallback) when a view needs its group. App code must not import
+`src/i18n/dictionary.ts` (every language at once; it is for tests and build
+scripts), and a new namespace must be added to a group
+(`tests/localeGroups.test.ts`). Author-edited course
 content (block data) is not localized. Keyboard shortcuts match the physical key
 (`event.code`) so they work on any layout; hints come from `KEYS` in
 `src/lib/keyboard.ts`.

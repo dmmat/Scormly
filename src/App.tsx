@@ -1,19 +1,36 @@
 import { lazy, Suspense } from 'react'
-import Landing from './components/landing/Landing'
+import AppLoader from './components/layout/AppLoader'
 import { useRoute, useRouteLinks } from './hooks/useRoute'
+import { getCurrentLanguage } from './i18n/I18nProvider'
+import { loadGroup } from './i18n/load'
 
-// The builder (editor, stores, export code) loads only on the /app and /demo
-// routes, so a visitor reading the landing page doesn't download it.
-const Builder = lazy(() => import('./components/Builder'))
+// Each view is its own chunk, so the landing page doesn't download the builder
+// (editor, stores, export code) and /app doesn't download the landing (its
+// copy and the chat demo). The page that needs a chunk preloads it in its HTML
+// (scripts/seoPrerender.ts), so it arrives together with this script.
+// A view arrives together with its interface strings in the current language.
+const Builder = lazy(() =>
+  Promise.all([import('./components/Builder'), loadGroup('app', getCurrentLanguage())]).then(([m]) => m),
+)
+const Landing = lazy(() =>
+  Promise.all([import('./components/landing/Landing'), loadGroup('landing', getCurrentLanguage())]).then(([m]) => m),
+)
+
+// What the page's HTML had in #root before React took it over: the landing's
+// copy for readers without scripts (index.html), or the loading screen
+// (app.html). Kept on screen while the landing's chunk loads.
+const PRERENDERED = document.getElementById('root')?.innerHTML ?? ''
 
 export default function App() {
   const { view } = useRoute()
   useRouteLinks()
   return view === 'app' ? (
-    <Suspense fallback={null}>
+    <Suspense fallback={<AppLoader />}>
       <Builder />
     </Suspense>
   ) : (
-    <Landing />
+    <Suspense fallback={<div style={{ display: 'contents' }} dangerouslySetInnerHTML={{ __html: PRERENDERED }} />}>
+      <Landing />
+    </Suspense>
   )
 }

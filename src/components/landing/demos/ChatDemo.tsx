@@ -13,7 +13,7 @@ import { chatScenarios, type ChatScenario, type LocalizedString } from './chatSc
 type Bubble = { id: number; from: 'bot' | 'user'; text: string }
 
 // The face of each character from the built-in picture library
-// (public/library/characters/<id>/neutral.webp). Names with no portrait of
+// (public/library/characters/<id>/thumb.webp, a 96 px copy for small circles). Names with no portrait of
 // their own borrow the closest one; the coffee bot gets an emoji instead.
 // Plain URLs on purpose: this page must not pull in the builder's modules.
 const FACE: Record<string, string> = {
@@ -36,10 +36,10 @@ function Ava({ name, initial, small }: { name: string; initial: string; small?: 
     <span className={`chatd-ava ${small ? 'chatd-ava-sm' : ''}`}>
       {face && !failed ? (
         <img
-          src={`${import.meta.env.BASE_URL}library/characters/${face}/neutral.webp`}
+          src={`${import.meta.env.BASE_URL}library/characters/${face}/thumb.webp`}
           alt=""
-          width={64}
-          height={64}
+          width={96}
+          height={96}
           decoding="async"
           onError={() => setFailed(true)}
         />

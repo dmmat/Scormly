@@ -54,7 +54,7 @@ export default function LibraryGrid({
               className={`${tileClass(value === c.id)} flex w-full items-center gap-3`}
             >
               <img
-                src={libraryUrl(`characters/${c.id}/neutral.webp`)}
+                src={libraryUrl(`characters/${c.id}/thumb.webp`)}
                 alt=""
                 className="h-12 w-12 shrink-0 rounded-full bg-gray-50 object-cover"
               />

@@ -16,7 +16,7 @@ import { BLOCK_REGISTRY, createBlock } from '../blocks/registry'
 import { QUESTION_TYPES } from '../blocks/quizQuestions'
 import { uid } from './id'
 import { translate } from '../i18n/I18nProvider'
-import { DICTIONARY } from '../i18n/dictionary'
+import { TABLES } from '../i18n/registry'
 import { toast } from '../store/toastStore'
 
 /** One repair; `key` is an i18n key in the `common` namespace. */
@@ -346,7 +346,7 @@ export function repairCourse(input: unknown): { course: Course; fixes: RepairFix
 }
 
 function english(fix: RepairFix): string {
-  let s = DICTIONARY.common.en[fix.key] ?? fix.key
+  let s = TABLES.common?.en?.[fix.key] ?? fix.key
   for (const [k, v] of Object.entries(fix.vars ?? {})) s = s.split(`{${k}}`).join(String(v))
   return s
 }
