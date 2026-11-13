@@ -95,7 +95,7 @@ export const chatScenarios: ChatScenario[] = [
   {
     id: 'onboarding-mentor',
     name: L('Maksym', 'Максим', 'Maksym', 'Maksym', 'Maksym'),
-    status: L('HR Lead', 'Керівниця HR', 'Responsable RH', 'Responsable de RR. HH.', 'HR-Leitung'),
+    status: L('HR Lead', 'Керівник HR', 'Responsable RH', 'Responsable de RR. HH.', 'HR-Leitung'),
     steps: [
       { kind: 'bot', text: L('Would you like a buddy for the first month?', 'Хочете бадді на перший місяць?', 'Un binôme pour votre premier mois, ça vous dit ?', '¿Te gustaría tener un buddy el primer mes?', 'Möchten Sie im ersten Monat einen Buddy?') },
       { kind: 'choices', opts: [L('Yes — really helpful', 'Так — це дуже допоможе', 'Oui — ça m’aiderait beaucoup', 'Sí — me ayudaría mucho', 'Ja — sehr hilfreich'), L('Maybe later', 'Можливо пізніше', 'Peut-être plus tard', 'Quizá más adelante', 'Vielleicht später')], pick: 0 },
@@ -189,7 +189,7 @@ export const chatScenarios: ChatScenario[] = [
   {
     id: 'cs-feature-request',
     name: L('Ivan', 'Іван', 'Ivan', 'Ivan', 'Ivan'),
-    status: L('CX Mentor', 'Менторка CX', 'Mentor CX', 'Mentor de CX', 'CX-Mentor'),
+    status: L('CX Mentor', 'Ментор CX', 'Mentor CX', 'Mentor de CX', 'CX-Mentor'),
     steps: [
       { kind: 'bot', text: L('User asks for a feature we won\'t build. Reply?', 'Користувач просить фічу, яку ми не зробимо. Відповідь?', 'Un utilisateur demande une fonction qu’on ne fera pas. Vous répondez ?', 'Un usuario pide una función que no haremos. ¿Qué respondes?', 'Ein Nutzer wünscht sich eine Funktion, die wir nicht bauen. Antwort?') },
       { kind: 'choices', opts: [L("Thank them, share why, suggest a workaround", 'Подякувати, пояснити чому, підказати workaround', 'Remercier, expliquer pourquoi, proposer une alternative', 'Agradecer, explicar por qué y sugerir una alternativa', 'Danken, den Grund erklären, eine Alternative vorschlagen'), L('Promise to "look into it"', 'Пообіцяти «розглянути»', 'Promettre d’« y réfléchir »', 'Prometer que “lo miraremos”', '„Ich schaue mir das an“ versprechen')], pick: 0 },
@@ -209,7 +209,7 @@ export const chatScenarios: ChatScenario[] = [
   {
     id: 'cs-handoff',
     name: L('Ivan', 'Іван', 'Ivan', 'Ivan', 'Ivan'),
-    status: L('CX Mentor', 'Менторка CX', 'Mentor CX', 'Mentor de CX', 'CX-Mentor'),
+    status: L('CX Mentor', 'Ментор CX', 'Mentor CX', 'Mentor de CX', 'CX-Mentor'),
     steps: [
       { kind: 'bot', text: L('You need to escalate. What do you give the next agent?', 'Треба ескалейтнути. Що передаєте колезі?', 'Il faut escalader. Que transmettez-vous au collègue suivant ?', 'Toca escalar el caso. ¿Qué le pasas a tu compañero?', 'Sie müssen eskalieren. Was geben Sie dem nächsten Agenten mit?') },
       { kind: 'choices', opts: [L('Full context + what was tried', 'Повний контекст + що пробували', 'Tout le contexte + ce qui a été tenté', 'Todo el contexto + lo que ya se probó', 'Den vollen Kontext + was versucht wurde'), L('Just the ticket ID', 'Лише ID тікета', 'Juste le numéro du ticket', 'Solo el ID del ticket', 'Nur die Ticket-ID')], pick: 0 },
@@ -263,7 +263,7 @@ export const chatScenarios: ChatScenario[] = [
   {
     id: 'hr-vacation',
     name: L('Ivan', 'Іван', 'Ivan', 'Ivan', 'Ivan'),
-    status: L('HR Lead', 'Керівниця HR', 'Responsable RH', 'Responsable de RR. HH.', 'HR-Leitung'),
+    status: L('HR Lead', 'Керівник HR', 'Responsable RH', 'Responsable de RR. HH.', 'HR-Leitung'),
     steps: [
       { kind: 'bot', text: L('Planning vacation. How far ahead do you tell your lead?', 'Плануєте відпустку. Наскільки заздалегідь кажете керівнику?', 'Des congés en vue. Vous prévenez votre manager combien de temps avant ?', 'Planeas vacaciones. ¿Con cuánta antelación avisas a tu responsable?', 'Urlaubsplanung. Wie früh sagen Sie Ihrer Führungskraft Bescheid?') },
       { kind: 'choices', opts: [L('At least two weeks', 'Щонайменше за 2 тижні', 'Au moins deux semaines', 'Al menos dos semanas', 'Mindestens zwei Wochen vorher'), L('The day before', 'За день до', 'La veille', 'El día anterior', 'Am Tag davor')], pick: 0 },
@@ -293,7 +293,7 @@ export const chatScenarios: ChatScenario[] = [
   {
     id: 'hr-feedback',
     name: L('Serhii', 'Сергій', 'Serhii', 'Serhii', 'Serhii'),
-    status: L('HR Lead', 'Керівниця HR', 'Responsable RH', 'Responsable de RR. HH.', 'HR-Leitung'),
+    status: L('HR Lead', 'Керівник HR', 'Responsable RH', 'Responsable de RR. HH.', 'HR-Leitung'),
     steps: [
       { kind: 'bot', text: L('Peer feedback — when does it land best?', 'Peer feedback — коли він найкраще «заходить»?', 'Le feedback entre collègues — quand passe-t-il le mieux ?', 'Feedback entre compañeros — ¿cuándo cala mejor?', 'Peer-Feedback — wann kommt es am besten an?') },
       { kind: 'choices', opts: [L('Soon after the moment', 'Невдовзі після ситуації', 'Peu après la situation', 'Poco después del momento', 'Kurz nach dem Moment'), L('Once a year in review', 'Раз на рік на review', 'Une fois par an, à l’entretien annuel', 'Una vez al año, en la evaluación', 'Einmal im Jahr in der Beurteilung')], pick: 0 },
