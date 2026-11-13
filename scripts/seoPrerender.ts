@@ -1,4 +1,4 @@
-import { copyFileSync, readFileSync, writeFileSync } from 'node:fs'
+import { copyFileSync, readdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import type { Plugin } from 'vite'
 import landing from '../src/i18n/locales/landing.ts'
@@ -6,6 +6,7 @@ import { RELEASES } from '../src/help/releaseNotes.ts'
 import { CONTACT_EMAIL } from '../src/lib/links.ts'
 import { DEFAULT_LANGUAGE, LANGUAGES, type Language } from '../src/i18n/types.ts'
 import { LD } from './seoLd.ts'
+import { LOGO_GLYPH } from '../src/components/layout/logoMark.ts'
 import pkg from '../package.json' with { type: 'json' }
 
 // The site is a client-rendered SPA, so the served index.html used to contain an
@@ -40,7 +41,7 @@ function faqKeys(t: Record<string, string>): number[] {
   return out
 }
 
-function staticLanding(lang: Language): string {
+export function staticLanding(lang: Language): string {
   const t = landing[lang]
   const list = (items: [string, string][]) =>
     items.map(([h, p]) => `<li><h3>${esc(h)}</h3><p>${esc(p)}</p></li>`).join('')
@@ -161,6 +162,19 @@ export function localizePage(html: string, lang: Language): string {
   return swap(out, staticLanding(DEFAULT_LANGUAGE), staticLanding(lang))
 }
 
+// The screen /app and /demo show until the builder's code has arrived, instead
+// of the landing page they are a copy of. Same markup as components/layout/AppLoader.tsx.
+const APP_LOADER = `<div class="app-loader" role="status"><div class="app-loader-mark"><svg width="40" height="40" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect width="32" height="32" rx="7" fill="#EC4899"/><path d="${LOGO_GLYPH}" fill="#fff"/></svg><span class="app-loader-brand">Scorm<span>ly</span></span></div><div class="app-loader-page" aria-hidden="true"><i class="app-loader-title"></i><i class="app-loader-line"></i><i class="app-loader-line short"></i><i class="app-loader-image"></i><i class="app-loader-btn"></i></div><span class="sr-only">Loading the editor…</span></div>`
+
+/** The built landing page turned into the page of /app and /demo: the loading
+ *  screen in place of the landing's copy, and the builder's chunks preloaded in
+ *  parallel with the main script (otherwise they start only after it has run). */
+export function appShell(html: string, preloads: string[]): string {
+  const links = preloads.map((href) => `<link rel="modulepreload" crossorigin href="${href}">`).join('\n    ')
+  const out = swap(html, staticLanding(DEFAULT_LANGUAGE), APP_LOADER)
+  return links ? swap(out, '</head>', `    ${links}\n  </head>`) : out
+}
+
 // The pages to index: the landing in each language, each listing the other
 // versions. The builder (/app) and the demo (/demo) are the same app with
 // nothing of their own to index.
@@ -195,9 +209,15 @@ export function seoPrerender(): Plugin {
       for (const { id } of LANGUAGES) {
         if (id !== DEFAULT_LANGUAGE) writeFileSync(resolve(outDir, `${id}.html`), localizePage(html, id))
       }
-      for (const name of ['app.html', 'demo.html', '404.html']) {
-        copyFileSync(resolve(outDir, 'index.html'), resolve(outDir, name))
-      }
+      // The builder chunk and the big one it imports, to load beside the main script.
+      const assets = readdirSync(resolve(outDir, 'assets'))
+      const base = /src="([^"]*)assets\/index-/.exec(html)?.[1] ?? '/'
+      const preloads = ['Builder', 'IntroView']
+        .map((name) => assets.find((f) => f.startsWith(`${name}-`) && f.endsWith('.js')))
+        .filter((f): f is string => !!f)
+        .map((f) => `${base}assets/${f}`)
+      for (const name of ['app.html', 'demo.html']) writeFileSync(resolve(outDir, name), appShell(html, preloads))
+      copyFileSync(resolve(outDir, 'index.html'), resolve(outDir, '404.html'))
     },
     // The page changes with every deploy, so the sitemap carries the build date.
     generateBundle() {

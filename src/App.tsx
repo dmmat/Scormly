@@ -1,5 +1,6 @@
 import { lazy, Suspense } from 'react'
 import Landing from './components/landing/Landing'
+import AppLoader from './components/layout/AppLoader'
 import { useRoute, useRouteLinks } from './hooks/useRoute'
 
 // The builder (editor, stores, export code) loads only on the /app and /demo
@@ -10,7 +11,7 @@ export default function App() {
   const { view } = useRoute()
   useRouteLinks()
   return view === 'app' ? (
-    <Suspense fallback={null}>
+    <Suspense fallback={<AppLoader />}>
       <Builder />
     </Suspense>
   ) : (
