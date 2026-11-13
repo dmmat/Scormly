@@ -12,6 +12,42 @@ export interface Release {
 
 export const RELEASES: Release[] = [
   {
+    id: '2026-11-13-characters',
+    date: '2026-11-13',
+    items: {
+      en: [
+        'A built-in library of illustrated characters (eight people, three emotions each), learner avatars and ten office backgrounds: in a dialogue scenario press “Choose from library” instead of hunting for pictures.',
+        'New scenario layout, “Scene”: a background, a large character and the answers in one numbered speech bubble. The sample course shows it.',
+        'A setup wizard for scenarios walks you through the look, the character, the place and the first exchange. It stays open until you press Cancel or Create.',
+        'A line without answers now offers “Restart” in every scenario layout, and a scenario you are not editing looks just like it does for the learner.',
+      ],
+      uk: [
+        'Вбудована бібліотека ілюстрованих персонажів (вісім людей, по три емоції), аватари учня та десять офісних фонів: у сценарії натисніть «Обрати з бібліотеки» замість пошуку картинок.',
+        'Новий вигляд сценарію «Сцена»: фон, персонаж великим планом і відповіді в одній нумерованій хмаринці діалогу. Його показує приклад курсу.',
+        'Майстер налаштування сценарію веде крок за кроком: вигляд, персонаж, місце й перша репліка. Він лишається відкритим, доки ви не натиснете «Скасувати» чи «Створити».',
+        'Репліка без відповідей тепер пропонує «Спочатку» в усіх виглядах сценарію, а сценарій, який ви не редагуєте, виглядає так само, як для учня.',
+      ],
+      fr: [
+        'Une bibliothèque intégrée de personnages illustrés (huit personnes, trois émotions chacune), d’avatars d’apprenant et de dix arrière-plans de bureau : dans un scénario de dialogue, cliquez sur « Choisir dans la bibliothèque » au lieu de chercher des images.',
+        'Nouvelle disposition de scénario, « Scène » : un arrière-plan, un grand personnage et les réponses dans une seule bulle numérotée. Le cours d’exemple la présente.',
+        'Un assistant de configuration guide la création d’un scénario : aspect, personnage, lieu et premier échange. Il reste ouvert jusqu’à ce que vous cliquiez sur Annuler ou Créer.',
+        'Une réplique sans réponses propose désormais « Recommencer » dans toutes les dispositions de scénario, et un scénario que vous ne modifiez pas s’affiche comme chez l’apprenant.',
+      ],
+      es: [
+        'Una biblioteca integrada de personajes ilustrados (ocho personas, tres emociones cada una), avatares del alumno y diez fondos de oficina: en un escenario de diálogo pulsa “Elegir de la biblioteca” en lugar de buscar imágenes.',
+        'Nueva disposición de escenario, “Escena”: un fondo, un personaje grande y las respuestas en un único globo numerado. El curso de ejemplo la muestra.',
+        'Un asistente de configuración te guía por el aspecto, el personaje, el lugar y el primer intercambio de un escenario. Se mantiene abierto hasta que pulses Cancelar o Crear.',
+        'Una frase sin respuestas ahora ofrece “Empezar de nuevo” en todas las disposiciones de escenario, y un escenario que no estás editando se ve igual que para el alumno.',
+      ],
+      de: [
+        'Eine eingebaute Bibliothek mit illustrierten Figuren (acht Personen, je drei Emotionen), Avataren für Lernende und zehn Büro-Hintergründen: In einem Dialogszenario genügt „Aus der Bibliothek wählen“, statt Bilder zu suchen.',
+        'Neues Szenario-Layout „Szene“: ein Hintergrund, eine große Figur und die Antworten in einer nummerierten Sprechblase. Der Beispielkurs zeigt es.',
+        'Ein Einrichtungsassistent führt durch Aussehen, Figur, Ort und den ersten Austausch eines Szenarios. Er bleibt offen, bis Sie auf Abbrechen oder Erstellen klicken.',
+        'Eine Äußerung ohne Antworten bietet jetzt in jedem Szenario-Layout „Neu starten“ an, und ein Szenario, das Sie nicht bearbeiten, sieht aus wie für die Lernenden.',
+      ],
+    },
+  },
+  {
     id: '2026-11-13',
     date: '2026-11-13',
     items: {
