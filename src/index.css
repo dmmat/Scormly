@@ -498,6 +498,9 @@ body {
   width: 1.4rem; height: 1.4rem; font-size: 0.7rem; align-self: flex-end;
   background: color-mix(in srgb, var(--color-brand) 20%, #fff); color: var(--color-brand-dark);
 }
+.chatd-ava { overflow: hidden; }
+.chatd-ava img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.chatd-header .chatd-ava { box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.4); }
 .chatd-dot { display: inline-block; width: 0.45rem; height: 0.45rem; border-radius: 9999px; background: #4ade80; }
 .chatd-replay {
   margin-left: auto; border: 0; cursor: pointer; font: inherit; font-size: 0.72rem; font-weight: 600;
