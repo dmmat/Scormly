@@ -16,7 +16,6 @@ import { DEFAULT_THEME, THEMES, isThemeId } from '../theme/themes'
 import { uid } from '../lib/id'
 import { translate } from '../i18n/I18nProvider'
 import type { Language } from '../i18n/types'
-import { makeSampleCourse } from '../lib/sampleCourse'
 import { preloadSampleAssets } from '../lib/sampleAssets'
 import { repairCourse, type RepairFix } from '../lib/repairCourse'
 import { useReviewStore } from './reviewStore'
@@ -316,7 +315,8 @@ export const useCourseStore = create<CourseState>((set, get) => {
     },
 
     loadSampleCourse: async (lang) => {
-      await preloadSampleAssets()
+      // The sample (its copy in every language) is loaded only when asked for.
+      const [{ makeSampleCourse }] = await Promise.all([import('../lib/sampleCourse'), preloadSampleAssets()])
       const course = makeSampleCourse(lang)
       useReviewStore.getState().reset()
       set({

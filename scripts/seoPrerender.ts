@@ -166,13 +166,31 @@ export function localizePage(html: string, lang: Language): string {
 // of the landing page they are a copy of. Same markup as components/layout/AppLoader.tsx.
 const APP_LOADER = `<div class="app-loader" role="status"><div class="app-loader-mark"><svg width="40" height="40" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect width="32" height="32" rx="7" fill="#EC4899"/><path d="${LOGO_GLYPH}" fill="#fff"/></svg><span class="app-loader-brand">Scorm<span>ly</span></span></div><div class="app-loader-page" aria-hidden="true"><i class="app-loader-title"></i><i class="app-loader-line"></i><i class="app-loader-line short"></i><i class="app-loader-image"></i><i class="app-loader-btn"></i></div><span class="sr-only">Loading the editor…</span></div>`
 
+/** Adds `<link rel="modulepreload">` for chunks a page is about to ask for, so
+ *  they download beside the main script instead of after it has run. */
+export function withPreloads(html: string, hrefs: string[]): string {
+  if (!hrefs.length) return html
+  const links = hrefs.map((href) => `<link rel="modulepreload" crossorigin href="${href}">`).join('\n    ')
+  return swap(html, '</head>', `    ${links}\n  </head>`)
+}
+
 /** The built landing page turned into the page of /app and /demo: the loading
- *  screen in place of the landing's copy, and the builder's chunks preloaded in
- *  parallel with the main script (otherwise they start only after it has run). */
+ *  screen in place of the landing's copy, and the builder's chunks preloaded. */
 export function appShell(html: string, preloads: string[]): string {
-  const links = preloads.map((href) => `<link rel="modulepreload" crossorigin href="${href}">`).join('\n    ')
-  const out = swap(html, staticLanding(DEFAULT_LANGUAGE), APP_LOADER)
-  return links ? swap(out, '</head>', `    ${links}\n  </head>`) : out
+  return withPreloads(swap(html, staticLanding(DEFAULT_LANGUAGE), APP_LOADER), preloads)
+}
+
+/** A chunk and every chunk it imports statically (file names in `assets/`). */
+export function chunkClosure(entry: string | undefined, read: (file: string) => string, skip: Set<string>): string[] {
+  const out: string[] = []
+  const visit = (file: string) => {
+    if (skip.has(file) || out.includes(file)) return
+    out.push(file)
+    // Static imports only: `from"./x.js"` / `import"./x.js"`, not `import("./x.js")`.
+    for (const m of read(file).matchAll(/(?:from|import)\s*"\.\/([^"]+\.js)"/g)) visit(m[1])
+  }
+  if (entry) visit(entry)
+  return out
 }
 
 // The pages to index: the landing in each language, each listing the other
@@ -205,18 +223,32 @@ export function seoPrerender(): Plugin {
     // any other path (e.g. an old /app/<key> link) still open the app, and
     // each other language gets its own translated page.
     closeBundle() {
-      const html = readFileSync(resolve(outDir, 'index.html'), 'utf8')
+      const built = readFileSync(resolve(outDir, 'index.html'), 'utf8')
+      // Each page preloads the chunks of its own view (see App.tsx): they are
+      // dynamic imports, which would otherwise start only once the main script ran.
+      const assetsDir = resolve(outDir, 'assets')
+      const assets = readdirSync(assetsDir)
+      const base = /src="([^"]*)assets\/index-/.exec(built)?.[1] ?? '/'
+      const loaded = new Set([...built.matchAll(/assets\/([^"]+\.js)"/g)].map((m) => m[1]))
+      const chunksOf = (name: string) =>
+        chunkClosure(
+          assets.find((f) => f.startsWith(`${name}-`) && f.endsWith('.js')),
+          // A chunk's text may quote an import that is not one of ours (sample code).
+          (file) => (assets.includes(file) ? readFileSync(resolve(assetsDir, file), 'utf8') : ''),
+          loaded,
+        )
+          .filter((f) => assets.includes(f))
+          .map((f) => `${base}assets/${f}`)
+      const builder = chunksOf('Builder')
+      const html = withPreloads(built, chunksOf('Landing'))
+      writeFileSync(resolve(outDir, 'index.html'), html)
       for (const { id } of LANGUAGES) {
         if (id !== DEFAULT_LANGUAGE) writeFileSync(resolve(outDir, `${id}.html`), localizePage(html, id))
       }
-      // The builder chunk and the big one it imports, to load beside the main script.
-      const assets = readdirSync(resolve(outDir, 'assets'))
-      const base = /src="([^"]*)assets\/index-/.exec(html)?.[1] ?? '/'
-      const preloads = ['Builder', 'IntroView']
-        .map((name) => assets.find((f) => f.startsWith(`${name}-`) && f.endsWith('.js')))
-        .filter((f): f is string => !!f)
-        .map((f) => `${base}assets/${f}`)
-      for (const name of ['app.html', 'demo.html']) writeFileSync(resolve(outDir, name), appShell(html, preloads))
+      writeFileSync(resolve(outDir, 'app.html'), appShell(built, builder))
+      // The demo also opens the sample course straight away.
+      const sample = chunksOf('sampleCourse').filter((href) => !builder.includes(href))
+      writeFileSync(resolve(outDir, 'demo.html'), appShell(built, [...builder, ...sample]))
       copyFileSync(resolve(outDir, 'index.html'), resolve(outDir, '404.html'))
     },
     // The page changes with every deploy, so the sitemap carries the build date.
