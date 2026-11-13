@@ -1,0 +1,253 @@
+{
+  "version": 1,
+  "characters": [
+    {
+      "id": "ksiu",
+      "name": {
+        "en": "Ksenia",
+        "uk": "Ксюша"
+      },
+      "role": {
+        "en": "HR / onboarding",
+        "uk": "HR / онбординг"
+      },
+      "emotions": [
+        "neutral",
+        "happy",
+        "concerned"
+      ],
+      "scene": [
+        "neutral",
+        "happy",
+        "concerned"
+      ]
+    },
+    {
+      "id": "nazar",
+      "name": {
+        "en": "Nazar",
+        "uk": "Назар"
+      },
+      "role": {
+        "en": "Team lead",
+        "uk": "Керівник команди"
+      },
+      "emotions": [
+        "neutral",
+        "happy",
+        "concerned"
+      ],
+      "scene": [
+        "neutral",
+        "happy",
+        "concerned"
+      ]
+    },
+    {
+      "id": "max",
+      "name": {
+        "en": "Max",
+        "uk": "Макс"
+      },
+      "role": {
+        "en": "New employee",
+        "uk": "Новий працівник"
+      },
+      "emotions": [
+        "neutral",
+        "happy",
+        "concerned"
+      ],
+      "scene": [
+        "neutral",
+        "happy",
+        "concerned"
+      ]
+    },
+    {
+      "id": "anna",
+      "name": {
+        "en": "Anna",
+        "uk": "Аня"
+      },
+      "role": {
+        "en": "Colleague",
+        "uk": "Колега"
+      },
+      "emotions": [
+        "neutral",
+        "happy",
+        "concerned"
+      ],
+      "scene": [
+        "neutral",
+        "happy",
+        "concerned"
+      ]
+    },
+    {
+      "id": "sergio",
+      "name": {
+        "en": "Sergio",
+        "uk": "Серджіо"
+      },
+      "role": {
+        "en": "Customer",
+        "uk": "Клієнт"
+      },
+      "emotions": [
+        "neutral",
+        "happy",
+        "concerned"
+      ],
+      "scene": [
+        "neutral",
+        "happy",
+        "concerned"
+      ]
+    },
+    {
+      "id": "dmytro",
+      "name": {
+        "en": "Dmytro",
+        "uk": "Дмитро"
+      },
+      "role": {
+        "en": "IT support",
+        "uk": "IT-підтримка"
+      },
+      "emotions": [
+        "neutral",
+        "happy",
+        "concerned"
+      ],
+      "scene": [
+        "neutral",
+        "happy",
+        "concerned"
+      ]
+    },
+    {
+      "id": "jisu",
+      "name": {
+        "en": "Jisu",
+        "uk": "Дзісу"
+      },
+      "role": {
+        "en": "Marketing / design",
+        "uk": "Маркетинг / дизайн"
+      },
+      "emotions": [
+        "neutral",
+        "happy",
+        "concerned"
+      ],
+      "scene": [
+        "neutral",
+        "happy",
+        "concerned"
+      ]
+    },
+    {
+      "id": "layla",
+      "name": {
+        "en": "Layla",
+        "uk": "Лейла"
+      },
+      "role": {
+        "en": "Legal / compliance",
+        "uk": "Юристка / комплаєнс"
+      },
+      "emotions": [
+        "neutral",
+        "happy",
+        "concerned"
+      ],
+      "scene": [
+        "neutral",
+        "happy",
+        "concerned"
+      ]
+    }
+  ],
+  "avatars": [
+    "learner-01",
+    "learner-02",
+    "learner-03",
+    "learner-04",
+    "learner-05",
+    "learner-06"
+  ],
+  "backgrounds": [
+    {
+      "id": "office-open-space",
+      "name": {
+        "en": "Open-plan office",
+        "uk": "Open-space офіс"
+      }
+    },
+    {
+      "id": "meeting-room",
+      "name": {
+        "en": "Meeting room",
+        "uk": "Переговорна"
+      }
+    },
+    {
+      "id": "whiteboard",
+      "name": {
+        "en": "Whiteboard",
+        "uk": "Біля дошки"
+      }
+    },
+    {
+      "id": "manager-office",
+      "name": {
+        "en": "Manager's office",
+        "uk": "Кабінет керівника"
+      }
+    },
+    {
+      "id": "reception-desk",
+      "name": {
+        "en": "Reception",
+        "uk": "Рецепція"
+      }
+    },
+    {
+      "id": "retail-floor",
+      "name": {
+        "en": "Retail floor",
+        "uk": "Торговий зал"
+      }
+    },
+    {
+      "id": "call-center",
+      "name": {
+        "en": "Call center",
+        "uk": "Колл-центр"
+      }
+    },
+    {
+      "id": "it-corner",
+      "name": {
+        "en": "IT corner",
+        "uk": "IT-куток"
+      }
+    },
+    {
+      "id": "break-room",
+      "name": {
+        "en": "Break room",
+        "uk": "Кухня / кав'ярня"
+      }
+    },
+    {
+      "id": "home-office",
+      "name": {
+        "en": "Home office",
+        "uk": "Домашній офіс"
+      }
+    }
+  ]
+}
