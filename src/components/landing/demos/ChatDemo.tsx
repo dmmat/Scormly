@@ -12,6 +12,46 @@ import { chatScenarios, type ChatScenario, type LocalizedString } from './chatSc
 
 type Bubble = { id: number; from: 'bot' | 'user'; text: string }
 
+// The face of each character from the built-in picture library
+// (public/library/characters/<id>/neutral.webp). Names with no portrait of
+// their own borrow the closest one; the coffee bot gets an emoji instead.
+// Plain URLs on purpose: this page must not pull in the builder's modules.
+const FACE: Record<string, string> = {
+  Ksiu: 'ksiu',
+  Anna: 'anna',
+  Dmytro: 'dmytro',
+  Maksym: 'max',
+  Nazar: 'nazar',
+  Betty: 'layla',
+  Serhii: 'sergio',
+  Ivan: 'sergio',
+  Kuzia: 'jisu',
+}
+
+// A round avatar: the character's portrait, else the emoji, else the initial.
+function Ava({ name, initial, small }: { name: string; initial: string; small?: boolean }) {
+  const [failed, setFailed] = useState(false)
+  const face = FACE[name]
+  return (
+    <span className={`chatd-ava ${small ? 'chatd-ava-sm' : ''}`}>
+      {face && !failed ? (
+        <img
+          src={`${import.meta.env.BASE_URL}library/characters/${face}/neutral.webp`}
+          alt=""
+          width={64}
+          height={64}
+          decoding="async"
+          onError={() => setFailed(true)}
+        />
+      ) : name === 'Coffee bot' ? (
+        '☕'
+      ) : (
+        initial
+      )}
+    </span>
+  )
+}
+
 // Fisher–Yates shuffle (non-mutating).
 function shuffle<T>(arr: readonly T[]): T[] {
   const out = arr.slice()
@@ -68,6 +108,7 @@ export default function ChatDemo() {
   }, [scenario, lang])
 
   const initial = (resolved.name.trim()[0] ?? '?').toUpperCase()
+  const faceKey = scenario.name.en // portraits are looked up by the English name
 
   useEffect(() => {
     const el = bodyRef.current
@@ -161,7 +202,7 @@ export default function ChatDemo() {
     <div className="phone">
       <div className="phone-screen">
         <header className="chatd-header">
-          <span className="chatd-ava">{initial}</span>
+          <Ava name={faceKey} initial={initial} />
           <span className="min-w-0">
             <span className="block truncate text-sm font-semibold leading-tight">
               {resolved.name}
@@ -183,7 +224,7 @@ export default function ChatDemo() {
           {bubbles.map((b) =>
             b.from === 'bot' ? (
               <div key={b.id} className="chatd-row chatd-in">
-                <span className="chatd-ava chatd-ava-sm">{initial}</span>
+                <Ava name={faceKey} initial={initial} small />
                 <p className="chatd-bubble chatd-bot">{b.text}</p>
               </div>
             ) : (
@@ -194,7 +235,7 @@ export default function ChatDemo() {
           )}
           {typing && (
             <div className="chatd-row">
-              <span className="chatd-ava chatd-ava-sm">{initial}</span>
+              <Ava name={faceKey} initial={initial} small />
               <span className="chatd-bubble chatd-bot chatd-typing">
                 <i /><i /><i />
               </span>
