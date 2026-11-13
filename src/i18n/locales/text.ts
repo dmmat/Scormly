@@ -126,6 +126,37 @@ const text: LocaleTable = {
     notePlaceholder: 'Texto de la nota',
     warningPlaceholder: 'Texto de la advertencia',
   },
+  de: {
+    // Heading
+    headingPlaceholder: 'Überschrift',
+    headingLevel: 'Überschrift Ebene {level}',
+
+    // Paragraph
+    bold: 'Fett',
+    italic: 'Kursiv',
+    paragraphPlaceholder: 'Text eingeben…',
+
+    // List
+    bulleted: 'Aufzählung',
+    numbered: 'Nummeriert',
+    listItemPlaceholder: 'Listenpunkt',
+    removeItem: 'Punkt entfernen',
+    addItem: 'Punkt hinzufügen',
+
+    // Note
+    noteKind: 'Typ',
+    note: 'Hinweis',
+    tip: 'Tipp',
+    success: 'Erfolg',
+    warning: 'Warnung',
+    paragraphStyle: 'Stil',
+    para_normal: 'Normal',
+    para_lead: 'Einleitung',
+    para_dropcap: 'Initiale',
+    para_columns: 'Fließende Spalten',
+    notePlaceholder: 'Text des Hinweises',
+    warningPlaceholder: 'Text der Warnung',
+  },
 }
 
 export default text

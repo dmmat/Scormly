@@ -14,14 +14,14 @@ import pkg from '../package.json' with { type: 'json' }
 // createRoot().render() replaces it on mount.
 //
 // Each interface language gets its own page so it can be found in that
-// language: English at '/', the others at '/uk', '/fr', '/es' (uk.html, …),
+// language: English at '/', the others at '/uk', '/fr', '/es', '/de' (uk.html, …),
 // with their own title, description, canonical URL and copy, tied together by
 // hreflang links and listed in the sitemap.
 
 const GITHUB = 'https://github.com/dmmat/Scormly'
 const SITE = 'https://scormly.app/'
 const RELEASE_DATE = RELEASES.find((r) => r.date)?.date ?? ''
-const OG_LOCALE: Record<Language, string> = { en: 'en_US', uk: 'uk_UA', fr: 'fr_FR', es: 'es_ES' }
+const OG_LOCALE: Record<Language, string> = { en: 'en_US', uk: 'uk_UA', fr: 'fr_FR', es: 'es_ES', de: 'de_DE' }
 
 const langPath = (lang: Language) => (lang === DEFAULT_LANGUAGE ? '' : lang)
 const pageUrl = (lang: Language) => SITE + langPath(lang)

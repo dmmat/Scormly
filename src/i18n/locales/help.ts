@@ -348,6 +348,93 @@ const help: LocaleTable = {
     // What's new
     whatsNewTitle: 'Novedades',
   },
+  de: {
+    help: 'Hilfe',
+    menuTour: 'Rundgang starten',
+    menuWhatsNew: 'Neuigkeiten',
+    menuFaq: 'Fragen & Antworten',
+    menuShortcuts: 'Tastenkürzel',
+    menuReport: 'Problem melden',
+    newBadge: 'Neu',
+
+    // Tour
+    tourStep: '{n} von {total}',
+    tourSkip: 'Rundgang überspringen',
+    tourBack: 'Zurück',
+    tourNext: 'Weiter',
+    tourDone: 'Loslegen',
+    tourWelcomeTitle: 'Willkommen bei Scormly 👋',
+    tourWelcomeText:
+      'Ein einminütiger Rundgang durch den Builder. Sie können ihn jetzt überspringen und jederzeit über das Hilfemenü starten.',
+    tourLessonsTitle: 'Lektionen',
+    tourLessonsText:
+      'Ihr Kurs ist eine Liste von Lektionen. Klicken Sie auf eine, um sie zu bearbeiten, ziehen Sie die Nummer, um die Reihenfolge zu ändern, und doppelklicken Sie (oder F2), um sie umzubenennen.',
+    tourCanvasTitle: 'Lektionsinhalt',
+    tourCanvasText:
+      'Lektionen bestehen aus Blöcken: Text, Medien, Quizze, Dialogszenarien und mehr. Klicken Sie auf einen Block, um ihn zu bearbeiten; ein Rechtsklick zeigt weitere Aktionen.',
+    tourAddTitle: 'Blöcke hinzufügen',
+    tourAddText:
+      'Fügen Sie hier am Ende einen Block hinzu, oder zeigen Sie zwischen zwei Blöcke und drücken Sie „+“, um direkt dort einen einzufügen. Tippen zum Suchen, Eingabetaste zum Hinzufügen.',
+    tourSettingsTitle: 'Projekteinstellungen',
+    tourSettingsText:
+      'Legen Sie fest, wann der Kurs als abgeschlossen gilt, ob er mit einer Bestehensgrenze bewertet wird, ob die Navigation frei oder schrittweise erfolgt, und wählen Sie das Design.',
+    tourPreviewTitle: 'Vorschau',
+    tourPreviewText: 'Sehen Sie den Kurs genau so, wie ihn Lernende sehen werden, mit funktionierenden Quizzen und Navigation.',
+    tourCommentsTitle: 'Review-Kommentare',
+    tourCommentsText:
+      'Hinterlassen Sie Notizen zu jedem Block – hier oder in der Vorschau – für Kolleginnen und Kollegen oder für sich selbst. Sie werden mit der Projekt-.zip weitergegeben und gelangen nie in den exportierten Kurs.',
+    tourExportTitle: 'In Ihr LMS exportieren',
+    tourExportText:
+      'Laden Sie ein SCORM-2004-, SCORM-1.2- oder cmi5-Paket herunter und laden Sie es in Ihr LMS hoch. Scormly prüft den Kurs vorher auf häufige Probleme.',
+    tourSaveTitle: 'Speichern',
+    tourSaveText:
+      'Alles wird automatisch in Ihrem Projektordner auf diesem Computer gespeichert. Es wird nichts hochgeladen.',
+    tourHelpTitle: 'Hier gibt es Hilfe',
+    tourHelpText:
+      'Fragen & Antworten, Tastenkürzel, Neuigkeiten und dieser Rundgang noch einmal – alles im Hilfemenü.',
+
+    // FAQ
+    faqTitle: 'Fragen & Antworten',
+    faqQ1: 'Wo wird mein Kurs gespeichert?',
+    faqA1:
+      'In dem Ordner, den Sie gewählt haben, auf Ihrem eigenen Computer: project.json (der Kurs), ein Ordner assets/ mit Ihren Medien, eine Verlaufsdatei für Rückgängig/Wiederholen und comments.json, sobald es Kommentare gibt. Scormly hat keinen Server – es wird nichts hochgeladen.',
+    faqQ2: 'Muss ich auf Speichern klicken?',
+    faqA2:
+      'Nein. Änderungen werden etwa eine Sekunde nach dem Ende der Bearbeitung automatisch gespeichert. Strg/⌘+S speichert sofort. Die Schaltfläche „Speichern“ zeigt den Status an und wird rot, wenn das Speichern fehlschlägt.',
+    faqQ3: 'Welchen Export soll ich wählen?',
+    faqA3:
+      'SCORM 2004 funktioniert in den meisten modernen LMS und ist die Voreinstellung. Verwenden Sie SCORM 1.2 für ältere Systeme und cmi5, wenn Ihr LMS xAPI/cmi5 unterstützt. Im Zweifel probieren Sie zuerst SCORM 2004.',
+    faqQ4: 'Wie bringe ich den Kurs in mein LMS?',
+    faqA4:
+      'Exportieren Sie ein Paket (.zip) und laden Sie diese Zip-Datei in Ihrem LMS als SCORM-/cmi5-Kurs hoch. Entpacken Sie sie nicht. Die Pakete werden mit SCORM Cloud getestet.',
+    faqQ5: 'Wie werden Abschluss und Punktzahl gemeldet?',
+    faqA5:
+      'Legen Sie es in den Projekteinstellungen fest: abgeschlossen, wenn alle Lektionen angesehen oder alle Quizze beantwortet wurden, optional mit einer Bestehensgrenze. Das LMS erhält Abschluss, Punktzahl, bestanden/nicht bestanden und Zeit, und Lernende setzen dort fort, wo sie aufgehört haben.',
+    faqQ6: 'Welche Mediendateien kann ich verwenden?',
+    faqA6:
+      'Bilder: PNG, JPEG, WebP, GIF, SVG (große Bilder werden automatisch verkleinert). Video: MP4, WebM. Audio: MP3, OGG, WAV, M4A. Medien werden in den Ordner assets des Projekts kopiert und in die Exporte eingebunden.',
+    faqQ7: 'Wie teile ich ein Projekt mit einer Kollegin oder einem Kollegen?',
+    faqA7:
+      'Menü „Projekt“ → Projekt herunterladen (.zip). Sie entpacken es in einen Ordner und öffnen diesen Ordner in Scormly.',
+    faqQ8: 'Ich habe versehentlich etwas gelöscht.',
+    faqA8:
+      'Verwenden Sie Rückgängig (Strg/⌘+Z) oder die Schaltfläche „Rückgängig“ in der Benachrichtigung. Scormly behält die letzten 50 Schritte, und die letzten 20 bleiben beim erneuten Öffnen des Projekts erhalten.',
+    faqQ9: 'Welche Browser werden unterstützt?',
+    faqA9:
+      'Chrome, Edge, Opera und andere Chromium-Browser können in einen Ordner speichern. Andere Browser können den Builder ohne Speichern nutzen – laden Sie die Projekt-Zip herunter, um Ihre Arbeit zu sichern.',
+    faqQ10: 'Können KI-Tools meinen Kurs bearbeiten?',
+    faqA10:
+      'Ja. Jeder Projektordner (und jede Projekt-.zip) enthält eine AGENTS.md, die das Format von project.json beschreibt, sodass ein KI-Agent (oder Sie) die Kursdatei direkt bearbeiten kann. Er kann auch Ihre Kommentare abarbeiten – siehe unten.',
+    faqQ11: 'Wie funktionieren Kommentare?',
+    faqA11:
+      'Wählen Sie einen Block aus und klicken Sie in seiner Werkzeugleiste auf Kommentieren (Strg+Alt+M, ⌘⌥A auf dem Mac), um eine Notiz für eine Kollegin, einen Kollegen oder sich selbst zu hinterlassen. Es gibt keine Konten: Sie geben Ihren Namen einmal ein, und dieser Browser merkt ihn sich. Die Schaltfläche „Kommentare“ in der Kopfzeile listet sie auf – dort können Sie antworten, sie als erledigt markieren oder löschen. In der Vorschau können Sie über dieselbe Schaltfläche kommentieren, während Sie den Kurs als Lernende durchgehen: Zeigen Sie auf einen Block und klicken Sie auf Kommentieren. Kommentare werden in der comments.json des Projekts gespeichert, reisen in der Projekt-.zip mit und gelangen nie in den exportierten Kurs. Wenn die .zip des Projekts von einer Kollegin oder einem Kollegen zurückkommt, werden deren Kommentare zu Ihren hinzugefügt – oder wählen Sie „Nur Kommentare hinzufügen“, um Ihren Kurs unverändert zu lassen.',
+    faqQ12: 'Kann ein KI-Assistent die Kommentare abarbeiten?',
+    faqA12:
+      'Ja. AGENTS.md beschreibt comments.json. Geben Sie dem Assistenten also den Projektordner oder die .zip und bitten Sie ihn zum Beispiel: „Lies AGENTS.md und arbeite die offenen Kommentare in comments.json ab.“ Er ändert den Kurs, antwortet auf jeden Kommentar mit dem, was er getan hat, und markiert ihn als erledigt. Öffnen Sie das Projekt – oder die .zip, die er zurückgibt – und lesen Sie seine Antworten im Kommentarbereich; öffnen Sie einen Kommentar erneut, wenn die Änderung nicht passt.',
+
+    // What's new
+    whatsNewTitle: 'Neuigkeiten',
+  },
 }
 
 export default help

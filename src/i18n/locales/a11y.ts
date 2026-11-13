@@ -91,6 +91,28 @@ const a11y: LocaleTable = {
     incorrect: 'Incorrecto',
     visited: 'visto',
   },
+  de: {
+    menu: 'Barrierefreiheit-Einstellungen',
+    textSize: 'Textgröße',
+    sizeNormal: 'Normal',
+    sizeLarge: 'Groß',
+    sizeXLarge: 'Sehr groß',
+    highContrast: 'Hoher Kontrast',
+    spacing: 'Gut lesbare Abstände',
+    reduceMotion: 'Bewegung reduzieren',
+    captions: 'Untertitel standardmäßig aktiviert',
+    close: 'Schließen',
+    skip: 'Zum Inhalt springen',
+    lessonAnnounce: 'Lektion {n} von {total}: {title}',
+    captionsLabel: 'Untertitel',
+    transcript: 'Transkript',
+    embedTitle: 'Eingebetteter Inhalt',
+    cardFront: 'Vorderseite: {text}',
+    cardBack: 'Rückseite: {text}',
+    correct: 'Richtig',
+    incorrect: 'Falsch',
+    visited: 'angesehen',
+  },
 }
 
 export default a11y

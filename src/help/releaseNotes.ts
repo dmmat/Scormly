@@ -47,6 +47,14 @@ export const RELEASES: Release[] = [
         'Un proyecto que solo existe en la pestaña muestra un “!” ámbar junto a su nombre en lugar de un aviso, y al salir se ofrece descargar antes el .zip.',
         'El recorrido ahora incluye los comentarios de revisión.',
       ],
+      de: [
+        'Der Builder und die Website sprechen jetzt auch Deutsch: Die Sprache wählen Sie in der oberen Leiste.',
+        'Kürzere Adressen: scormly.app/app für den Builder, scormly.app/demo für den Beispielkurs. Alte Links funktionieren weiterhin.',
+        'Die Website hat für jede Sprache eine eigene Adresse: scormly.app/uk, scormly.app/fr, scormly.app/es und scormly.app/de.',
+        'Der Builder passt besser auf kleine Bildschirme: Die obere Leiste bleibt einzeilig, lange Überschriften werden umgebrochen.',
+        'Ein Projekt, das nur im Tab existiert, zeigt statt eines Banners ein oranges „!“ neben seinem Namen, und beim Verlassen wird angeboten, zuerst die .zip herunterzuladen.',
+        'Die Tour behandelt jetzt auch Review-Kommentare.',
+      ],
     },
   },
   {
@@ -91,6 +99,15 @@ export const RELEASES: Release[] = [
         'El curso de ejemplo incluye el widget “Detective de enlaces”: descubre a quién pertenece realmente una dirección web. Es un ejemplo real de lo que puede hacer el bloque Widget.',
         'Vista previa: “Completar la prueba” → Aprobado / No aprobado responde y envía una prueba con un clic, para que revises la pantalla de resultados y lo que viene después sin responder a mano.',
       ],
+      de: [
+        'Review-Kommentare: Kommentieren Sie jeden Block, antworten Sie und markieren Sie Kommentare als erledigt — im Editor oder in der Vorschau, während Sie den Kurs als Lernende durchgehen. Für Kolleginnen und Kollegen oder als Notizen für später an sich selbst. Keine Konten: Geben Sie einfach Ihren Namen ein oder wählen Sie jemanden, der bereits kommentiert hat.',
+        'Kommentare liegen in der eigenen Datei comments.json des Projekts, reisen in der Projekt-.zip mit und gelangen nie in den exportierten Kurs. Kommt die .zip eines Reviewers zurück, werden seine Kommentare zu Ihren hinzugefügt — oder Sie übernehmen nur die Kommentare und behalten Ihren Kurs, wie er ist.',
+        'Neuer Widget-Block: Schreiben Sie eigenes HTML, CSS und JavaScript oder laden Sie eine .html-Seite oder eine Website als .zip hoch — für Widgets, Simulationen, Rechner und Minispiele. Er funktioniert auch im exportierten Kurs.',
+        'Widget-Seiten passen zu Ihrem Kurs: Themenfarbe, Button-Form und Schriften, dazu fertige Klassen für Buttons, Karten, Felder und Feedback. Schalten Sie die Kursstile für eine Seite mit eigenem Design aus.',
+        '„KI-Anweisungen kopieren“ im Block: Fügen Sie sie mit Ihrem Anliegen in einen Chat-Assistenten ein, und die Seite, die er schreibt, lässt sich direkt einsetzen. Die AGENTS.md in jedem Projekt erklärt es ebenfalls.',
+        'Der Beispielkurs enthält ein Widget „Link-Detektiv“: Finden Sie heraus, wem eine Webadresse wirklich gehört — ein lebendiges Beispiel dafür, was der Widget-Block kann.',
+        'Vorschau: „Test abschließen“ → Bestanden / Nicht bestanden beantwortet und sendet einen Test mit einem Klick ab, damit Sie den Ergebnisbildschirm und alles danach prüfen können, ohne von Hand zu antworten.',
+      ],
     },
   },
   {
@@ -120,6 +137,12 @@ export const RELEASES: Release[] = [
         'Nuevos bloques: diagrama de proceso, guía paso a paso, comparación, control deslizante antes / después y reflexión.',
         'Tablas y enlaces en el texto, además de atajos como Ctrl+B y Ctrl+K.',
         'Continuar revela la siguiente parte de una lección; tus propios colores de tema; resultados más fiables en el LMS.',
+      ],
+      de: [
+        'Speichern Sie einen Kurs als .zip und öffnen Sie ihn in jedem Browser — leicht mit Kolleginnen und Kollegen zu teilen oder an einen KI-Assistenten zu übergeben. Kurse können auch in diesem Browser liegen und bleiben nach dem Neuladen erhalten.',
+        'Neue Blöcke: Prozessdiagramm, Schritt-für-Schritt-Anleitung, Vergleich, Vorher-nachher-Regler und Reflexion.',
+        'Tabellen und Links im Text sowie Kurzbefehle wie Strg+B und Strg+K.',
+        '„Weiter“ blendet den nächsten Teil einer Lektion ein; eigene Themenfarben; zuverlässigere LMS-Ergebnisse.',
       ],
     },
   },
@@ -151,6 +174,12 @@ export const RELEASES: Release[] = [
         'Los cuestionarios combinan todos los tipos de pregunta, ahora también ordenar y rellenar huecos, con un único botón de envío.',
         'Nuevos bloques y opciones: columnas, carrusel, imagen y texto, archivos adjuntos, estilos de cita, ancho de tabla.',
       ],
+      de: [
+        'Blockstile: Hintergründe aus Theme oder Foto, Innenabstand und Breite sowie fertige Blöcke.',
+        'Eine Titelseite vor der ersten Lektion, mit eigenem Text und Medien.',
+        'Quizze mischen alle Fragetypen, jetzt auch Sortieren und Lückentext, unter einem gemeinsamen Absenden.',
+        'Neue Blöcke und Optionen: Spalten, Karussell, Bild & Text, Anhänge, Zitatstile, Tabellenbreite.',
+      ],
     },
   },
   {
@@ -180,6 +209,12 @@ export const RELEASES: Release[] = [
         'Conformidad más estricta con SCORM y cmi5, con los archivos de esquema oficiales incluidos para los LMS más antiguos.',
         'Una pantalla final honesta: indica cuándo el curso aún no está completado o aprobado y enlaza a las lecciones que hay que terminar o repetir.',
         'Los botones del reproductor siguen el idioma del curso, y un nuevo botón “Salir del curso” vuelve al LMS.',
+      ],
+      de: [
+        'Zuverlässigeres LMS-Tracking: Fortsetzen, Lernzeit und Bestanden/Nicht bestanden erreichen das LMS zuverlässiger, und ein bestandener Kurs bleibt bestanden.',
+        'Strengere SCORM- und cmi5-Konformität, mit den offiziellen Schemadateien für ältere LMS.',
+        'Ein ehrlicher Abschlussbildschirm: Er sagt, wenn der Kurs noch nicht abgeschlossen oder bestanden ist, und verlinkt auf die Lektionen, die noch zu beenden oder zu wiederholen sind.',
+        'Die Player-Schaltflächen folgen der Kurssprache, und eine neue Schaltfläche „Kurs beenden“ führt zurück ins LMS.',
       ],
     },
   },
@@ -211,6 +246,12 @@ export const RELEASES: Release[] = [
         'Subtítulos y transcripciones para video y audio, imágenes decorativas e idioma del contenido.',
         'La comprobación previa a la exportación señala carencias de accesibilidad, como textos alternativos o subtítulos que faltan.',
       ],
+      de: [
+        'Fünf neue Themes, darunter ein Terminal im Hacker-Stil; Exporte übernehmen jetzt die Formen jedes Themes.',
+        'Barrierefreie Kurse: ein Barrierefreiheitsmenü für Lernende, volle Tastatur- und Screenreader-Unterstützung, AA-Kontrast.',
+        'Untertitel und Transkripte für Video und Audio, dekorative Bilder und eine Inhaltssprache.',
+        'Die Prüfung vor dem Export weist auf Barrierefreiheitslücken wie fehlenden Alternativtext oder fehlende Untertitel hin.',
+      ],
     },
   },
   {
@@ -241,6 +282,12 @@ export const RELEASES: Release[] = [
         'Inserta un bloque en cualquier lugar, deshaz una eliminación desde la notificación y comprueba el curso antes de exportarlo.',
         'Configuración del proyecto en pestañas, con el idioma del reproductor, el progreso de las lecciones y un mensaje final personalizado.',
       ],
+      de: [
+        'Neue Blöcke: Bild-Hotspots, Zeitleiste sowie bewertete Sortier- und Lückentext-Übungen.',
+        'Ein Hilfemenü mit geführter Tour, Fragen & Antworten und Versionshinweisen; Tastenkürzel überall.',
+        'Blöcke überall einfügen, Löschen über die Benachrichtigung rückgängig machen und eine Kursprüfung vor dem Export.',
+        'Projekteinstellungen mit Registerkarten, mit Player-Sprache, Lektionsfortschritt und eigener Abschlussnachricht.',
+      ],
     },
   },
   {
@@ -270,6 +317,12 @@ export const RELEASES: Release[] = [
         'Bloque Índice del curso, diseño de chat para los escenarios de diálogo, visualización obligatoria de videos y navegación paso a paso.',
         'Informes más completos en el LMS: objetivos por cuestionario, interacciones detalladas por pregunta, nombre e idioma del alumno.',
         'Descarga un proyecto como .zip para compartirlo.',
+      ],
+      de: [
+        'cmi5-(xAPI-)Export neben SCORM 2004 und 1.2.',
+        'Block „Kursübersicht“, Chat-Layout für Dialogszenarien, verpflichtendes Ansehen von Videos und Schritt-für-Schritt-Navigation.',
+        'Umfangreicheres LMS-Reporting: Ziele pro Quiz, detaillierte Fragen-Interaktionen, Name und Sprache der Lernenden.',
+        'Ein Projekt als .zip herunterladen, um es zu teilen.',
       ],
     },
   },

@@ -130,6 +130,38 @@ const hotspotTimeline: LocaleTable = {
     stepOf: 'Paso {n} de {total}',
     goToStep: 'Ir al paso {n}',
   },
+  de: {
+    // Image hotspots — editor
+    hotspotAddHint: 'Klicken Sie auf das Bild, um eine Markierung hinzuzufügen. Ziehen Sie eine Markierung, um sie zu verschieben; klicken Sie mit der rechten Maustaste darauf (oder drücken Sie Entf), um sie zu entfernen.',
+    hotspotEmptyHint: 'Noch keine Markierungen – klicken Sie auf das Bild, um eine hinzuzufügen.',
+    hotspotTitlePlaceholder: 'Titel der Markierung',
+    hotspotTextPlaceholder: 'Text, der beim Öffnen der Markierung angezeigt wird',
+    hotspotX: 'X, %',
+    hotspotY: 'Y, %',
+    removeHotspot: 'Markierung entfernen',
+    // Image hotspots — learner
+    hotspotMarker: 'Markierung {n}: {title}',
+    hotspotProgress: '{n} von {total} erkundet',
+    close: 'Schließen',
+
+    // Timeline — editor
+    layout: 'Layout',
+    layoutVertical: 'Vertikale Zeitleiste',
+    layoutStepper: 'Schritt für Schritt',
+    addStep: '+ Eintrag',
+    removeStep: 'Eintrag entfernen',
+    moveUp: 'Nach oben',
+    moveDown: 'Nach unten',
+    labelPlaceholder: 'Beschriftung (Datum oder „Schritt 1“)',
+    stepTitlePlaceholder: 'Titel',
+    stepTextPlaceholder: 'Beschreibung',
+    noSteps: 'Noch keine Einträge.',
+    // Timeline — learner
+    prev: 'Zurück',
+    next: 'Weiter',
+    stepOf: 'Schritt {n} von {total}',
+    goToStep: 'Zu Schritt {n}',
+  },
 }
 
 export default hotspotTimeline

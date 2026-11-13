@@ -154,6 +154,44 @@ const quiz: LocaleTable = {
     removePair: 'Quitar par',
     correctOption: 'Opción correcta',
   },
+  de: {
+    passingScore: 'Bestehensgrenze, %',
+    showAnswers: 'Richtige Antworten anzeigen',
+    showAnswersHelp: 'Zeigt nach dem Absenden, welche Antworten richtig waren, samt Feedback. Ist die Option aus, wird nur das Ergebnis angezeigt.',
+    questionN: 'Frage {n}',
+
+    typeSingle: 'Einzelantwort',
+    typeMultiple: 'Mehrfachantwort',
+    typeMatching: 'Zuordnen',
+    typeSequence: 'In Reihenfolge bringen',
+    typeFillBlanks: 'Lückentext',
+    typeSingleDesc: 'Eine richtige Option',
+    typeMultipleDesc: 'Mehrere richtige Optionen',
+    typeMatchingDesc: 'Elemente Antworten zuordnen oder in Kategorien sortieren',
+    typeSequenceDesc: 'Die Schritte in die richtige Reihenfolge bringen',
+    typeFillBlanksDesc: 'Fehlende Wörter eingeben oder auswählen',
+    questionType: 'Fragetyp',
+
+    promptLabel: 'Frage',
+    promptPlaceholder: 'Fragetext…',
+
+    questionFeedback: 'Allgemeines Feedback',
+    questionFeedbackPlaceholder: 'Erklärung, die nach der Antwort angezeigt wird (optional)',
+
+    optionPlaceholder: 'Text der Option',
+    optionFeedbackPlaceholder: 'Feedback',
+    pairLeftPlaceholder: 'Links',
+    pairRightPlaceholder: 'Rechts',
+
+    addOption: '+ Option',
+    addPair: '+ Paar',
+    addQuestion: '+ Frage hinzufügen',
+
+    removeQuestion: 'Frage entfernen',
+    removeOption: 'Option entfernen',
+    removePair: 'Paar entfernen',
+    correctOption: 'Richtige Option',
+  },
 }
 
 export default quiz

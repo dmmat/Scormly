@@ -1,7 +1,7 @@
 // Routing by path. The open project is reflected in the URL so it can be
 // restored, bookmarked or shared, and different tabs can hold different projects:
 //   '/'                  → landing ('/#features' is a section of it)
-//   '/uk', '/fr', '/es'  → landing in that language (English lives at '/')
+//   '/uk', '/fr', '/es', '/de' → landing in that language (English lives at '/')
 //   '/app'               → builder, no project (welcome)
 //   '/app?p=<projectKey>' → builder with that project open
 //   '/demo'              → builder with the built-in sample course

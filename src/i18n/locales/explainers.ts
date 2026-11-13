@@ -291,6 +291,78 @@ const explainers: LocaleTable = {
     answerSaved: 'Tu respuesta se ha guardado.',
     editAnswer: 'Editar la respuesta',
   },
+  de: {
+    // Shared editor controls
+    layout: 'Layout',
+    addStep: '+ Schritt',
+    removeStep: 'Schritt entfernen',
+    moveUp: 'Nach oben',
+    moveDown: 'Nach unten',
+    stepTitle: 'Titel',
+    stepText: 'Beschreibung',
+    noSteps: 'Noch keine Schritte.',
+
+    // Process diagram
+    layout_flow: 'Pfeile',
+    layout_chevrons: 'Chevrons',
+    layout_cycle: 'Kreislauf',
+    layout_pyramid: 'Pyramide',
+    style: 'Stil',
+    variant_solid: 'Gefüllt',
+    variant_soft: 'Dezent',
+    variant_outline: 'Umriss',
+    processCycleHint: 'Lernende öffnen jeden Schritt auf dem Ring, um ihn zu lesen.',
+    processPyramidHint: 'Der erste Schritt bildet die Spitze der Pyramide.',
+    openStep: 'Schritt {n}: {title}',
+    exploredOf: '{n} von {total} erkundet',
+
+    // Step-by-step guide
+    layout_list: 'Alle Schritte',
+    layout_slides: 'Einzeln nacheinander',
+    addImage: 'Bild hinzufügen',
+    replaceImage: 'Bild ersetzen',
+    removeImage: 'Bild entfernen',
+    altPlaceholder: 'Bild beschreiben (Alternativtext)',
+    unsupportedImage: 'Nicht unterstütztes Bildformat. Verwenden Sie PNG, JPG, WebP, GIF oder SVG.',
+    stepOf: 'Schritt {n} von {total}',
+    back: 'Zurück',
+    next: 'Weiter',
+    startOver: 'Von vorn beginnen',
+
+    // Comparison
+    columnTitle: 'Spaltentitel',
+    tone: 'Markierung',
+    tone_pro: 'Pro',
+    tone_con: 'Contra',
+    tone_neutral: 'Neutral',
+    addPoint: '+ Punkt',
+    removePoint: 'Punkt entfernen',
+    pointPlaceholder: 'Punkt',
+    addColumn: '+ Spalte',
+    removeColumn: 'Spalte entfernen',
+    versus: '„VS“-Abzeichen',
+
+    // Before / after
+    uploadBefore: 'Das „Vorher“-Bild hochladen',
+    uploadAfter: 'Das „Nachher“-Bild hochladen',
+    replaceBefore: '„Vorher“ ersetzen',
+    replaceAfter: '„Nachher“ ersetzen',
+    beforeLabel: 'Beschriftung „Vorher“',
+    afterLabel: 'Beschriftung „Nachher“',
+    beforeAlt: 'Alternativtext „Vorher“',
+    afterAlt: 'Alternativtext „Nachher“',
+    beforeAfterHint: 'Verwenden Sie zwei Bilder mit gleicher Größe und gleichem Ausschnitt.',
+    sliderLabel: 'Vergleichen: ziehen, um mehr von „{before}“ oder „{after}“ zu zeigen',
+
+    // Reflection
+    promptPlaceholder: 'Frage an die Lernenden',
+    sampleLabel: 'Musterantwort',
+    samplePlaceholder: 'Wird angezeigt, nachdem die Lernenden abgesendet haben. Leer lassen, um sie auszulassen.',
+    answerPlaceholder: 'Antwort eingeben …',
+    submitAnswer: 'Absenden',
+    answerSaved: 'Ihre Antwort wurde gespeichert.',
+    editAnswer: 'Antwort bearbeiten',
+  },
 }
 
 export default explainers

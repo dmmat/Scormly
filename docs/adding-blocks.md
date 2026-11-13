@@ -133,7 +133,7 @@ export default function DividerBlock({
   `btn-primary` / `btn-secondary` / `interactive-surface` classes — don't hardcode
   colors, or themes won't work.
 - **UI strings go through i18n.** Don't hardcode user-facing text — add keys to
-  the relevant namespace in `src/i18n/locales/` (every interface language: English, Ukrainian, French, Spanish) and read them
+  the relevant namespace in `src/i18n/locales/` (every interface language: English, Ukrainian, French, Spanish, German) and read them
   via `useT('<namespace>')`. Author-edited course content is not localized.
   Comment only where the "why" needs explaining.
 

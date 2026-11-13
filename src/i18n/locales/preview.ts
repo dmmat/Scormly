@@ -154,6 +154,44 @@ const preview: LocaleTable = {
     // Flashcards
     flipHint: 'Haz clic para girar',
   },
+  de: {
+    title: 'Vorschau',
+    open: 'Vorschau',
+    close: 'Vorschau schließen',
+    prev: 'Zurück',
+    next: 'Weiter',
+    progress: 'Lektion {n} von {total}',
+    empty: 'Diese Lektion hat noch keinen Inhalt.',
+    finish: 'Beenden',
+    courseComplete: 'Kurs abgeschlossen',
+    courseCompleteText: 'Sie haben das Ende des Kurses erreicht.',
+    review: 'Kurs wiederholen',
+
+    // Quiz
+    submit: 'Antwort abgeben',
+    submitAll: 'Antworten abgeben',
+    retry: 'Erneut versuchen',
+    correct: 'Richtig',
+    incorrect: 'Falsch',
+    selectAnswer: 'Wählen Sie eine Antwort',
+    yourScore: 'Ihr Ergebnis: {score} %',
+    passed: 'Bestanden',
+    failed: 'Nicht bestanden',
+    // Author shortcut on quizzes (preview window only)
+    autoTest: 'Test absolvieren',
+    autoTestHint: 'Nur in der Vorschau: beantwortet die Fragen und gibt sie ab, damit Sie das Ergebnis prüfen können.',
+    autoPass: 'Bestanden',
+    autoFail: 'Nicht bestanden',
+    autoPassOff: 'Dieser Test kann nicht bestanden werden – prüfen Sie die richtigen Antworten.',
+    autoFailOff: 'In diesem Test kann man nicht durchfallen – prüfen Sie die Bestehensgrenze.',
+
+    // Scenario
+    restart: 'Neu starten',
+    end: 'Ende',
+
+    // Flashcards
+    flipHint: 'Zum Umdrehen klicken',
+  },
 }
 
 export default preview

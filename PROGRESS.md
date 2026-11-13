@@ -594,3 +594,5 @@ captions and larger text, in the builder preview and in the exported player alik
   `sitemap.xml` lists all four with their alternates. In the app a language in the URL wins for the
   visit without touching the saved choice; the landing keeps its URL on the language shown, and the
   footer has plain language links. Builder routes are unchanged.
+- 2026-11-13 — **German interface**: `de` added to `LANGUAGES` (builder, landing at `/de`, release notes,
+  chat scenarios, sample course); `tests/i18n.test.ts` covers it like the other languages.

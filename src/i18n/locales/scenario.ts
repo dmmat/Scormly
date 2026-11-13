@@ -182,6 +182,51 @@ const scenario: LocaleTable = {
     deleteChoice: 'Eliminar opción',
     addNode: '+ Añadir nodo',
   },
+  de: {
+    // ── ContinueBlock ──
+    continueDefault: 'Weiter',
+    continueLocked: 'Gesperrt, bis die Aufgaben erledigt sind',
+    continueLockedHint: 'Erledigen Sie die Aufgaben oben, um fortzufahren.',
+    buttonLabel: 'Beschriftung der Schaltfläche',
+    mode: 'Modus',
+    modeUnrestricted: 'Frei',
+    modeRestricted: 'Sperrend',
+    restrictedHelp:
+      'Die Schaltfläche bleibt gesperrt, bis die Lernenden die Quizze, Übungen und Reflexionen oben beantwortet und die erforderlichen Videos angesehen haben. Sie müssen sie anklicken, bevor sie weitergehen.',
+    gateHelp: 'Die Blöcke darunter bleiben verborgen, bis die Lernenden auf die Schaltfläche klicken.',
+    nextCard: 'Auch die Karte „Nächste Lektion“ anzeigen',
+    nextCardHelp: 'Diese Schaltfläche führt die Lernenden bereits weiter, daher wird die Karte darunter ausgeblendet.',
+
+    // ── ScenarioBlock ──
+    characterName: 'Name der Figur',
+    characterDefault: 'Figur',
+    characterLine: 'Text der Figur…',
+    characterImages: 'Bild der Figur je Emotion',
+    layout: 'Layout',
+    layoutClassic: 'Klassisch',
+    layoutChat: 'Chat (Messenger)',
+    userAvatar: 'Ihr Avatar (Chat-Antworten)',
+    emptyScenario: 'Das Szenario ist leer',
+    choiceDefault: 'Antwortoption',
+
+    emotionNeutral: 'neutral',
+    emotionHappy: 'fröhlich',
+    emotionConcerned: 'besorgt',
+
+    nodeN: 'Knoten {n}',
+    unknownNode: 'Unbekannter Knoten',
+    finish: '— Ende —',
+    startNode: 'Start',
+    makeStart: 'Als Startknoten festlegen',
+    deleteNode: 'Knoten löschen',
+
+    choiceTextPlaceholder: 'Text der Option',
+    transition: 'Übergang',
+    emotion: 'Emotion',
+    addChoice: '+ Antwortoption',
+    deleteChoice: 'Option löschen',
+    addNode: '+ Knoten hinzufügen',
+  },
 }
 
 export default scenario

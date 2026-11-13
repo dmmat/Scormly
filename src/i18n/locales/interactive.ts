@@ -106,6 +106,32 @@ const interactive: LocaleTable = {
     frontPlaceholder: 'Cara anterior',
     backPlaceholder: 'Cara posterior',
   },
+  de: {
+    // Tabs
+    addTab: '+ Tab',
+    tabTitlePlaceholder: 'Titel',
+    tabFallback: 'Tab',
+    removeTab: 'Tab entfernen',
+    tabContentPlaceholder: 'Tab-Inhalt …',
+    noTabs: 'Keine Tabs',
+
+    // Accordion
+    addSection: '+ Abschnitt',
+    sectionTitlePlaceholder: 'Abschnittstitel',
+    sectionFallback: 'Abschnitt',
+    removeSection: 'Abschnitt entfernen',
+    sectionContentPlaceholder: 'Abschnittsinhalt …',
+    collapse: 'Einklappen',
+    expand: 'Ausklappen',
+
+    // Flashcards
+    addCard: '+ Karte',
+    removeCard: '✕ Entfernen',
+    front: 'Vorderseite',
+    back: 'Rückseite',
+    frontPlaceholder: 'Vorderseite',
+    backPlaceholder: 'Rückseite',
+  },
 }
 
 export default interactive

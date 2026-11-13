@@ -126,6 +126,37 @@ const media: LocaleTable = {
     unsupportedVideo: 'Formato de video no compatible. Usa MP4 (H.264) o WebM.',
     unsupportedCaptions: 'Formato de subtítulos no compatible. Usa un archivo WebVTT (.vtt).',
   },
+  de: {
+    uploadImage: 'Bild hochladen',
+    replaceImage: 'Bild ersetzen',
+    captionPlaceholder: 'Bildunterschrift (optional)',
+    altLabel: 'Alternativtext',
+    altPlaceholder: 'Bildbeschreibung für die Barrierefreiheit',
+    decorative: 'Dekoratives Bild',
+    decorativeHelp: 'Screenreader überspringen es (leerer Alternativtext). Nur verwenden, wenn das Bild keine Information liefert.',
+    imageAlt: 'Alternativtext für Bild {n}',
+
+    addImages: 'Bilder hinzufügen',
+    removeImage: 'Bild entfernen',
+
+    uploadVideo: 'Video hochladen',
+    replaceVideo: 'Video ersetzen',
+    addPoster: 'Vorschaubild hinzufügen',
+    replacePoster: 'Vorschaubild ersetzen',
+    requireWatch: 'Ansehen erforderlich',
+    requireWatchHelp: 'Die Lernenden müssen das Video ansehen, bevor sie fortfahren können.',
+    addCaptions: 'Untertitel hinzufügen (.vtt)',
+    replaceCaptions: 'Untertitel ersetzen',
+    removeCaptions: 'Untertitel entfernen',
+    captionsAttached: 'Untertitel: {name}',
+    captionsHelp: 'Eine WebVTT-Untertiteldatei, die im Player als Untertitel angezeigt wird.',
+    transcriptLabel: 'Transkript',
+    transcriptPlaceholder: 'Vollständiger Text des Gesprochenen (und wichtiger Geräusche) für Lernende, die die Medien nicht hören oder abspielen können',
+
+    unsupportedImage: 'Nicht unterstütztes Bildformat. Verwenden Sie PNG, JPEG, WebP, GIF oder SVG.',
+    unsupportedVideo: 'Nicht unterstütztes Videoformat. Verwenden Sie MP4 (H.264) oder WebM.',
+    unsupportedCaptions: 'Nicht unterstütztes Untertitelformat. Verwenden Sie eine WebVTT-Datei (.vtt).',
+  },
 }
 
 export default media

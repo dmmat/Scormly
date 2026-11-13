@@ -188,10 +188,10 @@ CSS variables (`themeStyle`), and exports embed the resolved palette as
 
 ## Internationalization (i18n)
 
-The app UI is in **English, Ukrainian, French and Spanish** (`LANGUAGES` in
+The app UI is in **English, Ukrainian, French, Spanish and German** (`LANGUAGES` in
 `src/i18n/types.ts`; default English; auto-selects the first browser language
 it has; the manual switch persists to localStorage). Strings
-live in `src/i18n/locales/<namespace>.ts` (each exports `{ en, uk, fr, es }`;
+live in `src/i18n/locales/<namespace>.ts` (each exports `{ en, uk, fr, es, de }`;
 `tests/i18n.test.ts` checks every language has every key, placeholder and tag). Read them
 with `const { t } = useT('<namespace>')`. Do **not** hardcode user-facing text —
 add keys to the appropriate namespace in every language. Author-edited course
@@ -202,12 +202,12 @@ content (block data) is not localized. Keyboard shortcuts match the physical key
 ## Landing page and routing
 
 `App.tsx` does simple path routing (`useRoute`, URL scheme in `lib/route.ts`):
-`/` renders the SEO landing page (`components/landing/Landing.tsx`; `/uk`, `/fr`,
+`/` renders the SEO landing page (`components/landing/Landing.tsx`; `/uk`, `/fr`, `/de`,
 `/es` are the same page in that language, English stays at `/`), `/app` the
 builder (`components/Builder.tsx`, the open project is `/app?p=<key>`) and
 `/demo` the builder with the sample course. The host is static, so the build
 copies `index.html` to `app.html`, `demo.html` and `404.html` and writes a
-translated `uk.html` / `fr.html` / `es.html` (own title, description, canonical,
+translated `uk.html` / `fr.html` / `es.html` / `de.html` (own title, description, canonical,
 prerendered copy; hreflang links and the sitemap tie them together —
 `scripts/seoPrerender.ts`, page title / description are the `metaTitle` /
 `metaDescription` landing keys). A URL that names a language wins over the

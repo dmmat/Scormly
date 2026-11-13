@@ -58,6 +58,20 @@ const themes: LocaleTable = {
     custom: 'Personalizado',
     customDesc: 'Tu propio color y esquinas (Configuración del proyecto → Apariencia)',
   },
+  de: {
+    roseDesc: 'Rosa Akzent, weich gerundete Schaltflächen',
+    oceanDesc: 'Blauer Akzent, pillenförmige Schaltflächen',
+    forestDesc: 'Grüner Akzent, eckige Schaltflächen',
+    sunsetDesc: 'Oranger Akzent, kräftige Schaltflächen',
+    monoDesc: 'Graphitfarbener Akzent, scharfe rechte Winkel',
+    indigoDesc: 'Indigo-Akzent, klare rechteckige Schaltflächen',
+    crimsonDesc: 'Karminroter Akzent, scharfe Ecken',
+    mintDesc: 'Türkiser Akzent, große, sehr weiche Rundungen',
+    grapeDesc: 'Violetter Akzent, pillenförmige Schaltflächen und klare Karten',
+    terminalDesc: 'Hacker-Terminal: Festbreitenschrift, phosphorgrüne Schaltflächen',
+    custom: 'Benutzerdefiniert',
+    customDesc: 'Eigene Farbe und Ecken (Projekteinstellungen → Darstellung)',
+  },
 }
 
 export default themes

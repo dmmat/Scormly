@@ -184,6 +184,51 @@ const assessment: LocaleTable = {
     blankN: 'Hueco {n}',
     correctAnswer: 'Respuesta: {a}',
   },
+  de: {
+    // Ordering — editor
+    modeSequence: 'In Reihenfolge bringen',
+    modeCategories: 'In Kategorien einordnen',
+    promptLabel: 'Aufgabe',
+    promptPlaceholder: 'Anweisung für die Lernenden …',
+    itemsSequence: 'Elemente in der richtigen Reihenfolge',
+    itemsSequenceHelp: 'Die Lernenden sehen sie gemischt und bringen sie in diese Reihenfolge zurück.',
+    itemsCategories: 'Elemente',
+    itemPlaceholder: 'Text des Elements',
+    addItem: '+ Element',
+    removeItem: 'Element entfernen',
+    moveUp: 'Nach oben',
+    moveDown: 'Nach unten',
+    categoriesLabel: 'Kategorien',
+    categoryPlaceholder: 'Name der Kategorie',
+    addCategory: '+ Kategorie',
+    removeCategory: 'Kategorie entfernen',
+    itemCategory: 'Richtige Kategorie',
+    noCategory: '— Kategorie —',
+
+    // Ordering — learner
+    sequenceHint: 'Ziehen Sie die Elemente oder verwenden Sie die Pfeile, um sie in die richtige Reihenfolge zu bringen.',
+    categoriesHint: 'Ziehen Sie jedes Element in eine Kategorie oder wählen Sie eine aus der Liste.',
+    unsorted: 'Noch nicht einsortiert',
+    chooseCategory: 'Kategorie wählen',
+    correctPosition: 'Richtige Position: {n}',
+    correctCategory: 'Richtig: {c}',
+    dragItem: 'Zum Umsortieren ziehen',
+
+    // Fill in the blanks — editor
+    textLabel: 'Text mit Lücken',
+    textPlaceholder: 'Die Hauptstadt von Frankreich ist [Paris].',
+    textHelp: 'Setzen Sie jede Antwort in eckige Klammern: [Paris]. Trennen Sie weitere akzeptierte Antworten mit |, z. B. [Paris|Paname] – die erste ist die richtige Antwort.',
+    fbModeType: 'Antwort eintippen',
+    fbModeSelect: 'Aus einer Liste wählen',
+    caseSensitive: 'Groß-/Kleinschreibung beachten',
+    caseSensitiveHelp: 'Aus: „paris“ zählt auch als „Paris“. Gilt für eingetippte Antworten.',
+    blanksCount: 'Lücken: {n}',
+    noBlanks: 'Noch keine Lücken – setzen Sie eine Antwort in [eckige Klammern].',
+
+    // Fill in the blanks — learner
+    blankN: 'Lücke {n}',
+    correctAnswer: 'Antwort: {a}',
+  },
 }
 
 export default assessment

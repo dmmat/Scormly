@@ -178,6 +178,50 @@ const newblocks: LocaleTable = {
     quotePlaceholder: 'Texto de la cita',
     authorPlaceholder: 'Autor (opcional)',
   },
+  de: {
+    uploadAudio: 'Audio hochladen',
+    replaceAudio: 'Audio ersetzen',
+    unsupportedAudio: 'Nicht unterstütztes Audioformat. Verwenden Sie MP3, OGG oder WAV.',
+
+    embedUrlPlaceholder: 'URL einfügen (YouTube, Vimeo, …)',
+    embedTitlePlaceholder: 'Titel (optional)',
+    embedHint: 'Die URL eines Videos oder einer Seite einfügen, um sie einzubetten.',
+    embedInvalid: 'Geben Sie eine gültige https-URL ein.',
+
+    codePlaceholder: 'Ihr Code…',
+
+    htmlSourceCode: 'Code',
+    htmlSourceFile: 'Datei',
+    htmlSourceLabel: 'Quelle',
+    htmlCodeLabel: 'HTML, CSS und JavaScript',
+    htmlUpload: '.html oder .zip hochladen',
+    htmlReplace: 'Datei ersetzen',
+    htmlUploadHint: 'Eine einzelne Seite oder eine .zip-Datei einer Website mit index.html (Skripte, Stile und Bilder über relative Pfade).',
+    htmlUploading: 'Wird hochgeladen…',
+    htmlBadFormat: 'Wählen Sie eine .html-Datei oder eine .zip-Datei.',
+    htmlNoPage: 'Die .zip-Datei enthält keine .html-Seite.',
+    htmlEmpty: 'Schreiben Sie Code oder laden Sie eine Seite hoch, um sie hier anzuzeigen.',
+    htmlMissing: 'Die Seitendatei fehlt im Projekt.',
+    htmlTitleLabel: 'Titel (für Screenreader)',
+    htmlHeightLabel: 'Höhe',
+    htmlHeightAuto: 'An Inhalt anpassen',
+    htmlHeightPx: 'px',
+    htmlStyles: 'Kursstile',
+    htmlStylesHint: 'Die Seite erhält die Schriften und die Akzentfarbe des Kurses sowie die sc-*-Klassen (Schaltflächen, Karten, Felder…). Das eigene CSS der Seite hat weiterhin Vorrang.',
+    htmlCopyAi: 'Anweisungen für KI kopieren',
+    htmlCopied: 'Anweisungen kopiert – fügen Sie sie in Ihren KI-Assistenten ein und beschreiben Sie, was die Seite tun soll.',
+    htmlPreviewNote: 'Im Editor werden Importe zwischen ES-Modulen (import … from "./file.js") nicht geladen – im exportierten Kurs funktionieren sie.',
+    languagePlaceholder: 'Sprache (optional)',
+
+    addRow: 'Zeile hinzufügen',
+    addColumn: 'Spalte hinzufügen',
+    removeRow: 'Zeile entfernen',
+    removeColumn: 'Spalte entfernen',
+    headerRow: 'Kopfzeile',
+
+    quotePlaceholder: 'Zitattext',
+    authorPlaceholder: 'Autor (optional)',
+  },
 }
 
 export default newblocks

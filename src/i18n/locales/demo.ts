@@ -16,6 +16,9 @@ const demo: LocaleTable = {
   es: {
     chatReplay: 'Repetir',
   },
+  de: {
+    chatReplay: 'Wiederholen',
+  },
 }
 
 export default demo
