@@ -2,6 +2,7 @@ import type { Block, BlockBackground, Course, Lesson } from '../types/course'
 import { DEFAULT_COURSE_SETTINGS } from '../types/course'
 import { avatarArt, coverArt, flagSlide, inboxArt, reportButtonArt, textFile } from './sampleArt'
 import type { Language } from '../i18n/types'
+import { SAMPLE_ASSETS } from './sampleAssets'
 
 // Built-in sample course ("Spot the phish"), opened from the landing page and the
 // welcome screen so visitors can explore a complete course without creating a
@@ -449,6 +450,8 @@ export function makeSampleCourse(lang: Language): Course {
   const tr = (t: Text) => t[lang]
   const p = (t: Text) => `<p>${tr(t)}</p>`
 
+  const dilemma = { start: id('node'), bad: id('node'), check: id('node'), ask: id('node') }
+
   // ── Lesson 1: Welcome ─────────────────────────────────────────────────────
   const welcome: Lesson = {
     id: id('lesson'),
@@ -545,6 +548,78 @@ export function makeSampleCourse(lang: Language): Course {
         role: tr(L('Head of IT Security', 'Керівниця з ІТ-безпеки', 'Responsable de la sécurité informatique', 'Responsable de seguridad informática', 'Leiterin IT-Sicherheit')),
         image: avatarArt(tr(L('ML', 'МЛ', 'ML', 'ML', 'ML'))),
       }, 'muted'),
+      block('heading', { level: 2, text: tr(L('Your first dilemma', 'Ваша перша дилема', 'Votre premier dilemme', 'Tu primer dilema', 'Ihr erstes Dilemma')) }),
+      block('paragraph', {
+        html: p(L(
+          'Meet Ksenia from HR. Choose what you would do.',
+          'Знайомтеся: Ксюша з HR. Оберіть, як би ви вчинили.',
+          'Faites la connaissance de Ksenia, des RH. Choisissez ce que vous feriez.',
+          'Te presento a Ksenia, de RR. HH. Elige qué harías.',
+          'Das ist Ksenia aus dem HR. Wählen Sie, was Sie tun würden.',
+        )),
+      }),
+      block('scenario', {
+        characterImages: {},
+        sceneImages: SAMPLE_ASSETS.ksiuScene,
+        background: SAMPLE_ASSETS.background,
+        characterName: tr(L('Ksenia, HR', 'Ксюша, HR', 'Ksenia, RH', 'Ksenia, RR. HH.', 'Ksenia, HR')),
+        layout: 'scene',
+        startNodeId: dilemma.start,
+        nodes: [
+          {
+            id: dilemma.start,
+            emotion: 'neutral',
+            text: tr(L(
+              'Welcome aboard! One question before we begin: a “colleague” emails you a link and asks you to log in to a new portal today. What do you do?',
+              'Вітаю в команді! Одне запитання перед початком: «колега» надсилає вам посилання й просить сьогодні увійти до нового порталу. Що ви робите?',
+              'Bienvenue à bord ! Une question avant de commencer : un « collègue » vous envoie un lien et vous demande de vous connecter aujourd’hui à un nouveau portail. Que faites-vous ?',
+              '¡Bienvenido a bordo! Una pregunta antes de empezar: un “compañero” te envía un enlace y te pide que hoy inicies sesión en un portal nuevo. ¿Qué haces?',
+              'Willkommen an Bord! Eine Frage vorab: Ein „Kollege“ schickt Ihnen einen Link und bittet Sie, sich heute in einem neuen Portal anzumelden. Was tun Sie?',
+            )),
+            choices: [
+              { id: id('choice'), text: tr(L('Click the link and log in, it’s probably fine', 'Перейти за посиланням і увійти, мабуть, усе гаразд', 'Cliquer sur le lien et me connecter, ça doit être bon', 'Hacer clic en el enlace e iniciar sesión, seguro que está bien', 'Auf den Link klicken und anmelden, wird schon passen')), nextNodeId: dilemma.bad },
+              { id: id('choice'), text: tr(L('Check the sender’s address and the link first', 'Спершу перевірити адресу відправника й посилання', 'Vérifier d’abord l’adresse de l’expéditeur et le lien', 'Comprobar primero la dirección del remitente y el enlace', 'Zuerst Absenderadresse und Link prüfen')), nextNodeId: dilemma.check },
+              { id: id('choice'), text: tr(L('Ask the colleague on another channel', 'Запитати колегу в іншому каналі', 'Demander au collègue par un autre canal', 'Preguntar al compañero por otro canal', 'Den Kollegen über einen anderen Kanal fragen')), nextNodeId: dilemma.ask },
+            ],
+          },
+          {
+            id: dilemma.bad,
+            emotion: 'concerned',
+            text: tr(L(
+              'Careful! Unexpected links are the classic way attackers collect passwords. This course shows how to spot them.',
+              'Обережно! Несподівані посилання — класичний спосіб викрасти паролі. Цей курс покаже, як їх розпізнавати.',
+              'Attention ! Les liens inattendus sont le moyen classique de voler des mots de passe. Ce cours vous apprend à les repérer.',
+              '¡Cuidado! Los enlaces inesperados son la forma clásica de robar contraseñas. Este curso te enseña a detectarlos.',
+              'Vorsicht! Unerwartete Links sind der klassische Weg, Passwörter zu stehlen. Dieser Kurs zeigt, wie man sie erkennt.',
+            )),
+            choices: [],
+          },
+          {
+            id: dilemma.check,
+            emotion: 'happy',
+            text: tr(L(
+              'Exactly! Checking the sender and the link before you click is the first habit this course builds.',
+              'Саме так! Перевірити відправника й посилання перед кліком — перша звичка, яку формує цей курс.',
+              'Exactement ! Vérifier l’expéditeur et le lien avant de cliquer est la première habitude que ce cours construit.',
+              '¡Exacto! Comprobar el remitente y el enlace antes de hacer clic es el primer hábito que construye este curso.',
+              'Genau! Absender und Link zu prüfen, bevor man klickt, ist die erste Gewohnheit, die dieser Kurs aufbaut.',
+            )),
+            choices: [],
+          },
+          {
+            id: dilemma.ask,
+            emotion: 'happy',
+            text: tr(L(
+              'Great instinct! Confirming through another channel is the safest move.',
+              'Чудова інтуїція! Підтвердити в іншому каналі — найбезпечніший крок.',
+              'Bon réflexe ! Confirmer par un autre canal est la démarche la plus sûre.',
+              '¡Buen instinto! Confirmarlo por otro canal es la jugada más segura.',
+              'Guter Instinkt! Über einen anderen Kanal nachzufragen ist der sicherste Weg.',
+            )),
+            choices: [],
+          },
+        ],
+      }),
       block('courseOutline', { title: tr(L('Course outline', 'Зміст курсу', 'Sommaire du cours', 'Índice del curso', 'Kursübersicht')), numbered: true }),
     ],
   }
@@ -906,8 +981,9 @@ export function makeSampleCourse(lang: Language): Course {
         )),
       }),
       block('scenario', {
-        characterImages: {},
-        characterName: tr(L('Alex, IT support', 'Олекс, ІТ-підтримка', 'Alex, support informatique', 'Alex, soporte informático', 'Alex, IT-Support')),
+        characterImages: SAMPLE_ASSETS.dmytroBust,
+        userAvatar: SAMPLE_ASSETS.learner,
+        characterName: tr(L('Dmytro, IT support', 'Дмитро, ІТ-підтримка', 'Dmytro, support informatique', 'Dmytro, soporte informático', 'Dmytro, IT-Support')),
         layout: 'chat',
         startNodeId: n.start,
         nodes: [

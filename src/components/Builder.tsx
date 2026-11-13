@@ -43,8 +43,7 @@ export default function Builder() {
   const { t } = useT('common')
   const skipped = useCourseStore((s) => s.tabOnly)
   const openSample = () => {
-    useCourseStore.getState().loadSampleCourse(lang)
-    useCourseStore.getState().setTabOnly(true)
+    void useCourseStore.getState().loadSampleCourse(lang).then(() => useCourseStore.getState().setTabOnly(true))
   }
 
   // /demo (from the landing page) opens the sample course directly, unless a

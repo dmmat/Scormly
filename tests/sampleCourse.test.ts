@@ -62,3 +62,33 @@ describe('sample course', () => {
     expect(new Set(ids).size).toBe(ids.length)
   })
 })
+
+describe('sample course pictures', () => {
+  test('every picture it uses has a source in the library and is referenced', async () => {
+    const { existsSync } = await import('node:fs')
+    const { SAMPLE_ASSET_SOURCES } = await import('../src/lib/sampleAssets')
+    for (const source of Object.values(SAMPLE_ASSET_SOURCES)) {
+      expect(existsSync(`public/library/${source}`), source).toBe(true)
+    }
+    const json = JSON.stringify(makeSampleCourse('en'))
+    for (const path of Object.keys(SAMPLE_ASSET_SOURCES)) expect(json, path).toContain(path)
+    // The scene and the chat: a library character, a background, a learner avatar.
+    const scenarios = makeSampleCourse('en').lessons.flatMap((l) => l.blocks).filter((b) => b.type === 'scenario')
+    expect(scenarios.map((b) => b.type === 'scenario' && b.data.layout)).toEqual(['scene', 'chat'])
+  })
+})
+
+describe('sample course export', () => {
+  test('a SCORM package carries the library pictures the sample uses', async () => {
+    const JSZip = (await import('jszip')).default
+    const { putMemoryAsset, clearMemoryAssets } = await import('../src/lib/assets')
+    const { SAMPLE_ASSET_SOURCES } = await import('../src/lib/sampleAssets')
+    const { addAssets } = await import('../src/export/packageCommon')
+    clearMemoryAssets()
+    for (const path of Object.keys(SAMPLE_ASSET_SOURCES)) putMemoryAsset(path, new Blob(['x'], { type: 'image/webp' }))
+    const zip = new JSZip()
+    const added = await addAssets(zip, null, makeSampleCourse('de'))
+    expect([...added].sort()).toEqual(Object.keys(SAMPLE_ASSET_SOURCES).sort())
+    clearMemoryAssets()
+  })
+})
