@@ -419,7 +419,7 @@ export const BLOCK_REGISTRY: { [T in BlockType]: BlockMeta<T> } = {
   scenario: {
     type: 'scenario',
     category: 'interactive',
-    variants: [{ id: 'classic' }, { id: 'chat', data: { layout: 'chat' } }],
+    variants: [{ id: 'classic' }, { id: 'chat', data: { layout: 'chat' } }, { id: 'scene', data: { layout: 'scene' } }],
     create: () => {
       const startId = uid('node')
       return {

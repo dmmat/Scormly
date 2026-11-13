@@ -1,4 +1,4 @@
-import type { ChangeEvent } from 'react'
+import { useState, type ChangeEvent } from 'react'
 import type { BlockComponentProps } from '../types'
 import type {
   BlockOfType,
@@ -11,6 +11,12 @@ import { uid } from '../../lib/id'
 import { useT, translate } from '../../i18n/I18nProvider'
 import { saveAsset, toastUploadError } from '../../lib/assets'
 import { useAssetUrl } from '../../hooks/useAssetUrl'
+import { useLang } from '../../i18n/I18nProvider'
+import { importAvatar, importBackground, importCharacter, loadLibrary } from '../../lib/library'
+import LibraryPickerDialog from '../../components/scenario/LibraryPickerDialog'
+import ScenarioPreview from '../../preview/components/ScenarioPreview'
+import ScenarioWizard from '../../components/scenario/ScenarioWizard'
+import type { LibraryKind } from '../../components/scenario/LibraryGrid'
 
 const IMAGE_ACCEPT = 'image/png,image/jpeg,image/webp,image/gif,image/svg+xml'
 
@@ -28,7 +34,10 @@ export default function ScenarioBlock({
 }: BlockComponentProps<BlockOfType<'scenario'>>) {
   const update = useCourseStore((s) => s.updateBlockData)
   const { t } = useT('scenario')
-  const { characterName, characterImages, startNodeId, nodes, layout = 'classic', userAvatar } = block.data
+  const { lang } = useLang()
+  const [picker, setPicker] = useState<LibraryKind | null>(null)
+  const [wizard, setWizard] = useState(false)
+  const { characterName, characterImages, startNodeId, nodes, layout = 'classic', userAvatar, sceneImages, background } = block.data
 
   // Short label for a node by its id (for transition dropdowns).
   function nodeLabel(id: string | null): string {
@@ -68,6 +77,52 @@ export default function ScenarioBlock({
       })
     } catch (err) {
       toastUploadError(err)
+    }
+  }
+
+  async function setScenePose(
+    emotion: ScenarioEmotion,
+    e: ChangeEvent<HTMLInputElement>,
+  ) {
+    const file = e.target.files?.[0]
+    e.target.value = ''
+    if (!file) return
+    try {
+      const src = await saveAsset(file, 'image')
+      update(lessonId, block.id, { sceneImages: { ...sceneImages, [emotion]: src } })
+    } catch (err) {
+      toastUploadError(err)
+    }
+  }
+
+  async function setBackground(e: ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    e.target.value = ''
+    if (!file) return
+    try {
+      const src = await saveAsset(file, 'image')
+      update(lessonId, block.id, { background: src })
+    } catch (err) {
+      toastUploadError(err)
+    }
+  }
+
+  // Library picks copy the pictures into the project (one undo step each).
+  async function pickFromLibrary(id: string) {
+    if (picker === 'character') {
+      const c = (await loadLibrary()).characters.find((x) => x.id === id)
+      if (!c) return
+      const images = await importCharacter(c, layout === 'scene')
+      update(lessonId, block.id, {
+        ...(layout === 'scene' ? { sceneImages: images } : { characterImages: images }),
+        ...(characterName.trim() === '' || characterName === translate('content', 'scenarioCharacter')
+          ? { characterName: c.name[lang] }
+          : {}),
+      })
+    } else if (picker === 'avatar') {
+      update(lessonId, block.id, { userAvatar: await importAvatar(id) })
+    } else if (picker === 'background') {
+      update(lessonId, block.id, { background: await importBackground(id) })
     }
   }
 
@@ -152,42 +207,21 @@ export default function ScenarioBlock({
     })
   }
 
-  // ── Compact preview (when not selected) ──
+  // ── Learner view (when not selected): the same component as the preview ──
   if (!selected) {
-    const start = nodes.find((n) => n.id === startNodeId) ?? nodes[0]
-    return (
-      <div className="interactive-surface border border-gray-200 bg-white p-4">
-        {start ? (
-          <div className="space-y-3">
-            <p className="text-sm font-semibold text-gray-700">
-              {characterName || t('characterDefault')}
-            </p>
-            <p className="leading-relaxed text-gray-800">
-              {start.text || t('characterLine')}
-            </p>
-            <div className="flex flex-col gap-2">
-              {start.choices.map((c) => (
-                <button
-                  key={c.id}
-                  type="button"
-                  className="btn-secondary text-left"
-                >
-                  {c.text || t('choiceDefault')}
-                </button>
-              ))}
-            </div>
-          </div>
-        ) : (
-          <p className="text-sm text-gray-400">{t('emptyScenario')}</p>
-        )}
-      </div>
-    )
+    return nodes.length ? <ScenarioPreview block={block} /> : <p className="text-sm text-gray-400">{t('emptyScenario')}</p>
   }
 
   // ── Editor ──
+  const images = layout === 'scene' ? (sceneImages ?? {}) : characterImages
   return (
     <div className="space-y-6 rounded-lg border border-gray-200 bg-white p-4">
+      {wizard && <ScenarioWizard block={block} lessonId={lessonId} onClose={() => setWizard(false)} />}
+      {picker && <LibraryPickerDialog kind={picker} onPick={pickFromLibrary} onClose={() => setPicker(null)} />}
       <div className="space-y-4">
+        <button type="button" onClick={() => setWizard(true)} className="btn-secondary text-sm">
+          ✨ {t('wizOpen')}
+        </button>
         <label className="block">
           <span className="mb-1 block text-sm font-medium text-gray-700">
             {t('characterName')}
@@ -206,7 +240,7 @@ export default function ScenarioBlock({
             {t('layout')}
           </span>
           <div className="flex flex-wrap gap-2">
-            {(['classic', 'chat'] as const).map((value) => (
+            {(['classic', 'chat', 'scene'] as const).map((value) => (
               <button
                 key={value}
                 type="button"
@@ -217,7 +251,7 @@ export default function ScenarioBlock({
                     : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                 }`}
               >
-                {t(value === 'classic' ? 'layoutClassic' : 'layoutChat')}
+                {t(value === 'classic' ? 'layoutClassic' : value === 'chat' ? 'layoutChat' : 'layoutScene')}
               </button>
             ))}
           </div>
@@ -225,8 +259,11 @@ export default function ScenarioBlock({
 
         <div>
           <span className="mb-1 block text-xs font-medium text-gray-500">
-            {t('characterImages')}
+            {t(layout === 'scene' ? 'sceneImages' : 'characterImages')}
           </span>
+          <button type="button" onClick={() => setPicker('character')} className="btn-secondary mb-2 text-sm">
+            {t('libraryChoose')}
+          </button>
           <div className="flex flex-wrap gap-3">
             {EMOTIONS.map(({ value, emoji, labelKey }) => (
               <label
@@ -235,13 +272,11 @@ export default function ScenarioBlock({
               >
                 <span aria-hidden>{emoji}</span>
                 <span>{t(labelKey)}</span>
-                {characterImages[value] && (
-                  <CharacterThumb src={characterImages[value]!} />
-                )}
+                {images[value] && <CharacterThumb src={images[value]!} />}
                 <input
                   type="file"
                   accept={IMAGE_ACCEPT}
-                  onChange={(e) => setCharacterImage(value, e)}
+                  onChange={(e) => (layout === 'scene' ? setScenePose(value, e) : setCharacterImage(value, e))}
                   className="max-w-[8rem] text-xs"
                 />
               </label>
@@ -249,11 +284,45 @@ export default function ScenarioBlock({
           </div>
         </div>
 
+        {layout === 'scene' && (
+          <div>
+            <span className="mb-1 block text-xs font-medium text-gray-500">
+              {t('background')}
+            </span>
+            <div className="flex flex-wrap items-center gap-2">
+              <button type="button" onClick={() => setPicker('background')} className="btn-secondary text-sm">
+                {t('libraryChoose')}
+              </button>
+              <label className="flex w-fit items-center gap-2 rounded-md border border-gray-200 px-3 py-2 text-xs text-gray-600">
+                {background && <CharacterThumb src={background} />}
+                <input
+                  type="file"
+                  accept={IMAGE_ACCEPT}
+                  onChange={setBackground}
+                  className="max-w-[8rem] text-xs"
+                />
+              </label>
+              {background && (
+                <button
+                  type="button"
+                  onClick={() => update(lessonId, block.id, { background: undefined })}
+                  className="text-xs text-gray-500 underline hover:text-gray-700"
+                >
+                  {t('removeBackground')}
+                </button>
+              )}
+            </div>
+          </div>
+        )}
+
         {layout === 'chat' && (
           <div>
             <span className="mb-1 block text-xs font-medium text-gray-500">
               {t('userAvatar')}
             </span>
+            <button type="button" onClick={() => setPicker('avatar')} className="btn-secondary mb-2 text-sm">
+              {t('libraryChoose')}
+            </button>
             <label className="flex w-fit items-center gap-2 rounded-md border border-gray-200 px-3 py-2 text-xs text-gray-600">
               {userAvatar && <CharacterThumb src={userAvatar} />}
               <input
