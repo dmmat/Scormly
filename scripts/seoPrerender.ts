@@ -5,6 +5,7 @@ import landing from '../src/i18n/locales/landing.ts'
 import { RELEASES } from '../src/help/releaseNotes.ts'
 import { CONTACT_EMAIL } from '../src/lib/links.ts'
 import { DEFAULT_LANGUAGE, LANGUAGES, type Language } from '../src/i18n/types.ts'
+import { LD } from './seoLd.ts'
 import pkg from '../package.json' with { type: 'json' }
 
 // The site is a client-rendered SPA, so the served index.html used to contain an
@@ -148,6 +149,15 @@ export function localizePage(html: string, lang: Language): string {
   out = swap(out, `<meta property="og:url" content="${SITE}" />`, `<meta property="og:url" content="${pageUrl(lang)}" />`)
   out = swap(out, /<meta property="og:locale" [^>]*>(\s*<meta property="og:locale:alternate" [^>]*>)*/, locales)
   out = swap(out, faqJsonLd(DEFAULT_LANGUAGE), faqJsonLd(lang))
+  // Structured data and the image alt, which the head repeats in English.
+  const enLd = LD[DEFAULT_LANGUAGE]
+  const ld = LD[lang]
+  out = swap(out, enLd.description, ld.description)
+  out = swap(out, enLd.siteDescription, ld.siteDescription)
+  out = swap(out, esc(enLd.imageAlt), esc(ld.imageAlt))
+  enLd.features.forEach((feature, i) => {
+    out = swap(out, feature, ld.features[i])
+  })
   return swap(out, staticLanding(DEFAULT_LANGUAGE), staticLanding(lang))
 }
 
