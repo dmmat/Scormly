@@ -550,6 +550,16 @@
 .sc-intro-arrow { color: #9ca3af; transition: transform 0.25s ease, color 0.25s ease; }
 .sc-intro-outline button:hover:not(:disabled) .sc-intro-arrow { transform: translateX(4px); color: var(--color-brand); }
 
+/* ── Unit headings (lesson groups) ────────────────────────────────────────
+   Above each unit's lessons in the cover outline, the course outline block
+   and the lesson menu (React: preview/GroupedLessons, player: groupedList). */
+.sc-unit { list-style: none; }
+.sc-unit-name { display: block; font-weight: 700; color: #111827; }
+/* Padding is per list (unlayered here, it would beat Tailwind's utilities). */
+.sc-intro-outline .sc-unit-head { padding: 2rem 0.25rem 0.375rem; border-bottom: 1px solid #e5e7eb; }
+.sc-intro-outline .sc-unit-name { font-size: 1.2rem; }
+.sc-intro-outline ol ol, .sc-intro-outline ol:has(> .sc-unit) { border-top: 0; }
+
 /* ── Process diagram ────────────────────────────────────────────────────── */
 /* Layouts adapt to the block's own width (container queries), so the editor
    canvas, the preview and the player agree; narrow widths stack vertically. */

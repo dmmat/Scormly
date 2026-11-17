@@ -3,6 +3,8 @@ import type { Course } from '../types/course'
 import { DEFAULT_INTRO } from '../types/course'
 import { useAssetUrl } from '../hooks/useAssetUrl'
 import { useT } from '../i18n/I18nProvider'
+import GroupedLessons from './GroupedLessons'
+import { coverNumber } from '../lib/units'
 
 // Learner-facing course cover page (Course.intro). Mirrors renderIntro() in the
 // SCORM player; the editor's IntroEditor uses the same sc-intro-* markup.
@@ -52,17 +54,17 @@ export default function IntroView({
       {children && <div className="sc-intro-blocks space-y-7">{children}</div>}
       {intro.showOutline !== false && lessons.length > 0 && (
         <nav className="sc-intro-outline" aria-label={t('lessons')}>
-          <ol>
-            {lessons.map((l, i) => (
+          <GroupedLessons course={course}>
+            {({ lesson: l, index: i }) => (
               <li key={l.id}>
                 <button type="button" onClick={() => onOpenLesson(i)}>
-                  <span className="sc-intro-num">{String(i + 1).padStart(2, '0')}</span>
+                  <span className="sc-intro-num">{coverNumber(course, i)}</span>
                   <span className="sc-intro-ltitle">{l.title}</span>
                   <span className="sc-intro-arrow" aria-hidden>→</span>
                 </button>
               </li>
-            ))}
-          </ol>
+            )}
+          </GroupedLessons>
         </nav>
       )}
     </div>

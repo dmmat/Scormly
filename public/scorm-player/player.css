@@ -130,11 +130,14 @@ hr.divider { border: 0; border-top: 2px solid #d1d5db; margin: 0.5rem 0; }
 .outline-title { margin: 0; padding: 0.625rem 1rem; border-bottom: 1px solid #e5e7eb; background: #f9fafb; font-weight: 600; color: #374151; }
 .outline-list { list-style: none; margin: 0; padding: 0; }
 .outline-item { display: flex; align-items: center; gap: 0.75rem; width: 100%; padding: 0.625rem 1rem; border: 0; border-top: 1px solid #f3f4f6; background: transparent; text-align: left; font: inherit; color: #374151; cursor: pointer; }
-.outline-list li:first-child .outline-item { border-top: 0; }
+.outline-list > li:first-child > .outline-item { border-top: 0; }
 .outline-item:hover { background: color-mix(in srgb, var(--brand) 6%, transparent); }
-.outline-num { display: flex; align-items: center; justify-content: center; width: 1.5rem; height: 1.5rem; flex-shrink: 0; border-radius: 9999px; background: color-mix(in srgb, var(--brand) 12%, transparent); color: var(--brand-dark); font-size: 0.75rem; font-weight: 600; }
+.outline-num { display: flex; align-items: center; justify-content: center; min-width: 1.5rem; height: 1.5rem; padding: 0 0.3rem; box-sizing: border-box; flex-shrink: 0; border-radius: 9999px; background: color-mix(in srgb, var(--brand) 12%, transparent); color: var(--brand-dark); font-size: 0.75rem; font-weight: 600; }
 .outline-label { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .outline-arrow { flex-shrink: 0; color: #d1d5db; }
+.outline .sc-unit-head { padding: 0.75rem 1rem 0.375rem; border-top: 1px solid #e5e7eb; background: #fafafa; }
+.outline-list > .sc-unit:first-child > .sc-unit-head { border-top: 0; }
+.outline .sc-unit-name { font-size: 0.95rem; }
 
 /* Tabs */
 .tabs { border: 1px solid #e5e7eb; border-radius: var(--radius-surface); background: #fff; overflow: hidden; }
@@ -447,12 +450,16 @@ html[data-a11y-contrast][data-theme="terminal"] .btn:not(.btn-outline) { box-sha
 .menu-row.is-current { background: color-mix(in srgb, var(--brand) 10%, #fff); color: var(--brand-dark); font-weight: 650; }
 .menu-dot {
   display: flex; flex-shrink: 0; align-items: center; justify-content: center;
-  width: 1.6rem; height: 1.6rem; border-radius: 9999px; background: #f0f0f3; color: #6b7280;
+  min-width: 1.6rem; height: 1.6rem; padding: 0 0.3rem; box-sizing: border-box; border-radius: 9999px; background: #f0f0f3; color: #6b7280;
   font-size: 0.75rem; font-weight: 700;
 }
 .menu-row.is-current .menu-dot { background: var(--brand); color: #fff; }
 .menu-dot.is-done { background: #10b981; color: #fff; }
 .menu-label { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* Unit headings in the menu (look: .sc-unit-* in the shared block design). */
+.menu-list .menu-list { padding: 0; }
+.menu-list .sc-unit-head { padding: 0.9rem 0.75rem 0.3rem; }
+.menu-list .sc-unit-name { font-size: 0.92rem; }
 
 .next-card {
   display: flex; align-items: center; justify-content: space-between; gap: 1rem;
@@ -1050,6 +1057,16 @@ html[data-a11y-contrast] .sc-intro-split .sc-intro-text, html[data-a11y-contrast
 .sc-intro-ltitle { flex: 1; font-size: 1.05rem; font-weight: 600; }
 .sc-intro-arrow { color: #9ca3af; transition: transform 0.25s ease, color 0.25s ease; }
 .sc-intro-outline button:hover:not(:disabled) .sc-intro-arrow { transform: translateX(4px); color: var(--brand); }
+
+/* ── Unit headings (lesson groups) ────────────────────────────────────────
+   Above each unit's lessons in the cover outline, the course outline block
+   and the lesson menu (React: preview/GroupedLessons, player: groupedList). */
+.sc-unit { list-style: none; }
+.sc-unit-name { display: block; font-weight: 700; color: #111827; }
+/* Padding is per list (unlayered here, it would beat Tailwind's utilities). */
+.sc-intro-outline .sc-unit-head { padding: 2rem 0.25rem 0.375rem; border-bottom: 1px solid #e5e7eb; }
+.sc-intro-outline .sc-unit-name { font-size: 1.2rem; }
+.sc-intro-outline ol ol, .sc-intro-outline ol:has(> .sc-unit) { border-top: 0; }
 
 /* ── Process diagram ────────────────────────────────────────────────────── */
 /* Layouts adapt to the block's own width (container queries), so the editor

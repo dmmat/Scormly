@@ -26,7 +26,9 @@ import {
   type NavigationMode,
   type Typography,
   type PlayerLanguage,
+  type UnitNumbering,
 } from '../../types/course'
+import { hasUnits, unitNumbering } from '../../lib/units'
 
 const IMAGE_ACCEPT = 'image/png,image/jpeg,image/webp,image/gif,image/svg+xml'
 
@@ -426,9 +428,11 @@ function AppearancePanel() {
 }
 
 function LearnerPanel() {
-  const stored = useCourseStore((s) => s.course.settings)
+  const course = useCourseStore((s) => s.course)
+  const stored = course.settings
   const updateSettings = useCourseStore((s) => s.updateSettings)
   const { t } = useT('settings')
+  const { t: td } = useT('design')
   const settings = stored ?? DEFAULT_COURSE_SETTINGS
 
   return (
@@ -465,6 +469,34 @@ function LearnerPanel() {
         label={t('showProgressLabel')}
         help={t('showProgressHelp')}
       />
+
+      {hasUnits(course) && (
+        <>
+          <Group label={t('unitNumbering')} help={t('unitNumberingHelp')} radio>
+            <RadioCards<UnitNumbering>
+              name="settings-unit-numbering"
+              value={unitNumbering(course)}
+              onChange={(unitNumbering) => updateSettings({ unitNumbering })}
+              options={[
+                ['unit', t('unitNumUnit'), t('unitNumUnitHelp')],
+                ['dotted', t('unitNumDotted'), t('unitNumDottedHelp')],
+                ['none', t('unitNumNone'), t('unitNumNoneHelp')],
+              ]}
+            />
+          </Group>
+
+          <Field label={t('unitLabel')} htmlFor="settings-unit-label" help={t('unitLabelHelp')}>
+            <input
+              id="settings-unit-label"
+              type="text"
+              value={settings.unitLabel ?? ''}
+              placeholder={td('unitWord')}
+              onChange={(e) => updateSettings({ unitLabel: e.target.value }, 'unit-label')}
+              className={`${inputClass} sm:w-auto sm:min-w-80`}
+            />
+          </Field>
+        </>
+      )}
 
       <Field label={t('finishMessage')} htmlFor="settings-finish-message" help={t('finishMessageHelp')}>
         <textarea

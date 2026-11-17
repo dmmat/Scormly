@@ -15,6 +15,9 @@ import { CONTENT_WIDTH_PX, DEFAULT_CONTENT_WIDTH, isTaskBlock, type BlockAnimati
 import { useReviewStore } from '../../store/reviewStore'
 import ReviewPanel from '../review/ReviewPanel'
 import { CommentIcon, useOpenComments } from '../review/reviewUi'
+import { isPageBreak, pageOfBlock, splitPages } from '../../lib/lessonPages'
+import { lessonKicker, lessonNumber } from '../../lib/units'
+import GroupedLessons from '../../preview/GroupedLessons'
 
 // Full-screen, learner-facing preview of the course with lesson navigation.
 // Mirrors the SCORM player: optional cover page, lesson menu with progress,
@@ -50,6 +53,8 @@ export default function PreviewOverlay() {
     course.lessons.findIndex((l) => l.id === activeLessonId),
   )
   const [index, setIndex] = useState(startIndex)
+  // Page within the lesson (Continue blocks set to start a new page).
+  const [page, setPage] = useState(0)
   const [onIntro, setOnIntro] = useState(introEnabled && activeLessonId === INTRO_ID)
   const [finished, setFinished] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
@@ -64,6 +69,10 @@ export default function PreviewOverlay() {
   // First block a Continue just revealed, brought into view after render.
   const [revealed, setRevealed] = useState<string | null>(null)
   const lesson = course.lessons[index]
+  const pages = splitPages(lesson?.blocks ?? [])
+  // The lesson may have been edited since: stay within its pages.
+  const pageIndex = Math.min(page, pages.length - 1)
+  const lastPage = pageIndex >= pages.length - 1
   const rootRef = useRef<HTMLDivElement>(null)
   const bodyRef = useRef<HTMLDivElement>(null)
   const mainRef = useRef<HTMLElement>(null)
@@ -88,18 +97,21 @@ export default function PreviewOverlay() {
     }
     headingRef.current?.focus({ preventScroll: true })
     const current = course.lessons[index]
+    const lessonText = current
+      ? ta('lessonAnnounce', { n: index + 1, total: course.lessons.length, title: current.title })
+      : ''
     setAnnouncement(
       finished
         ? t('courseComplete')
         : onIntro
           ? course.title
-          : current
-            ? ta('lessonAnnounce', { n: index + 1, total: course.lessons.length, title: current.title })
-            : '',
+          : pages.length > 1
+            ? `${lessonText}. ${td('pageOf', { n: pageIndex + 1, total: pages.length })}`
+            : lessonText,
     )
-    // Only lesson changes should move focus, not edits to the course.
+    // Only lesson and page changes should move focus, not edits to the course.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [index, finished, onIntro])
+  }, [index, finished, onIntro, pageIndex])
 
   // Esc closes the lesson menu first, then the comments, then the preview;
   // focus moves into it (so keys don't land in the editor field underneath)
@@ -110,18 +122,25 @@ export default function PreviewOverlay() {
     { focusContainer: true },
   )
   const total = course.lessons.length
-  const isLast = index >= total - 1
+  const isLast = index >= total - 1 && lastPage
   const progress = total ? Math.round((Object.keys(visited).length / total) * 100) : 0
 
-  // Hide blocks after a `continue` gate until it is clicked, then drop the gate
-  // itself — mirroring the SCORM player. A Continue at the very end is no gate:
-  // it leads on.
+  // Only the current page's blocks. Hide blocks after a `continue` gate until
+  // it is clicked, then drop the gate itself — mirroring the SCORM player. A
+  // Continue at the very end is no gate: it leads on; one ending a page opens
+  // the next page.
   const { visibleBlocks, gated } = (() => {
     const out: Block[] = []
-    const blocks = lesson?.blocks ?? []
+    const all = lesson?.blocks ?? []
+    const blocks = pages[pageIndex] ?? []
     for (let i = 0; i < blocks.length; i++) {
       const b = blocks[i]
-      const isGate = b.type === 'continue' && i < blocks.length - 1
+      const at = all.indexOf(b)
+      if (isPageBreak(all, at)) {
+        out.push(b)
+        return { visibleBlocks: out, gated: true }
+      }
+      const isGate = b.type === 'continue' && at < all.length - 1
       if (isGate && continued[b.id]) continue
       // An unknown type (a hand-edited project.json) renders nothing: no wrapper either.
       if (!(b.type in BLOCK_REGISTRY)) continue
@@ -140,8 +159,14 @@ export default function PreviewOverlay() {
     setFinished(false)
     setMenuOpen(false)
     setIndex(Math.min(total - 1, Math.max(0, i)))
+    setPage(0)
     setContinued({})
     setDone({})
+  }
+
+  function goPage(p: number) {
+    setDirection(p < pageIndex ? 'prev' : 'next')
+    setPage(p)
   }
 
   function goIntro() {
@@ -151,28 +176,46 @@ export default function PreviewOverlay() {
     setOnIntro(true)
   }
 
+  // Next page, else the next lesson (or the end). Like the header buttons
+  // elsewhere in the preview, it doesn't wait for restricted gates.
   function goNext() {
+    if (!lastPage) {
+      const pageBreak = pages[pageIndex][pages[pageIndex].length - 1]
+      setContinued((c) => ({ ...c, [pageBreak.id]: true }))
+      return goPage(pageIndex + 1)
+    }
     setDirection('next')
-    if (isLast) setFinished(true)
+    if (index >= total - 1) setFinished(true)
     else goTo(index + 1)
   }
 
+  // Previous page, else the previous lesson's last page (or the cover).
   function goPrev() {
+    if (pageIndex > 0) return goPage(pageIndex - 1)
     if (index === 0) {
       if (introEnabled) goIntro()
       return
     }
     setDirection('prev')
-    setIndex((i) => Math.max(0, i - 1))
+    const i = Math.max(0, index - 1)
+    setIndex(i)
+    setPage(splitPages(course.lessons[i]?.blocks ?? []).length - 1)
     setContinued({})
     setDone({})
   }
 
-  // A restricted Continue stays locked until every task above it is done.
+  // A restricted Continue stays locked until every task above it on its page
+  // is done; a page break also waits for the page's required videos (like the
+  // player).
   function continueLocked(block: Block): boolean {
-    if (block.type !== 'continue' || block.data.mode !== 'restricted' || !lesson) return false
-    const above = lesson.blocks.slice(0, lesson.blocks.indexOf(block))
-    return above.some((b) => isTaskBlock(b) && !done[b.id])
+    if (block.type !== 'continue' || !lesson) return false
+    const restricted = block.data.mode === 'restricted'
+    if (!restricted && !isPageBreak(lesson.blocks, lesson.blocks.indexOf(block))) return false
+    const onPage = pages[pageIndex] ?? []
+    const above = onPage.slice(0, onPage.indexOf(block))
+    return above.some((b) =>
+      restricted ? isTaskBlock(b) && !done[b.id] : b.type === 'video' && !!b.data.requireWatch && !done[b.id],
+    )
   }
 
   function handleContinue(blockId: string) {
@@ -180,6 +223,7 @@ export default function PreviewOverlay() {
     const at = blocks.findIndex((b) => b.id === blockId)
     if (at < 0 || at === blocks.length - 1) return goNext()
     setContinued((c) => ({ ...c, [blockId]: true }))
+    if (isPageBreak(blocks, at)) return goPage(pageIndex + 1)
     setRevealed(blocks[at + 1].id)
   }
 
@@ -205,6 +249,8 @@ export default function PreviewOverlay() {
       const i = course.lessons.findIndex((l) => l.id === pageId)
       if (i < 0) return
       if (onIntro || finished || i !== index) goTo(i)
+      // The lesson page that holds the block.
+      setPage(pageOfBlock(course.lessons[i].blocks, blockId))
     }
     // The panel covers the page on a phone: get out of the way.
     if (window.matchMedia('(max-width: 767px)').matches) setCommenting(false)
@@ -218,7 +264,14 @@ export default function PreviewOverlay() {
       : transition === 'slide'
         ? `lesson-enter-slide-${direction}`
         : 'lesson-enter-fade'
-  const screenKey = finished ? 'finished' : onIntro ? 'intro' : `lesson-${index}`
+  const screenKey = finished ? 'finished' : onIntro ? 'intro' : `lesson-${index}-${pageIndex}`
+  // "Unit 2 · Lesson 1" with units, else "Lesson n of N"; "· Page 2 of 3" on paged lessons.
+  const kicker = [
+    lessonKicker(course, index, td) ?? t('progress', { n: index + 1, total }),
+    pages.length > 1 ? td('pageOf', { n: pageIndex + 1, total: pages.length }) : '',
+  ]
+    .filter(Boolean)
+    .join(' · ')
 
   return (
     <div
@@ -300,7 +353,7 @@ export default function PreviewOverlay() {
               <button
                 type="button"
                 onClick={goPrev}
-                disabled={index === 0 && !introEnabled}
+                disabled={index === 0 && pageIndex === 0 && !introEnabled}
                 className="btn-secondary text-sm disabled:opacity-30"
               >
                 {t('prev')}
@@ -404,7 +457,7 @@ export default function PreviewOverlay() {
                 ) : lesson ? (
                   <>
                     <p className="mb-2 text-xs font-semibold uppercase tracking-[0.14em] text-brand-dark">
-                      {t('progress', { n: index + 1, total })}
+                      {kicker}
                     </p>
                     <h1
                       ref={headingRef}
@@ -607,24 +660,24 @@ function LessonMenu({
             <span className="text-xs font-medium tabular-nums text-gray-500">{t('progressPct', { n: progress })}</span>
           </div>
         </div>
-        <ol className="flex-1 overflow-y-auto p-2">
+        <div className="flex-1 overflow-y-auto p-2">
           {onPickIntro && (
-            <li>
-              <MenuRow active={onIntro} done={false} num="•" title={t('courseHome')} onClick={onPickIntro} />
-            </li>
+            <MenuRow active={onIntro} done={false} num="•" title={t('courseHome')} onClick={onPickIntro} />
           )}
-          {course.lessons.map((l, i) => (
-            <li key={l.id}>
-              <MenuRow
-                active={i === index}
-                done={!!visited[i] && i !== index}
-                num={String(i + 1)}
-                title={l.title}
-                onClick={() => onPick(i)}
-              />
-            </li>
-          ))}
-        </ol>
+          <GroupedLessons course={course} headClassName="px-3 pb-1.5 pt-4">
+            {({ lesson: l, index: i }) => (
+              <li key={l.id}>
+                <MenuRow
+                  active={i === index}
+                  done={!!visited[i] && i !== index}
+                  num={lessonNumber(course, i)}
+                  title={l.title}
+                  onClick={() => onPick(i)}
+                />
+              </li>
+            )}
+          </GroupedLessons>
+        </div>
       </nav>
     </>
   )
@@ -654,7 +707,7 @@ function MenuRow({
     >
       <span
         aria-hidden
-        className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-semibold ${
+        className={`flex h-6 min-w-6 px-1 shrink-0 items-center justify-center rounded-full text-xs font-semibold ${
           done ? 'bg-emerald-500 text-white' : active ? 'bg-brand text-white' : 'bg-gray-100 text-gray-500'
         }`}
       >

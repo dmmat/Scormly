@@ -20,6 +20,7 @@ import { preloadSampleAssets } from '../lib/sampleAssets'
 import { repairCourse, type RepairFix } from '../lib/repairCourse'
 import { useReviewStore } from './reviewStore'
 import { clearProjectKey } from '../lib/route'
+import * as units from '../lib/units'
 
 const HISTORY_LIMIT = 50
 
@@ -130,11 +131,29 @@ export interface CourseState {
   lastSavedAt: number | null
 
   // ── Lessons ──
-  addLesson: () => void
+  /** Adds a lesson at the end of `unitId` (null: among the lessons without a
+   *  unit); by default at the end of the course, i.e. in the last unit. */
+  addLesson: (unitId?: string | null) => void
   renameLesson: (lessonId: string, title: string) => void
   deleteLesson: (lessonId: string) => void
+  /** Moves a lesson to another index; with units it takes the unit of the
+   *  lesson it was dropped on. */
   moveLesson: (fromIndex: number, toIndex: number) => void
+  /** Drag and drop onto a lesson or a unit header (see lib/units dropLesson). */
+  dropLesson: (lessonId: string, over: { lessonId: string } | { unitId: string }) => void
+  /** Keyboard move one step, across unit edges (see lib/units moveLessonStep). */
+  moveLessonStep: (lessonId: string, dir: -1 | 1) => void
   setLessonStatus: (lessonId: string, status: LessonStatus) => void
+
+  // ── Units ──
+  /** Adds a unit at the end and returns its id. The first unit takes in the
+   *  lessons that exist so far. */
+  addUnit: () => string
+  renameUnit: (unitId: string, title: string) => void
+  /** Removes a unit; its lessons join the unit above (see lib/units). */
+  deleteUnit: (unitId: string) => void
+  moveUnit: (unitId: string, dir: -1 | 1) => void
+  setLessonUnit: (lessonId: string, unitId: string | null) => void
 
   // ── Blocks ──
   addBlock: (lessonId: string, type: BlockType, atIndex?: number) => void
@@ -372,7 +391,7 @@ export const useCourseStore = create<CourseState>((set, get) => {
       set(saveState === 'saved' ? { saveState, lastSavedAt: Date.now() } : { saveState }),
     lastSavedAt: null,
 
-    addLesson: () => {
+    addLesson: (unitId) => {
       const id = uid('lesson')
       mutate((c) => {
         c.lessons.push({
@@ -381,6 +400,8 @@ export const useCourseStore = create<CourseState>((set, get) => {
           status: 'draft',
           blocks: [],
         })
+        const target = unitId === undefined ? (c.units?.[c.units.length - 1]?.id ?? null) : unitId
+        if (units.hasUnits(c)) units.setLessonUnit(c, id, target)
       })
       set({ activeLessonId: id })
     },
@@ -404,9 +425,38 @@ export const useCourseStore = create<CourseState>((set, get) => {
 
     moveLesson: (fromIndex, toIndex) =>
       mutate((c) => {
-        const [moved] = c.lessons.splice(fromIndex, 1)
-        if (moved) c.lessons.splice(toIndex, 0, moved)
+        const moved = c.lessons[fromIndex]
+        const over = c.lessons[toIndex]
+        if (moved && over) units.dropLesson(c, moved.id, { lessonId: over.id })
       }),
+
+    dropLesson: (lessonId, over) => mutate((c) => units.dropLesson(c, lessonId, over)),
+
+    moveLessonStep: (lessonId, dir) => mutate((c) => units.moveLessonStep(c, lessonId, dir)),
+
+    addUnit: () => {
+      const id = uid('unit')
+      mutate((c) => {
+        const first = !units.hasUnits(c)
+        c.units = [...(c.units ?? []), { id, title: translate('content', 'unitN', { n: (c.units?.length ?? 0) + 1 }) }]
+        // Grouping starts with every lesson so far in the first unit.
+        if (first) for (const lesson of c.lessons) lesson.unitId = id
+        units.normalizeUnits(c)
+      })
+      return id
+    },
+
+    renameUnit: (unitId, title) =>
+      mutate((c) => {
+        const unit = c.units?.find((u) => u.id === unitId)
+        if (unit) unit.title = title
+      }, `unit-title-${unitId}`),
+
+    deleteUnit: (unitId) => mutate((c) => units.deleteUnit(c, unitId)),
+
+    moveUnit: (unitId, dir) => mutate((c) => units.moveUnit(c, unitId, dir)),
+
+    setLessonUnit: (lessonId, unitId) => mutate((c) => units.setLessonUnit(c, lessonId, unitId)),
 
     setLessonStatus: (lessonId, status) =>
       mutate((c) => {

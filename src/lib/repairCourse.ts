@@ -18,6 +18,7 @@ import { uid } from './id'
 import { translate } from '../i18n/I18nProvider'
 import { TABLES } from '../i18n/registry'
 import { toast } from '../store/toastStore'
+import { normalizeUnits } from './units'
 
 /** One repair; `key` is an i18n key in the `common` namespace. */
 export interface RepairFix {
@@ -149,6 +150,34 @@ class Repairer {
       }
     }
 
+    // Units: a list of { id, title }; lessons point at them with unitId.
+    const unitIds = new Set<string>()
+    if (c.units !== undefined) {
+      if (!Array.isArray(c.units)) {
+        delete c.units
+        this.fix('repairUnits')
+      } else {
+        const units: Obj[] = []
+        for (const raw of c.units as unknown[]) {
+          if (!isObj(raw)) {
+            this.fix('repairUnitDropped')
+            continue
+          }
+          const u: Obj = { ...raw }
+          const n = units.length + 1
+          const [id, newId] = this.claim(u.id, unitIds, 'unit')
+          u.id = id
+          if (newId) this.fix('repairUnitId', { n })
+          if (typeof u.title !== 'string') {
+            u.title = typeof u.title === 'number' ? String(u.title) : translate('content', 'unitN', { n })
+            this.fix('repairUnitTitle', { n, title: u.title as string })
+          }
+          units.push(u)
+        }
+        c.units = units
+      }
+    }
+
     const lessonIds = new Set<string>()
     const lessons: Obj[] = []
     ;(c.lessons as unknown[]).forEach((raw) => {
@@ -169,6 +198,10 @@ class Repairer {
         l.status = 'draft'
         this.fix('repairLessonStatus', { n })
       }
+      if (l.unitId !== undefined && (typeof l.unitId !== 'string' || !unitIds.has(l.unitId))) {
+        delete l.unitId
+        this.fix('repairLessonUnit', { n })
+      }
       if (!Array.isArray(l.blocks)) {
         l.blocks = []
         this.fix('repairLessonBlocks', { n })
@@ -178,7 +211,12 @@ class Repairer {
       lessons.push(l)
     })
     c.lessons = lessons
-    return c as unknown as Course
+    const course = c as unknown as Course
+    // Each unit's lessons together, in unit order (an empty list just goes).
+    const order = course.lessons.map((l) => l.id).join()
+    normalizeUnits(course)
+    if (course.lessons.map((l) => l.id).join() !== order) this.fix('repairUnitOrder')
+    return course
   }
 
   /** Blocks of one lesson (or the cover page); `where` names it in fixes. */

@@ -39,3 +39,10 @@ export function deleteLessonWithUndo(lessonId: string): void {
   s.deleteLesson(lessonId)
   offerUndo(translate('common', 'lessonDeleted', { title }))
 }
+
+export function deleteUnitWithUndo(unitId: string): void {
+  const s = useCourseStore.getState()
+  const title = s.course.units?.find((u) => u.id === unitId)?.title ?? ''
+  s.deleteUnit(unitId)
+  offerUndo(translate('common', 'unitDeleted', { title }))
+}
