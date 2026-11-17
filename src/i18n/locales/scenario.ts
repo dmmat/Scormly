@@ -16,6 +16,9 @@ const scenario: LocaleTable = {
     gateHelp: 'The blocks below stay hidden until the learner clicks the button.',
     nextCard: 'Also show the “Next lesson” card',
     nextCardHelp: 'This button already takes the learner on, so the card under it is hidden.',
+    newPage: 'Start a new page',
+    newPageHelp: 'The learner sees only the blocks up to this button; clicking it (or Next) opens the next page, and Previous goes back a page.',
+    pageStarts: 'Page {n}',
 
     // ── ScenarioBlock ──
     characterName: 'Character name',
@@ -109,6 +112,9 @@ const scenario: LocaleTable = {
     gateHelp: 'Блоки нижче приховані, доки студент не натисне кнопку.',
     nextCard: 'Також показувати картку «Наступний урок»',
     nextCardHelp: 'Ця кнопка вже веде студента далі, тому картку під нею приховано.',
+    newPage: 'Почати нову сторінку',
+    newPageHelp: 'Студент бачить лише блоки до цієї кнопки; натискання (або «Далі») відкриває наступну сторінку, а «Назад» повертає на попередню.',
+    pageStarts: 'Сторінка {n}',
 
     // ── ScenarioBlock ──
     characterName: 'Імʼя персонажа',
@@ -202,6 +208,9 @@ const scenario: LocaleTable = {
     gateHelp: 'Les blocs ci-dessous restent masqués jusqu’à ce que l’apprenant clique sur le bouton.',
     nextCard: 'Afficher aussi la carte « Leçon suivante »',
     nextCardHelp: 'Ce bouton fait déjà avancer l’apprenant : la carte située dessous est donc masquée.',
+    newPage: 'Commencer une nouvelle page',
+    newPageHelp: 'L’apprenant ne voit que les blocs jusqu’à ce bouton ; un clic (ou Suivant) ouvre la page suivante, et Précédent revient d’une page.',
+    pageStarts: 'Page {n}',
 
     // ── ScenarioBlock ──
     characterName: 'Nom du personnage',
@@ -295,6 +304,9 @@ const scenario: LocaleTable = {
     gateHelp: 'Los bloques siguientes permanecen ocultos hasta que el alumno hace clic en el botón.',
     nextCard: 'Mostrar también la tarjeta “Siguiente lección”',
     nextCardHelp: 'Este botón ya lleva al alumno a la siguiente lección, así que la tarjeta que hay debajo se oculta.',
+    newPage: 'Empezar una página nueva',
+    newPageHelp: 'El alumno solo ve los bloques hasta este botón; al pulsarlo (o Siguiente) se abre la página siguiente, y Anterior vuelve una página atrás.',
+    pageStarts: 'Página {n}',
 
     // ── ScenarioBlock ──
     characterName: 'Nombre del personaje',
@@ -388,6 +400,9 @@ const scenario: LocaleTable = {
     gateHelp: 'Die Blöcke darunter bleiben verborgen, bis die Lernenden auf die Schaltfläche klicken.',
     nextCard: 'Auch die Karte „Nächste Lektion“ anzeigen',
     nextCardHelp: 'Diese Schaltfläche führt die Lernenden bereits weiter, daher wird die Karte darunter ausgeblendet.',
+    newPage: 'Neue Seite beginnen',
+    newPageHelp: 'Lernende sehen nur die Blöcke bis zu dieser Schaltfläche; ein Klick (oder Weiter) öffnet die nächste Seite, Zurück geht eine Seite zurück.',
+    pageStarts: 'Seite {n}',
 
     // ── ScenarioBlock ──
     characterName: 'Name der Figur',

@@ -98,9 +98,20 @@ italic / underline, lists, links, inline images and tables (`rt-table`, edited
 via `components/editor/richTable.ts`); a process step's `html` is inline only.
 
 A `continue` block mid-lesson hides the blocks after it until clicked; a
-`restricted` one also waits for the task blocks above it (`isTaskBlock`). Keep
-the player (`continueLocked`), the preview (`PreviewProgress`) and this rule
-in sync.
+`restricted` one also waits for the task blocks above it on its page
+(`isTaskBlock`). With `newPage` it ends a page instead: the learner sees one
+page at a time and Next / Previous move between pages (`lib/lessonPages.ts`;
+the player's `pagesOf`, resume key `p`). Keep the player (`continueLocked`),
+the preview (`PreviewProgress`) and these rules in sync.
+
+`Course.units` (optional `{ id, title }[]`) groups lessons; a lesson joins one
+with `unitId`. `course.lessons` stays the one flat list everything walks, kept
+grouped (no unit first, then by unit order) by `normalizeUnits` in
+`lib/units.ts` — store actions and `repairCourse` call it. Lists of lessons
+(sidebar, menus, cover outline, course outline block) render the groups
+(`preview/GroupedLessons`, the player's `groupedList`); a unit heading is its
+title. `settings.unitNumbering` / `unitLabel` set the line above a lesson's
+title ("Unit 2 · Lesson 1", "Lesson 2.1").
 
 The `html` (Widget) block shows a page in a frame: written code, or an upload
 unpacked to `assets/html/<folder>/` (`lib/htmlBundle.ts`). Only the entry page

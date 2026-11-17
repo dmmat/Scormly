@@ -5,8 +5,9 @@
 > SCORM Cloud and virtually any standards-compliant LMS. There is no backend and no account:
 > courses, media and comments stay on the author's device, and packages are built client-side.
 
-Scormly is a block-based authoring tool: an author builds a course out of lessons, and each
-lesson out of blocks, editing them in place (WYSIWYG) with drag-and-drop and undo/redo. The
+Scormly is a block-based authoring tool: an author builds a course out of lessons (optionally
+grouped into units, such as modules or sections), and each lesson out of blocks, editing them
+in place (WYSIWYG) with drag-and-drop and undo/redo. The
 interface is in English, Ukrainian, French, Spanish and German. It works in current desktop browsers; Chrome and Edge
 can also save a project straight to a folder on disk.
 
@@ -36,8 +37,8 @@ can also save a project straight to a folder on disk.
   fill-in-the-blanks questions mixed under one Submit, with feedback and a passing score),
   sort-the-order and fill-in-the-blanks exercises, branching dialogue scenario (classic,
   chat / messenger or scene layout), reflection.
-- **Navigation:** Continue (reveals the rest of a lesson, optionally only after the tasks
-  above it are done), divider, course outline.
+- **Navigation:** Continue (reveals the rest of a lesson, or splits it into pages shown one at
+  a time, optionally only after the tasks above it are done), divider, course outline.
 - Ready-made block templates and per-block styles (theme or photo backgrounds, spacing,
   full-width bands).
 
@@ -53,6 +54,9 @@ A setup wizard walks an author through the layout, character, place and first ex
 
 ## Course design and export
 
+- Units group lessons in the lesson menu, cover page and course outline, numbered as
+  "Unit 2 · Lesson 1", "Lesson 2.1" or straight through the course; the word for a unit
+  (e.g. "Module") can be changed.
 - A cover page before the first lesson; 10 themes (Rose, Ocean, Forest, Sunset, Mono, Indigo,
   Crimson, Mint, Grape, Terminal) plus a custom accent color and corner shape; every theme
   keeps WCAG AA contrast.

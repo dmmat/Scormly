@@ -71,7 +71,7 @@ const BLOCK_DOCS: Record<BlockType, BlockDoc> = {
   },
   continue: {
     summary: 'Continue button / page gate.',
-    data: `{ mode: 'unrestricted' | 'restricted', label: string, nextCard?: boolean }  // hides later blocks until clicked (restricted: locked until the quizzes, exercises, reflections and required videos above are done, and required to leave the lesson); as the lesson's last block it replaces the "Next lesson" card unless nextCard is true`,
+    data: `{ mode: 'unrestricted' | 'restricted', label: string, nextCard?: boolean, newPage?: boolean }  // hides later blocks until clicked (restricted: locked until the quizzes, exercises, reflections and required videos above it on its page are done, and required to leave the lesson); newPage: true mid-lesson ends a page — the learner sees one page at a time and the button (or Next) opens the next one; as the lesson's last block it replaces the "Next lesson" card unless nextCard is true`,
   },
   divider: {
     summary: 'Horizontal separator.',
@@ -301,7 +301,8 @@ rewrites that file (unlike this one); edit it only when the author asks you to.
 
 \`\`\`
 Course
-└─ lessons: Lesson[]
+├─ units?: Unit[]        (optional lesson groups)
+└─ lessons: Lesson[]     (a lesson joins a unit with unitId)
    └─ blocks: Block[]
 \`\`\`
 
@@ -327,7 +328,9 @@ Course
     contentWidth?: 'narrow' | 'normal' | 'wide' | 'full',  // lesson column width (default 'wide')
     typography?: 'modern' | 'editorial' | 'rounded',       // font style (default 'modern'; editorial = serif headings)
     blockAnimation?: 'none' | 'fade' | 'slide' | 'zoom',   // block entrance as the learner scrolls (default 'fade')
-    lessonTransition?: 'none' | 'fade' | 'slide'           // animation between lessons (default 'fade')
+    lessonTransition?: 'none' | 'fade' | 'slide',          // animation between lessons (default 'fade')
+    unitNumbering?: 'unit' | 'dotted' | 'none',  // with units: "Unit 2 · Lesson 1" (default), "Lesson 2.1", or "Lesson 5" counted through the course
+    unitLabel?: string             // learner-facing word for a unit, e.g. "Module"; empty = "Unit" in the player language
   },
   intro?: {                        // optional cover page before the first lesson (not a lesson)
     enabled: boolean,
@@ -340,6 +343,7 @@ Course
                                    // gallery, imageText, video, audio, embed, html, attachment, divider,
                                    // process, steps, comparison, beforeAfter)
   },                               // the cover page shows the course title, description and coverImage
+  units?: { id: string, title: string }[],  // optional units (modules, sections) grouping the lessons
   lessons: Lesson[]
 }
 \`\`\`
@@ -347,8 +351,13 @@ Course
 ### Lesson
 
 \`\`\`ts
-{ id: string, title: string, status: 'draft' | 'published', blocks: Block[] }
+{ id: string, title: string, status: 'draft' | 'published', blocks: Block[], unitId?: string }
 \`\`\`
+
+\`unitId\` puts the lesson in one of \`course.units\` (omit it for a lesson
+outside the units). Keep \`lessons\` grouped: first the lessons without a unit,
+then each unit's lessons together, in the order of \`units\` (Scormly regroups
+them on load otherwise).
 
 ### Block
 
@@ -413,8 +422,11 @@ ${blockReference()}
 - **Continue gates**: a \`continue\` block in the middle of a lesson hides the
   blocks after it until the learner clicks it; split long lessons into parts
   with it. A \`restricted\` one also waits for the quizzes, exercises,
-  reflections and required videos above it. One at the very end of a lesson
-  leads to the next lesson.
+  reflections and required videos above it (on its page). One at the very end
+  of a lesson leads to the next lesson. With \`newPage: true\` it splits the
+  lesson into pages shown one at a time instead of revealing the rest below.
+- **Units**: to organise many lessons, add \`units\` and give each lesson the
+  \`unitId\` of its unit (see Lesson above).
 - **Custom HTML** (\`html\`): follow "Custom HTML blocks" below.
 - **Scenarios**: \`startNodeId\` and every non-null \`nextNodeId\` must be the
   \`id\` of a node in the same scenario.

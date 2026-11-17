@@ -526,7 +526,11 @@ export const BLOCK_REGISTRY: { [T in BlockType]: BlockMeta<T> } = {
   continue: {
     type: 'continue',
     category: 'navigation',
-    variants: [{ id: 'unrestricted' }, { id: 'restricted', data: { mode: 'restricted' } }],
+    variants: [
+      { id: 'unrestricted' },
+      { id: 'restricted', data: { mode: 'restricted' } },
+      { id: 'page', data: { newPage: true } },
+    ],
     create: () => ({
       id: uid('block'),
       type: 'continue',

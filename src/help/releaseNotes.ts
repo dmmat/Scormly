@@ -12,6 +12,37 @@ export interface Release {
 
 export const RELEASES: Release[] = [
   {
+    id: '2026-11-17-units-pages',
+    date: '2026-11-17',
+    items: {
+      en: [
+        'Units: group lessons into units (modules, sections) with “+ Add unit” under the lessons list. Drag lessons between units or use the folder button on a lesson; units can be renamed, reordered and removed (their lessons stay).',
+        'The learner sees the unit titles in the lesson menu, on the cover page and in the course outline. Pick how lessons are numbered — “Unit 2 · Lesson 1”, “Lesson 2.1” or straight through the course — and what a unit is called (for example “Module”) in Project settings → Learner experience.',
+        'Lesson pages: turn on “Start a new page” in a Continue block (or add the “New page” style) to split a long lesson into pages. The learner sees one page at a time with “Page 2 of 3” above the title; Next and Previous move between pages, and the place is kept when the course is resumed.',
+      ],
+      uk: [
+        'Розділи: групуйте уроки в розділи (модулі, частини) кнопкою «+ Додати розділ» під списком уроків. Перетягуйте уроки між розділами або скористайтеся кнопкою з папкою на уроці; розділи можна перейменовувати, переставляти й видаляти (їхні уроки залишаються).',
+        'Студент бачить назви розділів у меню уроків, на обкладинці та в блоці «Зміст курсу». Оберіть нумерацію уроків — «Розділ 2 · Урок 1», «Урок 2.1» чи наскрізну — і слово для розділу (наприклад, «Модуль») у Налаштуваннях проєкту → Досвід студента.',
+        'Сторінки уроку: увімкніть «Почати нову сторінку» в блоці «Продовжити» (або додайте стиль «Нова сторінка»), щоб розбити довгий урок на сторінки. Студент бачить одну сторінку за раз із підписом «Сторінка 2 з 3» над назвою; «Далі» й «Назад» гортають сторінки, а місце зберігається, коли курс відкривають знову.',
+      ],
+      fr: [
+        'Unités : regroupez les leçons en unités (modules, sections) avec « + Ajouter une unité » sous la liste des leçons. Glissez les leçons d’une unité à l’autre ou utilisez le bouton dossier d’une leçon ; les unités peuvent être renommées, réordonnées et supprimées (leurs leçons restent).',
+        'L’apprenant voit les titres des unités dans le menu des leçons, sur la page de couverture et dans le sommaire du cours. Choisissez la numérotation des leçons — « Unité 2 · Leçon 1 », « Leçon 2.1 » ou continue sur tout le cours — et le nom d’une unité (par ex. « Module ») dans Paramètres du projet → Expérience de l’apprenant.',
+        'Pages de leçon : activez « Commencer une nouvelle page » dans un bloc Continuer (ou ajoutez le style « Nouvelle page ») pour découper une longue leçon en pages. L’apprenant voit une page à la fois avec « Page 2 sur 3 » au-dessus du titre ; Suivant et Précédent passent d’une page à l’autre, et la position est conservée à la reprise du cours.',
+      ],
+      es: [
+        'Unidades: agrupa las lecciones en unidades (módulos, secciones) con “+ Añadir unidad” bajo la lista de lecciones. Arrastra las lecciones entre unidades o usa el botón de carpeta de una lección; las unidades se pueden renombrar, reordenar y eliminar (sus lecciones se conservan).',
+        'El alumno ve los títulos de las unidades en el menú de lecciones, en la portada y en el índice del curso. Elige cómo se numeran las lecciones —“Unidad 2 · Lección 1”, “Lección 2.1” o de forma continua— y cómo se llama una unidad (por ejemplo “Módulo”) en Ajustes del proyecto → Experiencia del alumno.',
+        'Páginas de lección: activa “Empezar una página nueva” en un bloque Continuar (o añade el estilo “Página nueva”) para dividir una lección larga en páginas. El alumno ve una página cada vez con “Página 2 de 3” sobre el título; Siguiente y Anterior pasan de página, y la posición se guarda al reanudar el curso.',
+      ],
+      de: [
+        'Einheiten: Gruppieren Sie Lektionen mit „+ Einheit hinzufügen“ unter der Lektionsliste in Einheiten (Module, Abschnitte). Ziehen Sie Lektionen zwischen Einheiten oder nutzen Sie die Ordner-Schaltfläche einer Lektion; Einheiten lassen sich umbenennen, umsortieren und löschen (ihre Lektionen bleiben).',
+        'Lernende sehen die Titel der Einheiten im Lektionsmenü, auf der Startseite und in der Kursübersicht. Unter Projekteinstellungen → Lernerlebnis wählen Sie die Nummerierung – „Einheit 2 · Lektion 1“, „Lektion 2.1“ oder durchgehend – und die Bezeichnung einer Einheit (zum Beispiel „Modul“).',
+        'Lektionsseiten: Aktivieren Sie „Neue Seite beginnen“ in einem Weiter-Block (oder fügen Sie den Stil „Neue Seite“ hinzu), um eine lange Lektion in Seiten zu teilen. Lernende sehen jeweils eine Seite mit „Seite 2 von 3“ über dem Titel; Weiter und Zurück blättern zwischen den Seiten, und die Position bleibt beim Fortsetzen des Kurses erhalten.',
+      ],
+    },
+  },
+  {
     id: '2026-11-13-characters',
     date: '2026-11-13',
     items: {

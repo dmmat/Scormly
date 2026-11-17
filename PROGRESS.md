@@ -68,6 +68,15 @@ Legend: `[ ]` planned · `[~]` in progress · `[x]` done
 - [x] `docs/adding-blocks.md` — how to add a new block type (4 steps)
 - [x] All docs and code comments in English; `CLAUDE.md` / `AGENTS.md` updated
 
+## Units and lesson pages (done, 2026-11-17)
+
+Requested in GitHub issue #32.
+
+- [x] Units: optional `course.units` + `lesson.unitId`; sidebar add / rename / reorder / delete (lessons kept), drag lessons between units, “Move to unit” menu, Alt+↑/↓ crosses unit edges
+- [x] Learner side: unit titles in the lesson menu, cover outline and course outline block (editor, preview, player); numbering “Unit 2 · Lesson 1” / “Lesson 2.1” / through the course, custom unit word (Project settings → Learner experience)
+- [x] Lesson pages: Continue with “Start a new page” (`newPage`); one page at a time, “Page 2 of 3”, Next / Previous page through, Previous from the next lesson lands on the last page, page kept on resume
+- [x] `repairCourse` for units, AGENTS.md guide, tests (`tests/units.test.ts`)
+
 ## Phase 3 — Local persistence (done)
 
 - [x] File System Access API wrapper (`lib/fileSystem.ts`): picker, permissions, JSON/blob I/O, feature detect
