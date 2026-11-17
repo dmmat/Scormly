@@ -286,6 +286,10 @@ export interface ContinueData {
   /** As the lesson's last block it replaces the "Next lesson" card, which
    *  would do the same; true shows the card as well. */
   nextCard?: boolean
+  /** Mid-lesson: the button ends a page. The learner sees only the blocks up
+   *  to the next page break, and the button (or Next) opens the next page.
+   *  Off (default) = the blocks after it appear below on the same page. */
+  newPage?: boolean
 }
 
 // ── Divider ──────────────────────────────────────────────────────────────────
@@ -727,7 +731,22 @@ export interface Lesson {
   title: string
   status: LessonStatus
   blocks: Block[]
+  /** The unit (Course.units) the lesson belongs to; none = before the units. */
+  unitId?: string
 }
+
+/** A named group of lessons (a unit, module or section). Lessons point at it
+ *  with `unitId`; `course.lessons` keeps each unit's lessons together, in the
+ *  order of `course.units`, after the lessons that have no unit. */
+export interface Unit {
+  id: string
+  title: string
+}
+
+/** How lessons in units are numbered for the learner:
+ *  unit — "Unit 2 · Lesson 1" · dotted — "Lesson 2.1" · none — "Lesson 5"
+ *  (counted through the whole course). */
+export type UnitNumbering = 'unit' | 'dotted' | 'none'
 
 /** Built-in theme IDs (see src/theme). */
 export type PresetThemeId =
@@ -799,6 +818,11 @@ export interface CourseSettings {
   lessonTransition?: LessonTransition
   /** Font pairing for the learner-facing course (default 'modern'). */
   typography?: Typography
+  /** Lesson numbers when the course has units (default 'unit'). */
+  unitNumbering?: UnitNumbering
+  /** The learner-facing word for a unit, e.g. "Module"; empty = "Unit" in
+   *  the player's language. */
+  unitLabel?: string
 }
 
 export type ContentWidth = 'narrow' | 'normal' | 'wide' | 'full'
@@ -868,5 +892,7 @@ export interface Course {
   settings?: CourseSettings
   /** Optional cover page before the first lesson (not a lesson itself). */
   intro?: CourseIntro
+  /** Optional lesson groups; absent or empty = a flat list of lessons. */
+  units?: Unit[]
   lessons: Lesson[]
 }

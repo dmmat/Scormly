@@ -54,7 +54,8 @@
       openStep: 'Step {n}: {title}', exploredOf: 'Explored {n} of {total}', back: 'Back', startOver: 'Start over',
       baSlider: 'Compare: drag to show more of “{before}” or “{after}”',
       answerPlaceholder: 'Type your answer…', submitAnswer: 'Submit', answerSaved: 'Your answer is saved.',
-      editAnswer: 'Edit answer', sampleAnswer: 'Sample answer', continueLocked: 'Complete the tasks above to continue.' },
+      editAnswer: 'Edit answer', sampleAnswer: 'Sample answer', continueLocked: 'Complete the tasks above to continue.',
+      pageOf: 'Page {n} of {total}', unitWord: 'Unit', unitHeading: '{unit} {u}', unitLesson: '{unit} {u} · Lesson {n}', dottedLesson: 'Lesson {u}.{n}', lessonOnly: 'Lesson {n}' },
     uk: { prev: 'Назад', next: 'Далі', progress: 'Урок {n} з {total}',
       empty: 'У цьому уроці ще немає контенту.', submit: 'Відповісти', submitAll: 'Надіслати відповіді', retry: 'Спробувати ще раз',
       correct: 'Правильно', incorrect: 'Неправильно', yourScore: 'Ваш результат: {s}%',
@@ -88,7 +89,8 @@
       openStep: 'Крок {n}: {title}', exploredOf: 'Переглянуто {n} з {total}', back: 'Назад', startOver: 'Спочатку',
       baSlider: 'Порівняння: тягніть, щоб показати більше «{before}» або «{after}»',
       answerPlaceholder: 'Напишіть свою відповідь…', submitAnswer: 'Надіслати', answerSaved: 'Вашу відповідь збережено.',
-      editAnswer: 'Змінити відповідь', sampleAnswer: 'Приклад відповіді', continueLocked: 'Виконайте завдання вище, щоб продовжити.' },
+      editAnswer: 'Змінити відповідь', sampleAnswer: 'Приклад відповіді', continueLocked: 'Виконайте завдання вище, щоб продовжити.',
+      pageOf: 'Сторінка {n} з {total}', unitWord: 'Розділ', unitHeading: '{unit} {u}', unitLesson: '{unit} {u} · Урок {n}', dottedLesson: 'Урок {u}.{n}', lessonOnly: 'Урок {n}' },
     es: { prev: 'Anterior', next: 'Siguiente', progress: 'Lección {n} de {total}',
       empty: 'Esta lección aún no tiene contenido.', submit: 'Enviar respuesta', submitAll: 'Enviar respuestas', retry: 'Intentar de nuevo',
       correct: 'Correcto', incorrect: 'Incorrecto', yourScore: 'Tu puntuación: {s} %',
@@ -122,7 +124,8 @@
       openStep: 'Paso {n}: {title}', exploredOf: 'Explorados: {n} de {total}', back: 'Atrás', startOver: 'Empezar de nuevo',
       baSlider: 'Comparación: arrastra para ver más de «{before}» o de «{after}»',
       answerPlaceholder: 'Escribe tu respuesta…', submitAnswer: 'Enviar', answerSaved: 'Tu respuesta se ha guardado.',
-      editAnswer: 'Editar la respuesta', sampleAnswer: 'Respuesta de ejemplo', continueLocked: 'Completa las tareas anteriores para continuar.' },
+      editAnswer: 'Editar la respuesta', sampleAnswer: 'Respuesta de ejemplo', continueLocked: 'Completa las tareas anteriores para continuar.',
+      pageOf: 'Página {n} de {total}', unitWord: 'Unidad', unitHeading: '{unit} {u}', unitLesson: '{unit} {u} · Lección {n}', dottedLesson: 'Lección {u}.{n}', lessonOnly: 'Lección {n}' },
     fr: { prev: 'Précédent', next: 'Suivant', progress: 'Leçon {n} sur {total}',
       empty: 'Cette leçon n’a pas encore de contenu.', submit: 'Valider la réponse', submitAll: 'Valider les réponses', retry: 'Réessayer',
       correct: 'Correct', incorrect: 'Incorrect', yourScore: 'Votre score : {s} %',
@@ -156,7 +159,8 @@
       openStep: 'Étape {n} : {title}', exploredOf: 'Explorés : {n} sur {total}', back: 'Retour', startOver: 'Recommencer',
       baSlider: 'Comparer : faites glisser pour voir davantage « {before} » ou « {after} »',
       answerPlaceholder: 'Saisissez votre réponse…', submitAnswer: 'Envoyer', answerSaved: 'Votre réponse est enregistrée.',
-      editAnswer: 'Modifier la réponse', sampleAnswer: 'Exemple de réponse', continueLocked: 'Terminez les activités ci-dessus pour continuer.' },
+      editAnswer: 'Modifier la réponse', sampleAnswer: 'Exemple de réponse', continueLocked: 'Terminez les activités ci-dessus pour continuer.',
+      pageOf: 'Page {n} sur {total}', unitWord: 'Unité', unitHeading: '{unit} {u}', unitLesson: '{unit} {u} · Leçon {n}', dottedLesson: 'Leçon {u}.{n}', lessonOnly: 'Leçon {n}' },
     de: { prev: 'Zurück', next: 'Weiter', progress: 'Lektion {n} von {total}',
       empty: 'Diese Lektion hat noch keinen Inhalt.', submit: 'Antwort absenden', submitAll: 'Antworten absenden', retry: 'Erneut versuchen',
       correct: 'Richtig', incorrect: 'Falsch', yourScore: 'Ihr Ergebnis: {s} %',
@@ -190,7 +194,8 @@
       openStep: 'Schritt {n}: {title}', exploredOf: '{n} von {total} erkundet', back: 'Zurück', startOver: 'Von vorn beginnen',
       baSlider: 'Vergleich: Ziehen Sie, um mehr von „{before}“ oder „{after}“ zu sehen',
       answerPlaceholder: 'Ihre Antwort eingeben…', submitAnswer: 'Absenden', answerSaved: 'Ihre Antwort wurde gespeichert.',
-      editAnswer: 'Antwort bearbeiten', sampleAnswer: 'Beispielantwort', continueLocked: 'Erledigen Sie die Aufgaben oben, um fortzufahren.' },
+      editAnswer: 'Antwort bearbeiten', sampleAnswer: 'Beispielantwort', continueLocked: 'Erledigen Sie die Aufgaben oben, um fortzufahren.',
+      pageOf: 'Seite {n} von {total}', unitWord: 'Einheit', unitHeading: '{unit} {u}', unitLesson: '{unit} {u} · Lektion {n}', dottedLesson: 'Lektion {u}.{n}', lessonOnly: 'Lektion {n}' },
     it: { prev: 'Indietro', next: 'Avanti', progress: 'Lezione {n} di {total}',
       empty: 'Questa lezione non ha ancora contenuti.', submit: 'Invia risposta', submitAll: 'Invia risposte', retry: 'Riprova',
       correct: 'Corretto', incorrect: 'Errato', yourScore: 'Il tuo punteggio: {s}%',
@@ -224,7 +229,8 @@
       openStep: 'Passaggio {n}: {title}', exploredOf: 'Esplorati: {n} su {total}', back: 'Indietro', startOver: 'Ricomincia da capo',
       baSlider: 'Confronto: trascina per vedere di più «{before}» o «{after}»',
       answerPlaceholder: 'Scrivi la tua risposta…', submitAnswer: 'Invia', answerSaved: 'La tua risposta è stata salvata.',
-      editAnswer: 'Modifica la risposta', sampleAnswer: 'Risposta di esempio', continueLocked: 'Completa le attività qui sopra per continuare.' },
+      editAnswer: 'Modifica la risposta', sampleAnswer: 'Risposta di esempio', continueLocked: 'Completa le attività qui sopra per continuare.',
+      pageOf: 'Pagina {n} di {total}', unitWord: 'Unità', unitHeading: '{unit} {u}', unitLesson: '{unit} {u} · Lezione {n}', dottedLesson: 'Lezione {u}.{n}', lessonOnly: 'Lezione {n}' },
     nl: { prev: 'Vorige', next: 'Volgende', progress: 'Les {n} van {total}',
       empty: 'Deze les heeft nog geen inhoud.', submit: 'Antwoord versturen', submitAll: 'Antwoorden versturen', retry: 'Opnieuw proberen',
       correct: 'Goed', incorrect: 'Fout', yourScore: 'Je score: {s}%',
@@ -258,7 +264,8 @@
       openStep: 'Stap {n}: {title}', exploredOf: '{n} van {total} bekeken', back: 'Terug', startOver: 'Opnieuw beginnen',
       baSlider: 'Vergelijken: sleep om meer van ‘{before}’ of ‘{after}’ te zien',
       answerPlaceholder: 'Typ je antwoord…', submitAnswer: 'Versturen', answerSaved: 'Je antwoord is opgeslagen.',
-      editAnswer: 'Antwoord bewerken', sampleAnswer: 'Voorbeeldantwoord', continueLocked: 'Rond de opdrachten hierboven af om verder te gaan.' },
+      editAnswer: 'Antwoord bewerken', sampleAnswer: 'Voorbeeldantwoord', continueLocked: 'Rond de opdrachten hierboven af om verder te gaan.',
+      pageOf: 'Pagina {n} van {total}', unitWord: 'Eenheid', unitHeading: '{unit} {u}', unitLesson: '{unit} {u} · Les {n}', dottedLesson: 'Les {u}.{n}', lessonOnly: 'Les {n}' },
     pt: { prev: 'Anterior', next: 'Próximo', progress: 'Lição {n} de {total}',
       empty: 'Esta lição ainda não tem conteúdo.', submit: 'Enviar resposta', submitAll: 'Enviar respostas', retry: 'Tentar novamente',
       correct: 'Correto', incorrect: 'Incorreto', yourScore: 'Sua pontuação: {s}%',
@@ -292,7 +299,8 @@
       openStep: 'Etapa {n}: {title}', exploredOf: 'Explorados: {n} de {total}', back: 'Voltar', startOver: 'Começar de novo',
       baSlider: 'Comparar: arraste para ver mais de “{before}” ou de “{after}”',
       answerPlaceholder: 'Digite sua resposta…', submitAnswer: 'Enviar', answerSaved: 'Sua resposta foi salva.',
-      editAnswer: 'Editar resposta', sampleAnswer: 'Exemplo de resposta', continueLocked: 'Conclua as tarefas acima para continuar.' },
+      editAnswer: 'Editar resposta', sampleAnswer: 'Exemplo de resposta', continueLocked: 'Conclua as tarefas acima para continuar.',
+      pageOf: 'Página {n} de {total}', unitWord: 'Unidade', unitHeading: '{unit} {u}', unitLesson: '{unit} {u} · Lição {n}', dottedLesson: 'Lição {u}.{n}', lessonOnly: 'Lição {n}' },
   };
   // Browser-based default; resume() refines it from the course settings / LMS.
   var lang = (function () {
@@ -464,7 +472,9 @@
     if (state.onIntro) { announce(state.course.title || ''); return; }
     var lessons = state.course.lessons || [];
     var lesson = lessons[state.lessonIndex];
-    announce(t('lessonAnnounce', { n: state.lessonIndex + 1, total: lessons.length, title: lesson ? lesson.title || '' : '' }));
+    var text = t('lessonAnnounce', { n: state.lessonIndex + 1, total: lessons.length, title: lesson ? lesson.title || '' : '' });
+    var pages = pagesOf(lesson);
+    announce(pages.length > 1 ? text + '. ' + t('pageOf', { n: state.page + 1, total: pages.length }) : text);
   }
 
   function skipLink() {
@@ -483,7 +493,7 @@
   var SCORED = { quiz: true, ordering: true, fillBlanks: true };
 
   var state = { course: null, lessonIndex: 0, visited: {}, continued: {}, watched: {}, reflections: {}, quizResults: {}, quizzes: [], quizIndexById: {}, interactionIndex: 0, sessionStart: 0, complete: false, finished: false, summary: null, learner: null, lmsMode: 'normal',
-    onIntro: false, navDirection: null, revealed: {}, menuOpen: false };
+    onIntro: false, navDirection: null, revealed: {}, menuOpen: false, page: 0 };
   // Set at boot to the unload handler, so the completion screen's "Exit course"
   // button can end the LMS session the same way closing the window does.
   var endSession = null;
@@ -575,7 +585,7 @@
     applySuspend(saved);
     Object.keys(fresh).forEach(function (id) { state.quizResults[id] = fresh[id]; });
     if (atStart && state.onIntro) render(); // the cover's button now reads "Continue course"
-    else if (atStart && saved && typeof saved.l === 'number') { visit(saved.l); return; }
+    else if (atStart && saved && typeof saved.l === 'number') { visit(saved.l, savedPage(saved)); return; }
     else refreshGating();
     reportProgress();
   }
@@ -617,7 +627,10 @@
     // A fresh attempt opens on the cover page (when the course has one); a
     // resumed one goes straight back to the saved lesson.
     if (introOn() && !(saved && typeof saved.l === 'number')) { showIntro(false); return; }
-    visit(saved && typeof saved.l === 'number' ? saved.l : 0);
+    visit(saved && typeof saved.l === 'number' ? saved.l : 0, savedPage(saved));
+  }
+  function savedPage(saved) {
+    return saved && typeof saved.p === 'number' && saved.p > 0 ? Math.floor(saved.p) : 0;
   }
 
   // ── Layout: content width, typography, full-bleed width ──────────────────
@@ -713,13 +726,181 @@
     if (b.type === 'video' && b.data.requireWatch) return !!state.watched[b.id];
     return true;
   }
-  // A restricted Continue stays locked until every task above it is done.
+  // A restricted Continue stays locked until every task above it on its page
+  // is done. Any page break also waits for the required videos on its page:
+  // past it they are out of sight, yet still needed to leave the lesson.
   function continueLocked(b) {
-    if (b.data.mode !== 'restricted' || state.continued[b.id]) return false;
+    if (state.continued[b.id]) return false;
     var lesson = (state.course.lessons || [])[state.lessonIndex];
     var blocks = (lesson && lesson.blocks) || [];
-    for (var k = 0, at = blocks.indexOf(b); k < at; k++) if (!taskDone(blocks[k])) return true;
+    var at = blocks.indexOf(b);
+    var restricted = b.data.mode === 'restricted';
+    if (!restricted && !isPageBreak(blocks, at)) return false;
+    var from = 0;
+    for (var j = 0; j < at; j++) if (isPageBreak(blocks, j)) from = j + 1;
+    for (var k = from; k < at; k++) {
+      var above = blocks[k];
+      if (restricted ? !taskDone(above) : above.type === 'video' && above.data.requireWatch && !state.watched[above.id]) return true;
+    }
     return false;
+  }
+
+  // ── Lesson pages ─────────────────────────────────────────────────────────
+  // A Continue set to start a new page (newPage), anywhere but the lesson's
+  // end, ends a page: only that page's blocks are shown. Mirrors
+  // src/lib/lessonPages.ts.
+  function isPageBreak(blocks, i) {
+    var b = blocks[i];
+    return !!b && b.type === 'continue' && !!b.data && b.data.newPage === true && i < blocks.length - 1;
+  }
+  // The lesson's pages, each ending with its page-break block.
+  function pagesOf(lesson) {
+    var blocks = (lesson && lesson.blocks) || [];
+    var pages = [[]];
+    blocks.forEach(function (b, i) {
+      pages[pages.length - 1].push(b);
+      if (isPageBreak(blocks, i)) pages.push([]);
+    });
+    return pages;
+  }
+  function currentPages() { return pagesOf((state.course.lessons || [])[state.lessonIndex]); }
+  // The block that ends the current page (null on the lesson's last page).
+  function currentPageBreak() {
+    var pages = currentPages();
+    if (state.page >= pages.length - 1) return null;
+    var page = pages[state.page];
+    return page[page.length - 1];
+  }
+  // The last page the learner has opened before: every page break up to it
+  // passed (where Previous from the next lesson lands).
+  function lastReachedPage(index) {
+    var pages = pagesOf((state.course.lessons || [])[index]);
+    var p = 0;
+    while (p < pages.length - 1 && state.continued[pages[p][pages[p].length - 1].id]) p++;
+    return p;
+  }
+  // Whether Next / the advance button may move on from here: to the next
+  // page past an unlocked page break, else out of the lesson.
+  // Restricted gates on the page must be passed first (Next would skip them).
+  function canAdvanceHere() {
+    var pageBreak = currentPageBreak();
+    if (!pageBreak) return canLeaveLesson(state.lessonIndex);
+    var page = currentPages()[state.page];
+    return !continueLocked(pageBreak) && page.every(function (b) {
+      return b === pageBreak || b.type !== 'continue' || b.data.mode !== 'restricted' || !!state.continued[b.id];
+    });
+  }
+  function goPage(p) {
+    var pages = currentPages();
+    p = Math.max(0, Math.min(p, pages.length - 1));
+    state.navDirection = p < state.page ? 'prev' : 'next';
+    state.page = p;
+    state.menuOpen = false;
+    render();
+    reportProgress();
+    focusLessonHeading(true);
+  }
+  // Next page past the current page break (marks it passed), or false.
+  function nextPage() {
+    var pageBreak = currentPageBreak();
+    if (!pageBreak) return false;
+    if (!canAdvanceHere()) return true;
+    state.continued[pageBreak.id] = true;
+    goPage(state.page + 1);
+    return true;
+  }
+  function prevPlace() {
+    if (state.page > 0) { goPage(state.page - 1); return; }
+    var i = state.lessonIndex;
+    if (i > 0) visit(i - 1, lastReachedPage(i - 1));
+    else if (introOn()) showIntro(true);
+  }
+
+  // ── Units ────────────────────────────────────────────────────────────────
+  // Optional lesson groups (course.units, lesson.unitId); course.lessons keeps
+  // each unit's lessons together. Mirrors src/lib/units.ts.
+  function courseUnits() {
+    var units = state.course.units;
+    return Array.isArray(units) ? units.filter(function (u) { return u && typeof u.id === 'string'; }) : [];
+  }
+  // [{ unit|null, number, lessons: [{ lesson, index, n }] }] in display order.
+  function lessonGroups() {
+    var lessons = state.course.lessons || [];
+    var units = courseUnits();
+    if (!units.length) {
+      return [{ unit: null, number: 0, lessons: lessons.map(function (l, k) { return { lesson: l, index: k, n: k + 1 }; }) }];
+    }
+    var loose = { unit: null, number: 0, lessons: [] };
+    var groups = units.map(function (u, k) { return { unit: u, number: k + 1, lessons: [] }; });
+    var byId = {};
+    groups.forEach(function (g) { byId[g.unit.id] = g; });
+    lessons.forEach(function (l, k) {
+      var g = (l.unitId && Object.prototype.hasOwnProperty.call(byId, l.unitId) && byId[l.unitId]) || loose;
+      g.lessons.push({ lesson: l, index: k, n: g.lessons.length + 1 });
+    });
+    return loose.lessons.length ? [loose].concat(groups) : groups;
+  }
+  function unitNumbering() {
+    var v = (state.course.settings || {}).unitNumbering;
+    return v === 'dotted' || v === 'none' ? v : 'unit';
+  }
+  function lessonPos(index) {
+    if (!courseUnits().length) return null;
+    var groups = lessonGroups();
+    for (var g = 0; g < groups.length; g++) {
+      for (var e = 0; e < groups[g].lessons.length; e++) {
+        if (groups[g].lessons[e].index === index) return { unitNumber: groups[g].number, n: groups[g].lessons[e].n };
+      }
+    }
+    return null;
+  }
+  // The lesson's number in the menu and outlines: "5", "1" (in its unit) or "2.1".
+  function lessonNum(index) {
+    var pos = lessonPos(index);
+    var style = unitNumbering();
+    if (!pos || style === 'none') return String(index + 1);
+    if (style === 'dotted' && pos.unitNumber) return pos.unitNumber + '.' + pos.n;
+    return String(pos.n);
+  }
+  function unitWord() {
+    var label = (state.course.settings || {}).unitLabel;
+    return (typeof label === 'string' && label.trim()) || t('unitWord');
+  }
+  function unitHeadingText(number) { return t('unitHeading', { unit: unitWord(), u: number }); }
+  // The line above the lesson title: "Unit 2 · Lesson 1" / "Lesson 2.1" with
+  // units, else "Lesson n of N"; plus "Page 2 of 3" on a paged lesson.
+  function lessonKicker(index) {
+    var lessons = state.course.lessons || [];
+    var pos = lessonPos(index);
+    var style = unitNumbering();
+    var text = !pos || style === 'none' ? t('progress', { n: index + 1, total: lessons.length })
+      : !pos.unitNumber ? t('lessonOnly', { n: pos.n })
+      : style === 'dotted' ? t('dottedLesson', { u: pos.unitNumber, n: pos.n })
+      : t('unitLesson', { unit: unitWord(), u: pos.unitNumber, n: pos.n });
+    var pages = pagesOf(lessons[index]);
+    return pages.length > 1 ? text + ' · ' + t('pageOf', { n: state.page + 1, total: pages.length }) : text;
+  }
+  // A list of lessons under unit headings (React: preview/GroupedLessons).
+  // include(index) filters lessons; row(lesson, index) builds each <li>.
+  var unitListSeq = 0;
+  function groupedList(listClass, include, row) {
+    var ol = h('ol', { class: listClass });
+    lessonGroups().forEach(function (g) {
+      var items = g.lessons.filter(function (e) { return include(e.index); });
+      if (!items.length) return;
+      if (!g.unit) { items.forEach(function (e) { ol.appendChild(row(e.lesson, e.index)); }); return; }
+      var id = 'unit-head-' + (++unitListSeq);
+      var inner = h('ol', { class: listClass, 'aria-labelledby': id });
+      items.forEach(function (e) { inner.appendChild(row(e.lesson, e.index)); });
+      // The unit's title; "Unit 2" only when it has none.
+      var title = typeof g.unit.title === 'string' ? g.unit.title.trim() : '';
+      ol.appendChild(h('li', { class: 'sc-unit' }, [
+        h('div', { class: 'sc-unit-head', id: id },
+          h('span', { class: 'sc-unit-name', lang: title ? contentLang() : null, text: title || unitHeadingText(g.number) })),
+        inner,
+      ]));
+    });
+    return ol;
   }
   // Whether a Continue block hides the blocks after it (any mode). One at the
   // very end of the lesson leads on instead, like the "Next lesson" card.
@@ -737,6 +918,8 @@
   function onContinue(b) {
     var lessons = state.course.lessons || [];
     state.continued[b.id] = true;
+    var blocks = lessons[state.lessonIndex].blocks;
+    if (isPageBreak(blocks, blocks.indexOf(b))) { goPage(state.page + 1); return; }
     reportProgress();
     if (isGate(b)) { revealAfter(b); return; }
     if (canLeaveLesson(state.lessonIndex)) {
@@ -827,7 +1010,7 @@
   // in place (no full render).
   function refreshGating() {
     var btn = document.getElementById('advance-btn');
-    if (btn) btn.disabled = !canLeaveLesson(state.lessonIndex);
+    if (btn) btn.disabled = !canAdvanceHere();
     var card = document.getElementById('next-card');
     if (card) card.disabled = !canLeaveLesson(state.lessonIndex);
     var bar = document.querySelector('.progress-fill');
@@ -850,13 +1033,15 @@
     });
   }
 
-  function visit(index) {
+  // page: the lesson page to open (default the first; clamped).
+  function visit(index, page) {
     var prevIndex = state.onIntro ? -1 : state.lessonIndex;
     state.navDirection = !lessonShown ? null : index < prevIndex ? 'prev' : 'next';
     if (index !== state.lessonIndex || state.onIntro) state.revealed = {};
     state.onIntro = false;
     state.menuOpen = false;
     state.lessonIndex = index;
+    state.page = Math.max(0, Math.min(page || 0, pagesOf((state.course.lessons || [])[index]).length - 1));
     state.visited[index] = true;
     render();
     reportProgress();
@@ -953,7 +1138,7 @@
   }
 
   // ── Resume state (suspend_data) ──────────────────────────────────────────
-  // Keys: l=lesson, v=visited indices, q=scores by block id, c=passed
+  // Keys: l=lesson, p=page within it (omitted on the first), v=visited indices, q=scores by block id, c=passed
   // restricted "Continue" gates, w=watched required videos. When the runtime
   // reports a size limit (SCORM 1.2: 4096 chars) and the state outgrows it, it
   // is shrunk step by step — never silently: block ids become ordinals and
@@ -990,6 +1175,7 @@
     var str = JSON.stringify({
       l: state.lessonIndex, v: visited, q: state.quizResults,
       c: Object.keys(state.continued), w: Object.keys(state.watched),
+      p: state.page || undefined,
     });
     var limit = (SCORM.suspendLimit && SCORM.suspendLimit()) || 0;
     if (!limit || str.length <= limit) return str;
@@ -1003,7 +1189,7 @@
       var n = ids.indexOf(id);
       if (n >= 0) q[n] = Math.round(state.quizResults[id]);
     });
-    var compact = { l: state.lessonIndex, z: 1, v: toRanges(visited), q: q,
+    var compact = { l: state.lessonIndex, p: state.page || undefined, z: 1, v: toRanges(visited), q: q,
       c: toRanges(ord(Object.keys(state.continued))), w: toRanges(ord(Object.keys(state.watched))) };
     var steps = [
       [],               // compact encoding only
@@ -1056,14 +1242,21 @@
     // Gates (restricted Continue + required videos), plus linear-mode quiz rule,
     // decide whether the learner may move on from this lesson.
     var canAdvance = canLeaveLesson(i);
-    var isLast = i >= lessons.length - 1;
+    var pages = pagesOf(lesson);
+    state.page = Math.max(0, Math.min(state.page, pages.length - 1));
+    var lastPage = state.page >= pages.length - 1;
+    var isLast = i >= lessons.length - 1 && lastPage;
 
-    // On the last lesson, "Next" becomes "Finish" (primary) to end the course.
+    // Next opens the lesson's next page first. On the last lesson's last page,
+    // "Next" becomes "Finish" (primary) to end the course.
     var advanceBtn = isLast
       ? h('button', { id: 'advance-btn', class: 'btn', text: t('finish'), disabled: canAdvance ? null : 'true',
           onclick: function () { if (canLeaveLesson(state.lessonIndex)) finishCourse(); } })
-      : h('button', { id: 'advance-btn', class: 'btn btn-outline', text: t('next'), disabled: canAdvance ? null : 'true',
-          onclick: function () { if (canLeaveLesson(state.lessonIndex)) visit(state.lessonIndex + 1); } });
+      : h('button', { id: 'advance-btn', class: 'btn btn-outline', text: t('next'), disabled: canAdvanceHere() ? null : 'true',
+          onclick: function () {
+            if (nextPage()) return;
+            if (canLeaveLesson(state.lessonIndex)) visit(state.lessonIndex + 1);
+          } });
 
     var titleRow = [
       h('span', { class: 'player-title', lang: contentLang(), text: state.course.title || '' }),
@@ -1079,14 +1272,14 @@
     if (state.lmsMode && state.lmsMode !== 'normal') {
       titleRow.push(h('span', { class: 'player-progress', text: '· ' + state.lmsMode }));
     }
-    var prevDisabled = i === 0 && !introOn();
+    var prevDisabled = i === 0 && state.page === 0 && !introOn();
     var header = h('header', { class: 'player-header' }, [
       h('div', { class: 'player-head-main' }, [menuButton()].concat(titleRow)),
       h('div', { class: 'player-actions' }, [
         renderA11yMenu(),
         h('nav', { class: 'player-nav', 'aria-label': t('lessonNav') }, [
           h('button', { class: 'btn btn-outline', text: t('prev'), disabled: prevDisabled ? 'true' : null,
-            onclick: function () { if (i > 0) visit(i - 1); else if (introOn()) showIntro(true); } }),
+            onclick: prevPlace }),
           advanceBtn,
         ]),
       ]),
@@ -1098,8 +1291,11 @@
     var gated = false;
     var lastShown = null;
     if (lesson && lesson.blocks && lesson.blocks.length) {
-      for (var bi = 0; bi < lesson.blocks.length; bi++) {
-        var b = lesson.blocks[bi];
+      // Only the current page; it ends with its page break (the way on).
+      var pageBlocks = pages[state.page];
+      if (!lastPage) gated = true;
+      for (var bi = 0; bi < pageBlocks.length; bi++) {
+        var b = pageBlocks[bi];
         var el = renderBlock(b);
         if (el) { blocksEl.appendChild(wrapBlock(b, el, anim)); lastShown = b; }
         // Hide everything after a Continue that hasn't been clicked yet.
@@ -1113,7 +1309,7 @@
     }
 
     var lessonEl = h('div', { class: 'lesson' + transitionClass(), lang: contentLang() }, [
-      settings().showProgress ? h('p', { class: 'lesson-kicker', text: t('progress', { n: i + 1, total: lessons.length }) }) : null,
+      settings().showProgress ? h('p', { class: 'lesson-kicker', text: lessonKicker(i) }) : null,
       h('h1', { class: 'lesson-title', tabindex: '-1', text: lesson ? lesson.title : '' }),
       blocksEl,
       // A Continue button at the very end already leads on; the card would repeat it.
@@ -1185,20 +1381,19 @@
   function renderLessonMenu() {
     var lessons = state.course.lessons || [];
     var pct = progressPct();
-    var list = h('ol', { class: 'menu-list' });
     function row(label, num, current, done, locked, onPick) {
-      list.appendChild(h('li', {}, h('button', { type: 'button', class: 'menu-row' + (current ? ' is-current' : ''),
+      return h('li', {}, h('button', { type: 'button', class: 'menu-row' + (current ? ' is-current' : ''),
         'aria-current': current ? 'page' : null, disabled: locked ? 'true' : null, onclick: onPick }, [
         h('span', { class: 'menu-dot' + (done ? ' is-done' : ''), 'aria-hidden': 'true', text: done ? '✓' : num }),
         h('span', { class: 'menu-label', lang: contentLang(), text: label }),
-      ])));
+      ]));
     }
-    if (introOn()) row(t('courseHome'), '•', state.onIntro, false, false, function () { showIntro(true); });
-    lessons.forEach(function (lesson, k) {
-      row(lesson.title || t('progress', { n: k + 1, total: lessons.length }), String(k + 1),
+    var list = groupedList('menu-list', function () { return true; }, function (lesson, k) {
+      return row(lesson.title || t('progress', { n: k + 1, total: lessons.length }), lessonNum(k),
         !state.onIntro && !state.finished && k === state.lessonIndex, lessonComplete(k), !canReachLesson(k),
         function () { if (canReachLesson(k)) visit(k); });
     });
+    if (introOn()) list.insertBefore(row(t('courseHome'), '•', state.onIntro, false, false, function () { showIntro(true); }), list.firstChild);
     var panel = h('nav', { class: 'menu-panel', 'aria-label': t('lessonsMenu') }, [
       h('div', { class: 'menu-head' }, [
         h('div', { class: 'menu-title-row' }, [
@@ -1255,15 +1450,15 @@
     ]);
     var outline = null;
     if (intro.showOutline !== false && lessons.length) {
-      var ol = h('ol');
-      lessons.forEach(function (lesson, k) {
+      var ol = groupedList('', function () { return true; }, function (lesson, k) {
         var done = lessonComplete(k);
-        ol.appendChild(h('li', {}, h('button', { type: 'button', disabled: canReachLesson(k) ? null : 'true',
+        var num = lessonNum(k);
+        return h('li', {}, h('button', { type: 'button', disabled: canReachLesson(k) ? null : 'true',
           onclick: function () { if (canReachLesson(k)) visit(k); } }, [
-          h('span', { class: 'sc-intro-num', text: k < 9 ? '0' + (k + 1) : String(k + 1) }),
+          h('span', { class: 'sc-intro-num', text: num.indexOf('.') < 0 && num.length < 2 ? '0' + num : num }),
           h('span', { class: 'sc-intro-ltitle', text: lesson.title || '' }),
           h('span', { class: 'sc-intro-arrow', 'aria-hidden': 'true', text: done ? '✓' : '→' }),
-        ])));
+        ]));
       });
       outline = h('nav', { class: 'sc-intro-outline', 'aria-label': t('lessonsMenu') }, ol);
     }
@@ -1491,8 +1686,10 @@
       case 'quote':
         return renderQuote(b);
       case 'continue': {
-        // A passed gate disappears; the blocks it was hiding are now shown.
-        if (state.continued[b.id] && isGate(b)) return null;
+        // A passed gate disappears; the blocks it was hiding are now shown. A
+        // page break stays: it is the way to the next page.
+        var lessonBlocks = ((state.course.lessons || [])[state.lessonIndex] || {}).blocks || [];
+        if (state.continued[b.id] && isGate(b) && !isPageBreak(lessonBlocks, lessonBlocks.indexOf(b))) return null;
         var locked = continueLocked(b);
         return h('div', { class: 'continue', 'data-continue': b.id, 'data-locked': locked ? '1' : null }, [
           h('button', { class: 'btn', type: 'button', disabled: locked ? 'true' : null,
@@ -2096,23 +2293,22 @@
   // Course outline: links to every lesson; a click navigates the learner there.
   // The lesson list is derived live from the course (not stored in the block).
   function renderOutline(b) {
-    var lessons = state.course.lessons || [];
     var wrap = h('div', { class: 'outline' });
     if (b.data.title) wrap.appendChild(h('p', { class: 'outline-title', text: b.data.title }));
-    var ol = h('ol', { class: 'outline-list' });
-    var n = 0; // sequential number among shown lessons
-    lessons.forEach(function (lesson, i) {
-      if (i === state.lessonIndex) return; // exclude the current lesson
+    var grouped = courseUnits().length > 0;
+    var n = 0; // sequential number among shown lessons (without units)
+    // The current lesson is excluded.
+    var ol = groupedList('outline-list', function (i) { return i !== state.lessonIndex; }, function (lesson, i) {
       n++;
       // Linear mode: lessons not yet reachable by Next are shown but locked.
       var locked = !canReachLesson(i);
       var row = h('button', { class: 'outline-item', type: 'button', 'data-lesson': String(i), disabled: locked ? 'true' : null,
-        onclick: (function (idx) { return function () { if (canReachLesson(idx)) visit(idx); }; })(i) }, [
-        b.data.numbered ? h('span', { class: 'outline-num', text: String(n) }) : null,
+        onclick: function () { if (canReachLesson(i)) visit(i); } }, [
+        b.data.numbered ? h('span', { class: 'outline-num', text: grouped ? lessonNum(i) : String(n) }) : null,
         h('span', { class: 'outline-label', text: lesson.title || '' }),
         h('span', { class: 'outline-arrow', text: '→' }),
       ]);
-      ol.appendChild(h('li', {}, row));
+      return h('li', {}, row);
     });
     wrap.appendChild(ol);
     return wrap;

@@ -187,6 +187,12 @@ const design: LocaleTable = {
     lessonsMenu: 'Lessons',
     closeMenu: 'Close the lesson list',
     progressPct: '{n}% complete',
+    pageOf: 'Page {n} of {total}',
+    unitWord: 'Unit',
+    unitHeading: '{unit} {u}',
+    unitLesson: '{unit} {u} · Lesson {n}',
+    dottedLesson: 'Lesson {u}.{n}',
+    lessonOnly: 'Lesson {n}',
 
     // Appearance settings
     contentWidth: 'Content width',
@@ -387,6 +393,12 @@ const design: LocaleTable = {
     lessonsMenu: 'Уроки',
     closeMenu: 'Закрити список уроків',
     progressPct: 'Пройдено {n}%',
+    pageOf: 'Сторінка {n} з {total}',
+    unitWord: 'Розділ',
+    unitHeading: '{unit} {u}',
+    unitLesson: '{unit} {u} · Урок {n}',
+    dottedLesson: 'Урок {u}.{n}',
+    lessonOnly: 'Урок {n}',
 
     contentWidth: 'Ширина контенту',
     contentWidthHelp: 'Наскільки широкі уроки на великих екранах. Зображення «на всю ширину» завжди займають усю сторінку.',
@@ -597,6 +609,12 @@ const design: LocaleTable = {
     lessonsMenu: 'Leçons',
     closeMenu: 'Fermer la liste des leçons',
     progressPct: '{n} % terminé',
+    pageOf: 'Page {n} sur {total}',
+    unitWord: 'Unité',
+    unitHeading: '{unit} {u}',
+    unitLesson: '{unit} {u} · Leçon {n}',
+    dottedLesson: 'Leçon {u}.{n}',
+    lessonOnly: 'Leçon {n}',
 
     // Appearance settings
     contentWidth: 'Largeur du contenu',
@@ -808,6 +826,12 @@ const design: LocaleTable = {
     lessonsMenu: 'Lecciones',
     closeMenu: 'Cerrar la lista de lecciones',
     progressPct: '{n} % completado',
+    pageOf: 'Página {n} de {total}',
+    unitWord: 'Unidad',
+    unitHeading: '{unit} {u}',
+    unitLesson: '{unit} {u} · Lección {n}',
+    dottedLesson: 'Lección {u}.{n}',
+    lessonOnly: 'Lección {n}',
 
     // Appearance settings
     contentWidth: 'Ancho del contenido',
@@ -1019,6 +1043,12 @@ const design: LocaleTable = {
     lessonsMenu: 'Lektionen',
     closeMenu: 'Lektionsliste schließen',
     progressPct: '{n} % abgeschlossen',
+    pageOf: 'Seite {n} von {total}',
+    unitWord: 'Einheit',
+    unitHeading: '{unit} {u}',
+    unitLesson: '{unit} {u} · Lektion {n}',
+    dottedLesson: 'Lektion {u}.{n}',
+    lessonOnly: 'Lektion {n}',
 
     // Appearance settings
     contentWidth: 'Inhaltsbreite',

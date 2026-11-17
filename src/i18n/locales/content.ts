@@ -7,6 +7,7 @@ const content: LocaleTable = {
   en: {
     newCourse: 'Untitled course',
     lessonN: 'Lesson {n}',
+    unitN: 'Unit {n}',
 
     // In-memory demo course (the "try without saving" flow)
     demoCourseTitle: 'New course',
@@ -116,6 +117,7 @@ const content: LocaleTable = {
   uk: {
     newCourse: 'Новий курс',
     lessonN: 'Урок {n}',
+    unitN: 'Розділ {n}',
 
     // In-memory demo course (the "try without saving" flow)
     demoCourseTitle: 'Новий курс',
@@ -225,6 +227,7 @@ const content: LocaleTable = {
   fr: {
     newCourse: 'Cours sans titre',
     lessonN: 'Leçon {n}',
+    unitN: 'Unité {n}',
 
     // In-memory demo course (the "try without saving" flow)
     demoCourseTitle: 'Nouveau cours',
@@ -334,6 +337,7 @@ const content: LocaleTable = {
   es: {
     newCourse: 'Curso sin título',
     lessonN: 'Lección {n}',
+    unitN: 'Unidad {n}',
 
     // In-memory demo course (the "try without saving" flow)
     demoCourseTitle: 'Nuevo curso',
@@ -443,6 +447,7 @@ const content: LocaleTable = {
   de: {
     newCourse: 'Unbenannter Kurs',
     lessonN: 'Lektion {n}',
+    unitN: 'Einheit {n}',
 
     // In-memory demo course (the "try without saving" flow)
     demoCourseTitle: 'Neuer Kurs',

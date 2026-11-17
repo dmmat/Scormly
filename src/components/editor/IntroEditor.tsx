@@ -12,6 +12,8 @@ import {
   UploadButton,
   useAssetUpload,
 } from './controls'
+import GroupedLessons from '../../preview/GroupedLessons'
+import { coverNumber } from '../../lib/units'
 
 type Layout = CourseIntro['layout']
 
@@ -142,17 +144,17 @@ export default function IntroEditor({ children }: { children?: ReactNode }) {
         <div className="sc-intro-blocks">{children}</div>
         {intro.showOutline !== false && course.lessons.length > 0 && (
           <nav className="sc-intro-outline mx-4" aria-label={t('lessons')}>
-            <ol>
-              {course.lessons.map((l, i) => (
+            <GroupedLessons course={course}>
+              {({ lesson: l, index: i }) => (
                 <li key={l.id}>
                   <button type="button" onClick={() => setActiveLesson(l.id)}>
-                    <span className="sc-intro-num">{String(i + 1).padStart(2, '0')}</span>
+                    <span className="sc-intro-num">{coverNumber(course, i)}</span>
                     <span className="sc-intro-ltitle">{l.title}</span>
                     <span className="sc-intro-arrow" aria-hidden>→</span>
                   </button>
                 </li>
-              ))}
-            </ol>
+              )}
+            </GroupedLessons>
           </nav>
         )}
       </div>

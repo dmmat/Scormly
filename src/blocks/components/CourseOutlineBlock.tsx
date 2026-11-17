@@ -2,6 +2,8 @@ import type { BlockComponentProps } from '../types'
 import type { BlockOfType } from '../../types/course'
 import { useCourseStore } from '../../store/courseStore'
 import { useT } from '../../i18n/I18nProvider'
+import GroupedLessons from '../../preview/GroupedLessons'
+import { outlineNumbers } from '../../lib/units'
 
 // Lists the course's lessons as navigable links. The lesson list is derived
 // live from the store (not stored in the block), so it always stays in sync as
@@ -12,11 +14,12 @@ export default function CourseOutlineBlock({
   lessonId,
   selected,
 }: BlockComponentProps<BlockOfType<'courseOutline'>>) {
-  const lessons = useCourseStore((s) => s.course.lessons)
+  const course = useCourseStore((s) => s.course)
   const setActiveLesson = useCourseStore((s) => s.setActiveLesson)
   const update = useCourseStore((s) => s.updateBlockData)
   const { t } = useT('blocks')
   const { title, numbered } = block.data
+  const numbers = outlineNumbers(course, lessonId)
 
   return (
     <div className="space-y-3">
@@ -47,11 +50,14 @@ export default function CourseOutlineBlock({
             {title}
           </p>
         )}
-        <ol className="divide-y divide-gray-100">
-          {/* The current lesson is excluded — it only links to the others. */}
-          {lessons
-            .filter((lesson) => lesson.id !== lessonId)
-            .map((lesson, i) => (
+        {/* The current lesson is excluded — it only links to the others. */}
+        <GroupedLessons
+          course={course}
+          className="divide-y divide-gray-100"
+          headClassName="bg-gray-50/60 px-4 pb-1.5 pt-3"
+          filter={({ lesson }) => lesson.id !== lessonId}
+        >
+          {({ lesson }) => (
               <li key={lesson.id}>
                 <button
                   type="button"
@@ -63,8 +69,8 @@ export default function CourseOutlineBlock({
                   className="flex w-full items-center gap-3 px-4 py-2.5 text-left text-sm text-gray-700 transition-colors hover:bg-brand/5"
                 >
                   {numbered && (
-                    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-brand/10 text-xs font-semibold text-brand">
-                      {i + 1}
+                    <span className="flex h-6 min-w-6 shrink-0 items-center justify-center rounded-full bg-brand/10 px-1 text-xs font-semibold text-brand">
+                      {numbers.get(lesson.id)}
                     </span>
                   )}
                   <span className="min-w-0 flex-1 truncate">{lesson.title}</span>
@@ -73,8 +79,8 @@ export default function CourseOutlineBlock({
                   </span>
                 </button>
               </li>
-            ))}
-        </ol>
+          )}
+        </GroupedLessons>
       </div>
     </div>
   )

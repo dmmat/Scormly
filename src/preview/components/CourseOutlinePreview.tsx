@@ -1,5 +1,7 @@
 import type { BlockOfType } from '../../types/course'
 import { useCourseStore } from '../../store/courseStore'
+import GroupedLessons from '../GroupedLessons'
+import { outlineNumbers } from '../../lib/units'
 
 // Learner-facing course outline: lists lessons as links. A click navigates the
 // preview to that lesson via the callback provided by PreviewOverlay.
@@ -13,12 +15,9 @@ export default function CourseOutlinePreview({
   currentLessonId?: string
   onNavigate?: (lessonIndex: number) => void
 }) {
-  const lessons = useCourseStore((s) => s.course.lessons)
+  const course = useCourseStore((s) => s.course)
   const { title, numbered } = block.data
-  // Keep the original index for navigation, then drop the current lesson.
-  const items = lessons
-    .map((lesson, index) => ({ lesson, index }))
-    .filter(({ lesson }) => lesson.id !== currentLessonId)
+  const numbers = outlineNumbers(course, currentLessonId)
 
   return (
     <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
@@ -27,8 +26,13 @@ export default function CourseOutlinePreview({
           {title}
         </p>
       )}
-      <ol className="divide-y divide-gray-100">
-        {items.map(({ lesson, index }, i) => (
+      <GroupedLessons
+        course={course}
+        className="divide-y divide-gray-100"
+        headClassName="bg-gray-50/60 px-4 pb-1.5 pt-3"
+        filter={({ lesson }) => lesson.id !== currentLessonId}
+      >
+        {({ lesson, index }) => (
           <li key={lesson.id}>
             <button
               type="button"
@@ -36,8 +40,8 @@ export default function CourseOutlinePreview({
               className="flex w-full items-center gap-3 px-4 py-2.5 text-left text-sm text-gray-700 transition-colors hover:bg-brand/5"
             >
               {numbered && (
-                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-brand/10 text-xs font-semibold text-brand">
-                  {i + 1}
+                <span className="flex h-6 min-w-6 shrink-0 items-center justify-center rounded-full bg-brand/10 px-1 text-xs font-semibold text-brand">
+                  {numbers.get(lesson.id)}
                 </span>
               )}
               <span className="min-w-0 flex-1 truncate">{lesson.title}</span>
@@ -46,8 +50,8 @@ export default function CourseOutlinePreview({
               </span>
             </button>
           </li>
-        ))}
-      </ol>
+        )}
+      </GroupedLessons>
     </div>
   )
 }
