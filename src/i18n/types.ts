@@ -14,5 +14,8 @@ export const LANGUAGES: { id: Language; label: string }[] = [
 // language turns on automatically if the browser prefers it, or manually).
 export const DEFAULT_LANGUAGE: Language = 'en'
 
+/** localStorage key of the language the visitor picked. */
+export const LANGUAGE_STORAGE_KEY = 'scormly-language'
+
 // Translation table for a single namespace: key → string, for each language.
 export type LocaleTable = Record<Language, Record<string, string>>

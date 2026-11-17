@@ -1,27 +1,27 @@
-import { registerTables } from './registry'
-import common from './locales/common'
-import blocks from './locales/blocks'
-import themes from './locales/themes'
-import text from './locales/text'
-import media from './locales/media'
-import interactive from './locales/interactive'
-import scenario from './locales/scenario'
-import quiz from './locales/quiz'
-import landing from './locales/landing'
-import welcome from './locales/welcome'
-import content from './locales/content'
-import richtext from './locales/richtext'
-import preview from './locales/preview'
-import newblocks from './locales/newblocks'
-import settings from './locales/settings'
-import demo from './locales/demo'
-import help from './locales/help'
-import hotspotTimeline from './locales/hotspotTimeline'
-import assessment from './locales/assessment'
-import a11y from './locales/a11y'
-import design from './locales/design'
-import explainers from './locales/explainers'
-import review from './locales/review'
+import { registerTables } from './registry.ts'
+import common from './locales/common.ts'
+import blocks from './locales/blocks.ts'
+import themes from './locales/themes.ts'
+import text from './locales/text.ts'
+import media from './locales/media.ts'
+import interactive from './locales/interactive.ts'
+import scenario from './locales/scenario.ts'
+import quiz from './locales/quiz.ts'
+import landing from './locales/landing.ts'
+import welcome from './locales/welcome.ts'
+import content from './locales/content.ts'
+import richtext from './locales/richtext.ts'
+import preview from './locales/preview.ts'
+import newblocks from './locales/newblocks.ts'
+import settings from './locales/settings.ts'
+import demo from './locales/demo.ts'
+import help from './locales/help.ts'
+import hotspotTimeline from './locales/hotspotTimeline.ts'
+import assessment from './locales/assessment.ts'
+import a11y from './locales/a11y.ts'
+import design from './locales/design.ts'
+import explainers from './locales/explainers.ts'
+import review from './locales/review.ts'
 
 // All translation namespaces. Each lives in its own file (src/i18n/locales/),
 // so they can be worked on in parallel without conflicts.
@@ -53,7 +53,7 @@ export const DICTIONARY = {
 
 export type Namespace = keyof typeof DICTIONARY
 
-// Importing this module is what makes every namespace available to
-// translate() / useT(): code that renders outside the landing page must
-// import it (the builder and the block previews do).
+// Importing this module registers every namespace in every language at once.
+// That is for tests and build scripts: the app must NOT import it (it would
+// ship all the languages), it loads the strings it needs through ./load.
 registerTables(DICTIONARY)

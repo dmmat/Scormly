@@ -1,7 +1,8 @@
 import { lazy, Suspense, useEffect, useRef, useState, type MouseEvent, type ReactNode } from 'react'
 import Logo from '../layout/Logo'
 import LanguagePicker from '../editor/LanguagePicker'
-import { useLang, useT } from '../../i18n/I18nProvider'
+import { getCurrentLanguage, useLang, useT } from '../../i18n/I18nProvider'
+import { loadGroup } from '../../i18n/load'
 import { LANGUAGES } from '../../i18n/types'
 import { useReveal } from '../../hooks/useReveal'
 import { navigate, useRoute } from '../../hooks/useRoute'
@@ -13,7 +14,10 @@ import HowSteps from './demos/HowSteps'
 
 // These demos render real learner blocks (the whole preview layer and the
 // sample course), so they load when their section comes near the viewport.
-const DesignShowcase = lazy(() => import('./demos/DesignShowcase'))
+// The showcase renders real learner blocks, which need the builder's strings.
+const DesignShowcase = lazy(() =>
+  Promise.all([import('./demos/DesignShowcase'), loadGroup('app', getCurrentLanguage())]).then(([m]) => m),
+)
 
 function Deferred({ minHeight, children }: { minHeight: number; children: ReactNode }) {
   const ref = useRef<HTMLDivElement>(null)

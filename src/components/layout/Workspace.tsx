@@ -30,6 +30,7 @@ import BlockShell from '../editor/BlockShell'
 import AddBlockMenu from '../editor/AddBlockMenu'
 import { useT } from '../../i18n/I18nProvider'
 import { AutoTextarea } from '../editor/controls'
+import { lessonKicker } from '../../lib/units'
 
 export default function Workspace() {
   const activeLesson = useCourseStore(selectActiveLesson)
@@ -38,12 +39,14 @@ export default function Workspace() {
   const renameLesson = useCourseStore((s) => s.renameLesson)
   const addLesson = useCourseStore((s) => s.addLesson)
   const lessonCount = useCourseStore((s) => s.course.lessons.length)
+  const { t } = useT('common')
+  const { t: td } = useT('design')
   const lessonIndex = useCourseStore((s) => s.course.lessons.findIndex((l) => l.id === s.activeLessonId))
+  // "Unit 2 · Lesson 1" when the course has units, as the learner sees it.
+  const kicker = useCourseStore((s) => lessonKicker(s.course, lessonIndex, td))
   const introActive = useCourseStore((s) => s.activeLessonId === INTRO_ID)
   const contentWidth = useCourseStore((s) => s.course.settings?.contentWidth ?? DEFAULT_CONTENT_WIDTH)
   const typography = useCourseStore((s) => s.course.settings?.typography ?? 'modern')
-  const { t } = useT('common')
-  const { t: td } = useT('design')
   const mainRef = useRef<HTMLElement>(null)
   usePageWidthVar(mainRef)
 
@@ -68,7 +71,7 @@ export default function Workspace() {
           <>
             <header className="canvas-lesson-head mb-10 px-4" onClick={(e) => e.stopPropagation()}>
               <p className="mb-2 text-xs font-semibold uppercase tracking-[0.14em] text-brand-dark">
-                {t('lesson')} {lessonIndex + 1}
+                {kicker ?? `${t('lesson')} ${lessonIndex + 1}`}
               </p>
               <AutoTextarea
                 value={activeLesson.title}

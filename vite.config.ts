@@ -2,6 +2,7 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import { seoPrerender } from './scripts/seoPrerender.ts'
+import { localeChunks } from './scripts/localeChunks.ts'
 import pkg from './package.json' with { type: 'json' }
 
 // Served from the root of the custom domain (scormly.app, via public/CNAME), so
@@ -10,5 +11,5 @@ import pkg from './package.json' with { type: 'json' }
 export default defineConfig({
   base: '/',
   define: { __APP_VERSION__: JSON.stringify(pkg.version) },
-  plugins: [react(), tailwindcss(), seoPrerender()],
+  plugins: [react(), tailwindcss(), localeChunks(), seoPrerender()],
 })
