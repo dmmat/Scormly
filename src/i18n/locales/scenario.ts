@@ -86,7 +86,7 @@ const scenario: LocaleTable = {
 
     nodeN: 'Node {n}',
     unknownNode: 'Unknown node',
-    finish: '— Finish —',
+    finish: 'End of scenario',
     startNode: 'Start',
     makeStart: 'Make start node',
     deleteNode: 'Delete node',
@@ -137,7 +137,7 @@ const scenario: LocaleTable = {
     wizNone: 'немає',
     wizLayoutTitle: 'Який вигляд матиме діалог?',
     wizLayoutClassicDesc: 'Аватар, репліка й кнопки відповідей. Найпростіший варіант.',
-    wizLayoutChatDesc: 'Чат як у месенджері: розмова накопичується, відповіді — бульбашки.',
+    wizLayoutChatDesc: 'Чат як у месенджері: розмова накопичується, відповіді у вигляді бульбашок.',
     wizLayoutSceneDesc: 'Сцена: фон-локація, персонаж великим планом і репліка в бульбашці.',
     wizCharacterTitle: 'З ким розмовляє учень?',
     wizOwnCharacter: 'Свій персонаж',
@@ -182,7 +182,7 @@ const scenario: LocaleTable = {
 
     nodeN: 'Вузол {n}',
     unknownNode: 'Невідомий вузол',
-    finish: '— Завершити —',
+    finish: 'Кінець сценарію',
     startNode: 'Початковий',
     makeStart: 'Зробити початковим',
     deleteNode: 'Видалити вузол',
@@ -278,7 +278,7 @@ const scenario: LocaleTable = {
 
     nodeN: 'Nœud {n}',
     unknownNode: 'Nœud inconnu',
-    finish: '— Fin —',
+    finish: 'Fin du scénario',
     startNode: 'Départ',
     makeStart: 'Définir comme nœud de départ',
     deleteNode: 'Supprimer le nœud',
@@ -374,7 +374,7 @@ const scenario: LocaleTable = {
 
     nodeN: 'Nodo {n}',
     unknownNode: 'Nodo desconocido',
-    finish: '— Fin —',
+    finish: 'Fin del escenario',
     startNode: 'Inicio',
     makeStart: 'Convertir en nodo inicial',
     deleteNode: 'Eliminar nodo',
@@ -470,7 +470,7 @@ const scenario: LocaleTable = {
 
     nodeN: 'Knoten {n}',
     unknownNode: 'Unbekannter Knoten',
-    finish: '— Ende —',
+    finish: 'Ende des Szenarios',
     startNode: 'Start',
     makeStart: 'Als Startknoten festlegen',
     deleteNode: 'Knoten löschen',

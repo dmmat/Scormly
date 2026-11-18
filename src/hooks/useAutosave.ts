@@ -9,7 +9,7 @@ const DEBOUNCE_MS = 1000
 
 // Debounced autosave: whenever the course or its comments change and a project
 // folder is open, persist project.json (+ history, comments) after a short
-// pause. Also wires Ctrl/Cmd+S for an immediate save — without a folder, that
+// pause. Also wires Ctrl/Cmd+S for an immediate save; without a folder, that
 // downloads the project .zip.
 export function useAutosave() {
   const course = useCourseStore((s) => s.course)

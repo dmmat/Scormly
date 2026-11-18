@@ -6,7 +6,7 @@ import { chatScenarios, type ChatScenario, type LocalizedString } from './chatSc
 // answers appear, one is auto-picked, and the conversation loops. Pure
 // CSS + timers (no animation lib). Honors prefers-reduced-motion.
 //
-// The demo rotates through `chatScenarios` — a shuffled queue, no repeats
+// The demo rotates through `chatScenarios`: a shuffled queue, no repeats
 // until the whole list is exhausted, then re-shuffled. Texts inside each
 // scenario are localized and resolved against the current UI language.
 
@@ -62,7 +62,7 @@ function shuffle<T>(arr: readonly T[]): T[] {
   return out
 }
 
-// Shuffle but always lead with a Ksiu scenario — she's the demo's main face,
+// Shuffle but always lead with a Ksiu scenario: she's the demo's main face,
 // so visitors always meet her first. Within the Ksiu pool the pick is random,
 // and everything after position 0 is fully shuffled.
 function shuffleWithKsiuFirst(): ChatScenario[] {
@@ -82,7 +82,7 @@ export default function ChatDemo() {
   const [replay, setReplay] = useState(0)
   const bodyRef = useRef<HTMLDivElement>(null)
 
-  // The play queue — a shuffled list of scenarios; we walk through it without
+  // The play queue: a shuffled list of scenarios; we walk through it without
   // repeats, then reshuffle. `queueRef` survives re-renders; the cursor state
   // triggers re-runs of the playback effect when it advances.
   const queueRef = useRef<ChatScenario[]>([])
@@ -168,7 +168,7 @@ export default function ChatDemo() {
       if (cancelled) return
       setCursor((c) => {
         const nextC = c + 1
-        // Reshuffle the queue once we've shown them all — keeps variety high.
+        // Reshuffle the queue once we've shown them all; keeps variety high.
         if (nextC >= queueRef.current.length) {
           queueRef.current = shuffleWithKsiuFirst()
           return 0

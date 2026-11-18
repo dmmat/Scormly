@@ -3,7 +3,7 @@
 // can read, edit, and author Scormly courses by editing project.json directly.
 //
 // BLOCK_DOCS is typed as Record<BlockType, ...>, so adding a new block type to
-// the union forces a matching entry here — the guide can't silently fall behind.
+// the union forces a matching entry here, so the guide can't silently fall behind.
 
 import type { BlockType, Course } from '../types/course'
 
@@ -54,7 +54,7 @@ const BLOCK_DOCS: Record<BlockType, BlockDoc> = {
     data: `{ url: string, title?: string }  // title: accessible name of the iframe (screen readers announce it)`,
   },
   html: {
-    summary: 'Custom HTML / CSS / JS (an interactive widget, simulation, game, chart…) shown in a frame — the author\'s own code or an uploaded .html page / .zip site. See "Custom HTML blocks" below.',
+    summary: 'Custom HTML / CSS / JS (an interactive widget, simulation, game, chart…) shown in a frame: the author\'s own code or an uploaded .html page / .zip site. See "Custom HTML blocks" below.',
     data: `{ source: 'code' | 'file', code: string, src: string, fileName?: string, title?: string, height?: number, styles?: boolean }  // source 'code': the page is the HTML document in code; 'file': the page is src, an entry file like assets/html/<folder>/index.html whose folder ships whole (keep code '' or src '' for the unused one). title: accessible name of the frame; height: frame height in px, omitted = fit the page's content; styles: load the Scormly kit (course fonts, accent, sc-* classes) into the page, default true`,
   },
   code: {
@@ -71,7 +71,7 @@ const BLOCK_DOCS: Record<BlockType, BlockDoc> = {
   },
   continue: {
     summary: 'Continue button / page gate.',
-    data: `{ mode: 'unrestricted' | 'restricted', label: string, nextCard?: boolean, newPage?: boolean }  // hides later blocks until clicked (restricted: locked until the quizzes, exercises, reflections and required videos above it on its page are done, and required to leave the lesson); newPage: true mid-lesson ends a page — the learner sees one page at a time and the button (or Next) opens the next one; as the lesson's last block it replaces the "Next lesson" card unless nextCard is true`,
+    data: `{ mode: 'unrestricted' | 'restricted', label: string, nextCard?: boolean, newPage?: boolean }  // hides later blocks until clicked (restricted: locked until the quizzes, exercises, reflections and required videos above it on its page are done, and required to leave the lesson); newPage: true mid-lesson ends a page: the learner sees one page at a time and the button (or Next) opens the next one; as the lesson's last block it replaces the "Next lesson" card unless nextCard is true`,
   },
   divider: {
     summary: 'Horizontal separator.',
@@ -157,7 +157,7 @@ const BLOCK_DOCS: Record<BlockType, BlockDoc> = {
   fillBlanks: {
     summary: 'Scored fill-in-the-blanks exercise.',
     data: `{
-    text: string,  // blanks in square brackets: "The capital of France is [Paris|Paname]." — '|' separates accepted answers, the first is canonical
+    text: string,  // blanks in square brackets: "The capital of France is [Paris|Paname]."; '|' separates accepted answers, the first is canonical
     mode: 'type' | 'select',  // type = text inputs; select = dropdowns listing every blank's canonical answer
     passingScore: number,  // 0–100; score = % of blanks answered correctly
     showAnswers?: boolean,  // default true
@@ -180,7 +180,7 @@ const BLOCK_DOCS: Record<BlockType, BlockDoc> = {
     summary: 'Process diagram: numbered steps drawn as circles joined by arrows, chevrons, a cycle or a pyramid (not scored).',
     data: `{
     layout: 'flow' | 'chevrons' | 'cycle' | 'pyramid',
-    variant?: 'solid' | 'soft' | 'outline',  // default 'solid'; 'soft' = tinted shapes (flow: tinted cards); 'outline' = outlined number circles (flow only — other layouts show solid)
+    variant?: 'solid' | 'soft' | 'outline',  // default 'solid'; 'soft' = tinted shapes (flow: tinted cards); 'outline' = outlined number circles (flow only; other layouts show solid)
     steps: { id: string, title: string, text: string, html?: string }[]  // html: the description as inline rich text (<strong>, <em>, <u>, <a href target="_blank" rel="noopener noreferrer">, <br>); when set it wins over text (keep text as its plain version)
   }  // 2–8 steps; flow shows at most 4 per row (rows balanced); keep titles short (1–3 words) and text to a sentence. flow = numbered circles joined by arrows (soft = each step on a tinted card); chevrons = arrow band with text under each; cycle = steps on a ring the learner opens one by one (text shown in the middle, so keep it short); pyramid = stacked levels, the first step on top`,
   },
@@ -223,14 +223,14 @@ e-learning course (SCORM / cmi5 in an LMS), possibly offline.
   styles, images, fonts, JSON) referenced by a **relative** path
   (\`img/chart.png\`, not \`/img/chart.png\` or a file:// path). Don't load
   libraries from a CDN unless the author agrees: learners may be offline or
-  behind a firewall — put the library file in the zip instead.
+  behind a firewall. Put the library file in the zip instead.
 - **Fit the column**: the frame is as wide as the lesson column (about 320 px
-  on phones up to ~1000 px) and, by default, as tall as the page's content —
+  on phones up to ~1000 px) and, by default, as tall as the page's content,
   so lay out for any width, let the content set the height, and don't size
   the page to \`100vh\` / \`height: 100%\` (that height is the frame's own). A
   fixed-height app (a canvas game) is fine when the author sets a height on
   the block.
-- **Look — use the Scormly kit**: the course loads its own stylesheet into
+- **Look: use the Scormly kit**: the course loads its own stylesheet into
   the page (unless the block sets \`styles: false\`), so the page matches the
   course theme and fonts with no CSS of its own. It already styles \`body\`
   (8 px padding, transparent background, course font, 16 px text),
@@ -278,10 +278,10 @@ function blockReference(): string {
 export function buildAgentGuide(course: Course): string {
   const firstLesson = course.lessons[0]?.id ?? 'lesson-...'
 
-  return `# Scormly course — agent guide
+  return `# Scormly course: agent guide
 
 This folder is a **Scormly** project. The entire course lives in
-[\`project.json\`](./project.json) — a single JSON file you can read and edit
+[\`project.json\`](./project.json), a single JSON file you can read and edit
 directly to author or modify the course. Scormly is a local-first course builder
 that exports to SCORM 1.2 / 2004 and cmi5 (xAPI).
 
@@ -292,7 +292,7 @@ that exports to SCORM 1.2 / 2004 and cmi5 (xAPI).
 ## Read first: the author's instructions
 
 [\`user-instructions.md\`](./user-instructions.md) holds the author's own
-notes for you — who the learners are, tone and style, terms to use or avoid,
+notes for you: who the learners are, tone and style, terms to use or avoid,
 house rules. Read it before you change anything and follow it. Where it
 conflicts with the data format described here, the format wins. Scormly never
 rewrites that file (unlike this one); edit it only when the author asks you to.
@@ -391,7 +391,7 @@ ${blockReference()}
   noreferrer">\`; web, mailto: or tel: addresses only) and inline images with
   relative \`assets/\` paths, plus tables as described under \`paragraph\`.
   A process step's \`html\` is inline only (bold, italic, underline, links,
-  line breaks) — no lists, tables or images inside diagram shapes.
+  line breaks); no lists, tables or images inside diagram shapes.
 - **Media**: reference files by relative path under \`assets/images/\`,
   \`assets/videos/\`, \`assets/audio/\`, \`assets/captions/\` (WebVTT),
   \`assets/files/\` (attachments) or \`assets/html/<folder>/\` (a Widget
@@ -430,14 +430,14 @@ ${blockReference()}
 - **Custom HTML** (\`html\`): follow "Custom HTML blocks" below.
 - **Scenarios**: \`startNodeId\` and every non-null \`nextNodeId\` must be the
   \`id\` of a node in the same scenario.
-- **Don't** invent block \`type\`s or \`data\` fields beyond those listed above —
+- **Don't** invent block \`type\`s or \`data\` fields beyond those listed above:
   unknown blocks are ignored by the player (and flagged before export). For
   something no block type does, use a Widget block (\`html\`).
 
 ## Custom HTML blocks
 
-An \`html\` block shows a page of its own — an interactive widget, a
-simulation, a calculator, a mini-game, a chart — in a frame inside the lesson.
+An \`html\` block shows a page of its own (an interactive widget, a
+simulation, a calculator, a mini-game, a chart) in a frame inside the lesson.
 Use it for what the other block types can't do; prefer the built-in blocks for
 text, media, quizzes and exercises (they are tracked and themed).
 
@@ -455,7 +455,7 @@ Writing the page:
 
 ${HTML_BLOCK_GUIDE}
 
-## Before you finish — quality checklist
+## Before you finish: quality checklist
 
 Scormly runs these checks before exporting and warns the author; a course that
 passes them is ready to export:
@@ -485,11 +485,11 @@ passes them is ready to export:
 ## Typical agent workflow
 
 1. Read \`project.json\` (and this guide) to understand the current course.
-2. Make your edits — add lessons/blocks, rewrite text, build quizzes — keeping
+2. Make your edits (add lessons/blocks, rewrite text, build quizzes), keeping
    ids unique and the JSON valid.
 3. Walk through the checklist above.
 4. Ask the author to reopen the project in Scormly (the folder, or the \`.zip\`
-   you return — see below) to review, preview and export (SCORM 2004 / 1.2 or
+   you return; see below) to review, preview and export (SCORM 2004 / 1.2 or
    cmi5). Exporting happens in the app, not from the file.
 
 ## Review comments (\`comments.json\`)
@@ -526,7 +526,7 @@ them and exports leave them out.
   assistant"), and set \`resolved: true\`, \`resolvedBy\`, \`resolvedAt\` and
   \`updatedAt\`. Leave threads you didn't act on open.
 - Don't delete or reword other people's comments, keep ids unique, and keep a
-  block's \`id\` when you edit the block — it's how its comments find it.
+  block's \`id\` when you edit the block: it's how its comments find it.
 
 ## Working from a .zip
 
@@ -539,7 +539,7 @@ work on it:
    ids). Put any new media under \`assets/images/\`, \`assets/videos/\`,
    \`assets/audio/\`, \`assets/captions/\`, \`assets/files/\` or
    \`assets/html/<folder>/\` (custom HTML pages) and reference it
-   by that relative path — don't embed files as base64 \`data:\` URLs.
+   by that relative path; don't embed files as base64 \`data:\` URLs.
 2. Keep \`user-instructions.md\` in the archive, and the course \`id\` as it is: when the \`.zip\` comes back, Scormly uses
    it to recognize the project and offers to update the author's copy (a
    changed id opens as a separate project).
@@ -547,7 +547,7 @@ work on it:
    project folder itself also works), keeping \`AGENTS.md\`, \`comments.json\`
    and \`assets/\`.
 4. Give the \`.zip\` back to the author, who opens it with **Open .zip** on
-   Scormly's start screen or in the project menu — no folder needed, in any
+   Scormly's start screen or in the project menu, no folder needed, in any
    browser. Small structural slips (missing or duplicate ids, missing fields)
    are repaired on open and reported; still, follow the shapes above.
 
@@ -575,7 +575,7 @@ work on it:
 \`\`\`
 
 _Generated by Scormly. It is rewritten whenever the project is opened in a newer
-version, so don't keep notes here — edits will be replaced. Scormly never reads
+version, so don't keep notes here: edits will be replaced. Scormly never reads
 it back; deleting it is harmless (it is recreated on the next open)._
 `
 }

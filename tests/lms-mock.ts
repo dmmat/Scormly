@@ -56,7 +56,7 @@ export function makeScormApi(version: ScormVersion, preload: Record<string, stri
 }
 
 // The cross-section of the wrapper used in tests. Mirrors window.SCORM at
-// runtime — tests assert via this surface.
+// runtime; tests assert via this surface.
 export interface ScormWrapper {
   init(): boolean
   whenReady(cb: () => void, onLate?: () => void): void

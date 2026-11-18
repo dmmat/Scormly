@@ -57,7 +57,7 @@ export default function Builder() {
   useEffect(() => {
     let active = true
     void restoreOpenProject(projectKey).then((ok) => {
-      // No project could be restored — fall back to a clean /app URL.
+      // No project could be restored: fall back to a clean /app URL.
       if (!ok && projectKey) navigate('app')
       if (active) setRestoring(false)
     })

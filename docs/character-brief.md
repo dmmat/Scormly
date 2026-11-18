@@ -301,7 +301,7 @@ consistent):
 | `frustrated` (opt.) | drawn together, inner ends lowered | narrowed | pressed lips / crooked mouth | shoulders higher, a slight exhale |
 | `thinking` (opt.) | one brow higher | gaze up and to the side | lips to the side | a hand near the chin is **allowed** within the safe zone |
 
-### 5.1 Ksenia ("Ksiu", Ксюша) — `ksiu` · HR / onboarding mentor
+### 5.1 Ksenia ("Ksiu", Ксюша): `ksiu` · HR / onboarding mentor
 
 - **Age:** 28-32. The main "face" of Scormly (first on the landing page).
 - **Appearance:** fair skin with a warm undertone, freckles; light-brown
@@ -315,7 +315,7 @@ consistent):
 - `concerned` - brows in a "little house", lips pressed - "oh, there's a
   nuance here, let's go through it", sympathetic, without anxiety.
 
-### 5.2 Nazar (Назар) — `nazar` · team lead
+### 5.2 Nazar (Назар): `nazar` · team lead
 
 - **Age:** 38-45.
 - **Appearance:** medium skin tone, a short neat haircut, dark hair with grey
@@ -329,7 +329,7 @@ consistent):
 - `concerned` - brows drawn together, a slight crease on the forehead, lips
   pressed - "we need to talk about the deadline".
 
-### 5.3 Max (Макс) — `max` · new employee
+### 5.3 Max (Макс): `max` · new employee
 
 - **Age:** 22-26.
 - **Appearance:** fair skin, dark-blond unruly hair, a bit longer on top; a
@@ -343,7 +343,7 @@ consistent):
 - `concerned` - uncertainty: brows in a "little house", the mouth slightly to
   the side - "did I break something?".
 
-### 5.4 Anna (Аня) — `anna` · colleague
+### 5.4 Anna (Аня): `anna` · colleague
 
 - **Age:** 30-36.
 - **Appearance:** dark skin (the `#6B4430` range), voluminous curly black hair
@@ -358,7 +358,7 @@ consistent):
 - `concerned` - "hmm, something's off": one brow slightly lower, lips pressed
   to the side, an empathetic gaze.
 
-### 5.5 Sergio (Серджіо) — `sergio` · customer
+### 5.5 Sergio (Серджіо): `sergio` · customer
 
 - **Age:** 55-65.
 - **Appearance:** fair skin with rosy cheeks, short grey hair, receding
@@ -374,7 +374,7 @@ consistent):
   corners down, chin slightly tucked in.
 - For Sergio `frustrated` is **especially desirable** (complaint scenarios).
 
-### 5.6 Dmytro ("Dima", Дмитро) — `dmytro` · IT support
+### 5.6 Dmytro ("Dima", Дмитро): `dmytro` · IT support
 
 - **Age:** 27-34.
 - **Appearance:** swarthy / olive skin, short black hair with a fade, neat
@@ -389,7 +389,7 @@ consistent):
 - `concerned` - wary: brows drawn together, lips in a line - "this email looks
   like phishing".
 
-### 5.7 Jisu (Дзісу) — `jisu` · marketing / design *(second wave)*
+### 5.7 Jisu (Дзісу): `jisu` · marketing / design *(second wave)*
 
 - **Age:** 26-32.
 - **Appearance:** East Asian, light skin with a warm undertone; a stylish bob
@@ -404,7 +404,7 @@ consistent):
 - `concerned` - brows in a "little house", lips pressed - "hmm, this doesn't
   match the brief", kindly.
 
-### 5.8 Layla (Лейла) — `layla` · lawyer / compliance *(second wave)*
+### 5.8 Layla (Лейла): `layla` · lawyer / compliance *(second wave)*
 
 - **Age:** 35-42.
 - **Appearance:** a woman of Arab descent (Middle East / North Africa), tan

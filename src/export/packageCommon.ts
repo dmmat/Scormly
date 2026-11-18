@@ -55,7 +55,7 @@ export function collectAssetPaths(course: Course): Set<string> {
   // JSON string / HTML attribute / CSS url() (quote, backslash escape, angle
   // bracket, query/fragment, line break). Spaces, Unicode, parentheses and
   // %-escapes are allowed, so the match is lazy and must end in `.ext`
-  // followed by a terminator — "see assets/a.png for details" stops at `.png`,
+  // followed by a terminator: "see assets/a.png for details" stops at `.png`,
   // while "assets/my file (1).png" is matched whole. Candidates are only ever
   // compared against real files in assets/, so an over-match is harmless.
   const re = /assets\/[^"'<>\\`?#\r\n]+?\.[A-Za-z0-9]+(?=["'<>\\`?#)\s,;]|$)/gu
@@ -113,7 +113,7 @@ async function addDir(
 
 /**
  * The player runtime couldn't be downloaded from the site (offline, or a
- * deploy in progress) — unrelated to the project's own media files.
+ * deploy in progress), unrelated to the project's own media files.
  */
 export class PlayerFilesError extends Error {}
 
@@ -205,7 +205,7 @@ export const SCHEMA_FILES: Record<'scorm12' | 'scorm2004', string[]> = {
 /**
  * Add the SCORM schema files for `set` at the package root (byte-for-byte).
  * Best effort: the schemas are optional for nearly every LMS, so failing to
- * load them must not fail the export. All or nothing — a partial set would
+ * load them must not fail the export. All or nothing: a partial set would
  * break validators that follow the imports. Resolves to whether they were added.
  */
 export async function addSchemas(zip: JSZip, set: 'scorm12' | 'scorm2004'): Promise<boolean> {
@@ -226,7 +226,7 @@ export async function addSchemas(zip: JSZip, set: 'scorm12' | 'scorm2004'): Prom
   }
 }
 
-// Add media from the project's assets/ folder — only the files the course
+// Add media from the project's assets/ folder, only the files the course
 // references (orphans from replaced/removed media are skipped).
 export async function addAssets(
   zip: JSZip,
@@ -255,7 +255,7 @@ export async function addAssets(
     })
     return await addDir(zip, assets, 'assets/', referenced, dirs)
   } catch {
-    // No assets folder — media is either absent or embedded as data URLs.
+    // No assets folder: media is either absent or embedded as data URLs.
     return []
   }
 }

@@ -5,7 +5,7 @@
 (function () {
   'use strict';
 
-  // [brand, brand-dark, button radius, surface radius] — mirrors the builder
+  // [brand, brand-dark, button radius, surface radius], mirrors the builder
   // themes in src/index.css so exports look like the preview.
   var THEME_ACCENT = {
     rose: ['#db2777', '#be185d', '0.5rem', '0.5rem'],
@@ -28,10 +28,10 @@
       finish: 'Finish', exitCourse: 'Exit course', courseComplete: 'Course complete',
       courseCompleteText: 'You have reached the end of the course. You can close this window.',
       courseIncomplete: 'The course is not complete yet',
-      courseIncompleteText: 'Some activities still need your answer. Finish them to complete the course — your progress is saved.',
+      courseIncompleteText: 'Some activities still need your answer. Finish them to complete the course. Your progress is saved.',
       unfinishedLessons: 'Unfinished lessons',
       courseFailed: 'The course is not passed yet',
-      courseFailedText: 'You need {p}% to pass. Retake the tests in these lessons — your progress is saved.',
+      courseFailedText: 'You need {p}% to pass. Retake the tests in these lessons. Your progress is saved.',
       retakeLessons: 'Lessons with tests to retake',
       review: 'Review the course', watchToContinue: 'Watch the video to continue.',
       close: 'Close', hotspotMarker: 'Marker {n}: {title}', hotspotProgress: 'Explored {n} of {total}',
@@ -63,10 +63,10 @@
       finish: 'Завершити', exitCourse: 'Вийти з курсу', courseComplete: 'Курс завершено',
       courseCompleteText: 'Ви пройшли курс до кінця. Це вікно можна закрити.',
       courseIncomplete: 'Курс ще не завершено',
-      courseIncompleteText: 'Деякі завдання ще чекають на вашу відповідь. Виконайте їх, щоб завершити курс — ваш прогрес збережено.',
+      courseIncompleteText: 'Деякі завдання ще чекають на вашу відповідь. Виконайте їх, щоб завершити курс. Ваш прогрес збережено.',
       unfinishedLessons: 'Незавершені уроки',
       courseFailed: 'Курс ще не складено',
-      courseFailedText: 'Щоб скласти, потрібно {p}%. Перескладіть тести в цих уроках — ваш прогрес збережено.',
+      courseFailedText: 'Щоб скласти, потрібно {p}%. Перескладіть тести в цих уроках. Ваш прогрес збережено.',
       retakeLessons: 'Уроки з тестами для перескладання',
       review: 'Переглянути курс', watchToContinue: 'Перегляньте відео, щоб продовжити.',
       close: 'Закрити', hotspotMarker: 'Мітка {n}: {title}', hotspotProgress: 'Переглянуто {n} з {total}',
@@ -133,10 +133,10 @@
       finish: 'Terminer', exitCourse: 'Quitter le cours', courseComplete: 'Cours terminé',
       courseCompleteText: 'Vous avez atteint la fin du cours. Vous pouvez fermer cette fenêtre.',
       courseIncomplete: 'Le cours n’est pas encore terminé',
-      courseIncompleteText: 'Certaines activités attendent encore votre réponse. Terminez-les pour achever le cours — votre progression est enregistrée.',
+      courseIncompleteText: 'Certaines activités attendent encore votre réponse. Terminez-les pour achever le cours. Votre progression est enregistrée.',
       unfinishedLessons: 'Leçons non terminées',
       courseFailed: 'Le cours n’est pas encore validé',
-      courseFailedText: 'Il faut {p} % pour valider le cours. Repassez les tests de ces leçons — votre progression est enregistrée.',
+      courseFailedText: 'Il faut {p} % pour valider le cours. Repassez les tests de ces leçons. Votre progression est enregistrée.',
       retakeLessons: 'Leçons dont les tests sont à repasser',
       review: 'Revoir le cours', watchToContinue: 'Regardez la vidéo pour continuer.',
       close: 'Fermer', hotspotMarker: 'Repère {n} : {title}', hotspotProgress: 'Explorés : {n} sur {total}',
@@ -273,10 +273,10 @@
       finish: 'Concluir', exitCourse: 'Sair do curso', courseComplete: 'Curso concluído',
       courseCompleteText: 'Você chegou ao fim do curso. Já pode fechar esta janela.',
       courseIncomplete: 'O curso ainda não foi concluído',
-      courseIncompleteText: 'Algumas atividades ainda aguardam sua resposta. Conclua-as para terminar o curso — seu progresso está salvo.',
+      courseIncompleteText: 'Algumas atividades ainda aguardam sua resposta. Conclua-as para terminar o curso. Seu progresso está salvo.',
       unfinishedLessons: 'Lições não concluídas',
       courseFailed: 'A nota de aprovação ainda não foi atingida',
-      courseFailedText: 'São necessários {p}% para a aprovação. Refaça os testes destas lições — seu progresso está salvo.',
+      courseFailedText: 'São necessários {p}% para a aprovação. Refaça os testes destas lições. Seu progresso está salvo.',
       retakeLessons: 'Lições com testes para refazer',
       review: 'Revisar o curso', watchToContinue: 'Assista ao vídeo para continuar.',
       close: 'Fechar', hotspotMarker: 'Marcador {n}: {title}', hotspotProgress: 'Explorados: {n} de {total}',
@@ -536,7 +536,7 @@
     // finished state resumable; completion/success are already reported.
     // Set now, not only on unload: browsers block the synchronous XHR many
     // LMS APIs use to commit during page dismissal, and an exit that never
-    // reaches the LMS counts as a normal exit — the resume data is dropped.
+    // reaches the LMS counts as a normal exit, so the resume data is dropped.
     SCORM.setExit('suspend');
     // Registered right after init (not after the async cmi5 handshake) so a
     // learner who closes the window early still gets a proper terminate.
@@ -949,7 +949,7 @@
 
   // Linear navigation: a lesson can be jumped to only when every lesson
   // before it has been visited and may be left (gates, required videos, quiz
-  // rule) — i.e. it is reachable by Next alone.
+  // rule), i.e. it is reachable by Next alone.
   function canReachLesson(index) {
     if (settings().navigation !== 'linear') return true;
     for (var k = 0; k < index; k++) {
@@ -959,7 +959,7 @@
   }
 
   // Learner explicitly ends the course: report + commit the final state and
-  // show the completion screen. The session is NOT terminated here — "Review
+  // show the completion screen. The session is NOT terminated here: "Review
   // the course" (and a quiz retake during review) must stay tracked;
   // Terminate happens on unload (onExit) or via the "Exit course" button.
   function finishCourse() {
@@ -973,7 +973,7 @@
   function sessionSeconds() { return (Date.now() - state.sessionStart) / 1000; }
 
   // "Exit course" on the completion screen: terminate the LMS session, then
-  // leave — a SCORM 2004 LMS closes the course itself on the suspendAll
+  // leave; a SCORM 2004 LMS closes the course itself on the suspendAll
   // navigation request; cmi5 returns to the LaunchData returnURL once
   // `terminated` is sent; otherwise try closing the window (SCORM popups).
   // When nothing works (1.2 SCO in an iframe) the completion screen stays,
@@ -1103,7 +1103,7 @@
     // No-op on SCORM, where setProgress already covers the progress measure.
     if (SCORM.setProgressed) SCORM.setProgressed(progressFraction);
 
-    // Scoring / pass-fail — only when enabled and the course has quizzes.
+    // Scoring / pass-fail, only when enabled and the course has quizzes.
     var success = null;
     var scoreValue = null;
     if (cfg.scored && hasQuiz && quizzesDone) {
@@ -1141,7 +1141,7 @@
   // Keys: l=lesson, p=page within it (omitted on the first), v=visited indices, q=scores by block id, c=passed
   // restricted "Continue" gates, w=watched required videos. When the runtime
   // reports a size limit (SCORM 1.2: 4096 chars) and the state outgrows it, it
-  // is shrunk step by step — never silently: block ids become ordinals and
+  // is shrunk step by step, never silently: block ids become ordinals and
   // visited lists become ranges (z=1), then the gate/video maps are dropped.
   // Lesson position and scores are always kept.
   function blockOrdinals() {
@@ -1550,7 +1550,7 @@
         h('nav', { class: 'player-nav', 'aria-label': t('lessonNav') }, [
           h('button', { class: 'btn btn-outline', text: t('review'),
             onclick: function () { state.finished = false; render(); focusLessonHeading(true); } }),
-          // Exit back to the LMS — only shown when actually running in one.
+          // Exit back to the LMS, only shown when actually running in one.
           SCORM.available()
             ? h('button', { class: 'btn', text: t('exitCourse'), onclick: exitCourse })
             : null,
@@ -1562,7 +1562,7 @@
     // screen must not claim otherwise: list the unfinished lessons instead.
     // Failed: the LMS doesn't count the course as done either (cmi5 moveOn
     // CompletedAndPassed; SCORM success_status failed), so no "Course
-    // complete" / author's congratulations — show the pass mark and the
+    // complete" / author's congratulations: show the pass mark and the
     // lessons where points can still be won.
     var card = s.completed && s.success === 'failed' ? h('div', { class: 'finish-card' }, [
       h('div', { class: 'finish-check failed', 'aria-hidden': 'true', text: '!' }),
@@ -2315,7 +2315,7 @@
   }
 
   // Video block. Download is disabled (controlsList=nodownload + no context
-  // menu / PiP) — a deterrent, not DRM. When requireWatch is set, watching to
+  // menu / PiP): a deterrent, not DRM. When requireWatch is set, watching to
   // ~95% (or to the end) satisfies the lesson's advance gate.
   function renderVideo(b) {
     if (!b.data.src) return null;
@@ -2819,7 +2819,7 @@
               }
             });
             card.appendChild(h('label', { class: 'quiz-opt' }, [input, h('span', { text: o.text }),
-              reveal && o.feedback && input.checked ? h('span', { class: 'empty', text: '— ' + o.feedback }) : null]));
+              reveal && o.feedback && input.checked ? h('span', { class: 'empty', text: ': ' + o.feedback }) : null]));
           });
         } else if (q.type === 'sequence') {
           if (!submitted) card.appendChild(h('p', { class: 'ord-hint', text: t('sequenceHint') }));
@@ -2832,7 +2832,7 @@
           (q.pairs || []).forEach(function (p) {
             var sel = h('select', { 'aria-label': p.left });
             sel.disabled = submitted;
-            sel.appendChild(h('option', { value: '', text: '—' }));
+            sel.appendChild(h('option', { value: '', text: '…' }));
             choices.forEach(function (right) { sel.appendChild(h('option', { value: right, text: right })); });
             sel.value = (answers[q.id] || {})[p.id] || '';
             sel.addEventListener('change', function () {
@@ -2846,7 +2846,7 @@
         if (reveal) {
           card.appendChild(h('p', { class: 'quiz-feedback ' + (ok ? 'passed' : 'failed') }, [
             resultIcon(ok),
-            (ok ? t('correct') : t('incorrect')) + (q.feedback ? ' — ' + q.feedback : ''),
+            (ok ? t('correct') : t('incorrect')) + (q.feedback ? ': ' + q.feedback : ''),
           ]));
         }
         wrap.appendChild(card);
@@ -2925,7 +2925,7 @@
               correct: isBlankCorrect(seg.answers, (a || [])[seg.index], strictOf(q)),
               weight: 1,
               latencySec: latency,
-              description: q.prompt + ' — ' + t('blankN', { n: seg.index + 1 }),
+              description: q.prompt + ': ' + t('blankN', { n: seg.index + 1 }),
               correctResponses: seg.answers.slice(),
               caseMatters: strictOf(q),
               objectiveId: 'QUIZ_' + b.id,
@@ -2978,7 +2978,7 @@
           var single = (q.options || []).find(function (o) { return o.correct; });
           correct = single ? [single.id] : [];
         }
-        // Build interaction object — extra fields are ignored by SCORM, used by xAPI.
+        // Build interaction object; extra fields are ignored by SCORM, used by xAPI.
         var inter = {
           id: q.id,
           type: q.type === 'matching' ? 'matching' : 'choice',
@@ -3213,7 +3213,7 @@
       }
       var sel = h('select', { 'aria-label': t('chooseCategory') + ': ' + it.text, 'data-focus': id + ':sel' });
       sel.disabled = submitted;
-      sel.appendChild(h('option', { value: '', text: '—' }));
+      sel.appendChild(h('option', { value: '', text: '…' }));
       categories.forEach(function (c) { sel.appendChild(h('option', { value: c.id, text: c.title })); });
       sel.value = assigned[id] || '';
       sel.addEventListener('change', function () { assigned[id] = sel.value || undefined; build(id + ':sel'); });
@@ -3321,7 +3321,7 @@
       var field;
       if (isSelect) {
         field = h('select', { class: cls, 'aria-label': t('blankN', { n: s.index + 1 }) });
-        field.appendChild(h('option', { value: '', text: '—' }));
+        field.appendChild(h('option', { value: '', text: '…' }));
         options.forEach(function (o) { field.appendChild(h('option', { value: o, text: o })); });
         field.value = responses[s.index] || '';
         field.addEventListener('change', function () { responses[s.index] = field.value; });

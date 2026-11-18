@@ -1,6 +1,6 @@
 // Projects kept in this browser. The Origin Private File System (OPFS) gives
-// each project a real directory handle — no permission prompts, it survives
-// reloads, and it works in Firefox as well as Chrome — so the folder code
+// each project a real directory handle: no permission prompts, it survives
+// reloads, and it works in Firefox as well as Chrome, so the folder code
 // (autosave, media, undo history, export) runs on it unchanged. Layout:
 // <OPFS>/projects/<id>/{project.json, AGENTS.md, assets/…}. Not synced
 // anywhere: a .zip download is the way to back a project up or share it.

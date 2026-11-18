@@ -4,7 +4,7 @@
 
 **Local-first block-based course builder with SCORM & cmi5 export**
 
-Build interactive, block-based courses right in your browser — no server, no
+Build interactive, block-based courses right in your browser: no server, no
 cloud. Everything is stored in your own file system, and the finished course is
 exported as a **SCORM 1.2 / 2004** or **cmi5 (xAPI)** package for any LMS.
 
@@ -22,12 +22,12 @@ exported as a **SCORM 1.2 / 2004** or **cmi5 (xAPI)** package for any LMS.
 
 > **Scormly** is a local-first, in-browser course builder that exports
 > standards-compliant **SCORM 1.2 / 2004** and **cmi5 (xAPI)** packages.
-> No backend, no account — your data and media live in your own file system via
+> No backend, no account: your data and media live in your own file system via
 > the File System Access API, and packaging happens entirely client-side.
 
 ## ✨ Features
 
-- **Block-based editor** — a lesson is built from content blocks with inline
+- **Block-based editor**: a lesson is built from content blocks with inline
   WYSIWYG editing, drag-and-drop reordering, and a right-click context menu.
 - **Rich block library:**
   - *Text:* headings, rich-text paragraphs, lists, callouts (note / warning),
@@ -36,24 +36,24 @@ exported as a **SCORM 1.2 / 2004** or **cmi5 (xAPI)** package for any LMS.
     any https page).
   - *Code:* your own HTML / CSS / JavaScript, or an uploaded `.html` page or
     `.zip` site (widgets, simulations, mini-games), shown in a frame that fits
-    its content. Pages can use the course look — theme color, button shape,
+    its content. Pages can use the course look: theme color, button shape,
     fonts and ready-made `sc-*` classes (the Scormly kit).
   - *Navigation:* a "Continue" button that reveals the rest of the lesson in
-    parts (optionally **restricted** — locked until the tasks above are done),
+    parts (optionally **restricted**, i.e. locked until the tasks above are done),
     a divider, and a **course outline** that links to the
     other lessons.
   - *Interactive:* tabs, accordions, flashcards, a branching **dialogue
     scenario**, and **quizzes** (single / multiple / matching with per-answer
     feedback, a passing score, and a "show correct answers" toggle).
-- **Video controls** — download is disabled by default, and any video can
+- **Video controls**: download is disabled by default, and any video can
   **require watching** (~95%) before the learner may continue.
-- **Course settings** — completion rule (view all lessons vs. answer all
+- **Course settings**: completion rule (view all lessons vs. answer all
   quizzes), optional pass/fail scoring with a passing score, and a **navigation
   mode** (free, or **linear** where *Next* unlocks only once the lesson is done).
-- **Learner preview** — a full-screen, in-app run-through with a *Finish* screen.
-- **Global project themes** — Rose, Ocean, Forest, Sunset, Mono, Indigo, Crimson, Mint, Grape, Terminal — change the accent and
+- **Learner preview**: a full-screen, in-app run-through with a *Finish* screen.
+- **Global project themes**: Rose, Ocean, Forest, Sunset, Mono, Indigo, Crimson, Mint, Grape, Terminal. They change the accent and
   the look of buttons/interactions with one click.
-- **Accessible courses** — designed to help you meet **WCAG 2.1 AA**: full
+- **Accessible courses**: designed to help you meet **WCAG 2.1 AA**: full
   keyboard navigation, screen-reader friendly markup and announcements, WebVTT
   captions and transcripts, decorative-image flag, AA contrast in every theme,
   and a learner accessibility menu (text size, high contrast, readable spacing,
@@ -63,20 +63,20 @@ exported as a **SCORM 1.2 / 2004** or **cmi5 (xAPI)** package for any LMS.
 - **Interface in five languages** (English, Ukrainian, French, Spanish, German) and an SEO landing page.
 - **Undo / Redo** with history and keyboard shortcuts (Ctrl/Cmd + Z / Y),
   persisted alongside the project.
-- **Local-first** — the project and media are saved to your own folder via the
+- **Local-first**: the project and media are saved to your own folder via the
   File System Access API (autosave, recent projects, image optimization); no
   backend whatsoever.
-- **SCORM 1.2 / 2004 and cmi5 (xAPI) export** — runs entirely client-side
+- **SCORM 1.2 / 2004 and cmi5 (xAPI) export**: runs entirely client-side
   (JSZip). SCORM is verified on SCORM Cloud.
-- **Review comments** — comment on any block, reply and resolve: for
-  colleagues or as notes to self. No accounts — just your name. They
+- **Review comments**: comment on any block, reply and resolve: for
+  colleagues or as notes to self. No accounts, just your name. They
   live in the project's own `comments.json`, travel in the project `.zip` and
   never reach the exported course.
-- **AI-friendly** — every project gets an `AGENTS.md` documenting `project.json`
+- **AI-friendly**: every project gets an `AGENTS.md` documenting `project.json`
   and all block types, so an AI assistant can read, edit, or author courses by
-  editing the JSON directly — including pages for Widget blocks (the block's
+  editing the JSON directly, including pages for Widget blocks (the block's
   *Copy instructions for AI* button gives a chat assistant the same rules).
-- **Declarative data model** — the whole course is serialized JSON
+- **Declarative data model**: the whole course is serialized JSON
   (`project.json`) that is easy to version, import, and export.
 
 ## 🧱 Stack
@@ -118,14 +118,14 @@ through a dispatcher, and changes flow through a Zustand store with snapshots fo
 undo/redo.
 
 Export bundles a self-contained static player with the course data embedded as
-`course-data.js` (loaded via a `<script>` tag — LMS sandboxes reject runtime
+`course-data.js` (loaded via a `<script>` tag, because LMS sandboxes reject runtime
 `fetch` of sibling files), copies the **referenced** media from `assets/`,
-generates the manifest, and packs everything into a single `.zip` with JSZip —
-no server required:
+generates the manifest, and packs everything into a single `.zip` with JSZip.
+No server required:
 
-- **SCORM 1.2 / 2004** — `imsmanifest.xml` + `scorm.js` (one runtime auto-detects
+- **SCORM 1.2 / 2004**: `imsmanifest.xml` + `scorm.js` (one runtime auto-detects
   the API version).
-- **cmi5 (xAPI)** — `cmi5.xml` + `xapi.js` (the same player; it does the cmi5
+- **cmi5 (xAPI)**: `cmi5.xml` + `xapi.js` (the same player; it does the cmi5
   launch handshake and sends xAPI statements to the LMS's LRS).
 
 For more detail, see [docs/architecture.md](docs/architecture.md).
@@ -165,10 +165,10 @@ public/scorm-player/          # vanilla runtime shipped in every export
 
 ## 📚 Documentation
 
-- [docs/architecture.md](docs/architecture.md) — data model, store, rendering, themes.
-- [docs/adding-blocks.md](docs/adding-blocks.md) — how to add a new block type.
-- [PROGRESS.md](PROGRESS.md) — current development status by phase.
-- `AGENTS.md` — generated into each project folder; documents `project.json` and
+- [docs/architecture.md](docs/architecture.md): data model, store, rendering, themes.
+- [docs/adding-blocks.md](docs/adding-blocks.md): how to add a new block type.
+- [PROGRESS.md](PROGRESS.md): current development status by phase.
+- `AGENTS.md`: generated into each project folder; documents `project.json` and
   every block type so AI agents (and humans) can edit courses directly.
 
 ## 🗺 Roadmap
@@ -182,8 +182,8 @@ public/scorm-player/          # vanilla runtime shipped in every export
       autosave, history, recent projects)
 - [x] Learner preview + Finish/completion screen
 - [x] Course settings: completion rule, pass/fail scoring, navigation mode
-- [x] SCORM 1.2 / 2004 export — **verified on SCORM Cloud**
-- [x] cmi5 (xAPI) export — implemented; not yet verified on a live LRS
+- [x] SCORM 1.2 / 2004 export: **verified on SCORM Cloud**
+- [x] cmi5 (xAPI) export: implemented; not yet verified on a live LRS
 - [x] AI agent guide (`AGENTS.md`) generated per project
 - [ ] Verify cmi5 on a live LRS / TalentLMS; cmi5 resume across launches
 - [ ] Plain xAPI target (own LRS endpoint), more interface languages

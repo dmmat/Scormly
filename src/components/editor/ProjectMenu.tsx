@@ -9,7 +9,7 @@ import { runExport } from '../../export/runExport'
 import { useDialog } from '../../hooks/useDialog'
 
 // Dropdown on the project name: back to the projects screen (to create, open
-// or switch projects — see WelcomeScreen), or download this one as a .zip.
+// or switch projects; see WelcomeScreen), or download this one as a .zip.
 // Without a project name it reads "Not saving to disk" (work in this tab only).
 export default function ProjectMenu() {
   const projectName = useCourseStore((s) => s.projectName)
@@ -23,8 +23,8 @@ export default function ProjectMenu() {
 
   useMenu({ open, onClose: () => setOpen(false), rootRef, triggerRef })
 
-  // Why leaving needs an answer first: 'zip' — no folder and edits since the
-  // last .zip download; 'folder' — the last write to the folder failed.
+  // Why leaving needs an answer first: 'zip' means no folder and edits since the
+  // last .zip download; 'folder' means the last write to the folder failed.
   const [leaveAsk, setLeaveAsk] = useState<'zip' | 'folder' | null>(null)
 
   // Leaving the project: write pending edits first, and ask before discarding

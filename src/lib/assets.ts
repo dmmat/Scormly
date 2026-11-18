@@ -1,7 +1,7 @@
 // Media assets: copy uploaded files into the project's assets/ folder and store
 // relative paths in the model. Images are optimized in-browser (downscale +
 // re-encode) while preserving transparency. Display paths are resolved back to
-// object URLs via the project's directory handle — or, without a folder, via
+// object URLs via the project's directory handle (or, without a folder, via
 // the in-memory store below.
 
 import { useCourseStore } from '../store/courseStore'
@@ -179,7 +179,7 @@ export function mimeForPath(path: string): string {
 
 /**
  * Validate, optimize and store an uploaded file. Returns a project-relative
- * path (assets/images/...) — on disk when a project folder is open, otherwise
+ * path (assets/images/...): on disk when a project folder is open, otherwise
  * in memory. Throws UnsupportedFormatError for disallowed formats.
  */
 export async function saveAsset(file: File, kind: AssetKind): Promise<string> {

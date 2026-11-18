@@ -54,7 +54,7 @@ export default function BlanksText({
                 onChange={(e) => onChange(s.index, e.target.value)}
                 className={`rounded-md border px-2 py-0.5 text-gray-800 outline-none ${tone}`}
               >
-                <option value="">—</option>
+                <option value="">…</option>
                 {options.map((o) => (
                   <option key={o} value={o}>
                     {o}

@@ -61,7 +61,7 @@ export interface BlockSettings {
   /** Photo for background 'image' (assets/ path); dimmed so text stays readable. */
   backgroundImage?: string
   /** Block width: narrow (~60% of the column), normal (the column, default),
-   *  wide (breaks out past the column) or full — edge to edge of the page: a
+   *  wide (breaks out past the column) or full (edge to edge of the page): a
    *  full-width band (with a background the content stays in the column;
    *  without one, media such as text on image or a carousel spans the page). */
   width?: BlockWidth
@@ -744,7 +744,7 @@ export interface Unit {
 }
 
 /** How lessons in units are numbered for the learner:
- *  unit — "Unit 2 · Lesson 1" · dotted — "Lesson 2.1" · none — "Lesson 5"
+ *  unit: "Unit 2 · Lesson 1" · dotted: "Lesson 2.1" · none: "Lesson 5"
  *  (counted through the whole course). */
 export type UnitNumbering = 'unit' | 'dotted' | 'none'
 
@@ -788,7 +788,7 @@ export type NavigationMode =
   /** Free movement: Next/Previous always available. */
   | 'free'
   /** Linear: Next unlocks only once the current lesson is complete (gates,
-   *  required videos, and — under the 'quiz' rule — its quizzes answered).
+   *  required videos, and (under the 'quiz' rule) its quizzes answered).
    *  Previous stays available. */
   | 'linear'
 
@@ -864,7 +864,7 @@ export const DEFAULT_INTRO: CourseIntro = {
 }
 
 /** Languages the learner player's own UI (buttons, feedback) is translated
- *  into — keep in sync with the `T` table in public/scorm-player/player.js. */
+ *  into; keep in sync with the `T` table in public/scorm-player/player.js. */
 export const PLAYER_LANGUAGES = ['en', 'uk', 'es', 'fr', 'de', 'it', 'nl', 'pt'] as const
 
 export type PlayerLanguage = 'auto' | (typeof PLAYER_LANGUAGES)[number]

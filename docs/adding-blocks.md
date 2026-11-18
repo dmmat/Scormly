@@ -77,7 +77,7 @@ anywhere else. Label each in both languages as `variant_<type>_<id>` in the
 `blocks` namespace (search matches these labels too); `tests/registry.test.ts`
 checks the labels and that no variant creates a broken block. Also add a line
 icon for the type to `PATHS` in
-[`src/blocks/BlockIcon.tsx`](../src/blocks/BlockIcon.tsx) (24×24, stroked) —
+[`src/blocks/BlockIcon.tsx`](../src/blocks/BlockIcon.tsx) (24×24, stroked);
 the `Record<BlockType, …>` type makes the build fail until you do.
 
 ## 3. Create the editor component
@@ -127,12 +127,12 @@ export default function DividerBlock({
 - **Editing through the store:** `update(lessonId, block.id, patch, coalesceKey?)`.
   Use a stable `coalesceKey` (e.g. `divider-x-${block.id}`) for continuous typing;
   omit the key for discrete actions.
-- **Immutability:** when updating arrays/nested objects, build new ones — don't
+- **Immutability:** when updating arrays/nested objects, build new ones; don't
   mutate `block.data`.
 - **Themes:** for accents, use `bg-brand` / `text-brand` / `border-brand` or the
-  `btn-primary` / `btn-secondary` / `interactive-surface` classes — don't hardcode
+  `btn-primary` / `btn-secondary` / `interactive-surface` classes; don't hardcode
   colors, or themes won't work.
-- **UI strings go through i18n.** Don't hardcode user-facing text — add keys to
+- **UI strings go through i18n.** Don't hardcode user-facing text; add keys to
   the relevant namespace in `src/i18n/locales/` (every interface language: English, Ukrainian, French, Spanish, German) and read them
   via `useT('<namespace>')`. Author-edited course content is not localized.
   Comment only where the "why" needs explaining.
@@ -158,7 +158,7 @@ The editor component is only one of three renderers. Also add:
 
 - a case to [`BlockPreview`](../src/preview/BlockPreview.tsx) (in-app preview);
 - a case to `renderBlock()` in [`public/scorm-player/player.js`](../public/scorm-player/player.js)
-  (the exported course — vanilla JS, no React);
+  (the exported course: vanilla JS, no React);
 - an entry to `BLOCK_DOCS` in [`src/lib/agentGuide.ts`](../src/lib/agentGuide.ts)
   (the `AGENTS.md` written into project folders; the build fails without it).
 

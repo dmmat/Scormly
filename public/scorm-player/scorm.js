@@ -10,7 +10,7 @@
    - resume:    suspend_data, location, exit=suspend
    - time:      session_time
    - objectives: cmi.objectives.n.* (one per scored block: quiz / ordering / fill-in),
-                 indexed by id — records the LMS already holds (e.g. manifest-declared
+                 indexed by id: records the LMS already holds (e.g. manifest-declared
                  2004 objectives) are reused, new ones are appended at _count
    - interactions: cmi.interactions.n.* appended after the LMS's _count, incl.
                    weighting / latency / description (2004) /
@@ -69,8 +69,8 @@
 
   // What the LMS already records, so later writes never downgrade it: passed
   // stays passed (and its score never drops), completed never returns to
-  // incomplete. Learners may retake quizzes — also from "Review the course"
-  // after finishing — and LMSes keep the last value written, not the best.
+  // incomplete. Learners may retake quizzes (also from "Review the course"
+  // after finishing), and LMSes keep the last value written, not the best.
   var sticky = { completed: false, passed: false, status12: '', raw: null };
   var held12 = null; // 1.2 score waiting for completion (see setScore)
   function writeScore12() {
@@ -101,7 +101,7 @@
     // caller decides whether to log. We only log if the LMS actually errored.
     var code = lastError();
     if (code && code !== '0' && code !== '403') {
-      // 403 = "Data Model Element Not Initialized" (2004) — common & benign.
+      // 403 = "Data Model Element Not Initialized" (2004): common & benign.
       // Some 1.2 LMSes also return non-zero for unsupported optional elements.
       console.debug('[SCORM] GetValue(' + key + ') code ' + code);
     }
@@ -130,11 +130,11 @@
 
   // Index the records the LMS already holds, so we append after them (a new
   // launch must not overwrite the previous session's interactions) and write
-  // objectives to the slot that already carries their id — 2004 LMSes preload
+  // objectives to the slot that already carries their id; 2004 LMSes preload
   // the manifest's objectives (PRIMARYOBJ, QUIZ_*) in declaration order, and
   // writing a different id to an existing slot is an error.
   // Optional data model families the LMS doesn't implement (1.2 error 401,
-  // 2004 401/402 — e.g. TalentLMS has no cmi.objectives). Writing to them
+  // 2004 401/402, e.g. TalentLMS has no cmi.objectives). Writing to them
   // only produces an error per call, so they are skipped altogether.
   var unsupported = { objectives: false, interactions: false };
   function notImplemented() {
@@ -311,7 +311,7 @@
         set('cmi.score.scaled', Math.max(0, Math.min(1, (raw - lo) / range)).toFixed(4));
       } else {
         // 1.2: with a mastery score in the manifest the LMS may turn any raw
-        // score into passed / failed (RTE cmi.core.lesson_status) — which
+        // score into passed / failed (RTE cmi.core.lesson_status), which
         // many LMSes count as finished. So the score waits for completion.
         held12 = { raw: Math.round(raw), min: lo, max: hi };
         if (sticky.completed) writeScore12();

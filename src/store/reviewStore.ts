@@ -6,7 +6,7 @@ import { translate } from '../i18n/I18nProvider'
 
 // Review comments of the open project and the comments panel. Kept out of the
 // course store on purpose: comments are saved in their own file
-// (lib/comments.ts) and aren't part of the course's undo history — deleting
+// (lib/comments.ts) and aren't part of the course's undo history, so deleting
 // one offers its own Undo instead.
 
 const REVIEWER_KEY = 'scormly.reviewer'

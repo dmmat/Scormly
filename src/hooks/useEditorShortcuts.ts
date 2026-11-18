@@ -5,12 +5,12 @@ import { deleteBlockWithUndo } from '../lib/deleteWithUndo'
 import { useReviewStore } from '../store/reviewStore'
 
 // Editor keyboard shortcuts acting on the selected block:
-//   Delete, Backspace — delete block
-//   Ctrl/Cmd + D      — duplicate block
-//   Alt + ↑ / ↓       — move block up / down
-//   Ctrl+Alt+M (⌘⌥A)  — comment on the block (also while editing its text)
-//   Escape            — deselect
-//   ?                 — keyboard shortcuts help
+//   Delete, Backspace: delete block
+//   Ctrl/Cmd + D:      duplicate block
+//   Alt + ↑ / ↓:       move block up / down
+//   Ctrl+Alt+M (⌘⌥A):  comment on the block (also while editing its text)
+//   Escape:            deselect
+//   ?:                 keyboard shortcuts help
 // Ignored while typing in inputs / textareas / contentEditable (except Escape),
 // and while the preview or settings overlay is open.
 export function useEditorShortcuts() {

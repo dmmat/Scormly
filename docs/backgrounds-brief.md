@@ -32,20 +32,20 @@ modes stay unchanged and without a background.
 
 A separate decision: whether this is a new `layout` value (`'scene'`) in the
 same "Scenario" block (cheaper: shared nodes, branches, dialogue editor), or
-a separate block type. Recommendation — **a `layout` value**, because the
+a separate block type. Recommendation: **a `layout` value**, because the
 dialogue logic is the same and only the presentation differs.
 
 Decisions to make **before** generation:
 
-1. **How to show the character on the background — DECISION: (B).** The
+1. **How to show the character on the background? DECISION: (B).** The
    existing frames are 1:1 bust portraits, the shoulders run past the sides
    of the square, so on a wide background they would have shoulders "cut off
    vertically". Therefore a **separate set of scene poses** is drawn for
    each character (waist-up, with natural shoulders and hands, transparent
-   background) — specification in **section 9**. That is +3 frames per
+   background); specification in **section 9**. That is +3 frames per
    character on top of the 3 avatar ones (the medallion (A) was rejected).
 2. **Light/dark theme.** The player is light for now → backgrounds come in
-   one, "daytime" variant. Night versions — not now.
+   one, "daytime" variant. Night versions: not now.
 3. **Whether to tie the background to the Scormly theme.** No: backgrounds
    are neutral and do not change with the accent (see 4.2). Accent elements
    are only in the UI.
@@ -60,7 +60,7 @@ Decisions to make **before** generation:
 |---|---|---|
 | A | Background scenes (16:9) | **10 required** + up to 4 optional |
 | B | Thumbnails for the picker | 1 per background |
-| C | Character scene poses (section 9): `neutral`, `happy`, `concerned` | **3 per character** (6 × 3 = 18; with Jisu and Layla — 24) |
+| C | Character scene poses (section 9): `neutral`, `happy`, `concerned` | **3 per character** (6 × 3 = 18; with Jisu and Layla, 24) |
 | D | "Character × background" previews (check, not for production) | 6 × 3 minimum |
 | E | Source files (PSD / Figma / master PNG) | all |
 
@@ -68,7 +68,7 @@ Decisions to make **before** generation:
 
 | File | Format | Size | Weight | Purpose |
 |---|---|---|---|---|
-| Master | PNG, sRGB | **3200 × 1800** | — | source, does not go into the product |
+| Master | PNG, sRGB | **3200 × 1800** | n/a | source, does not go into the product |
 | Production | **WebP**, quality ≈ 80 | **1600 × 900** (2× of 800) | target **≤ 80 KB**, hard limit **≤ 120 KB** | library and SCORM |
 | Thumbnail | WebP | **320 × 180** | ≤ 15 KB | picker in the editor |
 
@@ -76,7 +76,7 @@ No transparency (the background is solid). No metadata, sRGB. Budget:
 10 × ~80 KB = ~0.8 MB per library; only the chosen background is copied into
 a course.
 
-Because of the weight — **flat fills and soft blurred depth**, no fine
+Because of the weight: **flat fills and soft blurred depth**, no fine
 noise, texture or film grain (they break compression). Gradients are allowed
 only if soft and broad.
 
@@ -97,7 +97,7 @@ source/backgrounds/<id>@3200.png
 source/characters/<id>/scene-<emotion>@1536.png
 ```
 
-IDs — `kebab-case`, Latin letters.
+IDs: `kebab-case`, Latin letters.
 
 ---
 
@@ -113,7 +113,7 @@ IDs — `kebab-case`, Latin letters.
   illustration), so that the background reads as a place but does not
   compete with the face.
 - **Camera at the eye level of a seated/standing person**, horizon at about
-  **40–45% of the frame height** — this matches the characters' eye line
+  **40–45% of the frame height**; this matches the characters' eye line
   (42%), and the character "stands" in the room naturally.
 - **No people** in the backgrounds: the author adds the characters.
 
@@ -124,13 +124,13 @@ IDs — `kebab-case`, Latin letters.
   `#C19A6B`, very sparingly burgundy `#7F3B4A` / mustard `#C9A227`.
 - Additionally allowed for backgrounds: **light walls and floors**
   (`#F3F4F6`, `#E5E7EB`, `#EDE7DC`) and **natural green foliage** (a
-  houseplant — muted, small).
+  houseplant; muted, small).
 - **No saturated** pink, blue, green, orange over large areas (as in 4.2 for
-  characters) — they would conflict with the theme accent.
+  characters): they would conflict with the theme accent.
 - **Text contrast:** the UI puts a bubble/panel on the scene, but the
   background must still be **medium-light and low-contrast**. Target average
   lightness 55–80% (HSL L), no sharp light spots >90% and no black spots
-  <15%. Sharp, small, high-contrast details (blinds, checks, brick) — only
+  <15%. Sharp, small, high-contrast details (blinds, checks, brick) only
   in the blurred background.
 
 ### 4.3 Composition (safe zones)
@@ -141,15 +141,15 @@ A 16:9 scene with three vertical zones:
 ┌──────────────┬─────────────────────┬──────────────┐
 │ CHARACTER    │   "live" center     │   small      │
 │ ZONE (0–40%) │   (40–100%)         │   interior   │
-│ simplified,  │   — the line and    │              │
+│ simplified,  │   the line and      │              │
 │ light patch  │   interior; calm    │              │
 └──────────────┴─────────────────────┴──────────────┘
-   bottom 30% — calm (under the text panel)
+   bottom 30%: calm (under the text panel)
 ```
 
-- **Left third** — simplified and lighter: the character is placed there (as
-  in the classic layout — character on the left, "turned" toward the text).
-- **Bottom 30% of the height** — calm floor/table, no details (under the
+- **Left third**: simplified and lighter: the character is placed there (as
+  in the classic layout: character on the left, "turned" toward the text).
+- **Bottom 30% of the height**: calm floor/table, no details (under the
   bubble).
 - The background must **look good mirrored** (the author may put the
   character on the right): no important asymmetric details and no text.
@@ -195,7 +195,7 @@ A 16:9 scene with three vertical zones:
 | `abstract-light` | Neutral light gradient + a few soft shapes (universal "no location") |
 | `abstract-dark` | The same, dark version (for the future) |
 
-> If there are children's courses (see the cast discussion) — additionally
+> If there are children's courses (see the cast discussion), additionally
 > `classroom`, `playground`, `library`. A separate style is not needed, only
 > a brighter color range within 4.2.
 
@@ -254,12 +254,12 @@ night scene, clutter
 
 ### 6.4 Tips
 
-1. Generate in 16:9, then **compress and check the weight**. If > 120 KB —
+1. Generate in 16:9, then **compress and check the weight**. If > 120 KB,
    simplify the background (fewer small details) rather than lowering the
    quality below 70.
 2. Make all 10 scenes in **one session**, with the same palette and blur
    level, otherwise the set will fall apart.
-3. Check the "background + character" pairing right away (checklist below) —
+3. Check the "background + character" pairing right away (checklist below)
    on one character from each gender/skin-tone pair (so that hair and
    clothing do not blend in).
 
@@ -270,7 +270,7 @@ night scene, clutter
 **Technical**
 - [ ] WebP 1600 × 900, ≤ 120 KB (target ≤ 80); thumbnail 320 × 180, ≤ 15 KB.
 - [ ] No metadata, sRGB, no transparency.
-- [ ] File names — per 3.3.
+- [ ] File names: per 3.3.
 
 **Composition**
 - [ ] Left third simplified and lighter; bottom 30% calm.
@@ -293,7 +293,7 @@ night scene, clutter
 **Rights**
 - [ ] Source files handed over; rights compatible with MIT and with
       distribution in users' SCORM packages without attribution (for
-      generated ones — the model's terms allow it).
+      generated ones; the model's terms allow it).
 
 ---
 
@@ -301,7 +301,7 @@ night scene, clutter
 
 1. **Data model:** `ScenarioData.background?: string` (relative path) + a
    new scenario type `layout: 'classic' | 'chat' | 'scene'` (see section 2).
-   Only fields are added — old projects do not break; `repairCourse`
+   Only fields are added, so old projects do not break; `repairCourse`
    ignores a missing background. The `background` field only makes sense for
    `scene`.
 2. **Files:** `public/library/backgrounds/*` + a `backgrounds` section in
@@ -314,9 +314,9 @@ night scene, clutter
    (see CLAUDE.md "Learner rendering in three places"). The scene is
    `object-fit: cover`, the text panel has a semi-transparent white backing,
    so that legibility does not depend on the background.
-5. **i18n:** namespace `scenario`, EN + UK; background names — from the
+5. **i18n:** namespace `scenario`, EN + UK; background names come from the
    manifest.
-6. **`BLOCK_DOCS`** in `agentGuide.ts` — update the scenario description (new
+6. **`BLOCK_DOCS`** in `agentGuide.ts`: update the scenario description (new
    field, new layout).
 7. **Pre-export check:** if a background is set but the file is missing.
 
@@ -333,7 +333,7 @@ here.
 
 | File | Format | Size | Weight |
 |---|---|---|---|
-| Master | PNG-32 (RGBA), sRGB | **1536 × 2048** (3:4) | — |
+| Master | PNG-32 (RGBA), sRGB | **1536 × 2048** (3:4) | n/a |
 | Production | **WebP with alpha**, quality ≈ 85 | **768 × 1024** | target **≤ 70 KB**, hard limit **≤ 100 KB** |
 
 Display: the character's height ≈ 60–75% of the scene height (in an
@@ -356,24 +356,24 @@ enough).
 
 - **Transparent background**, no floor, shadows, panels.
 - **Horizontal center** of the torso 50% ± 2%. **Shoulders and arms do not
-  touch the side edges** (≥ 4% margin) — this is the main difference from
+  touch the side edges** (≥ 4% margin); this is the main difference from
   the avatar busts: the silhouette must be whole.
-- **Bottom edge** — a straight crop at the waist; in the scene it is placed
+- **Bottom edge**: a straight crop at the waist; in the scene it is placed
   flush with the bottom edge of the frame, so nothing "hangs in the air".
-- **Head height** (crown without hairstyle → chin) — 22–26% of the frame,
+- **Head height** (crown without hairstyle → chin): 22–26% of the frame,
   the same for everyone (deviation ± 1.5%).
 - **Angle:** body turned 15–25° to the viewer's right, gaze at the viewer.
   All characters look in the same direction (toward the text).
 - **Hands are allowed but identical across all emotions:** hanging freely
   along the torso or clasped in front at waist level, within the frame. A
-  gesture (e.g. an open palm) — only as an optional separate variant, not in
+  gesture (e.g. an open palm) only as an optional separate variant, not in
   the required emotions, so that the frames do not "drift".
 
 ### 9.3 What changes between emotions
 
 Only the face (eyebrows, eyes, mouth), head tilt ≤ 5° around the point
 between the eyes, shoulder raise ≤ 1.5% of the height. **Body, clothing,
-hands, hairstyle silhouette — one shared layer.** The expression rules — the
+hands, hairstyle silhouette: one shared layer.** The expression rules: the
 "emotion formula" table in character-brief, section 5.
 
 ### 9.4 Prompt
@@ -407,9 +407,9 @@ positions`.
    as the reference: the face and clothing must match.
 2. First `scene-neutral`, then `happy`/`concerned` image-to-image (strength
    0.6–0.75), fixed seed.
-3. Align the frames by the eye line (20%) and the axis (50%) — a mandatory
+3. Align the frames by the eye line (20%) and the axis (50%): a mandatory
    50% transparency overlay, tolerance ≤ 1% of the frame.
-4. The best result — redraw in vector with one body/hands layer and separate
+4. The best result: redraw in vector with one body/hands layer and separate
    face layers.
 
 ### 9.6 Acceptance checklist (scene poses)

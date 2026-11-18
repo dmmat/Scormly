@@ -13,5 +13,5 @@
     <text x="130" y="74" font-family="system-ui, Arial, sans-serif" font-size="76" font-weight="800" fill="#111827">Scorm<tspan fill="#ec4899">ly</tspan></text>
   </g>
   <text x="96" y="400" font-family="system-ui, Arial, sans-serif" font-size="44" font-weight="700" fill="#111827">Build interactive courses · export to SCORM</text>
-  <text x="96" y="460" font-family="system-ui, Arial, sans-serif" font-size="32" fill="#6b7280">Open source · Free · 100% local — your data never leaves your computer</text>
+  <text x="96" y="460" font-family="system-ui, Arial, sans-serif" font-size="32" fill="#6b7280">Open source · Free · 100% local: your data never leaves your computer</text>
 </svg>

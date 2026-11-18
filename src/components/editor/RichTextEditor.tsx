@@ -99,7 +99,7 @@ interface RichTextEditorProps {
 }
 
 // Lightweight rich-text editor: a contentEditable area plus a formatting toolbar
-// (bold / italic / underline, lists, alignment, image). Dependency-free — uses
+// (bold / italic / underline, lists, alignment, image). Dependency-free: uses
 // document.execCommand, which produces clean, SCORM-friendly HTML.
 export default function RichTextEditor({
   html,
@@ -227,7 +227,7 @@ export default function RichTextEditor({
   }, [imgSel])
 
   // Seed/resync from the model only when NOT focused (so typing never moves the
-  // caret). Compares against modelHtml() — the DOM shows resolved object URLs for
+  // caret). Compares against modelHtml(): the DOM shows resolved object URLs for
   // asset images while the model stores relative paths.
   useEffect(() => {
     const el = ref.current
@@ -456,7 +456,7 @@ export default function RichTextEditor({
       // Stored in assets/ when a project is open (relative path), else a data URL.
       path = await saveAsset(file, 'image')
     } catch {
-      return // unsupported format — ignore
+      return // unsupported format, ignore
     }
     const displaySrc = (await resolveAssetUrl(path)) ?? path
 

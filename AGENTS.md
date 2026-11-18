@@ -19,14 +19,14 @@ the default route (the builder lives at `/app`).
 ## Check before committing
 
 - `npm run build` (includes `tsc --noEmit`) and `npx vitest run` must pass.
-- Verify UI changes in a browser (`npm run dev`), or headlessly — see the
-  "Conventions" section of CLAUDE.md for the player page / CDP approach.
+- Verify UI changes in a browser (`npm run dev`), or headlessly (see the
+  "Conventions" section of CLAUDE.md for the player page / CDP approach).
 
 ## Principles
 
-- Keep the data model (`src/types/course.ts`) declarative and JSON-serializable —
+- Keep the data model (`src/types/course.ts`) declarative and JSON-serializable:
   it is the basis for `project.json` and SCORM export.
-- Learner-facing blocks render in three places — editor, in-app preview and the
+- Learner-facing blocks render in three places: editor, in-app preview and the
   exported player (`public/scorm-player/`). Keep them in sync; shared block CSS
   is `src/styles/blocks.css`, copied into `player.css` by
   `scripts/syncPlayerCss.mjs` (runs automatically before `npm run dev` / `build`).
@@ -41,8 +41,8 @@ the default route (the builder lives at `/app`).
 - Don't add dependencies or abstractions beyond what the current task needs.
 - Follow strict TypeScript and the existing component style.
 - **All code comments and documentation are in English.** User-facing UI strings
-  go through i18n (`src/i18n/locales/`, English + Ukrainian) — don't hardcode them.
+  go through i18n (`src/i18n/locales/`, English + Ukrainian); don't hardcode them.
 - Brand: the name is **Scormly**, the default accent is pink `#EC4899`
   (`text-brand` / `bg-brand`). Use the `*-brand` utilities and the global
   `.btn-primary` / `.btn-secondary` / `.interactive-surface` classes so themes
-  apply — never hardcode the accent hex.
+  apply. Never hardcode the accent hex.

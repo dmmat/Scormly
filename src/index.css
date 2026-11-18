@@ -274,7 +274,7 @@ body {
 }
 
 /*
- * Landing header: "Open the builder" — a glowing pill. The gradient rim
+ * Landing header: "Open the builder", a glowing pill. The gradient rim
  * turns only on hover / focus and the shine passes once in a while, so the
  * button doesn't pull the eye from the page all the time.
  */
@@ -475,7 +475,7 @@ body {
  * ────────────────────────────────────────────────────────────────────────── */
 
 /* Loading screen of /app and /demo: in the page's HTML and in App.tsx's Suspense
- * fallback (components/layout/AppLoader.tsx) — keep the two in step. */
+ * fallback (components/layout/AppLoader.tsx); keep the two in step. */
 .app-loader {
   min-height: 100vh; min-height: 100dvh; display: flex; flex-direction: column;
   align-items: center; justify-content: center; gap: 1.6rem; background: #f9fafb;

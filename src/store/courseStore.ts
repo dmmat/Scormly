@@ -110,7 +110,7 @@ export interface CourseState {
   updateIntro: (patch: Partial<CourseIntro>, coalesceKey?: string) => void
   loadCourse: (course: Course) => void
   /** Swap in a whole new version of the course (e.g. from a .zip) as one
-   *  undoable step — Ctrl+Z brings the previous version back. */
+   *  undoable step: Ctrl+Z brings the previous version back. */
   replaceCourse: (course: Course) => void
   /** Reset to a fresh in-memory demo course, localized to the current UI language. */
   newDemoCourse: () => void

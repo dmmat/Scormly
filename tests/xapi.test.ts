@@ -27,7 +27,7 @@ function hasCategory(stmt: { context?: { contextActivities?: { category?: Array<
   return cats.some((c) => c.id === id)
 }
 
-describe('xAPI — inactive without launch params', () => {
+describe('xAPI: inactive without launch params', () => {
   test('init returns false and available() is false when no cmi5 params', () => {
     const { SCORM } = loadXapi() // no params → no launch
     expect(SCORM.init()).toBe(false)
@@ -51,7 +51,7 @@ describe('xAPI — inactive without launch params', () => {
   })
 })
 
-describe('xAPI — launch handshake', () => {
+describe('xAPI: launch handshake', () => {
   test('POSTs the one-time fetch URL and pulls LaunchData + suspendData', async () => {
     const { SCORM, calls, wait } = loadXapi({
       params: defaultLaunch(),
@@ -130,7 +130,7 @@ describe('xAPI — launch handshake', () => {
   })
 })
 
-describe('xAPI — full session statement order', () => {
+describe('xAPI: full session statement order', () => {
   test('emits initialized → progressed → passed[objective] → answered → passed[result] → completed → commented → terminated', async () => {
     const { SCORM, statements, wait } = loadXapi({
       params: defaultLaunch(),
@@ -182,7 +182,7 @@ describe('xAPI — full session statement order', () => {
     expect(progressed[0].result?.extensions?.[PROGRESS_EXT]).toBe(10)
     expect(progressed[1].result?.extensions?.[PROGRESS_EXT]).toBe(50)
     // progressed is only "cmi5 allowed" (not a cmi5-defined verb), so it must
-    // not carry the cmi5 category — nor the moveOn one.
+    // not carry the cmi5 category, nor the moveOn one.
     expect(hasCategory(progressed[0], CMI5_CAT)).toBe(false)
     expect(hasCategory(progressed[0], MOVEON_CAT)).toBe(false)
   })
@@ -262,7 +262,7 @@ describe('xAPI — full session statement order', () => {
   })
 })
 
-describe('xAPI — answered (interaction) statements', () => {
+describe('xAPI: answered (interaction) statements', () => {
   test('answered carries full definition (interactionType, choices, correctResponsesPattern)', async () => {
     const { SCORM, statements, wait } = loadXapi({
       params: defaultLaunch(),
@@ -293,7 +293,7 @@ describe('xAPI — answered (interaction) statements', () => {
     expect(ans.result?.success).toBe(true)
     expect(ans.result?.response).toBe('opt1')
     expect(ans.result?.duration).toBe('PT8S')
-    // answered must NOT carry the cmi5 category — it isn't cmi5-defined.
+    // answered must NOT carry the cmi5 category: it isn't cmi5-defined.
     expect(hasCategory(ans, CMI5_CAT)).toBe(false)
   })
 
@@ -321,7 +321,7 @@ describe('xAPI — answered (interaction) statements', () => {
   })
 })
 
-describe('xAPI — array responses', () => {
+describe('xAPI: array responses', () => {
   test('sequencing / matching arrays use the [,] and [.] delimiters', async () => {
     const { SCORM, statements, wait } = loadXapi({
       params: defaultLaunch(),
@@ -353,7 +353,7 @@ describe('xAPI — array responses', () => {
   })
 })
 
-describe('xAPI — objectives', () => {
+describe('xAPI: objectives', () => {
   test('setObjective sends a statement scoped to the objective activity', async () => {
     const { SCORM, statements, wait } = loadXapi({
       params: defaultLaunch(),
@@ -379,7 +379,7 @@ describe('xAPI — objectives', () => {
   })
 })
 
-describe('xAPI — State API for resume', () => {
+describe('xAPI: State API for resume', () => {
   test('setSuspend PUTs to stateId=suspendData', async () => {
     const { SCORM, stateCalls, wait } = loadXapi({
       params: defaultLaunch(),
@@ -394,7 +394,7 @@ describe('xAPI — State API for resume', () => {
     expect(puts[puts.length - 1].body).toBe('{"l":4}')
   })
 
-  test('rapid setSuspend calls coalesce — only the latest blob is needed', async () => {
+  test('rapid setSuspend calls coalesce: only the latest blob is needed', async () => {
     const { SCORM, stateCalls, wait } = loadXapi({
       params: defaultLaunch(),
       launchData: { launchMode: 'Normal' },
@@ -411,7 +411,7 @@ describe('xAPI — State API for resume', () => {
   })
 })
 
-describe('xAPI — launchMode Browse/Review locks out tracking', () => {
+describe('xAPI: launchMode Browse/Review locks out tracking', () => {
   test('Review mode: no statements after initialized except terminated', async () => {
     const { SCORM, statements, wait } = loadXapi({
       params: defaultLaunch(),
@@ -429,7 +429,7 @@ describe('xAPI — launchMode Browse/Review locks out tracking', () => {
     SCORM.finish()
     await wait()
     const verbs = statements().map((s) => s.verb.id)
-    // initialized is fired before LaunchData lands, so it slips through — but
+    // initialized is fired before LaunchData lands, so it slips through, but
     // every tracking-bearing statement must be suppressed. `terminated` and
     // `abandoned` also no-op in non-Normal mode.
     expect(verbs).not.toContain(V.completed)
@@ -458,7 +458,7 @@ describe('xAPI — launchMode Browse/Review locks out tracking', () => {
   })
 })
 
-describe('xAPI — abandon', () => {
+describe('xAPI: abandon', () => {
   // abandoned is LMS-issued only (cmi5 §9.3.9); the AU never sends it.
   test('reportAbandoned never emits abandoned from the AU', async () => {
     const { SCORM, statements, wait } = loadXapi({
@@ -487,7 +487,7 @@ describe('xAPI — abandon', () => {
   })
 })
 
-describe('xAPI — LMS context readers', () => {
+describe('xAPI: LMS context readers', () => {
   test('getLearner returns id/name from the cmi5 actor', () => {
     const { SCORM } = loadXapi({
       params: defaultLaunch({
@@ -531,7 +531,7 @@ describe('xAPI — LMS context readers', () => {
   })
 })
 
-describe('xAPI — cmi5 conformance guards', () => {
+describe('xAPI: cmi5 conformance guards', () => {
   test('never sends passed below the LaunchData masteryScore, even if the player says passed', async () => {
     const { SCORM, statements, wait } = loadXapi({
       params: defaultLaunch(),
@@ -676,7 +676,7 @@ describe('xAPI — cmi5 conformance guards', () => {
   })
 })
 
-describe('xAPI — contextTemplate is never overwritten (cmi5 §9.6.3.1, §10)', () => {
+describe('xAPI: contextTemplate is never overwritten (cmi5 §9.6.3.1, §10)', () => {
   test('uses the LMS-issued session ID from the contextTemplate in every statement', async () => {
     const { SCORM, statements, wait } = loadXapi({
       params: defaultLaunch(),
@@ -701,7 +701,7 @@ describe('xAPI — contextTemplate is never overwritten (cmi5 §9.6.3.1, §10)',
   })
 })
 
-describe('xAPI — learner preferences', () => {
+describe('xAPI: learner preferences', () => {
   test('surfaces audioPreference off (to be applied at startup, cmi5 §11.2)', async () => {
     const { SCORM, wait } = loadXapi({
       params: defaultLaunch(),
@@ -714,7 +714,7 @@ describe('xAPI — learner preferences', () => {
   })
 })
 
-describe('xAPI — LMS that drops statements with a 200', () => {
+describe('xAPI: LMS that drops statements with a 200', () => {
   test('warns when the LMS answers {"success":false} (TalentLMS with xAPI disabled)', async () => {
     const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
     const { SCORM, wait } = loadXapi({

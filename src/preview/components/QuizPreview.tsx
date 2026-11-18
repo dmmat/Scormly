@@ -149,7 +149,7 @@ export default function QuizPreview({ block }: PreviewProps<'quiz'>) {
                       />
                       <span className="text-gray-800">{o.text}</span>
                       {reveal && o.feedback && selected && (
-                        <span className="text-xs text-gray-500">— {o.feedback}</span>
+                        <span className="text-xs text-gray-500">: {o.feedback}</span>
                       )}
                     </label>
                   )
@@ -175,7 +175,7 @@ export default function QuizPreview({ block }: PreviewProps<'quiz'>) {
                       }}
                       className="flex-1 rounded-md border border-gray-300 px-3 py-2"
                     >
-                      <option value="">—</option>
+                      <option value="">…</option>
                       {(matchingChoices[q.id] ?? q.pairs.map((x) => x.right)).map((right) => (
                         <option key={right} value={right}>
                           {right}
@@ -223,7 +223,7 @@ export default function QuizPreview({ block }: PreviewProps<'quiz'>) {
               >
                 <span aria-hidden>{ok ? '✓ ' : '✗ '}</span>
                 {ok ? t('correct') : t('incorrect')}
-                {q.feedback ? ` — ${q.feedback}` : ''}
+                {q.feedback ? `: ${q.feedback}` : ''}
               </p>
             )}
           </div>

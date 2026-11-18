@@ -68,7 +68,7 @@ const richtext: LocaleTable = {
     linkInvalid: 'Вкажіть вебадресу, email або номер телефону.',
     insertTable: 'Вставити таблицю',
     tableSize: '{cols} × {rows}',
-    tableSizeHint: 'Розмір таблиці: стрілки — змінити, Enter — вставити',
+    tableSizeHint: 'Розмір таблиці: стрілками змінити, Enter, щоб вставити',
     table: 'Таблиця',
     rowAbove: 'Вставити рядок вище',
     rowBelow: 'Вставити рядок нижче',

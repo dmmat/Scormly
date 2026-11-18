@@ -37,7 +37,7 @@ const help: LocaleTable = {
     tourPreviewText: 'See the course exactly as a learner will, with working quizzes and navigation.',
     tourCommentsTitle: 'Review comments',
     tourCommentsText:
-      'Leave notes on any block — here or in Preview — for colleagues or for yourself. They travel with the project .zip and never reach the exported course.',
+      'Leave notes on any block, here or in Preview, for colleagues or for yourself. They travel with the project .zip and never reach the exported course.',
     tourExportTitle: 'Export to your LMS',
     tourExportText:
       'Download a SCORM 2004, SCORM 1.2 or cmi5 package and upload it to your LMS. Scormly checks the course for common problems first.',
@@ -46,13 +46,13 @@ const help: LocaleTable = {
       'Everything is saved automatically to your project folder on this computer. Nothing is uploaded anywhere.',
     tourHelpTitle: 'Help is here',
     tourHelpText:
-      'Questions & answers, keyboard shortcuts, what’s new, and this tour again — all in the Help menu.',
+      'Questions & answers, keyboard shortcuts, what’s new, and this tour again: all in the Help menu.',
 
     // FAQ
     faqTitle: 'Questions & answers',
     faqQ1: 'Where is my course saved?',
     faqA1:
-      'In the folder you picked, on your own computer: project.json (the course), an assets/ folder with your media, a history file for undo/redo, and comments.json once there are comments. Scormly has no server — nothing is uploaded.',
+      'In the folder you picked, on your own computer: project.json (the course), an assets/ folder with your media, a history file for undo/redo, and comments.json once there are comments. Scormly has no server, so nothing is uploaded.',
     faqQ2: 'Do I need to press Save?',
     faqA2:
       'No. Changes are saved automatically about a second after you stop editing. Ctrl/⌘+S saves immediately. The Save button shows the state and turns red if saving fails.',
@@ -76,16 +76,16 @@ const help: LocaleTable = {
       'Use Undo (Ctrl/⌘+Z) or the Undo button in the notification. Scormly keeps the last 50 steps, and the last 20 survive reopening the project.',
     faqQ9: 'Which browsers are supported?',
     faqA9:
-      'Chrome, Edge, Opera and other Chromium browsers can save to a folder. Other browsers can use the builder without saving — download the project zip to keep your work.',
+      'Chrome, Edge, Opera and other Chromium browsers can save to a folder. Other browsers can use the builder without saving: download the project zip to keep your work.',
     faqQ10: 'Can AI tools edit my course?',
     faqA10:
-      'Yes. Each project folder (and project .zip) has an AGENTS.md describing the project.json format, so an AI agent (or you) can edit the course file directly. It can work through your comments too — see below.',
+      'Yes. Each project folder (and project .zip) has an AGENTS.md describing the project.json format, so an AI agent (or you) can edit the course file directly. It can work through your comments too (see below).',
     faqQ11: 'How do comments work?',
     faqA11:
-      'Select a block and click Comment in its toolbar (Ctrl+Alt+M, ⌘⌥A on a Mac) to leave a note for a colleague or for yourself. There are no accounts: you type your name once and this browser remembers it. The Comments button in the header lists them — reply, resolve or delete them there. In Preview the same button lets you comment while you go through the course as a learner: point at a block and click Comment. Comments are kept in the project’s comments.json, travel in the project .zip and never reach the exported course. When a colleague’s .zip of the project comes back, their comments are added to yours — or choose “Add comments only” to keep your course as it is.',
+      'Select a block and click Comment in its toolbar (Ctrl+Alt+M, ⌘⌥A on a Mac) to leave a note for a colleague or for yourself. There are no accounts: you type your name once and this browser remembers it. The Comments button in the header lists them, and you can reply, resolve or delete them there. In Preview the same button lets you comment while you go through the course as a learner: point at a block and click Comment. Comments are kept in the project’s comments.json, travel in the project .zip and never reach the exported course. When a colleague’s .zip of the project comes back, their comments are added to yours. Or choose “Add comments only” to keep your course as it is.',
     faqQ12: 'Can an AI assistant work through the comments?',
     faqA12:
-      'Yes. AGENTS.md describes comments.json, so give the assistant the project folder or its .zip and ask, for example: “Read AGENTS.md and work through the open comments in comments.json.” It changes the course, replies to each comment with what it did and marks it resolved. Open the project — or the .zip it gives back — and read its replies in the Comments panel; reopen a comment if the change isn’t right.',
+      'Yes. AGENTS.md describes comments.json, so give the assistant the project folder or its .zip and ask, for example: “Read AGENTS.md and work through the open comments in comments.json.” It changes the course, replies to each comment with what it did and marks it resolved. Open the project (or the .zip it gives back) and read its replies in the Comments panel; reopen a comment if the change isn’t right.',
 
     // What's new
     whatsNewTitle: "What's new",
@@ -109,21 +109,21 @@ const help: LocaleTable = {
       'Хвилинний тур конструктором. Його можна пропустити зараз і пройти будь-коли з меню «Довідка».',
     tourLessonsTitle: 'Уроки',
     tourLessonsText:
-      'Курс — це список уроків. Клацніть урок, щоб редагувати його; тягніть за номер, щоб змінити порядок; подвійний клік (або F2) — перейменувати.',
+      'Курс складається з уроків. Клацніть урок, щоб редагувати його; тягніть за номер, щоб змінити порядок; подвійний клік (або F2) перейменовує.',
     tourCanvasTitle: 'Вміст уроку',
     tourCanvasText:
-      'Уроки складаються з блоків: текст, медіа, тести, діалогові сценарії та інше. Клацніть блок, щоб редагувати; правий клік — більше дій.',
+      'Уроки складаються з блоків: текст, медіа, тести, діалогові сценарії та інше. Клацніть блок, щоб редагувати; правий клік відкриває більше дій.',
     tourAddTitle: 'Додавання блоків',
     tourAddText:
-      'Додайте блок у кінець тут або наведіть між двома блоками й натисніть «+», щоб вставити саме там. Друкуйте для пошуку, Enter — додати.',
+      'Додайте блок у кінець тут або наведіть між двома блоками й натисніть «+», щоб вставити саме там. Друкуйте для пошуку, Enter додає блок.',
     tourSettingsTitle: 'Налаштування проєкту',
     tourSettingsText:
       'Оберіть, коли курс вважається завершеним, чи є прохідний бал, вільна чи покрокова навігація, і тему.',
     tourPreviewTitle: 'Перегляд',
-    tourPreviewText: 'Подивіться на курс очима слухача — з робочими тестами й навігацією.',
+    tourPreviewText: 'Подивіться на курс очима слухача, з робочими тестами й навігацією.',
     tourCommentsTitle: 'Коментарі',
     tourCommentsText:
-      'Залишайте нотатки до будь-якого блоку — тут або в Перегляді — для колег чи для себе. Вони передаються разом із .zip проєкту й ніколи не потрапляють в експортований курс.',
+      'Залишайте нотатки до будь-якого блоку (тут або в Перегляді) для колег чи для себе. Вони передаються разом із .zip проєкту й ніколи не потрапляють в експортований курс.',
     tourExportTitle: 'Експорт у LMS',
     tourExportText:
       'Завантажте пакет SCORM 2004, SCORM 1.2 або cmi5 і додайте його у свою LMS. Перед цим Scormly перевірить курс на типові проблеми.',
@@ -132,24 +132,24 @@ const help: LocaleTable = {
       'Усе зберігається автоматично в папку проєкту на цьому комп’ютері. Нічого нікуди не завантажується.',
     tourHelpTitle: 'Довідка тут',
     tourHelpText:
-      'Питання й відповіді, гарячі клавіші, що нового і цей тур — усе в меню «Довідка».',
+      'Питання й відповіді, гарячі клавіші, що нового і цей тур: усе в меню «Довідка».',
 
     faqTitle: 'Питання й відповіді',
     faqQ1: 'Де зберігається мій курс?',
     faqA1:
-      'У папці, яку ви обрали, на вашому комп’ютері: project.json (сам курс), папка assets/ з медіа, файл історії для скасування дій, а коли з’являться коментарі — ще й comments.json. У Scormly немає сервера — нічого не завантажується.',
+      'У папці, яку ви обрали, на вашому комп’ютері: project.json (сам курс), папка assets/ з медіа, файл історії для скасування дій, а коли з’являться коментарі, ще й comments.json. У Scormly немає сервера, тож нічого не завантажується.',
     faqQ2: 'Чи треба натискати «Зберегти»?',
     faqA2:
       'Ні. Зміни зберігаються автоматично приблизно за секунду після останньої правки. Ctrl/⌘+S зберігає одразу. Кнопка «Зберегти» показує стан і червоніє, якщо зберегти не вдалося.',
     faqQ3: 'Який експорт обрати?',
     faqA3:
-      'SCORM 2004 працює в більшості сучасних LMS і обраний за замовчуванням. SCORM 1.2 — для старіших систем, cmi5 — якщо LMS підтримує xAPI/cmi5. Якщо не впевнені, спершу спробуйте SCORM 2004.',
+      'SCORM 2004 працює в більшості сучасних LMS і обраний за замовчуванням. SCORM 1.2 потрібен для старіших систем, cmi5 підійде, якщо LMS підтримує xAPI/cmi5. Якщо не впевнені, спершу спробуйте SCORM 2004.',
     faqQ4: 'Як додати курс у LMS?',
     faqA4:
       'Експортуйте пакет (.zip) і завантажте цей zip у LMS як SCORM/cmi5-курс. Не розпаковуйте його. Пакети перевірено на SCORM Cloud.',
     faqQ5: 'Як передаються завершення й оцінка?',
     faqA5:
-      'Це задається в налаштуваннях проєкту: завершено, коли переглянуто всі уроки або дано відповіді на всі тести, за бажанням — з прохідним балом. LMS отримує завершення, бал, склав/не склав і час, а слухач продовжує з місця, де зупинився.',
+      'Це задається в налаштуваннях проєкту: завершено, коли переглянуто всі уроки або дано відповіді на всі тести, за бажанням із прохідним балом. LMS отримує завершення, бал, склав/не склав і час, а слухач продовжує з місця, де зупинився.',
     faqQ6: 'Які медіафайли можна використовувати?',
     faqA6:
       'Зображення: PNG, JPEG, WebP, GIF, SVG (великі зменшуються автоматично). Відео: MP4, WebM. Аудіо: MP3, OGG, WAV, M4A. Медіа копіюються в папку assets проєкту й потрапляють в експорт.',
@@ -161,16 +161,16 @@ const help: LocaleTable = {
       'Скасуйте дію (Ctrl/⌘+Z) або натисніть «Скасувати» у сповіщенні. Scormly пам’ятає останні 50 кроків, а останні 20 зберігаються й після повторного відкриття проєкту.',
     faqQ9: 'Які браузери підтримуються?',
     faqA9:
-      'Chrome, Edge, Opera та інші браузери на Chromium вміють зберігати в папку. В інших браузерах конструктор працює без збереження — завантажуйте zip проєкту, щоб не втратити роботу.',
+      'Chrome, Edge, Opera та інші браузери на Chromium вміють зберігати в папку. В інших браузерах конструктор працює без збереження, тож завантажуйте zip проєкту, щоб не втратити роботу.',
     faqQ10: 'Чи можуть ШІ-інструменти редагувати мій курс?',
     faqA10:
-      'Так. У кожній папці проєкту (і в .zip проєкту) є AGENTS.md з описом формату project.json, тож ШІ-агент (або ви) можете редагувати файл курсу напряму. Він уміє й опрацьовувати ваші коментарі — див. нижче.',
+      'Так. У кожній папці проєкту (і в .zip проєкту) є AGENTS.md з описом формату project.json, тож ШІ-агент (або ви) можете редагувати файл курсу напряму. Він уміє й опрацьовувати ваші коментарі (див. нижче).',
     faqQ11: 'Як працюють коментарі?',
     faqA11:
-      'Виділіть блок і натисніть «Коментар» на його панелі (Ctrl+Alt+M, на Mac ⌘⌥A), щоб лишити нотатку колезі чи собі на потім. Облікових записів немає: ім’я вводите один раз, і браузер його запам’ятовує. Кнопка «Коментарі» в шапці показує всі коментарі — там можна відповісти, позначити вирішеним чи видалити. У перегляді та сама кнопка дає коментувати, поки проходите курс як слухач: наведіть на блок і натисніть «Коментар». Коментарі зберігаються у файлі проєкту comments.json, їдуть разом із .zip проєкту й ніколи не потрапляють в експортований курс. Коли .zip проєкту повертається від колеги, його коментарі додаються до ваших — або виберіть «Лише додати коментарі», щоб курс лишився як є.',
+      'Виділіть блок і натисніть «Коментар» на його панелі (Ctrl+Alt+M, на Mac ⌘⌥A), щоб лишити нотатку колезі чи собі на потім. Облікових записів немає: ім’я вводите один раз, і браузер його запам’ятовує. Кнопка «Коментарі» в шапці показує всі коментарі, і там можна відповісти, позначити вирішеним чи видалити. У перегляді та сама кнопка дає коментувати, поки проходите курс як слухач: наведіть на блок і натисніть «Коментар». Коментарі зберігаються у файлі проєкту comments.json, їдуть разом із .zip проєкту й ніколи не потрапляють в експортований курс. Коли .zip проєкту повертається від колеги, його коментарі додаються до ваших. Або виберіть «Лише додати коментарі», щоб курс лишився як є.',
     faqQ12: 'Чи може ШІ-асистент опрацювати коментарі?',
     faqA12:
-      'Так. AGENTS.md описує comments.json, тож дайте асистентові папку проєкту або його .zip і попросіть, наприклад: «Прочитай AGENTS.md і опрацюй відкриті коментарі в comments.json». Він змінить курс, відповість на кожен коментар, що саме зробив, і позначить його вирішеним. Відкрийте проєкт — або .zip, який він поверне, — і перегляньте відповіді в панелі «Коментарі»; якщо зміна не підходить, відкрийте коментар знову.',
+      'Так. AGENTS.md описує comments.json, тож дайте асистентові папку проєкту або його .zip і попросіть, наприклад: «Прочитай AGENTS.md і опрацюй відкриті коментарі в comments.json». Він змінить курс, відповість на кожен коментар, що саме зробив, і позначить його вирішеним. Відкрийте проєкт (або .zip, який він поверне) і перегляньте відповіді в панелі «Коментарі»; якщо зміна не підходить, відкрийте коментар знову.',
 
     whatsNewTitle: 'Що нового',
   },
@@ -208,7 +208,7 @@ const help: LocaleTable = {
     tourPreviewText: 'Voyez le cours exactement comme un apprenant, avec des quiz et une navigation qui fonctionnent.',
     tourCommentsTitle: 'Commentaires de relecture',
     tourCommentsText:
-      'Laissez des notes sur n’importe quel bloc — ici ou dans l’aperçu — pour vos collègues ou pour vous-même. Elles voyagent avec le .zip du projet et n’apparaissent jamais dans le cours exporté.',
+      'Laissez des notes sur n’importe quel bloc, ici ou dans l’aperçu, pour vos collègues ou pour vous-même. Elles voyagent avec le .zip du projet et n’apparaissent jamais dans le cours exporté.',
     tourExportTitle: 'Exporter vers votre LMS',
     tourExportText:
       'Téléchargez un paquet SCORM 2004, SCORM 1.2 ou cmi5 et importez-le dans votre LMS. Scormly vérifie d’abord que le cours ne présente pas de problèmes courants.',
@@ -217,13 +217,13 @@ const help: LocaleTable = {
       'Tout est enregistré automatiquement dans le dossier de votre projet, sur cet ordinateur. Rien n’est envoyé nulle part.',
     tourHelpTitle: 'L’aide est ici',
     tourHelpText:
-      'Questions et réponses, raccourcis clavier, nouveautés et cette visite guidée — tout est dans le menu Aide.',
+      'Questions et réponses, raccourcis clavier, nouveautés et cette visite guidée : tout est dans le menu Aide.',
 
     // FAQ
     faqTitle: 'Questions et réponses',
     faqQ1: 'Où mon cours est-il enregistré ?',
     faqA1:
-      'Dans le dossier que vous avez choisi, sur votre ordinateur : project.json (le cours), un dossier assets/ avec vos médias, un fichier d’historique pour annuler/rétablir, et comments.json dès qu’il y a des commentaires. Scormly n’a pas de serveur — rien n’est envoyé.',
+      'Dans le dossier que vous avez choisi, sur votre ordinateur : project.json (le cours), un dossier assets/ avec vos médias, un fichier d’historique pour annuler/rétablir, et comments.json dès qu’il y a des commentaires. Scormly n’a pas de serveur, donc rien n’est envoyé.',
     faqQ2: 'Dois-je cliquer sur Enregistrer ?',
     faqA2:
       'Non. Les modifications sont enregistrées automatiquement environ une seconde après votre dernière modification. Ctrl/⌘+S enregistre immédiatement. Le bouton Enregistrer indique l’état et devient rouge si l’enregistrement échoue.',
@@ -247,16 +247,16 @@ const help: LocaleTable = {
       'Utilisez Annuler (Ctrl/⌘+Z) ou le bouton Annuler de la notification. Scormly conserve les 50 dernières actions, et les 20 dernières restent disponibles après la réouverture du projet.',
     faqQ9: 'Quels navigateurs sont pris en charge ?',
     faqA9:
-      'Chrome, Edge, Opera et les autres navigateurs Chromium peuvent enregistrer dans un dossier. Dans les autres navigateurs, l’éditeur fonctionne sans enregistrement — téléchargez le zip du projet pour conserver votre travail.',
+      'Chrome, Edge, Opera et les autres navigateurs Chromium peuvent enregistrer dans un dossier. Dans les autres navigateurs, l’éditeur fonctionne sans enregistrement : téléchargez le zip du projet pour conserver votre travail.',
     faqQ10: 'Des outils d’IA peuvent-ils modifier mon cours ?',
     faqA10:
-      'Oui. Chaque dossier de projet (et chaque .zip de projet) contient un fichier AGENTS.md qui décrit le format de project.json : un agent IA (ou vous) peut donc modifier directement le fichier du cours. Il peut aussi traiter vos commentaires — voir ci-dessous.',
+      'Oui. Chaque dossier de projet (et chaque .zip de projet) contient un fichier AGENTS.md qui décrit le format de project.json : un agent IA (ou vous) peut donc modifier directement le fichier du cours. Il peut aussi traiter vos commentaires (voir ci-dessous).',
     faqQ11: 'Comment fonctionnent les commentaires ?',
     faqA11:
-      'Sélectionnez un bloc et cliquez sur Commenter dans sa barre d’outils (Ctrl+Alt+M, ⌘⌥A sur Mac) pour laisser une note à un collègue ou à vous-même. Il n’y a pas de compte : vous saisissez votre nom une fois et ce navigateur le retient. Le bouton Commentaires de l’en-tête en affiche la liste — vous pouvez y répondre, les résoudre ou les supprimer. Dans l’aperçu, le même bouton permet de commenter pendant que vous parcourez le cours comme un apprenant : pointez un bloc et cliquez sur Commenter. Les commentaires sont conservés dans le fichier comments.json du projet, voyagent dans le .zip du projet et n’apparaissent jamais dans le cours exporté. Quand le .zip d’un collègue vous revient, ses commentaires s’ajoutent aux vôtres — ou choisissez « Ajouter uniquement les commentaires » pour garder votre cours tel quel.',
+      'Sélectionnez un bloc et cliquez sur Commenter dans sa barre d’outils (Ctrl+Alt+M, ⌘⌥A sur Mac) pour laisser une note à un collègue ou à vous-même. Il n’y a pas de compte : vous saisissez votre nom une fois et ce navigateur le retient. Le bouton Commentaires de l’en-tête en affiche la liste : vous pouvez y répondre, les résoudre ou les supprimer. Dans l’aperçu, le même bouton permet de commenter pendant que vous parcourez le cours comme un apprenant : pointez un bloc et cliquez sur Commenter. Les commentaires sont conservés dans le fichier comments.json du projet, voyagent dans le .zip du projet et n’apparaissent jamais dans le cours exporté. Quand le .zip d’un collègue vous revient, ses commentaires s’ajoutent aux vôtres. Vous pouvez aussi choisir « Ajouter uniquement les commentaires » pour garder votre cours tel quel.',
     faqQ12: 'Un assistant IA peut-il traiter les commentaires ?',
     faqA12:
-      'Oui. AGENTS.md décrit comments.json : donnez à l’assistant le dossier du projet ou son .zip et demandez-lui, par exemple : « Lis AGENTS.md et traite les commentaires ouverts de comments.json. » Il modifie le cours, répond à chaque commentaire en indiquant ce qu’il a fait et le marque comme résolu. Ouvrez le projet — ou le .zip qu’il vous renvoie — et lisez ses réponses dans le panneau Commentaires ; rouvrez un commentaire si la modification ne convient pas.',
+      'Oui. AGENTS.md décrit comments.json : donnez à l’assistant le dossier du projet ou son .zip et demandez-lui, par exemple : « Lis AGENTS.md et traite les commentaires ouverts de comments.json. » Il modifie le cours, répond à chaque commentaire en indiquant ce qu’il a fait et le marque comme résolu. Ouvrez le projet (ou le .zip qu’il vous renvoie) et lisez ses réponses dans le panneau Commentaires ; rouvrez un commentaire si la modification ne convient pas.',
 
     // What's new
     whatsNewTitle: 'Nouveautés',
@@ -295,7 +295,7 @@ const help: LocaleTable = {
     tourPreviewText: 'Mira el curso tal como lo verá un alumno, con cuestionarios y navegación que funcionan.',
     tourCommentsTitle: 'Comentarios de revisión',
     tourCommentsText:
-      'Deja notas en cualquier bloque —aquí o en la vista previa— para tus colegas o para ti. Viajan con el .zip del proyecto y nunca llegan al curso exportado.',
+      'Deja notas en cualquier bloque, aquí o en la vista previa, para tus colegas o para ti. Viajan con el .zip del proyecto y nunca llegan al curso exportado.',
     tourExportTitle: 'Exportar a tu LMS',
     tourExportText:
       'Descarga un paquete SCORM 2004, SCORM 1.2 o cmi5 y súbelo a tu LMS. Antes, Scormly comprueba que el curso no tenga problemas habituales.',
@@ -343,7 +343,7 @@ const help: LocaleTable = {
       'Selecciona un bloque y haz clic en Comentar en su barra de herramientas (Ctrl+Alt+M, ⌘⌥A en Mac) para dejar una nota a un colega o a ti mismo. No hay cuentas: escribes tu nombre una vez y este navegador lo recuerda. El botón Comentarios de la cabecera los muestra todos; ahí puedes responderlos, resolverlos o eliminarlos. En la vista previa, el mismo botón te permite comentar mientras recorres el curso como un alumno: señala un bloque y haz clic en Comentar. Los comentarios se guardan en el archivo comments.json del proyecto, viajan en el .zip del proyecto y nunca llegan al curso exportado. Cuando vuelve el .zip de un colega, sus comentarios se añaden a los tuyos; o elige “Añadir solo los comentarios” para dejar tu curso como está.',
     faqQ12: '¿Puede un asistente de IA ocuparse de los comentarios?',
     faqA12:
-      'Sí. AGENTS.md describe comments.json, así que dale al asistente la carpeta del proyecto o su .zip y pídele, por ejemplo: “Lee AGENTS.md y ocúpate de los comentarios abiertos de comments.json”. Cambiará el curso, responderá a cada comentario explicando lo que hizo y lo marcará como resuelto. Abre el proyecto —o el .zip que te devuelva— y lee sus respuestas en el panel Comentarios; vuelve a abrir un comentario si el cambio no te convence.',
+      'Sí. AGENTS.md describe comments.json, así que dale al asistente la carpeta del proyecto o su .zip y pídele, por ejemplo: “Lee AGENTS.md y ocúpate de los comentarios abiertos de comments.json”. Cambiará el curso, responderá a cada comentario explicando lo que hizo y lo marcará como resuelto. Abre el proyecto (o el .zip que te devuelva) y lee sus respuestas en el panel Comentarios; vuelve a abrir un comentario si el cambio no te convence.',
 
     // What's new
     whatsNewTitle: 'Novedades',

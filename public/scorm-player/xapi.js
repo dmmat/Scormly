@@ -8,7 +8,7 @@
      1. POST to the one-time `fetch` URL to obtain the auth token.
      2. GET the LMS.LaunchData state (auMode, masteryScore, contextTemplate,
         launchParameters, returnURL, …).
-     3. Send `initialized` first; then during the session — `completed`,
+     3. Send `initialized` first; then during the session: `completed`,
         `passed`/`failed`, plus the non-cmi5-defined `progressed` / `answered`;
         and `terminated` last. `abandoned` is issued by the LMS, never the AU.
    cmi5-defined statements carry the cmi5 category context activity; the
@@ -16,12 +16,12 @@
    `completed` and `passed` are sent at most once per registration (the flags
    survive relaunches inside the resume state, and are set only once the LRS
    has accepted the statement). A session carries at most one of passed /
-   failed (§9.3), so `failed` waits for the end of the session — a pass later
-   in the same session replaces it — and never follows a `passed`.
+   failed (§9.3), so `failed` waits for the end of the session (a pass later
+   in the same session replaces it) and never follows a `passed`.
    Statements go out one at a time in order; on unload whatever is still
    waiting is posted with `terminated` as one keepalive batch.
 
-   Resume: cmi5 has no suspend_data field — we persist the player's resume blob
+   Resume: cmi5 has no suspend_data field, so we persist the player's resume blob
    via the xAPI State API under stateId `suspendData` so getSuspend/setSuspend
    keep working across launches. The sent-statement flags ride along in the
    same JSON document under the `x5` key, invisible to the player. */
@@ -120,7 +120,7 @@
   // category activity; moveOn-relevant statements also add the moveon category.
   function context(opts) {
     // cmi5 §10: values from the contextTemplate may be added to but MUST NOT
-    // be overwritten — notably the LMS-issued session ID (§9.6.3.1), which
+    // be overwritten, notably the LMS-issued session ID (§9.6.3.1), which
     // the LMS uses to tie statements to the launch session (and evaluate
     // moveOn). Our own session ID is only a fallback when the LMS sent none.
     var ctx = launchData && launchData.contextTemplate
@@ -163,7 +163,7 @@
   }
 
   // Passed: once per registration, sent right away. Failed: remembered and
-  // sent when the session ends (sendPendingFailed) unless a pass came first —
+  // sent when the session ends (sendPendingFailed) unless a pass came first;
   // a session may carry only one of the two, and failed never follows passed.
   function sendResult(passed) {
     if (!active || !score || !trackingAllowed() || regSent.passed || pending.passed) return;
@@ -204,8 +204,8 @@
     }).then(function (r) {
       if (!r.ok) { console.warn('[xAPI] statement rejected: ' + r.status); return false; }
       // xAPI answers 200 with the stored statement ids. Some LMSes answer 200
-      // with {"success":false,"message":…} instead — TalentLMS does so while
-      // its xAPI integration is disabled — and silently drop the statement.
+      // with {"success":false,"message":…} instead (TalentLMS does so while
+      // its xAPI integration is disabled) and silently drop the statement.
       return r.text().then(function (text) {
         var body = null;
         try { body = JSON.parse(text); } catch (e) { /* not JSON */ }
@@ -260,7 +260,7 @@
     return items.length ? post(items.map(function (it) { return it.stmt; })) : null;
   }
 
-  // xAPI State API helpers — used for resume (suspendData). The state is scoped
+  // xAPI State API helpers, used for resume (suspendData). The state is scoped
   // to {activity, agent, registration}.
   function stateUrl(stateId) {
     var url = endpoint + 'activities/state?stateId=' + encodeURIComponent(stateId)
@@ -271,7 +271,7 @@
   }
 
   // Pending suspend-data writes: only the latest value matters, and there's no
-  // point queueing duplicates — the player calls setSuspend on every progress
+  // point queueing duplicates: the player calls setSuspend on every progress
   // change. We coalesce by overwriting `pendingSuspend` and flushing in the
   // background; if a flush is in-flight we mark `suspendDirty` to re-flush.
   var pendingSuspend = null;
@@ -479,7 +479,7 @@
         raw: Math.round(raw), min: lo, max: hi,
       };
       // Emit passed/failed (which carries the score) as soon as the quizzes are
-      // scored, rather than waiting for full course completion — so the LRS gets
+      // scored, rather than waiting for full course completion, so the LRS gets
       // a score even on a partial pass, matching the SCORM runtime's behaviour.
       sendResult(score.scaled >= masteryScore());
     },
@@ -493,7 +493,7 @@
       suspendDirty = true;
       flushSuspend();
     },
-    // location, exit, session_time: not part of cmi5 — durations and lifecycle
+    // location, exit, session_time: not part of cmi5; durations and lifecycle
     // are conveyed by statements themselves.
     setLocation: function () {},
     setExit: function () {},
@@ -503,7 +503,7 @@
     setProgress: function (fraction) {
       // Kept for API parity; the player calls setProgressed separately for
       // explicit milestone events. We avoid emitting a statement on every
-      // micro-update — setProgressed handles that.
+      // micro-update; setProgressed handles that.
       void fraction;
     },
 
@@ -615,8 +615,8 @@
     commit: function () {}, // statements are sent immediately
     // Ends the session: a held `failed`, then `terminated`, go to the back of
     // the queue; the returned promise resolves once they are sent (the "Exit
-    // course" button waits for it before leaving). unloading — or a second
-    // call once the page is going away — posts whatever is still waiting as
+    // course" button waits for it before leaving). unloading (or a second
+    // call once the page is going away) posts whatever is still waiting as
     // one keepalive batch, so `terminated` (and any result statements before
     // it) aren't lost with the page.
     finish: function (unloading) {

@@ -185,7 +185,7 @@ export default function AddBlockMenu({
             const description = tb(`${m.type}Desc`)
             const variants = blockVariants(m.type).map((v) => ({ id: v.id, label: tb(`variant_${m.type}_${v.id}`) }))
             // Typing a style's name ("chevron") finds its block, set to that
-            // style — unless the block's own name matches.
+            // style, unless the block's own name matches.
             const matched = q && !title.toLowerCase().includes(q)
               ? variants.find((v) => v.label.toLowerCase().includes(q))?.id
               : undefined
@@ -329,7 +329,7 @@ export default function AddBlockMenu({
     }
   }
 
-  // Beside the menu — right if the 22rem card fits in the window, else left —
+  // Beside the menu (right if the 22rem card fits in the window, else left),
   // aligned with its top and kept inside the viewport. It floats over the app
   // (sidebar included), so the canvas edge doesn't clip it.
   function previewPosition(): { left: number; top: number } | null {
@@ -574,7 +574,7 @@ export default function AddBlockMenu({
                                 className="pop-in flex flex-wrap gap-1 rounded-xl border border-gray-200 bg-white p-1.5 shadow-lg"
                               >
                                 {item.variants!.map((v) => {
-                                  const label = `${item.title} — ${v.label}`
+                                  const label = `${item.title}: ${v.label}`
                                   return (
                                     <button
                                       key={v.id}
