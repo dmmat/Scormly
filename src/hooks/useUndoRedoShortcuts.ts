@@ -2,7 +2,7 @@ import { useEffect } from 'react'
 import { useCourseStore } from '../store/courseStore'
 import { editorShortcutsBlocked, isEditableTarget } from '../lib/keyboard'
 
-// Global hotkeys: Ctrl/Cmd+Z — undo, Ctrl/Cmd+Shift+Z or Ctrl+Y — redo.
+// Global hotkeys: Ctrl/Cmd+Z to undo, Ctrl/Cmd+Shift+Z or Ctrl+Y to redo.
 // Ignores events coming from input fields (let the browser handle text undo)
 // and while an overlay (preview / settings) covers the editor.
 export function useUndoRedoShortcuts() {

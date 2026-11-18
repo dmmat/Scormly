@@ -15,9 +15,9 @@ export interface LdText {
 export const LD: Record<Language, LdText> = {
   en: {
     description:
-      'Free, open-source SCORM editor and course builder (SCORM authoring tool) that runs online in the browser and exports SCORM 1.2 / 2004 and cmi5 (xAPI) packages for any LMS. No backend, no account — courses are kept in the browser, in a folder on disk or as a project .zip, and never leave the device.',
+      'Free, open-source SCORM editor and course builder (SCORM authoring tool) that runs online in the browser and exports SCORM 1.2 / 2004 and cmi5 (xAPI) packages for any LMS. No backend, no account: courses are kept in the browser, in a folder on disk or as a project .zip, and never leave the device.',
     siteDescription: 'Free, open-source SCORM editor and course builder that works online in the browser.',
-    imageAlt: 'Scormly — build interactive courses and export to SCORM',
+    imageAlt: 'Scormly: build interactive courses and export to SCORM',
     features: [
       'Block-based course editor with drag-and-drop, undo/redo and insert-anywhere',
       'SCORM 1.2, SCORM 2004 (4th edition) and cmi5 (xAPI) export with resume, scores and question interactions',
@@ -39,9 +39,9 @@ export const LD: Record<Language, LdText> = {
   },
   uk: {
     description:
-      'Безкоштовний SCORM-редактор і конструктор курсів із відкритим кодом (інструмент для авторів SCORM), що працює онлайн у браузері й експортує пакети SCORM 1.2 / 2004 та cmi5 (xAPI) для будь-якої LMS. Без сервера й акаунта — курси зберігаються в браузері, у теці на диску або як .zip проєкту й ніколи не залишають пристрій.',
+      'Безкоштовний SCORM-редактор і конструктор курсів із відкритим кодом (інструмент для авторів SCORM), що працює онлайн у браузері й експортує пакети SCORM 1.2 / 2004 та cmi5 (xAPI) для будь-якої LMS. Без сервера й акаунта: курси зберігаються в браузері, у теці на диску або як .zip проєкту й ніколи не залишають пристрій.',
     siteDescription: 'Безкоштовний SCORM-редактор і конструктор курсів із відкритим кодом, що працює онлайн у браузері.',
-    imageAlt: 'Scormly — створюйте інтерактивні курси й експортуйте їх у SCORM',
+    imageAlt: 'Scormly: створюйте інтерактивні курси й експортуйте їх у SCORM',
     features: [
       'Блоковий редактор курсів із перетягуванням, скасуванням/поверненням дій і вставкою будь-де',
       'Експорт SCORM 1.2, SCORM 2004 (4-те видання) та cmi5 (xAPI) із продовженням, оцінками й відповідями на запитання',
@@ -65,7 +65,7 @@ export const LD: Record<Language, LdText> = {
     description:
       'Éditeur SCORM et outil de création de cours gratuit et open source (outil auteur SCORM) qui fonctionne en ligne dans le navigateur et exporte des paquets SCORM 1.2 / 2004 et cmi5 (xAPI) pour tout LMS. Pas de serveur, pas de compte : les cours restent dans le navigateur, dans un dossier sur le disque ou dans un .zip de projet, et ne quittent jamais l’appareil.',
     siteDescription: 'Éditeur SCORM et outil de création de cours gratuit et open source, qui fonctionne en ligne dans le navigateur.',
-    imageAlt: 'Scormly — créez des cours interactifs et exportez-les en SCORM',
+    imageAlt: 'Scormly: créez des cours interactifs et exportez-les en SCORM',
     features: [
       'Éditeur de cours par blocs avec glisser-déposer, annuler/rétablir et insertion n’importe où',
       'Export SCORM 1.2, SCORM 2004 (4e édition) et cmi5 (xAPI) avec reprise, scores et interactions des questions',
@@ -89,7 +89,7 @@ export const LD: Record<Language, LdText> = {
     description:
       'Editor SCORM y creador de cursos gratuito y de código abierto (herramienta de autor SCORM) que funciona en línea en el navegador y exporta paquetes SCORM 1.2 / 2004 y cmi5 (xAPI) para cualquier LMS. Sin servidor ni cuenta: los cursos se guardan en el navegador, en una carpeta del disco o como .zip de proyecto y nunca salen del dispositivo.',
     siteDescription: 'Editor SCORM y creador de cursos gratuito y de código abierto que funciona en línea en el navegador.',
-    imageAlt: 'Scormly — crea cursos interactivos y expórtalos a SCORM',
+    imageAlt: 'Scormly: crea cursos interactivos y expórtalos a SCORM',
     features: [
       'Editor de cursos por bloques con arrastrar y soltar, deshacer/rehacer e inserción en cualquier lugar',
       'Exportación a SCORM 1.2, SCORM 2004 (4.ª edición) y cmi5 (xAPI) con reanudación, puntuaciones e interacciones de las preguntas',
@@ -113,7 +113,7 @@ export const LD: Record<Language, LdText> = {
     description:
       'Kostenloser Open-Source-SCORM-Editor und Kursersteller (SCORM-Autorentool), der online im Browser läuft und SCORM-1.2/2004- sowie cmi5-(xAPI-)Pakete für jedes LMS exportiert. Ohne Server, ohne Konto: Kurse liegen im Browser, in einem Ordner auf der Festplatte oder als Projekt-.zip und verlassen das Gerät nie.',
     siteDescription: 'Kostenloser Open-Source-SCORM-Editor und Kursersteller, der online im Browser funktioniert.',
-    imageAlt: 'Scormly — interaktive Kurse erstellen und als SCORM exportieren',
+    imageAlt: 'Scormly: interaktive Kurse erstellen und als SCORM exportieren',
     features: [
       'Blockbasierter Kurseditor mit Drag-and-drop, Rückgängig/Wiederholen und Einfügen an beliebiger Stelle',
       'Export als SCORM 1.2, SCORM 2004 (4. Edition) und cmi5 (xAPI) mit Fortsetzen, Punkten und Frageninteraktionen',

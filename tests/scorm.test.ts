@@ -5,7 +5,7 @@
 import { describe, test, expect, vi } from 'vitest'
 import { makeScormApi, loadScorm } from './lms-mock'
 
-describe('SCORM wrapper — discovery + lifecycle', () => {
+describe('SCORM wrapper: discovery + lifecycle', () => {
   test('finds API_1484_11 first and reports 2004 mode', () => {
     const { SCORM, calls } = loadScorm('2004')
     expect(SCORM.init()).toBe(true)
@@ -39,7 +39,7 @@ describe('SCORM wrapper — discovery + lifecycle', () => {
   })
 })
 
-describe('SCORM 2004 — data model writes', () => {
+describe('SCORM 2004: data model writes', () => {
   test('report(completed, success) maps to completion_status + success_status', () => {
     const { SCORM, data } = loadScorm('2004')
     SCORM.init()
@@ -138,7 +138,7 @@ describe('SCORM 2004 — data model writes', () => {
   })
 })
 
-describe('SCORM 1.2 — data model writes', () => {
+describe('SCORM 1.2: data model writes', () => {
   test('init sets lesson_status to incomplete on first attempt', () => {
     const { SCORM, data } = loadScorm('1.2', { 'cmi.core.lesson_status': 'not attempted' })
     SCORM.init()
@@ -239,7 +239,7 @@ describe('SCORM 1.2 — data model writes', () => {
   })
 })
 
-describe('SCORM — LMS context readers', () => {
+describe('SCORM: LMS context readers', () => {
   test('reads learner id/name from cmi.learner_id/name (2004)', () => {
     const { SCORM } = loadScorm('2004', {
       'cmi.learner_id': 'u-42',
@@ -314,7 +314,7 @@ describe('SCORM — LMS context readers', () => {
   })
 })
 
-describe('SCORM — review / browse mode locks out tracking', () => {
+describe('SCORM: review / browse mode locks out tracking', () => {
   test('review mode: every write is a no-op', () => {
     const { SCORM, data } = loadScorm('2004', {
       'cmi.mode': 'review',
@@ -346,7 +346,7 @@ describe('SCORM — review / browse mode locks out tracking', () => {
   })
 })
 
-describe('SCORM — resume', () => {
+describe('SCORM: resume', () => {
   test('getSuspend reads cmi.suspend_data', () => {
     const { SCORM } = loadScorm('2004', { 'cmi.suspend_data': '{"l":3}' })
     SCORM.init()
@@ -373,7 +373,7 @@ describe('SCORM — resume', () => {
   })
 })
 
-describe('SCORM — cmi5-only methods are silent no-ops', () => {
+describe('SCORM: cmi5-only methods are silent no-ops', () => {
   // setProgressed and reportAbandoned exist so the player can call them
   // unconditionally; the SCORM implementation must not throw or write.
   test('setProgressed does nothing', () => {
@@ -389,7 +389,7 @@ describe('SCORM — cmi5-only methods are silent no-ops', () => {
   })
 })
 
-describe('SCORM — array responses (sequencing / matching / fill-in)', () => {
+describe('SCORM: array responses (sequencing / matching / fill-in)', () => {
   test('2004 joins lists with [,] and matching pairs with [.]', () => {
     const { SCORM, data } = loadScorm('2004')
     SCORM.init()
@@ -440,7 +440,7 @@ describe('SCORM — array responses (sequencing / matching / fill-in)', () => {
   })
 })
 
-describe('SCORM — LMS compatibility', () => {
+describe('SCORM: LMS compatibility', () => {
   test('accepts an Initialize that returns a boolean instead of "true"', () => {
     const m = loadScorm('2004')
     m.api.Initialize = (() => true) as unknown as () => string
@@ -517,7 +517,7 @@ describe('SCORM — LMS compatibility', () => {
   })
 })
 
-describe('SCORM — statuses never downgrade', () => {
+describe('SCORM: statuses never downgrade', () => {
   test('2004: passed + completed survive a failed retake', () => {
     const { SCORM, data } = loadScorm('2004')
     SCORM.init()
@@ -577,7 +577,7 @@ describe('SCORM — statuses never downgrade', () => {
   })
 })
 
-describe('SCORM — audio preference', () => {
+describe('SCORM: audio preference', () => {
   test('2004 audio_level 0 and 1.2 audio -1 mean sound off', () => {
     const a = loadScorm('2004', { 'cmi.learner_preference.audio_level': '0' })
     a.SCORM.init()
@@ -591,7 +591,7 @@ describe('SCORM — audio preference', () => {
   })
 })
 
-describe('SCORM — field findings (TalentLMS 1.2 log)', () => {
+describe('SCORM: field findings (TalentLMS 1.2 log)', () => {
   // TalentLMS answers cmi.objectives.* with 401 "Not implemented".
   function withoutObjectives(version: '1.2' | '2004') {
     const m = loadScorm(version)
@@ -644,7 +644,7 @@ describe('SCORM — field findings (TalentLMS 1.2 log)', () => {
   })
 })
 
-describe('SCORM — API discovery and LMS rejections', () => {
+describe('SCORM: API discovery and LMS rejections', () => {
   test('a 1.2 package uses the 1.2 API even when the LMS also exposes 2004', () => {
     const v2004 = makeScormApi('2004')
     const { SCORM, calls } = loadScorm('1.2', {}, { API_1484_11: v2004.api, __SCORMLY_SCORM__: '1.2' })

@@ -5,7 +5,7 @@ import { readFileSync, writeFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 
 const root = fileURLToPath(new URL('..', import.meta.url))
-const START = '/* >>> shared block design (generated from src/styles/blocks.css — do not edit here) */'
+const START = '/* >>> shared block design (generated from src/styles/blocks.css; do not edit here) */'
 const END = '/* <<< shared block design */'
 
 export function playerBlockCss(source) {

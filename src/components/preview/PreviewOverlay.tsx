@@ -126,7 +126,7 @@ export default function PreviewOverlay() {
   const progress = total ? Math.round((Object.keys(visited).length / total) * 100) : 0
 
   // Only the current page's blocks. Hide blocks after a `continue` gate until
-  // it is clicked, then drop the gate itself — mirroring the SCORM player. A
+  // it is clicked, then drop the gate itself, mirroring the SCORM player. A
   // Continue at the very end is no gate: it leads on; one ending a page opens
   // the next page.
   const { visibleBlocks, gated } = (() => {

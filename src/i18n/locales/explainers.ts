@@ -96,7 +96,7 @@ const explainers: LocaleTable = {
     variant_soft: 'Мʼякий',
     variant_outline: 'Контур',
     processCycleHint: 'Студенти відкривають кожен крок на колі, щоб прочитати його.',
-    processPyramidHint: 'Перший крок — це вершина піраміди.',
+    processPyramidHint: 'Перший крок є вершиною піраміди.',
     openStep: 'Крок {n}: {title}',
     exploredOf: 'Переглянуто {n} з {total}',
 

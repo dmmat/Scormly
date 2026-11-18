@@ -33,8 +33,8 @@ const newblocks: LocaleTable = {
     htmlStyles: 'Course styles',
     htmlStylesHint: 'Give the page the course fonts, accent color and the sc-* classes (buttons, cards, fields…). The page’s own CSS still wins.',
     htmlCopyAi: 'Copy instructions for AI',
-    htmlCopied: 'Instructions copied — paste them into your AI assistant with what the page should do.',
-    htmlPreviewNote: 'In the editor, imports between ES modules (import … from "./file.js") don’t load — they work in the exported course.',
+    htmlCopied: 'Instructions copied. Paste them into your AI assistant with what the page should do.',
+    htmlPreviewNote: 'In the editor, imports between ES modules (import … from "./file.js") don’t load. They work in the exported course.',
     languagePlaceholder: 'Language (optional)',
 
     addRow: 'Add row',
@@ -77,8 +77,8 @@ const newblocks: LocaleTable = {
     htmlStyles: 'Стилі курсу',
     htmlStylesHint: 'Дати сторінці шрифти й акцентний колір курсу та класи sc-* (кнопки, картки, поля…). Власний CSS сторінки все одно має перевагу.',
     htmlCopyAi: 'Скопіювати інструкцію для AI',
-    htmlCopied: 'Інструкцію скопійовано — вставте її в AI-асистента разом з описом того, що має робити сторінка.',
-    htmlPreviewNote: 'У редакторі імпорти між ES-модулями (import … from "./file.js") не завантажуються — вони працюють в експортованому курсі.',
+    htmlCopied: 'Інструкцію скопійовано. Вставте її в AI-асистента разом з описом того, що має робити сторінка.',
+    htmlPreviewNote: 'У редакторі імпорти між ES-модулями (import … from "./file.js") не завантажуються. Вони працюють в експортованому курсі.',
     languagePlaceholder: 'Мова (необов’язково)',
 
     addRow: 'Додати рядок',
@@ -121,8 +121,8 @@ const newblocks: LocaleTable = {
     htmlStyles: 'Styles du cours',
     htmlStylesHint: 'Applique à la page les polices et la couleur d’accent du cours, ainsi que les classes sc-* (boutons, cartes, champs…). Le CSS propre à la page reste prioritaire.',
     htmlCopyAi: 'Copier les instructions pour l’IA',
-    htmlCopied: 'Instructions copiées — collez-les dans votre assistant IA en décrivant ce que la page doit faire.',
-    htmlPreviewNote: 'Dans l’éditeur, les imports entre modules ES (import … from "./file.js") ne se chargent pas — ils fonctionnent dans le cours exporté.',
+    htmlCopied: 'Instructions copiées. Collez-les dans votre assistant IA en décrivant ce que la page doit faire.',
+    htmlPreviewNote: 'Dans l’éditeur, les imports entre modules ES (import … from "./file.js") ne se chargent pas. Ils fonctionnent dans le cours exporté.',
     languagePlaceholder: 'Langage (facultatif)',
 
     addRow: 'Ajouter une ligne',
@@ -165,8 +165,8 @@ const newblocks: LocaleTable = {
     htmlStyles: 'Estilos del curso',
     htmlStylesHint: 'Aplica a la página las fuentes y el color de acento del curso, además de las clases sc-* (botones, tarjetas, campos…). El CSS propio de la página sigue teniendo prioridad.',
     htmlCopyAi: 'Copiar instrucciones para la IA',
-    htmlCopied: 'Instrucciones copiadas — pégalas en tu asistente de IA junto con lo que debe hacer la página.',
-    htmlPreviewNote: 'En el editor, las importaciones entre módulos ES (import … from "./file.js") no se cargan — funcionan en el curso exportado.',
+    htmlCopied: 'Instrucciones copiadas. Pégalas en tu asistente de IA junto con lo que debe hacer la página.',
+    htmlPreviewNote: 'En el editor, las importaciones entre módulos ES (import … from "./file.js") no se cargan. Funcionan en el curso exportado.',
     languagePlaceholder: 'Lenguaje (opcional)',
 
     addRow: 'Añadir fila',

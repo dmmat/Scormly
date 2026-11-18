@@ -1,5 +1,5 @@
 // Pure helpers for the fill-in-the-blanks block. The author writes text with
-// blanks in square brackets — "The capital of France is [Paris|paris]." —
+// blanks in square brackets ("The capital of France is [Paris|paris]."),
 // where `|` separates accepted alternatives and the first one is canonical.
 //
 // The SCORM player (public/scorm-player/player.js) mirrors this logic in

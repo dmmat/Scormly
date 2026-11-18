@@ -13,14 +13,14 @@ extra requirements agreed during development.
 
 ## Stack
 
-- **React 18 + TypeScript** — component-based block structure.
-- **Vite** — build and dev server (HMR).
-- **Tailwind CSS v4** — styling (CSS-first config via `@tailwindcss/vite`, no
+- **React 18 + TypeScript**: component-based block structure.
+- **Vite**: build and dev server (HMR).
+- **Tailwind CSS v4**: styling (CSS-first config via `@tailwindcss/vite`, no
   `tailwind.config.js`; theme tokens live in `src/index.css` via `@theme`).
-- **Zustand** — global course state (structure, active lesson, selection, and a
+- **Zustand**: global course state (structure, active lesson, selection, and a
   custom undo/redo history).
-- **JSZip** — SCORM / cmi5 packages and the project .zip; **dnd-kit** —
-  drag-and-drop; **Vitest** — tests (`npx vitest run`).
+- **JSZip**: SCORM / cmi5 packages and the project .zip; **dnd-kit**:
+  drag-and-drop; **Vitest**: tests (`npx vitest run`).
 
 ## Commands
 
@@ -80,7 +80,7 @@ accent (Rose theme) is the darker pink `#DB2777` so white text on it and
 `brand-dark` (`#BE185D`) text on white meet WCAG AA 4.5:1 (Tailwind utilities
 `text-brand` / `bg-brand`, shades `brand-light`, `brand-dark`). Every theme must
 keep that contrast. The accent is driven by a CSS variable and overridden per
-theme — never hardcode the pink hex in components; use the `*-brand` utilities or
+theme. Never hardcode the pink hex in components; use the `*-brand` utilities or
 the global button/interactive classes.
 
 ## Data model
@@ -92,7 +92,7 @@ new block type = extend the union + add a registry entry (category, optional
 `variants` shown in the Add-block menu) + editor, preview and player renderers +
 a `BLOCK_DOCS` entry in `src/lib/agentGuide.ts` + a pre-export check where it
 makes sense (see [docs/adding-blocks.md](./docs/adding-blocks.md)). Keep the
-model declarative and JSON-serializable — it is the basis for `project.json` and
+model declarative and JSON-serializable: it is the basis for `project.json` and
 export. Rich text (`html` fields) is a small HTML subset: paragraphs, bold /
 italic / underline, lists, links, inline images and tables (`rt-table`, edited
 via `components/editor/richTable.ts`); a process step's `html` is inline only.
@@ -107,7 +107,7 @@ the preview (`PreviewProgress`) and these rules in sync.
 `Course.units` (optional `{ id, title }[]`) groups lessons; a lesson joins one
 with `unitId`. `course.lessons` stays the one flat list everything walks, kept
 grouped (no unit first, then by unit order) by `normalizeUnits` in
-`lib/units.ts` — store actions and `repairCourse` call it. Lists of lessons
+`lib/units.ts` (store actions and `repairCourse` call it). Lists of lessons
 (sidebar, menus, cover outline, course outline block) render the groups
 (`preview/GroupedLessons`, the player's `groupedList`); a unit heading is its
 title. `settings.unitNumbering` / `unitLabel` set the line above a lesson's
@@ -120,7 +120,7 @@ editor inlines the files into a sandboxed `srcdoc`, the player loads the real
 folder. Unless `styles: false`, the frame also gets the **Scormly kit**
 (`public/scorm-player/kit.css`, in `@layer scormly-kit`): `sc-*` classes and
 `--sc-*` tokens read from the course theme / typography where the frame sits
-(`kitTokensCss` in htmlBundle, `kitTokens` in the player — keep them in sync).
+(`kitTokensCss` in htmlBundle, `kitTokens` in the player; keep them in sync).
 `HTML_BLOCK_GUIDE` (agentGuide) is the AI-facing spec for such pages and lists
 the kit's classes (`tests/htmlBundle.test.ts` checks they exist).
 
@@ -161,14 +161,14 @@ Keyboard shortcuts (Ctrl/Cmd+Z / Y) are wired by `useUndoRedoShortcuts`. See
   path. Without one, media lives in memory (`putMemoryAsset`) and Save /
   Ctrl+S download the .zip.
 - **Project .zip:** `project.json`, `assets/`, `AGENTS.md` (generated),
-  `user-instructions.md` (the author's notes for AI — created from a template
+  `user-instructions.md` (the author's notes for AI: created from a template
   once, never overwritten, editable in Project settings → AI assistant) and
   `comments.json` when there are review comments.
 - **The course `id` identifies a project:** opening a .zip whose id matches the
   open project or one in the browser asks to update it (one undoable
   `replaceCourse`) or open it as new (a fresh id); a .zip with comments can
   also bring in only them. Comments are always merged, never replaced.
-- **Review comments** live in `comments.json` beside `project.json` — never
+- **Review comments** live in `comments.json` beside `project.json`: never
   in the course, its undo history or an export. Threads point at a block by
   `blockId` (threads of a deleted block are kept: undo brings it back).
   The file is written only once there are comments and a missing one means
@@ -179,7 +179,7 @@ Keyboard shortcuts (Ctrl/Cmd+Z / Y) are wired by `useUndoRedoShortcuts`. See
   AGENTS.md documents the file for AI assistants.
 - **Everything loaded passes `repairCourse`** (ids, types, missing fields,
   unknown block types kept but skipped). When the data model changes, update
-  `BLOCK_DOCS` / the guide text in `agentGuide.ts` — it is what AI assistants
+  `BLOCK_DOCS` / the guide text in `agentGuide.ts`: it is what AI assistants
   read inside every project.
 
 ## Themes
@@ -204,7 +204,7 @@ The app UI is in **English, Ukrainian, French, Spanish and German** (`LANGUAGES`
 it has; the manual switch persists to localStorage). Strings
 live in `src/i18n/locales/<namespace>.ts` (each exports `{ en, uk, fr, es, de }`;
 `tests/i18n.test.ts` checks every language has every key, placeholder and tag). Read them
-with `const { t } = useT('<namespace>')`. Do **not** hardcode user-facing text —
+with `const { t } = useT('<namespace>')`. Do **not** hardcode user-facing text;
 add keys to the appropriate namespace in every language. The app loads one
 language at a time: `scripts/localeChunks.ts` cuts the locale files into a chunk
 per group of namespaces (`src/i18n/groups.ts`: `landing`, `app`) and language,
@@ -226,8 +226,8 @@ builder (`components/Builder.tsx`, the open project is `/app?p=<key>`) and
 `/demo` the builder with the sample course. The host is static, so the build
 copies `index.html` to `app.html`, `demo.html` and `404.html` and writes a
 translated `uk.html` / `fr.html` / `es.html` / `de.html` (own title, description, canonical,
-prerendered copy; hreflang links and the sitemap tie them together —
-`scripts/seoPrerender.ts`, page title / description are the `metaTitle` /
+prerendered copy; hreflang links and the sitemap tie them together
+(`scripts/seoPrerender.ts`; page title / description are the `metaTitle` /
 `metaDescription` landing keys). A URL that names a language wins over the
 saved one for that visit; on the landing the URL follows the language shown. The old hash routes (`#/app`, `#/app/<key>`,
 `#/demo`) still open and are rewritten; a plain `#section` hash is an anchor on
@@ -246,7 +246,7 @@ and fully local (no data stored or transmitted). SEO meta tags are in
   screenshot with headless Chromium); the builder can be driven over CDP
   (Chromium `--remote-debugging-port` + Node's built-in `WebSocket`). With a
   long-running dev server, import the store module URL the page actually uses
-  (HMR may have given it a `?t=` suffix). Stop test browsers / servers by PID —
+  (HMR may have given it a `?t=` suffix). Stop test browsers / servers by PID:
   `pkill -f <pattern>` also matches your own shell command.
 - **All code comments and documentation are in English.** UI strings go through
   i18n (every language in `LANGUAGES`). Comment only where the "why" is non-obvious.
@@ -264,5 +264,5 @@ Done: editor, all block types (incl. process diagram, step-by-step guide,
 comparison, before / after, reflection), themes (incl. custom), i18n, landing,
 folder / browser / tab projects with autosave and history, project .zip,
 SCORM 1.2 / 2004 and cmi5 export, keyboard shortcuts, context menus,
-drag-and-drop. Next: plain xAPI export; later a paid tier (AI, cloud, sharing) —
+drag-and-drop. Next: plain xAPI export; later a paid tier (AI, cloud, sharing), so
 keep seams for it. See [PROGRESS.md](./PROGRESS.md).

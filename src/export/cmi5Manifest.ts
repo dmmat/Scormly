@@ -21,7 +21,7 @@ export function buildCmi5Manifest(course: Course): string {
   const title = escapeXml(course.title || 'Course')
   const description = escapeXml(course.description || course.title || 'Course')
   // langstring lang: the course's content language (BCP 47), not a hardcoded
-  // en-US — LMS catalogs display the matching langstring to the learner.
+  // en-US; LMS catalogs display the matching langstring to the learner.
   const lang = escapeXml(course.settings?.contentLanguage?.trim() || 'en-US')
   const courseId = `https://scormly.app/course/${encodeURIComponent(course.id)}`
   const auId = `${courseId}/au`

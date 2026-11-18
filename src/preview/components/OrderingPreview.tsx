@@ -236,7 +236,7 @@ function ItemChip({
         onChange={(e) => onChange(e.target.value || undefined)}
         className="sc-select max-w-full text-sm"
       >
-        <option value="">—</option>
+        <option value="">…</option>
         {categories.map((c) => (
           <option key={c.id} value={c.id}>
             {c.title}

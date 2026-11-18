@@ -191,7 +191,7 @@ hr.divider { border: 0; border-top: 2px solid #d1d5db; margin: 0.5rem 0; }
 .hotspot-pop-text { margin: 0.25rem 0 0; font-size: 0.875rem; line-height: 1.6; color: #374151; white-space: pre-line; }
 .hotspot-progress { margin: 0.5rem 0 0; text-align: center; font-size: 0.875rem; color: #6b7280; }
 
-/* Timeline — vertical */
+/* Timeline: vertical */
 .timeline { list-style: none; margin: 0 0 0 0.5rem; padding: 0; border-left: 2px solid #e5e7eb; }
 .timeline-item { position: relative; padding: 0 0 1.5rem 1.5rem; }
 .timeline-item:last-child { padding-bottom: 0; }
@@ -202,7 +202,7 @@ hr.divider { border: 0; border-top: 2px solid #d1d5db; margin: 0.5rem 0; }
 .timeline-title { margin: 0.125rem 0 0; font-weight: 600; color: #111827; }
 .timeline-text { margin: 0.25rem 0 0; line-height: 1.6; color: #374151; white-space: pre-line; }
 
-/* Timeline — stepper */
+/* Timeline: stepper */
 .stepper { border: 1px solid #e5e7eb; border-radius: var(--radius-surface); background: #fff; padding: 1.25rem; }
 .stepper-dots { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem; }
 .stepper-dot { width: 2rem; height: 2rem; border-radius: 9999px; border: 2px solid transparent; cursor: pointer;
@@ -222,7 +222,7 @@ hr.divider { border: 0; border-top: 2px solid #d1d5db; margin: 0.5rem 0; }
 .scenario-text { line-height: 1.6; margin: 0 0 1rem; }
 .scenario-choices { display: flex; flex-direction: column; gap: 0.5rem; }
 
-/* Scenario — chat / messenger layout */
+/* Scenario: chat / messenger layout */
 .chat { max-width: 26rem; margin: 0 auto; display: flex; flex-direction: column;
   border: 1px solid #d1d5db; border-radius: 1.5rem; overflow: hidden; background: #f9fafb; }
 .chat-header { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem;
@@ -505,9 +505,9 @@ html[data-a11y-contrast] .blk-has-bg :is(h1, h2, h3, p, li, .rich-text, .rich-te
 html[data-a11y-contrast] .sc-intro-split, html[data-a11y-contrast] .sc-intro-minimal { background: #fff; border: 2px solid #000; }
 html[data-a11y-contrast] .sc-intro-split .sc-intro-text, html[data-a11y-contrast] .sc-intro-minimal .sc-intro-text { color: #000; }
 
-/* >>> shared block design (generated from src/styles/blocks.css — do not edit here) */
+/* >>> shared block design (generated from src/styles/blocks.css; do not edit here) */
 /* ==========================================================================
- * Learner-facing block design — shared by the editor canvas, the in-app
+ * Learner-facing block design, shared by the editor canvas, the in-app
  * preview and the exported SCORM player.
  *
  * SOURCE OF TRUTH. public/scorm-player/player.css carries a copy between the
@@ -1531,7 +1531,7 @@ html[data-a11y-contrast] .sc-intro-split .sc-intro-text, html[data-a11y-contrast
    column; the height comes from the block or the page's content. */
 .sc-html-frame { display: block; width: 100%; border: 0; background: transparent; color-scheme: light; }
 
-/* Scenario — scene layout: a 16:9 stage (background picture, a waist-up
+/* Scenario: scene layout: a 16:9 stage (background picture, a waist-up
    character standing on its bottom edge) with the character's line in a bubble
    at the top right and the learner's answers as bubbles at the bottom right,
    on the stage itself. On a narrow screen the answers drop below the stage. */

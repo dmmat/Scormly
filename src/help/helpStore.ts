@@ -18,7 +18,7 @@ function write(key: string, value: string): void {
   try {
     localStorage.setItem(key, value)
   } catch {
-    // ignore — see above
+    // ignore, see above
   }
 }
 

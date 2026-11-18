@@ -31,7 +31,7 @@ function repairComment(raw: unknown, seen: Set<string>, now: string): ReviewComm
 
 /**
  * Parse comments.json. Null when the text isn't JSON at all; otherwise the
- * threads that make sense — missing ids, times and fields are filled in, and
+ * threads that make sense: missing ids, times and fields are filled in, and
  * threads without a block or without any text are dropped.
  */
 export function parseComments(text: string): ReviewThread[] | null {

@@ -76,7 +76,7 @@ function genuineEmailSvg(tr: (t: Text) => string): string {
 <text x="56" y="272" fill="#374151" font-size="16">${x(L('You don’t need to do anything.', 'Від вас нічого не потрібно.', 'Vous n’avez rien à faire.', 'No tienes que hacer nada.', 'Sie müssen nichts tun.'))}</text>
 <rect x="56" y="300" width="460" height="48" rx="8" fill="#f0fdf4" stroke="#bbf7d0"/>
 <text x="76" y="330" fill="#166534" font-size="16">${x(L('Questions? Call the service desk: ext. 1234', 'Питання? Дзвоніть у підтримку: внутр. 1234', 'Une question ? Appelez l’assistance : poste 1234', '¿Dudas? Llama a asistencia: ext. 1234', 'Fragen? Rufen Sie den Servicedesk an: Tel. 1234'))}</text>
-<text x="56" y="420" fill="#9ca3af" font-size="14">${x(L('— IT Service Desk', '— ІТ-підтримка', '— Assistance informatique', '— Asistencia informática', '— IT-Servicedesk'))}</text>
+<text x="56" y="420" fill="#9ca3af" font-size="14">${x(L('IT Service Desk', 'ІТ-підтримка', 'Assistance informatique', 'Asistencia informática', 'IT-Servicedesk'))}</text>
 </svg>`
   return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg)
 }
@@ -97,7 +97,7 @@ function addressTable(tr: (t: Text) => string): string {
 // "Link detective", a Widget (html) block for lesson 2: the learner clicks the
 // part of a web address that shows who really owns the site. Plain HTML / CSS /
 // JS on the Scormly kit (sc-* classes, --sc-* tokens), so it follows the course
-// theme — a showcase of what authors can build in the block.
+// theme: a showcase of what authors can build in the block.
 function linkDetectiveHtml(tr: (t: Text) => string, lang: Language): string {
   type Part = { kind: 'scheme' | 'sub' | 'sep' | 'owner' | 'path'; text: string }
   const scheme: Part = { kind: 'scheme', text: 'https://' }
@@ -112,7 +112,7 @@ function linkDetectiveHtml(tr: (t: Text) => string, lang: Language): string {
       parts: [scheme, sub('www'), dot, owner('paypal.com'), path('/signin')],
       explain: tr(L(
         'It sits right before the first “/”, so this really is PayPal. “www” is just a prefix.',
-        'Він стоїть просто перед першою «/», тож це справді PayPal. «www» — лише префікс.',
+        'Він стоїть просто перед першою «/», тож це справді PayPal. «www» лише префікс.',
         'Il se trouve juste avant le premier « / » : c’est donc bien PayPal. « www » n’est qu’un préfixe.',
         'Está justo antes de la primera “/”, así que de verdad es PayPal. “www” es solo un prefijo.',
         'Sie steht direkt vor dem ersten „/“, also ist das wirklich PayPal. „www“ ist nur ein Präfix.',
@@ -124,7 +124,7 @@ function linkDetectiveHtml(tr: (t: Text) => string, lang: Language): string {
       parts: [scheme, sub('paypal.com'), dot, owner('secure-login.net'), path('/verify')],
       explain: tr(L(
         '“paypal.com” on the left is only a disguise: whoever owns secure-login.net can write anything there.',
-        '«paypal.com» ліворуч — лише маска: хто володіє secure-login.net, може написати там будь-що.',
+        '«paypal.com» ліворуч лише маска: хто володіє secure-login.net, може написати там будь-що.',
         '« paypal.com » à gauche n’est qu’un déguisement : le propriétaire de secure-login.net peut y écrire ce qu’il veut.',
         '“paypal.com” a la izquierda es solo un disfraz: el dueño de secure-login.net puede escribir ahí lo que quiera.',
         '„paypal.com“ links ist nur eine Tarnung: Wem secure-login.net gehört, der kann dort schreiben, was er will.',
@@ -135,11 +135,11 @@ function linkDetectiveHtml(tr: (t: Text) => string, lang: Language): string {
       safe: false,
       parts: [scheme, owner('micros0ft-help.co'), path('/login')],
       explain: tr(L(
-        'A zero instead of “o” — and not Microsoft’s domain at all. Look-alike names are a classic trick.',
-        'Нуль замість «o» — і це зовсім не домен Microsoft. Схожі назви — класичний прийом.',
-        'Un zéro à la place du « o » — et ce n’est pas du tout le domaine de Microsoft. Les noms ressemblants sont un grand classique.',
+        'A zero instead of “o”, and not Microsoft’s domain at all. Look-alike names are a classic trick.',
+        'Нуль замість «o», і це зовсім не домен Microsoft. Схожі назви є класичним прийомом.',
+        'Un zéro à la place du « o », et ce n’est pas du tout le domaine de Microsoft. Les noms ressemblants sont un grand classique.',
         'Un cero en lugar de la “o”, y ni siquiera es el dominio de Microsoft. Los nombres parecidos son un truco clásico.',
-        'Eine Null statt „o“ — und gar nicht die Domain von Microsoft. Ähnlich klingende Namen sind ein klassischer Trick.',
+        'Eine Null statt „o“, und gar nicht die Domain von Microsoft. Ähnlich klingende Namen sind ein klassischer Trick.',
       )),
     },
     {
@@ -148,7 +148,7 @@ function linkDetectiveHtml(tr: (t: Text) => string, lang: Language): string {
       parts: [scheme, sub('accounts'), dot, owner('google.com'), path('/signin/v2')],
       explain: tr(L(
         '“accounts” is a subdomain Google made itself. This one is genuine.',
-        '«accounts» — піддомен, який створив сам Google. Цей сайт справжній.',
+        '«accounts» є піддоменом, який створив сам Google. Цей сайт справжній.',
         '« accounts » est un sous-domaine créé par Google lui-même. Ce site est authentique.',
         '“accounts” es un subdominio creado por el propio Google. Este sitio es auténtico.',
         '„accounts“ ist eine Subdomain, die Google selbst angelegt hat. Diese hier ist echt.',
@@ -160,7 +160,7 @@ function linkDetectiveHtml(tr: (t: Text) => string, lang: Language): string {
       parts: [scheme, sub('yourbank'), dot, owner('com-secure.info'), path('/login')],
       explain: tr(L(
         'Tricky: the dash glues “com-secure” into a new name, so the owner is not your bank.',
-        'Хитро: дефіс склеює «com-secure» в нову назву, тож власник — зовсім не ваш банк.',
+        'Хитро: дефіс склеює «com-secure» в нову назву, тож власник зовсім не ваш банк.',
         'Piège : le tiret soude « com-secure » en un nouveau nom ; le propriétaire n’est donc pas votre banque.',
         'Con trampa: el guion une “com-secure” en un nombre nuevo, así que el dueño no es tu banco.',
         'Heimtückisch: Der Bindestrich verklebt „com-secure“ zu einem neuen Namen, der Inhaber ist also nicht Ihre Bank.',
@@ -185,11 +185,11 @@ function linkDetectiveHtml(tr: (t: Text) => string, lang: Language): string {
     wrong: tr(L('❌ Not quite.', '❌ Не зовсім.', '❌ Pas tout à fait.', '❌ No del todo.', '❌ Nicht ganz.')),
     why: {
       scheme: tr(L(
-        'https:// only means the connection is encrypted — phishing sites have the padlock too.',
-        'https:// означає лише, що з’єднання зашифроване, — фішингові сайти теж мають замочок.',
-        'https:// indique seulement que la connexion est chiffrée — les sites d’hameçonnage ont eux aussi le cadenas.',
+        'https:// only means the connection is encrypted. Phishing sites have the padlock too.',
+        'https:// означає лише, що з’єднання зашифроване. Фішингові сайти теж мають замочок.',
+        'https:// indique seulement que la connexion est chiffrée. Les sites d’hameçonnage ont eux aussi le cadenas.',
         'https:// solo indica que la conexión está cifrada: los sitios de phishing también tienen el candado.',
-        'https:// bedeutet nur, dass die Verbindung verschlüsselt ist — Phishing-Seiten haben auch das Schloss.',
+        'https:// bedeutet nur, dass die Verbindung verschlüsselt ist. Phishing-Seiten haben auch das Schloss.',
       )),
       sub: tr(L(
         'That part sits left of the owner, and the owner can put anything there.',
@@ -199,11 +199,11 @@ function linkDetectiveHtml(tr: (t: Text) => string, lang: Language): string {
         'Dieser Teil steht links vom Inhaber, und der Inhaber kann dort alles eintragen.',
       )),
       path: tr(L(
-        'Everything after the first “/” is just a page on the site — its owner can name it anything.',
-        'Усе після першої «/» — лише сторінка на сайті, і власник може назвати її як завгодно.',
-        'Tout ce qui suit le premier « / » n’est qu’une page du site — son propriétaire peut la nommer comme il veut.',
+        'Everything after the first “/” is just a page on the site, and its owner can name it anything.',
+        'Усе після першої «/» лише сторінка на сайті, і власник може назвати її як завгодно.',
+        'Tout ce qui suit le premier « / » n’est qu’une page du site, et son propriétaire peut la nommer comme il veut.',
         'Todo lo que va después de la primera “/” es solo una página del sitio: su dueño puede llamarla como quiera.',
-        'Alles nach dem ersten „/“ ist nur eine Seite auf der Website — ihr Inhaber kann sie beliebig nennen.',
+        'Alles nach dem ersten „/“ ist nur eine Seite auf der Website, und ihr Inhaber kann sie beliebig nennen.',
       )),
     },
     owner: tr(L('The site belongs to {owner}.', 'Сайт належить {owner}.', 'Le site appartient à {owner}.', 'El sitio pertenece a {owner}.', 'Die Seite gehört {owner}.')),
@@ -219,11 +219,11 @@ function linkDetectiveHtml(tr: (t: Text) => string, lang: Language): string {
       'Sie haben {score} von {total} Inhabern gefunden',
     )),
     endAll: tr(L(
-      'Perfect — no link can fool you.',
-      'Бездоганно — вас не обдурить жодне посилання.',
-      'Parfait — aucun lien ne peut vous tromper.',
+      'Perfect! No link can fool you.',
+      'Бездоганно! Вас не обдурить жодне посилання.',
+      'Parfait ! Aucun lien ne peut vous tromper.',
       'Perfecto: ningún enlace puede engañarte.',
-      'Perfekt — kein Link kann Sie täuschen.',
+      'Perfekt! Kein Link kann Sie täuschen.',
     )),
     endSome: tr(L(
       'Good start! Play again and read each address from the first “/” leftwards.',
@@ -233,11 +233,11 @@ function linkDetectiveHtml(tr: (t: Text) => string, lang: Language): string {
       'Guter Anfang! Spielen Sie noch einmal und lesen Sie jede Adresse vom ersten „/“ nach links.',
     )),
     rule: tr(L(
-      'Rule of thumb: find the first single “/” after https://. The last two words before it — like paypal.com — are the real owner. Anything further left can be made up.',
-      'Правило: знайдіть першу одинарну «/» після https://. Останні два слова перед нею — як-от paypal.com — і є справжнім власником. Усе, що лівіше, можна вигадати.',
-      'Règle pratique : repérez le premier « / » isolé après https://. Les deux derniers mots qui le précèdent — par exemple paypal.com — désignent le vrai propriétaire. Tout ce qui se trouve plus à gauche peut être inventé.',
+      'Rule of thumb: find the first single “/” after https://. The last two words before it (like paypal.com) are the real owner. Anything further left can be made up.',
+      'Правило: знайдіть першу одинарну «/» після https://. Останні два слова перед нею (як-от paypal.com) і є справжнім власником. Усе, що лівіше, можна вигадати.',
+      'Règle pratique : repérez le premier « / » isolé après https://. Les deux derniers mots qui le précèdent (par exemple paypal.com) désignent le vrai propriétaire. Tout ce qui se trouve plus à gauche peut être inventé.',
       'Regla práctica: busca la primera “/” suelta después de https://. Las dos últimas palabras que hay antes, como paypal.com, son el dueño real. Todo lo que queda más a la izquierda puede ser inventado.',
-      'Faustregel: Suchen Sie das erste einzelne „/“ nach https://. Die letzten zwei Wörter davor — wie paypal.com — sind der wahre Inhaber. Alles weiter links lässt sich beliebig erfinden.',
+      'Faustregel: Suchen Sie das erste einzelne „/“ nach https://. Die letzten zwei Wörter davor (wie paypal.com) sind der wahre Inhaber. Alles weiter links lässt sich beliebig erfinden.',
     )),
     again: tr(L('Play again', 'Зіграти ще раз', 'Rejouer', 'Jugar otra vez', 'Nochmal spielen')),
   }
@@ -476,7 +476,7 @@ export function makeSampleCourse(lang: Language): Course {
           mails: [
             tr(L('Team lunch on Friday', 'Обід команди в п’ятницю', 'Déjeuner d’équipe vendredi', 'Almuerzo de equipo el viernes', 'Teamlunch am Freitag')),
             tr(L('URGENT: verify your account!', 'ТЕРМІНОВО: підтвердьте акаунт!', 'URGENT : vérifiez votre compte !', 'URGENTE: ¡verifique su cuenta!', 'DRINGEND: Konto bestätigen!')),
-            tr(L('Q3 report — final draft', 'Звіт за III квартал — фінал', 'Rapport T3 — version finale', 'Informe T3 — versión final', 'Q3-Bericht — Endfassung')),
+            tr(L('Q3 report: final draft', 'Звіт за III квартал: фінал', 'Rapport T3 : version finale', 'Informe T3: versión final', 'Q3-Bericht: Endfassung')),
           ],
         }),
         alt: tr(L(
@@ -538,11 +538,11 @@ export function makeSampleCourse(lang: Language): Course {
       block('quote', {
         variant: 'card',
         text: tr(L(
-          'After this course our team reported three real phishing attempts in the first week — before anyone clicked.',
-          'Після цього курсу наша команда вже за перший тиждень повідомила про три справжні фішингові спроби — ще до того, як хтось клікнув.',
-          'Après ce cours, notre équipe a signalé trois vraies tentatives d’hameçonnage dès la première semaine — avant que quiconque ne clique.',
+          'After this course our team reported three real phishing attempts in the first week, before anyone clicked.',
+          'Після цього курсу наша команда вже за перший тиждень повідомила про три справжні фішингові спроби, ще до того, як хтось клікнув.',
+          'Après ce cours, notre équipe a signalé trois vraies tentatives d’hameçonnage dès la première semaine, avant que quiconque ne clique.',
           'Después de este curso, nuestro equipo denunció tres intentos reales de phishing en la primera semana, antes de que nadie hiciera clic.',
-          'Nach diesem Kurs hat unser Team in der ersten Woche drei echte Phishing-Versuche gemeldet — bevor jemand geklickt hat.',
+          'Nach diesem Kurs hat unser Team in der ersten Woche drei echte Phishing-Versuche gemeldet, bevor jemand geklickt hat.',
         )),
         author: tr(L('Maria Lopez', 'Марія Левченко', 'Marie Lambert', 'María López', 'Maria Lopez')),
         role: tr(L('Head of IT Security', 'Керівниця з ІТ-безпеки', 'Responsable de la sécurité informatique', 'Responsable de seguridad informática', 'Leiterin IT-Sicherheit')),
@@ -587,7 +587,7 @@ export function makeSampleCourse(lang: Language): Course {
             emotion: 'concerned',
             text: tr(L(
               'Careful! Unexpected links are the classic way attackers collect passwords. This course shows how to spot them.',
-              'Обережно! Несподівані посилання — класичний спосіб викрасти паролі. Цей курс покаже, як їх розпізнавати.',
+              'Обережно! Несподівані посилання є класичним способом викрасти паролі. Цей курс покаже, як їх розпізнавати.',
               'Attention ! Les liens inattendus sont le moyen classique de voler des mots de passe. Ce cours vous apprend à les repérer.',
               '¡Cuidado! Los enlaces inesperados son la forma clásica de robar contraseñas. Este curso te enseña a detectarlos.',
               'Vorsicht! Unerwartete Links sind der klassische Weg, Passwörter zu stehlen. Dieser Kurs zeigt, wie man sie erkennt.',
@@ -599,7 +599,7 @@ export function makeSampleCourse(lang: Language): Course {
             emotion: 'happy',
             text: tr(L(
               'Exactly! Checking the sender and the link before you click is the first habit this course builds.',
-              'Саме так! Перевірити відправника й посилання перед кліком — перша звичка, яку формує цей курс.',
+              'Саме так! Перевірити відправника й посилання перед кліком є першою звичкою, яку формує цей курс.',
               'Exactement ! Vérifier l’expéditeur et le lien avant de cliquer est la première habitude que ce cours construit.',
               '¡Exacto! Comprobar el remitente y el enlace antes de hacer clic es el primer hábito que construye este curso.',
               'Genau! Absender und Link zu prüfen, bevor man klickt, ist die erste Gewohnheit, die dieser Kurs aufbaut.',
@@ -611,7 +611,7 @@ export function makeSampleCourse(lang: Language): Course {
             emotion: 'happy',
             text: tr(L(
               'Great instinct! Confirming through another channel is the safest move.',
-              'Чудова інтуїція! Підтвердити в іншому каналі — найбезпечніший крок.',
+              'Чудова інтуїція! Підтвердити в іншому каналі є найбезпечнішим кроком.',
               'Bon réflexe ! Confirmer par un autre canal est la démarche la plus sûre.',
               '¡Buen instinto! Confirmarlo por otro canal es la jugada más segura.',
               'Guter Instinkt! Über einen anderen Kanal nachzufragen ist der sicherste Weg.',
@@ -760,11 +760,11 @@ export function makeSampleCourse(lang: Language): Course {
               1,
               tr(L('Urgency', 'Терміновість', 'Urgence', 'Urgencia', 'Dringlichkeit')),
               tr(L(
-                '“Act now or lose access” — pressure is the attacker’s favourite tool.',
-                '«Дійте негайно, або втратите доступ» — тиск є улюбленим інструментом зловмисника.',
+                '“Act now or lose access”: pressure is the attacker’s favourite tool.',
+                '«Дійте негайно, або втратите доступ»: тиск є улюбленим інструментом зловмисника.',
                 '« Agissez maintenant ou perdez l’accès » : la pression est l’outil favori des attaquants.',
                 '“Actúa ya o perderás el acceso”: la presión es la herramienta favorita del atacante.',
-                '„Jetzt handeln, sonst verlieren Sie den Zugriff“ — Druck ist das Lieblingswerkzeug der Angreifer.',
+                '„Jetzt handeln, sonst verlieren Sie den Zugriff“: Druck ist das Lieblingswerkzeug der Angreifer.',
               )),
               'clock',
             ),
@@ -783,7 +783,7 @@ export function makeSampleCourse(lang: Language): Course {
               tr(L('Look-alike senders', 'Схожі адреси', 'Expéditeurs imités', 'Remitentes falsos', 'Ähnlich aussehende Absender')),
               tr(L(
                 'micros0ft-help.co is not microsoft.com. Read the domain letter by letter.',
-                'micros0ft-help.co — це не microsoft.com. Читайте домен по літері.',
+                'micros0ft-help.co це не microsoft.com. Читайте домен по літері.',
                 'micros0ft-help.co n’est pas microsoft.com. Lisez le domaine lettre par lettre.',
                 'micros0ft-help.co no es microsoft.com. Lee el dominio letra por letra.',
                 'micros0ft-help.co ist nicht microsoft.com. Lesen Sie die Domain Buchstabe für Buchstabe.',
@@ -854,11 +854,11 @@ export function makeSampleCourse(lang: Language): Course {
               'Warnsignal 4: Anfragen nach Passwörtern oder Codes',
             )),
             caption: tr(L(
-              'A password request is a phishing attempt — always.',
-              'Прохання назвати пароль — це завжди фішинг.',
+              'A password request is a phishing attempt. Always.',
+              'Прохання назвати пароль завжди є фішинг.',
               'Une demande de mot de passe est une tentative d’hameçonnage. Toujours.',
               'Si te piden la contraseña, es un intento de phishing. Siempre.',
-              'Eine Passwortanfrage ist ein Phishing-Versuch — immer.',
+              'Eine Passwortanfrage ist ein Phishing-Versuch. Immer.',
             )),
           },
         ],
@@ -894,14 +894,14 @@ export function makeSampleCourse(lang: Language): Course {
           variant: 'lead',
           html: p(L(
             '<strong>Attackers count on habit.</strong> The few seconds you spend checking a sender or a link are the best security tool you have.',
-            '<strong>Зловмисники розраховують на звичку.</strong> Кілька секунд, щоб перевірити відправника чи посилання, — найкращий інструмент безпеки, який у вас є.',
+            '<strong>Зловмисники розраховують на звичку.</strong> Кілька секунд, щоб перевірити відправника чи посилання є найкращим інструмент безпеки, який у вас є.',
             '<strong>Les attaquants comptent sur l’habitude.</strong> Les quelques secondes passées à vérifier un expéditeur ou un lien sont votre meilleur outil de sécurité.',
             '<strong>Los atacantes cuentan con la costumbre.</strong> Los pocos segundos que dedicas a comprobar un remitente o un enlace son tu mejor herramienta de seguridad.',
             '<strong>Angreifer setzen auf Gewohnheit.</strong> Die paar Sekunden, die Sie mit der Prüfung eines Absenders oder Links verbringen, sind Ihr bestes Sicherheitswerkzeug.',
           )),
         },
       },
-      block('heading', { level: 2, text: tr(L('Phishing is not only email', 'Фішинг — це не лише пошта', 'L’hameçonnage ne passe pas que par l’e-mail', 'El phishing no es solo correo', 'Phishing gibt es nicht nur per E-Mail')) }),
+      block('heading', { level: 2, text: tr(L('Phishing is not only email', 'Фішинг не лише в пошті', 'L’hameçonnage ne passe pas que par l’e-mail', 'El phishing no es solo correo', 'Phishing gibt es nicht nur per E-Mail')) }),
       block('tabs', {
         tabs: [
           {
@@ -1015,7 +1015,7 @@ export function makeSampleCourse(lang: Language): Course {
             )),
             choices: [
               { id: id('choice'), text: tr(L('OK, here it is…', 'Гаразд, ось він…', 'D’accord, le voici…', 'De acuerdo, aquí la tienes…', 'OK, hier ist es …')), nextNodeId: n.bad },
-              { id: id('choice'), text: tr(L('Pressure is a red flag. I’ll check with the service desk first.', 'Тиск — це тривожна ознака. Спершу перевірю на гарячій лінії.', 'La pression est un signal d’alerte. Je vérifie d’abord auprès de l’assistance.', 'La presión es una señal de alerta. Antes lo consulto con asistencia.', 'Druck ist ein Warnsignal. Ich frage erst beim Servicedesk nach.')), nextNodeId: n.verify },
+              { id: id('choice'), text: tr(L('Pressure is a red flag. I’ll check with the service desk first.', 'Тиск є тривожною ознакою. Спершу перевірю на гарячій лінії.', 'La pression est un signal d’alerte. Je vérifie d’abord auprès de l’assistance.', 'La presión es una señal de alerta. Antes lo consulto con asistencia.', 'Druck ist ein Warnsignal. Ich frage erst beim Servicedesk nach.')), nextNodeId: n.verify },
             ],
           },
           {
@@ -1042,11 +1042,11 @@ export function makeSampleCourse(lang: Language): Course {
             id: n.bad,
             emotion: 'neutral',
             text: tr(L(
-              '❌ Thanks! (The attacker now has your password.) Real IT will never ask for it — change it right away and report the chat.',
-              '❌ Дякую! (Тепер зловмисник має ваш пароль.) Справжнє ІТ ніколи його не питає — негайно змініть пароль і повідомте про чат.',
-              '❌ Merci ! (L’attaquant a maintenant votre mot de passe.) Le vrai service informatique ne vous le demandera jamais — changez-le immédiatement et signalez la conversation.',
+              '❌ Thanks! (The attacker now has your password.) Real IT will never ask for it. Change it right away and report the chat.',
+              '❌ Дякую! (Тепер зловмисник має ваш пароль.) Справжнє ІТ ніколи його не питає. Негайно змініть пароль і повідомте про чат.',
+              '❌ Merci ! (L’attaquant a maintenant votre mot de passe.) Le vrai service informatique ne vous le demandera jamais. Changez-le immédiatement et signalez la conversation.',
               '❌ ¡Gracias! (Ahora el atacante tiene tu contraseña.) El equipo de TI de verdad nunca te la pedirá: cámbiala enseguida y denuncia el chat.',
-              '❌ Danke! (Der Angreifer hat jetzt Ihr Passwort.) Die echte IT fragt nie danach — ändern Sie es sofort und melden Sie den Chat.',
+              '❌ Danke! (Der Angreifer hat jetzt Ihr Passwort.) Die echte IT fragt nie danach. Ändern Sie es sofort und melden Sie den Chat.',
             )),
             choices: [],
           },
@@ -1061,7 +1061,7 @@ export function makeSampleCourse(lang: Language): Course {
           { id: catPhish, title: tr(L('Phishing', 'Фішинг', 'Hameçonnage', 'Phishing', 'Phishing')) },
         ],
         items: [
-          { id: id('item'), categoryId: catPhish, text: tr(L('“Your parcel is on hold — pay 1.99 via this link”', '«Посилку затримано — сплатіть 1,99 за посиланням»', '« Votre colis est en attente — payez 1,99 via ce lien »', '“Tu paquete está retenido: paga 1,99 en este enlace”', '„Ihr Paket wird zurückgehalten — zahlen Sie 1,99 über diesen Link“')) },
+          { id: id('item'), categoryId: catPhish, text: tr(L('“Your parcel is on hold: pay 1.99 via this link”', '«Посилку затримано: сплатіть 1,99 за посиланням»', '« Votre colis est en attente : payez 1,99 via ce lien »', '“Tu paquete está retenido: paga 1,99 en este enlace”', '„Ihr Paket wird zurückgehalten: zahlen Sie 1,99 über diesen Link“')) },
           { id: id('item'), categoryId: catSafe, text: tr(L('A meeting invite from your manager for a meeting you discussed', 'Запрошення від керівника на зустріч, про яку ви домовлялися', 'Une invitation de votre responsable à une réunion dont vous aviez parlé', 'Una invitación de tu responsable a una reunión que ya tenías prevista', 'Eine Meeting-Einladung Ihrer Führungskraft für ein Meeting, das Sie besprochen haben')) },
           { id: id('item'), categoryId: catPhish, text: tr(L('“CEO” asks you to buy gift cards urgently and keep it secret', '«Директор» просить терміново купити подарункові картки й нікому не казати', 'Le « PDG » vous demande d’acheter d’urgence des cartes cadeaux et de garder le secret', 'El “CEO” te pide que compres tarjetas de regalo con urgencia y que lo mantengas en secreto', 'Der „CEO“ bittet Sie, dringend Geschenkkarten zu kaufen und es geheim zu halten')) },
           { id: id('item'), categoryId: catSafe, text: tr(L('A password-reset email right after you clicked “Forgot password”', 'Лист для скидання пароля одразу після того, як ви натиснули «Забули пароль»', 'Un e-mail de réinitialisation reçu juste après avoir cliqué sur « Mot de passe oublié »', 'Un correo para restablecer la contraseña justo después de hacer clic en “He olvidado mi contraseña”', 'Eine E-Mail zum Zurücksetzen des Passworts direkt nach Ihrem Klick auf „Passwort vergessen“')) },
@@ -1090,7 +1090,7 @@ export function makeSampleCourse(lang: Language): Course {
       block('timeline', {
         layout: 'stepper',
         items: [
-          { id: id('tl'), label: tr(L('Step 1', 'Крок 1', 'Étape 1', 'Paso 1', 'Schritt 1')), title: tr(L('Disconnect', 'Від’єднайтеся', 'Déconnectez-vous', 'Desconéctate', 'Trennen')), text: tr(L('Close the page and don’t enter anything else. If a file was downloaded, disconnect from the network.', 'Закрийте сторінку й нічого більше не вводьте. Якщо завантажився файл — від’єднайтеся від мережі.', 'Fermez la page et ne saisissez plus rien. Si un fichier a été téléchargé, déconnectez-vous du réseau.', 'Cierra la página y no introduzcas nada más. Si se ha descargado un archivo, desconéctate de la red.', 'Schließen Sie die Seite und geben Sie nichts weiter ein. Wurde eine Datei heruntergeladen, trennen Sie die Netzwerkverbindung.')) },
+          { id: id('tl'), label: tr(L('Step 1', 'Крок 1', 'Étape 1', 'Paso 1', 'Schritt 1')), title: tr(L('Disconnect', 'Від’єднайтеся', 'Déconnectez-vous', 'Desconéctate', 'Trennen')), text: tr(L('Close the page and don’t enter anything else. If a file was downloaded, disconnect from the network.', 'Закрийте сторінку й нічого більше не вводьте. Якщо завантажився файл, від’єднайтеся від мережі.', 'Fermez la page et ne saisissez plus rien. Si un fichier a été téléchargé, déconnectez-vous du réseau.', 'Cierra la página y no introduzcas nada más. Si se ha descargado un archivo, desconéctate de la red.', 'Schließen Sie die Seite und geben Sie nichts weiter ein. Wurde eine Datei heruntergeladen, trennen Sie die Netzwerkverbindung.')) },
           { id: id('tl'), label: tr(L('Step 2', 'Крок 2', 'Étape 2', 'Paso 2', 'Schritt 2')), title: tr(L('Change your password', 'Змініть пароль', 'Changez votre mot de passe', 'Cambia tu contraseña', 'Passwort ändern')), text: tr(L('From a trusted device, change the password and sign out of all sessions.', 'З довіреного пристрою змініть пароль і вийдіть з усіх сеансів.', 'Depuis un appareil de confiance, changez le mot de passe et fermez toutes les sessions.', 'Desde un dispositivo de confianza, cambia la contraseña y cierra todas las sesiones.', 'Ändern Sie das Passwort von einem vertrauenswürdigen Gerät aus und melden Sie sich von allen Sitzungen ab.')) },
           { id: id('tl'), label: tr(L('Step 3', 'Крок 3', 'Étape 3', 'Paso 3', 'Schritt 3')), title: tr(L('Report it', 'Повідомте', 'Signalez-le', 'Avisa', 'Melden')), text: tr(L('Tell your security team right away. Speed matters more than embarrassment.', 'Одразу повідомте службу безпеки. Швидкість важливіша за незручність.', 'Prévenez tout de suite votre équipe de sécurité. La rapidité compte plus que la gêne.', 'Avisa enseguida a tu equipo de seguridad. La rapidez importa más que la vergüenza.', 'Informieren Sie sofort Ihr Sicherheitsteam. Schnelligkeit zählt mehr als Peinlichkeit.')) },
           { id: id('tl'), label: tr(L('Step 4', 'Крок 4', 'Étape 4', 'Paso 4', 'Schritt 4')), title: tr(L('Watch for activity', 'Стежте за активністю', 'Surveillez l’activité', 'Vigila la actividad', 'Auf Aktivitäten achten')), text: tr(L('Check your account and bank statements for anything unusual over the next weeks.', 'Кілька тижнів перевіряйте акаунт і банківські виписки на незвичні операції.', 'Dans les semaines qui suivent, vérifiez que rien d’inhabituel n’apparaît sur votre compte ni sur vos relevés bancaires.', 'Durante las próximas semanas, revisa tu cuenta y tus extractos bancarios por si hay algo inusual.', 'Prüfen Sie Ihr Konto und Ihre Kontoauszüge in den nächsten Wochen auf Ungewöhnliches.')) },
@@ -1099,11 +1099,11 @@ export function makeSampleCourse(lang: Language): Course {
       block('note', {
         variant: 'success',
         text: tr(L(
-          'Key point: reporting fast matters more than feeling embarrassed — security teams would rather get ten false alarms than miss one real attack.',
-          'Головне: швидко повідомити важливіше за незручність — служба безпеки радше отримає десять хибних тривог, ніж пропустить одну справжню атаку.',
-          'À retenir : signaler vite compte plus que la gêne — les équipes de sécurité préfèrent dix fausses alertes à une vraie attaque manquée.',
+          'Key point: reporting fast matters more than feeling embarrassed: security teams would rather get ten false alarms than miss one real attack.',
+          'Головне: швидко повідомити важливіше за незручність: служба безпеки радше отримає десять хибних тривог, ніж пропустить одну справжню атаку.',
+          'À retenir : signaler vite compte plus que la gêne : les équipes de sécurité préfèrent dix fausses alertes à une vraie attaque manquée.',
           'Lo esencial: avisar rápido importa más que la vergüenza. Los equipos de seguridad prefieren diez falsas alarmas a que se les escape un ataque real.',
-          'Kernpunkt: Schnell zu melden ist wichtiger, als sich zu schämen — Sicherheitsteams erhalten lieber zehn Fehlalarme, als einen echten Angriff zu verpassen.',
+          'Kernpunkt: Schnell zu melden ist wichtiger, als sich zu schämen: Sicherheitsteams erhalten lieber zehn Fehlalarme, als einen echten Angriff zu verpassen.',
         )),
       }),
       block('heading', { level: 2, text: tr(L('How to report a phishing email', 'Як повідомити про фішинговий лист', 'Comment signaler un e-mail d’hameçonnage', 'Cómo denunciar un correo de phishing', 'So melden Sie eine Phishing-E-Mail')) }),
@@ -1114,11 +1114,11 @@ export function makeSampleCourse(lang: Language): Course {
             id: id('step'),
             title: tr(L('Don’t interact', 'Нічого не робіть із листом', 'N’interagissez pas', 'No interactúes', 'Nicht reagieren')),
             html: p(L(
-              'Don’t reply, click links or open attachments — not even “just to check”.',
-              'Не відповідайте, не клікайте посилання й не відкривайте вкладення — навіть «просто перевірити».',
-              'Ne répondez pas, ne cliquez sur aucun lien, n’ouvrez aucune pièce jointe — même « juste pour vérifier ».',
+              'Don’t reply, click links or open attachments, not even “just to check”.',
+              'Не відповідайте, не клікайте посилання й не відкривайте вкладення, навіть «просто перевірити».',
+              'Ne répondez pas, ne cliquez sur aucun lien, n’ouvrez aucune pièce jointe, même « juste pour vérifier ».',
               'No respondas, no hagas clic en los enlaces ni abras los adjuntos, ni siquiera “solo para comprobar”.',
-              'Nicht antworten, keine Links anklicken, keine Anhänge öffnen — auch nicht „nur zum Prüfen“.',
+              'Nicht antworten, keine Links anklicken, keine Anhänge öffnen, auch nicht „nur zum Prüfen“.',
             )),
           },
           {
@@ -1148,11 +1148,11 @@ export function makeSampleCourse(lang: Language): Course {
             id: id('step'),
             title: tr(L('Delete it', 'Видаліть лист', 'Supprimez-le', 'Elimínalo', 'Löschen')),
             html: p(L(
-              'Once it’s reported, delete the email — and empty it from Deleted items too.',
-              'Коли повідомили, видаліть лист — і з папки «Видалені» теж.',
-              'Une fois l’e-mail signalé, supprimez-le — et videz-le aussi des Éléments supprimés.',
+              'Once it’s reported, delete the email, and empty it from Deleted items too.',
+              'Коли повідомили, видаліть лист, і з папки «Видалені» теж.',
+              'Une fois l’e-mail signalé, supprimez-le, et videz-le aussi des Éléments supprimés.',
               'Una vez denunciado, elimina el correo y bórralo también de Elementos eliminados.',
-              'Löschen Sie die E-Mail, sobald sie gemeldet ist — und leeren Sie auch den Ordner „Gelöschte Elemente“.',
+              'Löschen Sie die E-Mail, sobald sie gemeldet ist, und leeren Sie auch den Ordner „Gelöschte Elemente“.',
             )),
           },
         ],
@@ -1184,25 +1184,25 @@ export function makeSampleCourse(lang: Language): Course {
       block('heading', { level: 2, text: tr(L('Your turn', 'Ваша черга', 'À vous de jouer', 'Tu turno', 'Sie sind dran')) }),
       block('reflection', {
         prompt: tr(L(
-          'Think of the last message that made you hesitate. What gave it away — or what would you check now before clicking?',
-          'Згадайте останнє повідомлення, яке вас насторожило. Що його видало — або що б ви перевірили тепер, перш ніж клікнути?',
-          'Pensez au dernier message qui vous a fait hésiter. Qu’est-ce qui l’a trahi — ou que vérifieriez-vous aujourd’hui avant de cliquer ?',
+          'Think of the last message that made you hesitate. What gave it away, or what would you check now before clicking?',
+          'Згадайте останнє повідомлення, яке вас насторожило. Що його видало або що б ви перевірили тепер, перш ніж клікнути?',
+          'Pensez au dernier message qui vous a fait hésiter. Qu’est-ce qui l’a trahi, ou que vérifieriez-vous aujourd’hui avant de cliquer ?',
           'Piensa en el último mensaje que te hizo dudar. ¿Qué lo delató? ¿O qué comprobarías ahora antes de hacer clic?',
-          'Denken Sie an die letzte Nachricht, bei der Sie gezögert haben. Woran war sie erkennbar — oder was würden Sie jetzt vor dem Klicken prüfen?',
+          'Denken Sie an die letzte Nachricht, bei der Sie gezögert haben. Woran war sie erkennbar, oder was würden Sie jetzt vor dem Klicken prüfen?',
         )),
         sample: tr(L(
-          'For example: “An SMS said my parcel was on hold and asked for a small fee. I wasn’t expecting a delivery and the link was a short URL. Now I’d open the courier’s app myself instead of the link — and report the message.”',
-          'Наприклад: «SMS писало, що мою посилку затримано, і просило сплатити невелику суму. Я не чекав(-ла) доставки, а посилання було скороченим. Тепер я сам(-а) відкрию застосунок перевізника замість посилання — і повідомлю про це SMS».',
-          'Par exemple : « Un SMS disait que mon colis était en attente et réclamait de petits frais. Je n’attendais aucune livraison et le lien était une URL raccourcie. Aujourd’hui, j’ouvrirais moi-même l’application du transporteur au lieu de suivre le lien — et je signalerais le message. »',
+          'For example: “An SMS said my parcel was on hold and asked for a small fee. I wasn’t expecting a delivery and the link was a short URL. Now I’d open the courier’s app myself instead of the link, and report the message.”',
+          'Наприклад: «SMS писало, що мою посилку затримано, і просило сплатити невелику суму. Я не чекав(-ла) доставки, а посилання було скороченим. Тепер я сам(-а) відкрию застосунок перевізника замість посилання і повідомлю про це SMS».',
+          'Par exemple : « Un SMS disait que mon colis était en attente et réclamait de petits frais. Je n’attendais aucune livraison et le lien était une URL raccourcie. Aujourd’hui, j’ouvrirais moi-même l’application du transporteur au lieu de suivre le lien, et je signalerais le message. »',
           'Por ejemplo: “Un SMS decía que mi paquete estaba retenido y me pedía un pequeño pago. No esperaba ninguna entrega y el enlace era una URL acortada. Ahora abriría yo la aplicación de la empresa de mensajería en lugar del enlace, y denunciaría el mensaje”.',
-          'Zum Beispiel: „Eine SMS sagte, mein Paket werde zurückgehalten, und verlangte eine kleine Gebühr. Ich erwartete keine Lieferung, und der Link war eine Kurz-URL. Jetzt würde ich die App des Paketdienstes selbst öffnen statt den Link — und die Nachricht melden.“',
+          'Zum Beispiel: „Eine SMS sagte, mein Paket werde zurückgehalten, und verlangte eine kleine Gebühr. Ich erwartete keine Lieferung, und der Link war eine Kurz-URL. Jetzt würde ich die App des Paketdienstes selbst öffnen statt den Link und die Nachricht melden.“',
         )),
       }),
       block('quote', {
         variant: 'statement',
         text: tr(L(
           'Amateurs hack systems; professionals hack people.',
-          'Аматори зламують системи, професіонали — людей.',
+          'Аматори зламують системи, професіонали зламують людей.',
           'Les amateurs piratent les systèmes ; les professionnels piratent les gens.',
           'Los aficionados hackean sistemas; los profesionales hackean personas.',
           'Amateure hacken Systeme; Profis hacken Menschen.',
@@ -1268,7 +1268,7 @@ export function makeSampleCourse(lang: Language): Course {
             )),
             options: [
               opt(
-                L('Read the code out — they called me, so it’s the bank', 'Диктую код — вони ж самі подзвонили, отже це банк', 'Je dicte le code — c’est eux qui m’ont appelé, donc c’est la banque', 'Les dicto el código: me han llamado ellos, así que es el banco', 'Den Code vorlesen — die haben mich angerufen, also ist es die Bank'),
+                L('Read the code out: they called me, so it’s the bank', 'Диктую код: вони ж самі подзвонили, отже це банк', 'Je dicte le code : c’est eux qui m’ont appelé, donc c’est la banque', 'Les dicto el código: me han llamado ellos, así que es el banco', 'Den Code vorlesen: Die haben mich angerufen, also ist es die Bank'),
                 false,
                 L('Anyone can fake a caller ID.', 'Номер абонента легко підробити.', 'N’importe qui peut falsifier un numéro d’appelant.', 'Cualquiera puede falsificar el número que aparece en la llamada.', 'Jeder kann eine Anruferkennung fälschen.'),
               ),
@@ -1377,11 +1377,11 @@ export function makeSampleCourse(lang: Language): Course {
       lessonTransition: 'slide',
       finishMessage: tr(
         L(
-          'Great job! You now know how to spot and handle phishing. Stay alert — and share what you learned with your team.',
-          'Чудова робота! Тепер ви знаєте, як розпізнати фішинг і що робити. Будьте пильні — і поділіться знаннями з командою.',
-          'Bravo ! Vous savez maintenant repérer l’hameçonnage et y réagir. Restez vigilant — et partagez ce que vous avez appris avec votre équipe.',
+          'Great job! You now know how to spot and handle phishing. Stay alert, and share what you learned with your team.',
+          'Чудова робота! Тепер ви знаєте, як розпізнати фішинг і що робити. Будьте пильні й поділіться знаннями з командою.',
+          'Bravo ! Vous savez maintenant repérer l’hameçonnage et y réagir. Restez vigilant, et partagez ce que vous avez appris avec votre équipe.',
           '¡Buen trabajo! Ya sabes detectar el phishing y cómo actuar. Mantente alerta y comparte lo aprendido con tu equipo.',
-          'Gut gemacht! Sie wissen jetzt, wie man Phishing erkennt und damit umgeht. Bleiben Sie wachsam — und geben Sie Ihr Wissen an Ihr Team weiter.',
+          'Gut gemacht! Sie wissen jetzt, wie man Phishing erkennt und damit umgeht. Bleiben Sie wachsam und geben Sie Ihr Wissen an Ihr Team weiter.',
         ),
       ),
     },

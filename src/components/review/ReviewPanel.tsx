@@ -12,7 +12,7 @@ import { FAQ_AI_COMMENTS, useHelpStore } from '../../help/helpStore'
 
 // The comments panel (review mode): threads on the blocks of the open page or
 // of the whole course, replies, resolve / reopen, and who is commenting. Sits
-// right of the canvas — or of the preview, which passes its own page, block
+// right of the canvas (or of the preview, which passes its own page, block
 // and way to show a block (ReviewPanelProps); on a phone it slides over it.
 
 interface BlockPlace {
@@ -302,7 +302,7 @@ function Panel({ preview }: ReviewPanelProps) {
   )
 }
 
-// "Commenting as …" — or, until there is a name, the form asking for one.
+// "Commenting as …" or, until there is a name, the form asking for one.
 function Identity() {
   const { t } = useT('review')
   const reviewer = useReviewStore((s) => s.reviewer)
@@ -505,7 +505,7 @@ function CommentView({ comment, own, editing, onStartEdit, onStopEdit, onSave, o
       <Avatar name={comment.author} />
       <div className="min-w-0 flex-1">
         <p className="flex flex-wrap items-baseline gap-x-1.5 text-xs">
-          <span className="font-semibold text-gray-900">{comment.author || '—'}</span>
+          <span className="font-semibold text-gray-900">{comment.author || '…'}</span>
           {own && <span className="text-gray-400">({t('you')})</span>}
           <time dateTime={comment.createdAt} title={fullTime(comment.createdAt, lang)} className="text-gray-400">
             {relativeTime(comment.createdAt, lang)}

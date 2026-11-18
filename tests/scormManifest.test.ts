@@ -45,7 +45,7 @@ function course(overrides: Partial<Course> = {}): Course {
 
 const FILES = ['index.html', 'player.js', 'assets/фото уроку (1).png']
 
-describe('buildManifest — both versions', () => {
+describe('buildManifest: both versions', () => {
   test.each(['1.2', '2004'] as const)('%s: hrefs are %%-encoded valid URIs', (v) => {
     const xml = buildManifest(course(), FILES, v)
     expect(xml).toContain(
@@ -60,7 +60,7 @@ describe('buildManifest — both versions', () => {
   })
 })
 
-describe('buildManifest — SCORM 2004', () => {
+describe('buildManifest: SCORM 2004', () => {
   test('declares the mastery score as minNormalizedMeasure', () => {
     const xml = buildManifest(course(), FILES, '2004', 80)
     expect(xml).toContain('satisfiedByMeasure="true"')
@@ -74,7 +74,7 @@ describe('buildManifest — SCORM 2004', () => {
 
   test('always declares completionSetByContent/objectiveSetByContent', () => {
     // Without these the LMS may auto-complete the SCO on exit, overriding the
-    // player's reported status — even for unscored courses.
+    // player's reported status, even for unscored courses.
     const unscored = course({ lessons: [] })
     for (const xml of [buildManifest(course(), FILES, '2004', 80), buildManifest(unscored, FILES, '2004')]) {
       expect(xml).toContain(
@@ -99,7 +99,7 @@ describe('buildManifest — SCORM 2004', () => {
   })
 })
 
-describe('buildManifest — SCORM 1.2', () => {
+describe('buildManifest: SCORM 1.2', () => {
   test('declares the mastery score via adlcp:masteryscore', () => {
     const xml = buildManifest(course(), FILES, '1.2', 80)
     expect(xml).toContain('<adlcp:masteryscore>80</adlcp:masteryscore>')

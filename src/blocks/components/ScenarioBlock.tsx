@@ -20,7 +20,7 @@ import type { LibraryKind } from '../../components/scenario/LibraryGrid'
 
 const IMAGE_ACCEPT = 'image/png,image/jpeg,image/webp,image/gif,image/svg+xml'
 
-// labelKey — translation key for the emotion name (resolved via t() in the component).
+// labelKey: translation key for the emotion name (resolved via t() in the component).
 const EMOTIONS: { value: ScenarioEmotion; emoji: string; labelKey: string }[] = [
   { value: 'neutral', emoji: '😐', labelKey: 'emotionNeutral' },
   { value: 'happy', emoji: '🙂', labelKey: 'emotionHappy' },
@@ -462,7 +462,7 @@ export default function ScenarioBlock({
                         }
                         className="rounded-md border border-gray-300 px-2 py-2 text-sm outline-none focus:border-brand"
                       >
-                        <option value="">—</option>
+                        <option value="">…</option>
                         {EMOTIONS.map(({ value, labelKey }) => (
                           <option key={value} value={value}>
                             {t(labelKey)}

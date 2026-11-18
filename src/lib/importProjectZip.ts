@@ -36,7 +36,7 @@ export class ZipProjectError extends Error {
 
 // ── "Update or open as new?" ──
 // A .zip whose course id matches a project already here (open now, or kept in
-// this browser) is most likely a new version of it — e.g. back from a
+// this browser) is most likely a new version of it, e.g. back from a
 // colleague or an AI assistant. The author decides; ZipUpdateDialog renders
 // the question. 'comments' keeps the course as it is here and only brings in
 // the .zip's review comments (offered when it has some).
@@ -107,7 +107,7 @@ async function findExisting(courseId: string): Promise<Target | null> {
 }
 
 /**
- * Open a project from a .zip (project.json + assets/) — no folder access
+ * Open a project from a .zip (project.json + assets/), no folder access
  * needed. A version of a project already here can update it (one undoable
  * step) or open as a new project with its own id. A new one is kept in this
  * browser (survives reloads), or, where the browser can't store it, lives in

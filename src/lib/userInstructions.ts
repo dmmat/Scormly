@@ -1,6 +1,6 @@
 // The author's own notes for AI assistants (user-instructions.md): who the
 // learners are, tone, terms, house rules. Scormly writes it from a template
-// once and never rewrites it — unlike AGENTS.md, which it regenerates and
+// once and never rewrites it, unlike AGENTS.md, which it regenerates and
 // which tells assistants to read this file first. Edited in Project settings
 // (the only way for projects kept in the browser) or in the project folder.
 

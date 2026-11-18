@@ -20,10 +20,10 @@ const landing: LocaleTable = {
     // Hero
     heroBadge: 'Open source · Free · 100% local',
     heroTitle:
-      'Free SCORM editor and authoring tool — right in your browser',
+      'Free SCORM editor and authoring tool, right in your browser',
     heroSubtitle:
-      'Scormly is a free, open-source SCORM authoring tool and course creator that works online in your browser. Build interactive courses from blocks and export a SCORM 1.2, SCORM 2004 or cmi5 package in one click — no backend, no sign-up, and your content never leaves your computer.',
-    heroCtaPrimary: 'Start building — free',
+      'Scormly is a free, open-source SCORM authoring tool and course creator that works online in your browser. Build interactive courses from blocks and export a SCORM 1.2, SCORM 2004 or cmi5 package in one click. No backend, no sign-up, and your content never leaves your computer.',
+    heroCtaPrimary: 'Start building for free',
     heroCtaSecondary: 'View on GitHub',
     heroCtaDemo: 'Open the demo course',
     heroNote: 'Runs entirely in your browser. Nothing to install.',
@@ -38,7 +38,7 @@ const landing: LocaleTable = {
       'No subscriptions, no seats, no paywalled features. Every capability is available to everyone, forever.',
     pillarLocalTitle: 'Local & private',
     pillarLocalText:
-      'Everything runs on your device. We store nothing and transmit nothing — there is no server to send your data to.',
+      'Everything runs on your device. We store nothing and transmit nothing: there is no server to send your data to.',
 
     // Who it is for
     whoTitle:
@@ -70,24 +70,24 @@ const landing: LocaleTable = {
     // Features
     designBadge: 'Design',
     designTitle: 'Courses that look designed, not assembled',
-    designSubtitle: 'A cover page, block styles from your theme, image and quote layouts, carousels and smooth motion — polished courses without a designer.',
+    designSubtitle: 'A cover page, block styles from your theme, image and quote layouts, carousels and smooth motion: polished courses without a designer.',
     designSwatches: 'Try a block background',
     designPoint1Title: 'Cover page and themed blocks',
-    designPoint1Text: 'Open the course with a title page, then give any block a background from your theme — tint, color, gradient or dark. Change the theme and everything follows.',
+    designPoint1Text: 'Open the course with a title page, then give any block a background from your theme: tint, color, gradient or dark. Change the theme and everything follows.',
     designPoint2Title: 'Ready-made blocks',
-    designPoint2Text: 'Statements, testimonials with photos, quotes on images, image & text, text on image, full-width pictures and photo carousels — one click each.',
+    designPoint2Text: 'Statements, testimonials with photos, quotes on images, image & text, text on image, full-width pictures and photo carousels, each one click away.',
     designPoint3Title: 'Downloads for learners',
     designPoint3Text: 'Attach PDFs, spreadsheets, slides or archives; they ship inside the SCORM package and download with their original names.',
     designPoint4Title: 'Motion and layout',
     designPoint4Text: 'Blocks glide in as learners scroll, lessons slide into place, and you choose the content width and typography. Reduced-motion settings are always respected.',
     featuresTitle: 'Everything you need to author a course',
-    featuresSubtitle: 'A focused block editor with the building blocks of modern e-learning — and nothing you don’t need.',
+    featuresSubtitle: 'A focused block editor with the building blocks of modern e-learning, and nothing you don’t need.',
     f1Title: 'Rich block library',
-    f1Text: 'Text, media, tabs, accordions, flashcards and dialogue scenarios with a chat layout — plus interactive image hotspots, timelines, process diagrams, step-by-step guides, comparisons, before / after sliders, reflections, sort-the-order and fill-in-the-blanks exercises. Need something else? A Widget block takes your own HTML and JavaScript or an uploaded .html / .zip.',
+    f1Text: 'Text, media, tabs, accordions, flashcards and dialogue scenarios with a chat layout, plus interactive image hotspots, timelines, process diagrams, step-by-step guides, comparisons, before / after sliders, reflections, sort-the-order and fill-in-the-blanks exercises. Need something else? A Widget block takes your own HTML and JavaScript or an uploaded .html / .zip.',
     f2Title: 'Graded quizzes',
-    f2Text: 'Single and multiple choice, matching, ordering and fill-in-the-blank questions in one test, with feedback and a passing score — every answer reported to your LMS.',
+    f2Text: 'Single and multiple choice, matching, ordering and fill-in-the-blank questions in one test, with feedback and a passing score. Every answer is reported to your LMS.',
     f3Title: 'A forgiving editor',
-    f3Text: 'Insert a block anywhere, reorder freely and undo any change — even straight from the notification after a delete.',
+    f3Text: 'Insert a block anywhere, reorder freely and undo any change, even straight from the notification after a delete.',
     f4Title: 'SCORM 1.2 / 2004 and cmi5 export',
     f4Text: 'One-click packages for Moodle and any other LMS, built in the browser. Learners resume where they left off, and a check before export catches empty lessons, missing media and quiz questions without a correct answer.',
     f5Title: 'Guided learning paths',
@@ -95,9 +95,9 @@ const landing: LocaleTable = {
     f6Title: 'Keyboard-first',
     f6Text: 'Shortcuts for common actions (press ?) and full keyboard access to menus, dialogs and reordering.',
     f7Title: 'Help built in',
-    f7Text: 'A guided tour, answers to common questions and a “What’s new” page — right inside the builder.',
+    f7Text: 'A guided tour, answers to common questions and a “What’s new” page, right inside the builder.',
     f8Title: '10 global themes',
-    f8Text: 'From Rose and Ocean to Mono and Terminal: switch the colors and the look of buttons and interactions across the whole project with one click — every theme tuned for WCAG AA contrast.',
+    f8Text: 'From Rose and Ocean to Mono and Terminal: switch the colors and the look of buttons and interactions across the whole project with one click. Every theme is tuned for WCAG AA contrast.',
     f9Title: 'Install as an app',
     f9Text: 'Install Scormly from Chrome or Edge and launch it from your desktop like any other app.',
     f10Title: 'Multilingual interface',
@@ -107,10 +107,10 @@ const landing: LocaleTable = {
     a11yBadge: 'Accessible by design',
     a11yTitle: 'Courses every learner can use',
     a11ySubtitle:
-      'Scormly courses are designed to help you meet WCAG 2.1 AA out of the box — the exported player handles the accessible markup, so you can focus on the content.',
+      'Scormly courses are designed to help you meet WCAG 2.1 AA out of the box. The exported player handles the accessible markup, so you can focus on the content.',
     a11yPoint1Title: 'Keyboard navigation',
     a11yPoint1Text:
-      'Every block — tabs, flashcards, hotspots, quizzes, exercises — works from the keyboard, with a visible focus ring and a “Skip to content” link.',
+      'Every block (tabs, flashcards, hotspots, quizzes, exercises) works from the keyboard, with a visible focus ring and a “Skip to content” link.',
     a11yPoint2Title: 'Screen-reader friendly',
     a11yPoint2Text:
       'Semantic headings and labelled controls; lesson changes and quiz feedback are announced, and correct or wrong is never shown by color alone.',
@@ -119,7 +119,7 @@ const landing: LocaleTable = {
       'Add WebVTT captions to videos and transcripts to video and audio, and mark purely decorative images so screen readers skip them.',
     a11yPoint4Title: 'Learner accessibility menu',
     a11yPoint4Text:
-      'Learners pick a larger text size, high contrast, readable spacing or reduced motion — remembered on their device. Every theme meets AA contrast.',
+      'Learners pick a larger text size, high contrast, readable spacing or reduced motion, and the choice is remembered on their device. Every theme meets AA contrast.',
     a11yPoint5Title: 'Checked before export',
     a11yPoint5Text:
       'The course check flags missing alt text, captions, transcripts, embed titles and content language before you publish.',
@@ -153,7 +153,7 @@ const landing: LocaleTable = {
       'Point Claude Code, Cursor or ChatGPT at the project folder: the agent writes lessons, blocks and quizzes into project.json, and you review, preview and export in Scormly.',
     aiPoint3Title: 'Still 100% local',
     aiPoint3Text:
-      'The agent works on files on your own disk. Scormly uploads nothing — what you share with an assistant is up to you.',
+      'The agent works on files on your own disk. Scormly uploads nothing: what you share with an assistant is up to you.',
     aiTermComment: '# ask your assistant',
     aiTermPrompt: 'read AGENTS.md, then add a phishing lesson',
     aiChatPrompt: 'Add a lesson on spotting phishing with a timeline and a 3-question quiz, then export it for our LMS.',
@@ -197,7 +197,7 @@ const landing: LocaleTable = {
     faqA4:
       'No. Scormly runs entirely in the browser. For saving to a folder on disk you need a Chromium-based browser (Chrome or Edge) that supports the File System Access API; other browsers, such as Firefox, keep projects in the browser’s private storage. If you like, you can also install it as an app from the browser.',
     faqQ5: 'Can I self-host it?',
-    faqA5: 'Absolutely. It is a static site — clone the repository, run the build, and host the output anywhere, or just use it locally.',
+    faqA5: 'Absolutely. It is a static site: clone the repository, run the build, and host the output anywhere, or just use it locally.',
     faqQ6:
       'Can Scormly replace commercial authoring tools?',
     faqA6:
@@ -209,13 +209,13 @@ const landing: LocaleTable = {
     faqQ9: 'Can I use the builder without a mouse?',
     faqA9: 'Yes. Menus, dialogs and lists work fully from the keyboard, lessons and blocks can be reordered with keys, and pressing ? shows every shortcut.',
     faqQ10: 'Is there a free, open-source SCORM editor?',
-    faqA10: 'Yes — Scormly is a free SCORM editor and SCORM course creator released under the MIT license. The source code is on GitHub, it works online in the browser without an account, and you can self-host it or use it offline as an installed app.',
+    faqA10: 'Yes, Scormly is a free SCORM editor and SCORM course creator released under the MIT license. The source code is on GitHub, it works online in the browser without an account, and you can self-host it or use it offline as an installed app.',
     faqQ11: 'Can I try a SCORM demo before building a course?',
-    faqA11: 'Yes. The live demo on this page runs the same interactive blocks your learners get — dialogue trainer, quiz, flashcards and course outline. When you are ready, open the builder and export your own SCORM package.',
+    faqA11: 'Yes. The live demo on this page runs the same interactive blocks your learners get: dialogue trainer, quiz, flashcards and course outline. When you are ready, open the builder and export your own SCORM package.',
     faqQ12: 'Are Scormly courses accessible?',
     faqA12: 'Scormly is designed to help you meet WCAG 2.1 AA. The exported player provides keyboard navigation, screen-reader friendly markup and announcements, captions and transcripts, AA-contrast themes and a learner accessibility menu (text size, high contrast, readable spacing, reduced motion). The course check flags missing alt text, captions, transcripts and more before export. Final conformance still depends on your content, so review it with your own accessibility process.',
     faqQ13: 'Does SCORM or cmi5 support accessibility?',
-    faqA13: 'SCORM and cmi5 are packaging and tracking standards — they do not make a course accessible by themselves. Accessibility depends on the HTML content inside the package, which Scormly’s player builds with accessibility in mind. SCORM does carry learner preferences such as captioning and language (and cmi5 carries language), and the Scormly player respects them.',
+    faqA13: 'SCORM and cmi5 are packaging and tracking standards. They do not make a course accessible by themselves. Accessibility depends on the HTML content inside the package, which Scormly’s player builds with accessibility in mind. SCORM does carry learner preferences such as captioning and language (and cmi5 carries language), and the Scormly player respects them.',
     faqQ14: 'What is the best free SCORM authoring tool?',
     faqA14: 'It depends on what you build. Scormly is a free, open-source option that runs in the browser with no install or account and exports SCORM 1.2, SCORM 2004 and cmi5. Other free tools include Adapt (self-hosted, responsive courses), eXeLearning (open-source desktop and web editor) and H5P with Lumi (interactive pieces, SCORM 1.2). Choose by the export format your LMS needs and whether you want to install anything.',
     faqQ15: 'How do I create a SCORM package for free?',
@@ -250,7 +250,7 @@ const landing: LocaleTable = {
     contributeBadge: 'Open source',
     contributeTitle: "Let's build Scormly together",
     contributeText:
-      'Scormly is open source and moving fast. Star the repo, open an issue, or send a pull request — new blocks, languages, integrations and ideas are all welcome.',
+      'Scormly is open source and moving fast. Star the repo, open an issue, or send a pull request: new blocks, languages, integrations and ideas are all welcome.',
     contributeCta: 'Become a contributor',
     contributeIssues: 'Suggest a feature',
 
@@ -279,16 +279,16 @@ const landing: LocaleTable = {
     // Hero
     heroBadge: 'Open source · Безкоштовно · 100% локально',
     heroTitle:
-      'Безкоштовний SCORM-редактор і інструмент авторингу — прямо в браузері',
+      'Безкоштовний SCORM-редактор і інструмент авторингу, прямо в браузері',
     heroSubtitle:
-      'Scormly — безкоштовний інструмент для створення SCORM-курсів з відкритим кодом, що працює онлайн у браузері. Створюйте інтерактивні курси з блоків і експортуйте пакет SCORM 1.2, SCORM 2004 чи cmi5 в один клік — без сервера й реєстрації, а ваш контент ніколи не залишає комп’ютер.',
+      'Scormly: безкоштовний інструмент для створення SCORM-курсів з відкритим кодом, що працює онлайн у браузері. Створюйте інтерактивні курси з блоків і експортуйте пакет SCORM 1.2, SCORM 2004 чи cmi5 в один клік. Без сервера й реєстрації, а ваш контент ніколи не залишає комп’ютер.',
     heroCtaPrimary: 'Почати безкоштовно',
     heroCtaSecondary: 'Подивитися на GitHub',
     heroCtaDemo: 'Відкрити демо-курс',
     heroNote: 'Працює повністю в браузері. Нічого не треба встановлювати.',
 
     // Trust pillars
-    pillarsTitle: 'Ваше — і тільки ваше',
+    pillarsTitle: 'Ваше, і тільки ваше',
     pillarOpenTitle: 'Відкритий код',
     pillarOpenText:
       'Scormly повністю open source за ліцензією MIT. Читайте код, розгортайте в себе, форкайте, долучайтеся.',
@@ -297,7 +297,7 @@ const landing: LocaleTable = {
       'Жодних підписок, місць чи платних функцій. Усі можливості доступні всім і назавжди.',
     pillarLocalTitle: 'Локально та приватно',
     pillarLocalText:
-      'Усе працює на вашому пристрої. Ми нічого не зберігаємо й нічого не передаємо — немає навіть сервера, куди слати дані.',
+      'Усе працює на вашому пристрої. Ми нічого не зберігаємо й нічого не передаємо: немає навіть сервера, куди слати дані.',
 
     // Who it is for
     whoTitle:
@@ -329,24 +329,24 @@ const landing: LocaleTable = {
     // Features
     designBadge: 'Дизайн',
     designTitle: 'Курси, що виглядають задизайненими, а не зібраними',
-    designSubtitle: 'Титульна сторінка, стилі блоків із вашої теми, макети зображень і цитат, каруселі та плавна анімація — гарні курси без дизайнера.',
+    designSubtitle: 'Титульна сторінка, стилі блоків із вашої теми, макети зображень і цитат, каруселі та плавна анімація: гарні курси без дизайнера.',
     designSwatches: 'Спробуйте фон блоку',
     designPoint1Title: 'Титульна сторінка й блоки в стилі теми',
-    designPoint1Text: 'Відкрийте курс обкладинкою, а будь-якому блоку дайте фон із вашої теми — відтінок, колір, градієнт чи темний. Змініть тему — і все підлаштується.',
+    designPoint1Text: 'Відкрийте курс обкладинкою, а будь-якому блоку дайте фон із вашої теми: відтінок, колір, градієнт чи темний. Змініть тему, і все підлаштується.',
     designPoint2Title: 'Готові блоки',
-    designPoint2Text: 'Акцентні фрази, відгуки з фото, цитати на зображенні, фото й текст, текст на фото, зображення на всю ширину та фотокаруселі — в один клік.',
+    designPoint2Text: 'Акцентні фрази, відгуки з фото, цитати на зображенні, фото й текст, текст на фото, зображення на всю ширину та фотокаруселі, кожне в один клік.',
     designPoint3Title: 'Матеріали для студентів',
     designPoint3Text: 'Прикріплюйте PDF, таблиці, презентації чи архіви: вони потрапляють у SCORM-пакет і завантажуються з оригінальними назвами.',
     designPoint4Title: 'Анімація й макет',
     designPoint4Text: 'Блоки плавно з’являються під час прокручування, уроки змінюються з переходом, а ширину контенту й типографіку ви обираєте самі. Налаштування зменшення анімації завжди враховуються.',
     featuresTitle: 'Усе для створення курсу',
-    featuresSubtitle: 'Сфокусований блочний редактор з будівельними блоками сучасного e-learning — і нічого зайвого.',
+    featuresSubtitle: 'Сфокусований блочний редактор з будівельними блоками сучасного e-learning, і нічого зайвого.',
     f1Title: 'Багата бібліотека блоків',
-    f1Text: 'Текст, медіа, вкладки, акордеони, картки й діалогові сценарії з чат-виглядом — а також інтерактивні зображення з гарячими точками, таймлайни, схеми процесів, покрокові інструкції, порівняння, слайдери «до / після», рефлексії, вправи на впорядкування та заповнення пропусків. Потрібне щось інше? Блок «Віджет» приймає власний HTML і JavaScript або завантажений .html / .zip.',
+    f1Text: 'Текст, медіа, вкладки, акордеони, картки й діалогові сценарії з чат-виглядом, а також інтерактивні зображення з гарячими точками, таймлайни, схеми процесів, покрокові інструкції, порівняння, слайдери «до / після», рефлексії, вправи на впорядкування та заповнення пропусків. Потрібне щось інше? Блок «Віджет» приймає власний HTML і JavaScript або завантажений .html / .zip.',
     f2Title: 'Квізи з оцінюванням',
-    f2Text: 'Питання з однією чи кількома відповідями, на відповідність, упорядкування й заповнення пропусків в одному тесті, із фідбеком і прохідним балом — кожна відповідь потрапляє у звіт LMS.',
+    f2Text: 'Питання з однією чи кількома відповідями, на відповідність, упорядкування й заповнення пропусків в одному тесті, із фідбеком і прохідним балом. Кожна відповідь потрапляє у звіт LMS.',
     f3Title: 'Редактор, що прощає помилки',
-    f3Text: 'Вставляйте блок будь-де, змінюйте порядок і скасовуйте будь-яку дію — навіть просто зі сповіщення після видалення.',
+    f3Text: 'Вставляйте блок будь-де, змінюйте порядок і скасовуйте будь-яку дію, навіть просто зі сповіщення після видалення.',
     f4Title: 'Експорт SCORM 1.2 / 2004 і cmi5',
     f4Text: 'Пакети для Moodle та будь-якої LMS в один клік, зібрані в браузері. Слухачі продовжують з місця, де зупинилися, а перевірка перед експортом знаходить порожні уроки, відсутні медіа й питання без правильної відповіді.',
     f5Title: 'Керований шлях навчання',
@@ -354,22 +354,22 @@ const landing: LocaleTable = {
     f6Title: 'Зручно з клавіатури',
     f6Text: 'Гарячі клавіші для частих дій (натисніть ?) і повний доступ з клавіатури до меню, діалогів і зміни порядку.',
     f7Title: 'Вбудована довідка',
-    f7Text: 'Тур конструктором, відповіді на часті питання та сторінка «Що нового» — просто в редакторі.',
+    f7Text: 'Тур конструктором, відповіді на часті питання та сторінка «Що нового», просто в редакторі.',
     f8Title: '10 глобальних тем',
-    f8Text: 'Від Rose та Ocean до Mono й Terminal: змінюйте кольори й вигляд кнопок та інтерактиву по всьому проєкту одним кліком — кожна тема з контрастом рівня WCAG AA.',
+    f8Text: 'Від Rose та Ocean до Mono й Terminal: змінюйте кольори й вигляд кнопок та інтерактиву по всьому проєкту одним кліком. Кожна тема має контраст рівня WCAG AA.',
     f9Title: 'Встановлюється як застосунок',
     f9Text: 'Встановіть Scormly з Chrome чи Edge і запускайте з робочого столу, як звичайну програму.',
     f10Title: 'Багатомовний інтерфейс',
-    f10Text: 'Користуйтеся конструктором українською, англійською, французькою чи іспанською, інші мови — на підході.',
+    f10Text: 'Користуйтеся конструктором українською, англійською, французькою чи іспанською, а інші мови на підході.',
 
     // Accessibility section
     a11yBadge: 'Доступність за замовчуванням',
     a11yTitle: 'Курси, якими може користуватися кожен',
     a11ySubtitle:
-      'Курси Scormly створені так, щоб допомогти вам відповідати WCAG 2.1 AA одразу — доступну розмітку бере на себе експортований плеєр, а ви зосереджуєтеся на змісті.',
+      'Курси Scormly створені так, щоб допомогти вам відповідати WCAG 2.1 AA одразу: доступну розмітку бере на себе експортований плеєр, а ви зосереджуєтеся на змісті.',
     a11yPoint1Title: 'Навігація з клавіатури',
     a11yPoint1Text:
-      'Кожен блок — вкладки, картки, гарячі точки, тести, вправи — працює з клавіатури, з помітною рамкою фокуса й посиланням «Перейти до вмісту».',
+      'Кожен блок (вкладки, картки, гарячі точки, тести, вправи) працює з клавіатури, з помітною рамкою фокуса й посиланням «Перейти до вмісту».',
     a11yPoint2Title: 'Зручно для програм зчитування екрана',
     a11yPoint2Text:
       'Семантичні заголовки й підписані елементи керування; зміна уроку та фідбек тестів озвучуються, а правильність відповіді ніколи не передається лише кольором.',
@@ -378,7 +378,7 @@ const landing: LocaleTable = {
       'Додавайте субтитри WebVTT до відео й текстові розшифровки до відео та аудіо, а суто декоративні зображення позначайте, щоб програми зчитування їх пропускали.',
     a11yPoint4Title: 'Меню доступності для слухача',
     a11yPoint4Text:
-      'Слухач обирає більший текст, високу контрастність, зручні інтервали чи менше анімації — налаштування зберігаються на його пристрої. Кожна тема має контраст рівня AA.',
+      'Слухач обирає більший текст, високу контрастність, зручні інтервали чи менше анімації, і налаштування зберігаються на його пристрої. Кожна тема має контраст рівня AA.',
     a11yPoint5Title: 'Перевірка перед експортом',
     a11yPoint5Text:
       'Перевірка курсу знаходить відсутні alt-тексти, субтитри, розшифровки, назви вбудованого контенту й мову контенту ще до публікації.',
@@ -403,7 +403,7 @@ const landing: LocaleTable = {
     aiBadge: 'Готовий до AI',
     aiTitle: 'Створюйте курси разом з AI-асистентом',
     aiSubtitle:
-      'Проєкт Scormly — це папка зі звичайними задокументованими файлами, тож AI-агенти на кшталт Claude, ChatGPT чи Cursor можуть читати, писати й перевіряти курси разом з вами.',
+      'Проєкт Scormly являє собою папку зі звичайними задокументованими файлами, тож AI-агенти на кшталт Claude, ChatGPT чи Cursor можуть читати, писати й перевіряти курси разом з вами.',
     aiPoint1Title: 'AGENTS.md у кожному проєкті',
     aiPoint1Text:
       'У кожній папці проєкту є інструкція з форматом project.json і всіма типами блоків, тож будь-який агент знає, як створити коректний контент.',
@@ -412,7 +412,7 @@ const landing: LocaleTable = {
       'Відкрийте папку проєкту в Claude Code, Cursor чи ChatGPT: агент пише уроки, блоки й тести в project.json, а ви переглядаєте й експортуєте курс у Scormly.',
     aiPoint3Title: 'Так само 100% локально',
     aiPoint3Text:
-      'Агент працює з файлами на вашому диску. Scormly нічого не завантажує — чим ділитися з асистентом, вирішуєте ви.',
+      'Агент працює з файлами на вашому диску. Scormly нічого не завантажує: чим ділитися з асистентом, вирішуєте ви.',
     aiTermComment: '# попросіть асистента',
     aiTermPrompt: 'прочитай AGENTS.md і додай урок про фішинг',
     aiChatPrompt: 'Додай урок про розпізнавання фішингу з таймлайном і тестом на 3 питання, а потім експортуй для нашої LMS.',
@@ -446,7 +446,7 @@ const landing: LocaleTable = {
     // FAQ
     faqTitle: 'Часті запитання',
     faqQ1: 'Scormly справді безкоштовний?',
-    faqA1: 'Так. Scormly — open source за ліцензією MIT і безкоштовний назавжди. Немає платних тарифів чи прихованих обмежень.',
+    faqA1: 'Так. Scormly має відкритий код (open source) за ліцензією MIT і безкоштовний назавжди. Немає платних тарифів чи прихованих обмежень.',
     faqQ2: 'Де зберігаються мої дані?',
     faqA2:
       'На вашому пристрої. Ви самі обираєте, де живе проєкт: у приватному сховищі браузера (Chrome, Edge, Firefox), у папці на диску (Chrome і Edge, через File System Access API) або як .zip проєкту. Сервера немає, тож нічого не завантажується й не зберігається віддалено.',
@@ -456,33 +456,33 @@ const landing: LocaleTable = {
     faqA4:
       'Ні. Scormly працює повністю в браузері. Для збереження в папку на диску потрібен браузер на базі Chromium (Chrome або Edge) із підтримкою File System Access API; інші браузери, як-от Firefox, зберігають проєкти у приватному сховищі браузера. За бажання Scormly можна встановити з браузера як застосунок.',
     faqQ5: 'Чи можна розгорнути в себе?',
-    faqA5: 'Звісно. Це статичний сайт — клонуйте репозиторій, зберіть і розмістіть результат будь-де, або просто використовуйте локально.',
+    faqA5: 'Звісно. Це статичний сайт: клонуйте репозиторій, зберіть і розмістіть результат будь-де, або просто використовуйте локально.',
     faqQ6:
       'Чи може Scormly замінити комерційні інструменти авторингу?',
     faqA6:
-      'Для багатьох курсів — так. Scormly покриває блочні курси з уроками, медіа, тестами з оцінюванням, розгалуженими діалоговими сценаріями, картками, гарячими точками й власними HTML-віджетами та експортує SCORM 1.2, SCORM 2004 і cmi5 з балами й відповідями на питання. Він безкоштовний, з відкритим кодом і зберігає дані на вашому пристрої. Це інший підхід, ніж у слайдових інструментів: якщо вам потрібні анімація на таймлайні слайдів, запис екрана чи договір про підтримку від вендора, комерційний інструмент може підійти краще.',
+      'Для багатьох курсів так. Scormly покриває блочні курси з уроками, медіа, тестами з оцінюванням, розгалуженими діалоговими сценаріями, картками, гарячими точками й власними HTML-віджетами та експортує SCORM 1.2, SCORM 2004 і cmi5 з балами й відповідями на питання. Він безкоштовний, з відкритим кодом і зберігає дані на вашому пристрої. Це інший підхід, ніж у слайдових інструментів: якщо вам потрібні анімація на таймлайні слайдів, запис екрана чи договір про підтримку від вендора, комерційний інструмент може підійти краще.',
     faqQ7: 'Чи можна створювати курси за допомогою AI?',
     faqA7: 'Так. У кожній папці проєкту є файл AGENTS.md з описом project.json і всіх типів блоків, тож асистент на кшталт Claude, ChatGPT чи Cursor може створювати коректні курси.',
     faqQ8: 'Чи можна перевірити курс перед публікацією?',
-    faqA8: 'Так. Перед експортом курс перевіряється, і ви бачите список проблем — порожні уроки, відсутні медіа чи питання без правильної відповіді, — щоб виправити їх до завантаження в LMS.',
+    faqA8: 'Так. Перед експортом курс перевіряється, і ви бачите список проблем (порожні уроки, відсутні медіа чи питання без правильної відповіді), щоб виправити їх до завантаження в LMS.',
     faqQ9: 'Чи можна працювати без миші?',
     faqA9: 'Так. Меню, діалоги й списки повністю доступні з клавіатури, уроки й блоки можна переставляти клавішами, а натиснувши ?, ви побачите всі гарячі клавіші.',
     faqQ10: 'Чи існує безкоштовний SCORM-редактор з відкритим кодом?',
-    faqA10: 'Так — Scormly: безкоштовний SCORM-редактор і конструктор SCORM-курсів за ліцензією MIT. Код відкритий на GitHub, редактор працює онлайн у браузері без акаунта, а ще його можна розгорнути в себе чи встановити як застосунок.',
+    faqA10: 'Так. Scormly є безкоштовним SCORM-редактор і конструктор SCORM-курсів за ліцензією MIT. Код відкритий на GitHub, редактор працює онлайн у браузері без акаунта, а ще його можна розгорнути в себе чи встановити як застосунок.',
     faqQ11: 'Чи можна спробувати SCORM-демо до створення курсу?',
-    faqA11: 'Так. Жива демонстрація на цій сторінці запускає ті самі інтерактивні блоки, що й у ваших слухачів: діалоговий тренажер, квіз, картки та зміст курсу. Коли будете готові — відкрийте конструктор і експортуйте власний SCORM-пакет.',
+    faqA11: 'Так. Жива демонстрація на цій сторінці запускає ті самі інтерактивні блоки, що й у ваших слухачів: діалоговий тренажер, квіз, картки та зміст курсу. Коли будете готові, відкрийте конструктор і експортуйте власний SCORM-пакет.',
     faqQ12: 'Чи доступні курси Scormly?',
     faqA12: 'Scormly створений, щоб допомогти вам відповідати WCAG 2.1 AA. Експортований плеєр забезпечує навігацію з клавіатури, розмітку й оголошення для програм зчитування екрана, субтитри та розшифровки, теми з контрастом рівня AA і меню доступності для слухача (розмір тексту, висока контрастність, зручні інтервали, менше анімації). Перевірка курсу перед експортом знаходить відсутні alt-тексти, субтитри, розшифровки тощо. Остаточна відповідність усе ж залежить від вашого контенту, тож перевіряйте його у своєму процесі.',
     faqQ13: 'Чи підтримують SCORM і cmi5 доступність?',
-    faqA13: 'SCORM і cmi5 — це стандарти пакування й відстеження, самі по собі вони не роблять курс доступним. Доступність залежить від HTML-контенту всередині пакета, і плеєр Scormly будує його з урахуванням доступності. Водночас SCORM передає налаштування слухача, як-от субтитри й мову (cmi5 — мову), і плеєр Scormly їх враховує.',
+    faqA13: 'SCORM і cmi5 є стандартами пакування й відстеження. Самі по собі вони не роблять курс доступним. Доступність залежить від HTML-контенту всередині пакета, і плеєр Scormly будує його з урахуванням доступності. Водночас SCORM передає налаштування слухача, як-от субтитри й мову (cmi5 передає мову), і плеєр Scormly їх враховує.',
     faqQ14: 'Який безкоштовний інструмент для створення SCORM-курсів найкращий?',
-    faqA14: 'Залежить від того, що ви створюєте. Scormly — безкоштовний варіант з відкритим кодом, який працює в браузері без встановлення й акаунта та експортує SCORM 1.2, SCORM 2004 і cmi5. Серед інших безкоштовних інструментів — Adapt (розгортається на власному сервері, адаптивні курси), eXeLearning (редактор з відкритим кодом для комп’ютера й вебу) та H5P із Lumi (інтерактивні елементи, SCORM 1.2). Обирайте за форматом експорту, потрібним вашій LMS, і за тим, чи готові ви щось встановлювати.',
+    faqA14: 'Залежить від того, що ви створюєте. Scormly є безкоштовним варіантом з відкритим кодом, який працює в браузері без встановлення й акаунта та експортує SCORM 1.2, SCORM 2004 і cmi5. Серед інших безкоштовних інструментів є Adapt (розгортається на власному сервері, адаптивні курси), eXeLearning (редактор з відкритим кодом для комп’ютера й вебу) та H5P із Lumi (інтерактивні елементи, SCORM 1.2). Обирайте за форматом експорту, потрібним вашій LMS, і за тим, чи готові ви щось встановлювати.',
     faqQ15: 'Як безкоштовно створити SCORM-пакет?',
-    faqA15: 'Відкрийте Scormly у браузері, створіть проєкт, додайте уроки й блоки (текст, медіа, тести) та натисніть «Експорт». Оберіть SCORM 1.2, SCORM 2004 чи cmi5 — і Scormly збере .zip-пакет просто у вашому браузері. Завантажте цей .zip у свою LMS як SCORM-активність. Без реєстрації й без встановлення програм.',
+    faqA15: 'Відкрийте Scormly у браузері, створіть проєкт, додайте уроки й блоки (текст, медіа, тести) та натисніть «Експорт». Оберіть SCORM 1.2, SCORM 2004 чи cmi5, і Scormly збере .zip-пакет просто у вашому браузері. Завантажте цей .zip у свою LMS як SCORM-активність. Без реєстрації й без встановлення програм.',
     faqQ16: 'Що експортувати: SCORM 1.2, SCORM 2004 чи cmi5?',
-    faqA16: 'Те, що найкраще підтримує ваша LMS. SCORM 1.2 підтримується найширше й працює майже всюди. SCORM 2004 (4-та редакція) передає більше деталей, наприклад окремі статуси завершення й успішності. cmi5 — сучасний стандарт на основі xAPI для LMS, які його підтримують. Scormly експортує всі три формати з того самого курсу, тож змінити вибір можна будь-коли.',
+    faqA16: 'Те, що найкраще підтримує ваша LMS. SCORM 1.2 підтримується найширше й працює майже всюди. SCORM 2004 (4-та редакція) передає більше деталей, наприклад окремі статуси завершення й успішності. cmi5 є сучасним стандартом на основі xAPI для LMS, які його підтримують. Scormly експортує всі три формати з того самого курсу, тож змінити вибір можна будь-коли.',
     faqQ17: 'Чи є Scormly безкоштовною альтернативою Articulate Storyline або Rise?',
-    faqA17: 'Так, для блочних курсів. Як і Rise, Scormly будує курси з блоків у браузері та експортує SCORM 1.2, SCORM 2004 і cmi5. На відміну від Articulate 360, він безкоштовний, з відкритим кодом і нічого не зберігає в хмарі. Слайдові анімації на таймлайні, як у Storyline, — інший підхід, який Scormly не копіює.',
+    faqA17: 'Так, для блочних курсів. Як і Rise, Scormly будує курси з блоків у браузері та експортує SCORM 1.2, SCORM 2004 і cmi5. На відміну від Articulate 360, він безкоштовний, з відкритим кодом і нічого не зберігає в хмарі. Слайдові анімації на таймлайні, як у Storyline, це інший підхід, який Scormly не копіює.',
     faqQ18: 'Чи працює Scormly з Moodle?',
     faqA18: 'Так. Експортуйте курс як SCORM-пакет і додайте його в Moodle як активність «Пакет SCORM». Moodle відстежує завершення, бал і спроби, а слухачі продовжують з місця, де зупинилися. Той самий пакет працює в TalentLMS, SCORM Cloud та інших LMS, сумісних зі стандартами.',
     faqQ19: 'Якими мовами слухачі можуть проходити курс Scormly?',
@@ -493,7 +493,7 @@ const landing: LocaleTable = {
     aboutTitle:
       'Про проєкт',
     aboutText:
-      'Scormly — незалежний проєкт з відкритим кодом, який розвивається відкрито на GitHub. Питання, ідеї та відгуки вітаються.',
+      'Scormly є незалежним проєктом з відкритим кодом, який розвивається відкрито на GitHub. Питання, ідеї та відгуки вітаються.',
     aboutVersion:
       'Версія',
     aboutReleased:
@@ -509,7 +509,7 @@ const landing: LocaleTable = {
     contributeBadge: 'Відкритий код',
     contributeTitle: 'Розвиваймо Scormly разом',
     contributeText:
-      'Scormly — відкритий і швидко розвивається. Поставте зірочку, відкрийте issue або надішліть pull request — нові блоки, мови, інтеграції та ідеї вітаються.',
+      'Scormly відкритий і швидко розвивається. Поставте зірочку, відкрийте issue або надішліть pull request: нові блоки, мови, інтеграції та ідеї вітаються.',
     contributeCta: 'Стати контрибʼютором',
     contributeIssues: 'Запропонувати фічу',
 
@@ -538,9 +538,9 @@ const landing: LocaleTable = {
     // Hero
     heroBadge: 'Open source · Gratuit · 100 % local',
     heroTitle:
-      'Éditeur SCORM gratuit et outil auteur en ligne — directement dans votre navigateur',
+      'Éditeur SCORM gratuit et outil auteur en ligne, directement dans votre navigateur',
     heroSubtitle:
-      'Scormly est un outil auteur SCORM gratuit et open source qui fonctionne en ligne, dans votre navigateur. Créez un cours SCORM interactif à partir de blocs et exportez-le en SCORM 1.2, SCORM 2004 ou cmi5 en un clic — sans serveur, sans inscription, et sans que vos contenus quittent votre ordinateur.',
+      'Scormly est un outil auteur SCORM gratuit et open source qui fonctionne en ligne, dans votre navigateur. Créez un cours SCORM interactif à partir de blocs et exportez-le en SCORM 1.2, SCORM 2004 ou cmi5 en un clic. Sans serveur, sans inscription, et sans que vos contenus quittent votre ordinateur.',
     heroCtaPrimary: 'Créer un cours gratuitement',
     heroCtaSecondary: 'Voir sur GitHub',
     heroCtaDemo: 'Ouvrir le cours de démo',
@@ -593,19 +593,19 @@ const landing: LocaleTable = {
     designPoint1Title: 'Page de couverture et blocs aux couleurs du thème',
     designPoint1Text: 'Ouvrez le cours sur une page de titre, puis donnez à n’importe quel bloc un fond issu de votre thème : teinte, couleur, dégradé ou sombre. Changez de thème, tout suit.',
     designPoint2Title: 'Blocs prêts à l’emploi',
-    designPoint2Text: 'Phrases d’accroche, témoignages avec photo, citations sur image, image et texte, texte sur image, visuels pleine largeur et carrousels de photos — en un clic.',
+    designPoint2Text: 'Phrases d’accroche, témoignages avec photo, citations sur image, image et texte, texte sur image, visuels pleine largeur et carrousels de photos, en un clic.',
     designPoint3Title: 'Fichiers à télécharger pour les apprenants',
     designPoint3Text: 'Joignez des PDF, des tableurs, des présentations ou des archives : ils sont intégrés au paquet SCORM et se téléchargent sous leur nom d’origine.',
     designPoint4Title: 'Animations et mise en page',
     designPoint4Text: 'Les blocs apparaissent en douceur au fil du défilement, les leçons s’enchaînent avec une transition, et vous choisissez la largeur du contenu et la typographie. Le réglage de réduction des animations est toujours respecté.',
     featuresTitle: 'Tout ce qu’il faut pour créer un cours',
-    featuresSubtitle: 'Un éditeur par blocs qui va à l’essentiel, avec toutes les briques du e-learning moderne — et rien de superflu.',
+    featuresSubtitle: 'Un éditeur par blocs qui va à l’essentiel, avec toutes les briques du e-learning moderne, et rien de superflu.',
     f1Title: 'Une riche bibliothèque de blocs',
-    f1Text: 'Texte, médias, onglets, accordéons, cartes mémo et scénarios de dialogue façon messagerie — mais aussi images à zones cliquables, chronologies, schémas de processus, guides pas à pas, comparaisons, curseurs avant / après, réflexions, exercices de mise en ordre et textes à trous. Il vous faut autre chose ? Le bloc Widget accepte votre propre HTML et JavaScript, ou un fichier .html / .zip importé.',
+    f1Text: 'Texte, médias, onglets, accordéons, cartes mémo et scénarios de dialogue façon messagerie, mais aussi images à zones cliquables, chronologies, schémas de processus, guides pas à pas, comparaisons, curseurs avant / après, réflexions, exercices de mise en ordre et textes à trous. Il vous faut autre chose ? Le bloc Widget accepte votre propre HTML et JavaScript, ou un fichier .html / .zip importé.',
     f2Title: 'Quiz notés',
-    f2Text: 'Choix unique ou multiple, association, mise en ordre et texte à trous dans un même test, avec feedback et score de réussite — chaque réponse est transmise à votre LMS.',
+    f2Text: 'Choix unique ou multiple, association, mise en ordre et texte à trous dans un même test, avec feedback et score de réussite. Chaque réponse est transmise à votre LMS.',
     f3Title: 'Un éditeur qui pardonne',
-    f3Text: 'Insérez un bloc où vous voulez, réorganisez librement et annulez n’importe quelle action — même depuis la notification qui suit une suppression.',
+    f3Text: 'Insérez un bloc où vous voulez, réorganisez librement et annulez n’importe quelle action, même depuis la notification qui suit une suppression.',
     f4Title: 'Export SCORM 1.2 / 2004 et cmi5',
     f4Text: 'Des paquets pour Moodle et tout autre LMS, générés en un clic dans le navigateur. Les apprenants reprennent là où ils s’étaient arrêtés, et une vérification avant export repère les leçons vides, les médias manquants et les questions de quiz sans bonne réponse.',
     f5Title: 'Parcours guidés',
@@ -613,13 +613,13 @@ const landing: LocaleTable = {
     f6Title: 'Pensé pour le clavier',
     f6Text: 'Des raccourcis pour les actions courantes (appuyez sur ?) et un accès complet au clavier pour les menus, les boîtes de dialogue et la réorganisation.',
     f7Title: 'Aide intégrée',
-    f7Text: 'Une visite guidée, des réponses aux questions fréquentes et une page « Nouveautés » — directement dans l’éditeur.',
+    f7Text: 'Une visite guidée, des réponses aux questions fréquentes et une page « Nouveautés », directement dans l’éditeur.',
     f8Title: '10 thèmes globaux',
-    f8Text: 'De Rose et Ocean à Mono et Terminal : changez en un clic les couleurs et l’apparence des boutons et des éléments interactifs dans tout le projet — chaque thème respecte le contraste WCAG AA.',
+    f8Text: 'De Rose et Ocean à Mono et Terminal : changez en un clic les couleurs et l’apparence des boutons et des éléments interactifs dans tout le projet. Chaque thème respecte le contraste WCAG AA.',
     f9Title: 'Installable comme une application',
     f9Text: 'Installez Scormly depuis Chrome ou Edge et lancez-le depuis votre bureau, comme n’importe quelle application.',
     f10Title: 'Interface multilingue',
-    f10Text: 'Utilisez l’éditeur en français, en anglais, en espagnol ou en ukrainien — d’autres langues arrivent.',
+    f10Text: 'Utilisez l’éditeur en français, en anglais, en espagnol ou en ukrainien. D’autres langues arrivent.',
 
     // Accessibility section
     a11yBadge: 'Accessible dès la conception',
@@ -628,7 +628,7 @@ const landing: LocaleTable = {
       'Les cours Scormly sont conçus pour vous aider à respecter d’emblée les WCAG 2.1 AA : le lecteur exporté se charge du balisage accessible, vous vous concentrez sur le contenu.',
     a11yPoint1Title: 'Navigation au clavier',
     a11yPoint1Text:
-      'Chaque bloc — onglets, cartes mémo, zones cliquables, quiz, exercices — s’utilise au clavier, avec un indicateur de focus visible et un lien « Aller au contenu ».',
+      'Chaque bloc (onglets, cartes mémo, zones cliquables, quiz, exercices) s’utilise au clavier, avec un indicateur de focus visible et un lien « Aller au contenu ».',
     a11yPoint2Title: 'Compatible avec les lecteurs d’écran',
     a11yPoint2Text:
       'Titres sémantiques et commandes étiquetées ; les changements de leçon et le feedback des quiz sont annoncés, et une réponse juste ou fausse n’est jamais signalée par la seule couleur.',
@@ -637,7 +637,7 @@ const landing: LocaleTable = {
       'Ajoutez des sous-titres WebVTT aux vidéos, des transcriptions aux vidéos et aux fichiers audio, et signalez les images purement décoratives pour que les lecteurs d’écran les ignorent.',
     a11yPoint4Title: 'Menu d’accessibilité pour l’apprenant',
     a11yPoint4Text:
-      'L’apprenant choisit un texte plus grand, un contraste élevé, un espacement confortable ou des animations réduites — ses réglages sont mémorisés sur son appareil. Tous les thèmes respectent le contraste AA.',
+      'L’apprenant choisit un texte plus grand, un contraste élevé, un espacement confortable ou des animations réduites, et ses réglages sont mémorisés sur son appareil. Tous les thèmes respectent le contraste AA.',
     a11yPoint5Title: 'Vérifié avant l’export',
     a11yPoint5Text:
       'La vérification du cours signale, avant publication, les textes alternatifs, sous-titres, transcriptions et titres de contenus intégrés manquants, ainsi que l’absence de langue du contenu.',
@@ -715,7 +715,7 @@ const landing: LocaleTable = {
     faqA4:
       'Non. Scormly fonctionne entièrement dans le navigateur. Pour enregistrer dans un dossier de votre disque, il faut un navigateur basé sur Chromium (Chrome ou Edge) compatible avec l’API File System Access ; les autres navigateurs, comme Firefox, conservent les projets dans le stockage privé du navigateur. Si vous le souhaitez, vous pouvez aussi l’installer comme application depuis le navigateur.',
     faqQ5: 'Puis-je l’héberger moi-même ?',
-    faqA5: 'Bien sûr. C’est un site statique : clonez le dépôt, lancez le build et hébergez le résultat où vous voulez — ou utilisez-le simplement en local.',
+    faqA5: 'Bien sûr. C’est un site statique : clonez le dépôt, lancez le build et hébergez le résultat où vous voulez, ou utilisez-le simplement en local.',
     faqQ6:
       'Scormly peut-il remplacer les outils auteur commerciaux ?',
     faqA6:
@@ -723,7 +723,7 @@ const landing: LocaleTable = {
     faqQ7: 'Puis-je créer des cours avec l’IA ?',
     faqA7: 'Oui. Chaque dossier de projet contient un fichier AGENTS.md qui documente project.json et tous les types de blocs : un assistant comme Claude, ChatGPT ou Cursor peut ainsi produire des cours valides.',
     faqQ8: 'Puis-je vérifier mon cours avant de le publier ?',
-    faqA8: 'Oui. L’export commence par une vérification du cours et liste les problèmes — leçons vides, médias manquants, questions de quiz sans bonne réponse — pour que vous les corrigiez avant le dépôt sur votre LMS.',
+    faqA8: 'Oui. L’export commence par une vérification du cours et liste les problèmes (leçons vides, médias manquants, questions de quiz sans bonne réponse) pour que vous les corrigiez avant le dépôt sur votre LMS.',
     faqQ9: 'Puis-je utiliser l’éditeur sans souris ?',
     faqA9: 'Oui. Les menus, les boîtes de dialogue et les listes s’utilisent entièrement au clavier, les leçons et les blocs se réorganisent avec les touches, et la touche ? affiche tous les raccourcis.',
     faqQ10: 'Existe-t-il un éditeur SCORM gratuit et open source ?',
@@ -768,7 +768,7 @@ const landing: LocaleTable = {
     contributeBadge: 'Open source',
     contributeTitle: 'Construisons Scormly ensemble',
     contributeText:
-      'Scormly est open source et avance vite. Ajoutez une étoile au dépôt, ouvrez une issue ou proposez une pull request — nouveaux blocs, langues, intégrations, idées : tout est bienvenu.',
+      'Scormly est open source et avance vite. Ajoutez une étoile au dépôt, ouvrez une issue ou proposez une pull request. Nouveaux blocs, langues, intégrations, idées : tout est bienvenu.',
     contributeCta: 'Contribuer au projet',
     contributeIssues: 'Proposer une fonctionnalité',
 

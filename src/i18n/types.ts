@@ -1,5 +1,5 @@
 // Interface languages. ONLY the editor shell (chrome) is localized, not the
-// course content — block text stays exactly as the author entered it.
+// course content: block text stays exactly as the author entered it.
 export type Language = 'en' | 'uk' | 'fr' | 'es' | 'de'
 
 export const LANGUAGES: { id: Language; label: string }[] = [

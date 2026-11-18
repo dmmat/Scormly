@@ -1,11 +1,11 @@
 import type { LocaleTable } from '../types'
 
 // UI strings for the scored exercise blocks other than the quiz: ordering
-// ("Sort / order") and fill in the blanks — editor and learner preview.
+// ("Sort / order") and fill in the blanks: editor and learner preview.
 // Passing score / show answers labels are shared with the `quiz` namespace.
 const assessment: LocaleTable = {
   en: {
-    // Ordering — editor
+    // Ordering: editor
     modeSequence: 'Put in order',
     modeCategories: 'Sort into categories',
     promptLabel: 'Task',
@@ -23,9 +23,9 @@ const assessment: LocaleTable = {
     addCategory: '+ Category',
     removeCategory: 'Remove category',
     itemCategory: 'Correct category',
-    noCategory: '— Category —',
+    noCategory: 'No category',
 
-    // Ordering — learner
+    // Ordering: learner
     sequenceHint: 'Drag the items, or use the arrows, to put them in the right order.',
     categoriesHint: 'Drag each item into a category, or pick one from its list.',
     unsorted: 'Not sorted yet',
@@ -34,23 +34,23 @@ const assessment: LocaleTable = {
     correctCategory: 'Correct: {c}',
     dragItem: 'Drag to reorder',
 
-    // Fill in the blanks — editor
+    // Fill in the blanks: editor
     textLabel: 'Text with blanks',
     textPlaceholder: 'The capital of France is [Paris].',
-    textHelp: 'Wrap each answer in square brackets: [Paris]. Separate other accepted answers with |, e.g. [Paris|Paname] — the first one is the correct answer.',
+    textHelp: 'Wrap each answer in square brackets: [Paris]. Separate other accepted answers with |, e.g. [Paris|Paname]. The first one is the correct answer.',
     fbModeType: 'Type the answer',
     fbModeSelect: 'Choose from a list',
     caseSensitive: 'Case-sensitive answers',
     caseSensitiveHelp: 'Off: "paris" also counts as "Paris". Applies to typed answers.',
     blanksCount: 'Blanks: {n}',
-    noBlanks: 'No blanks yet — wrap an answer in [square brackets].',
+    noBlanks: 'No blanks yet. Wrap an answer in [square brackets].',
 
-    // Fill in the blanks — learner
+    // Fill in the blanks: learner
     blankN: 'Blank {n}',
     correctAnswer: 'Answer: {a}',
   },
   uk: {
-    // Ordering — editor
+    // Ordering: editor
     modeSequence: 'Упорядкувати',
     modeCategories: 'Розсортувати за категоріями',
     promptLabel: 'Завдання',
@@ -68,9 +68,9 @@ const assessment: LocaleTable = {
     addCategory: '+ Категорія',
     removeCategory: 'Видалити категорію',
     itemCategory: 'Правильна категорія',
-    noCategory: '— Категорія —',
+    noCategory: 'Без категорії',
 
-    // Ordering — learner
+    // Ordering: learner
     sequenceHint: 'Перетягніть елементи або скористайтеся стрілками, щоб розставити їх у правильному порядку.',
     categoriesHint: 'Перетягніть кожен елемент у категорію або оберіть її зі списку.',
     unsorted: 'Ще не розсортовано',
@@ -79,23 +79,23 @@ const assessment: LocaleTable = {
     correctCategory: 'Правильно: {c}',
     dragItem: 'Перетягніть, щоб змінити порядок',
 
-    // Fill in the blanks — editor
+    // Fill in the blanks: editor
     textLabel: 'Текст із пропусками',
-    textPlaceholder: 'Столиця Франції — [Париж].',
-    textHelp: 'Візьміть кожну відповідь у квадратні дужки: [Париж]. Інші прийнятні відповіді відокремте |, напр. [Париж|Paris] — перша з них правильна.',
+    textPlaceholder: 'Столиця Франції: [Париж].',
+    textHelp: 'Візьміть кожну відповідь у квадратні дужки: [Париж]. Інші прийнятні відповіді відокремте |, напр. [Париж|Paris]. Перша з них правильна.',
     fbModeType: 'Ввести відповідь',
     fbModeSelect: 'Обрати зі списку',
     caseSensitive: 'Враховувати регістр',
     caseSensitiveHelp: 'Вимкнено: «париж» теж зараховується як «Париж». Стосується введених відповідей.',
     blanksCount: 'Пропусків: {n}',
-    noBlanks: 'Пропусків ще немає — візьміть відповідь у [квадратні дужки].',
+    noBlanks: 'Пропусків ще немає. Візьміть відповідь у [квадратні дужки].',
 
-    // Fill in the blanks — learner
+    // Fill in the blanks: learner
     blankN: 'Пропуск {n}',
     correctAnswer: 'Відповідь: {a}',
   },
   fr: {
-    // Ordering — editor
+    // Ordering: editor
     modeSequence: 'Remettre dans l’ordre',
     modeCategories: 'Classer par catégories',
     promptLabel: 'Consigne',
@@ -113,9 +113,9 @@ const assessment: LocaleTable = {
     addCategory: '+ Catégorie',
     removeCategory: 'Supprimer la catégorie',
     itemCategory: 'Bonne catégorie',
-    noCategory: '— Catégorie —',
+    noCategory: 'Sans catégorie',
 
-    // Ordering — learner
+    // Ordering: learner
     sequenceHint: 'Faites glisser les éléments, ou utilisez les flèches, pour les remettre dans le bon ordre.',
     categoriesHint: 'Faites glisser chaque élément dans une catégorie, ou choisissez-la dans sa liste.',
     unsorted: 'Pas encore classés',
@@ -124,23 +124,23 @@ const assessment: LocaleTable = {
     correctCategory: 'Bonne catégorie : {c}',
     dragItem: 'Faites glisser pour réordonner',
 
-    // Fill in the blanks — editor
+    // Fill in the blanks: editor
     textLabel: 'Texte à trous',
     textPlaceholder: 'La capitale de la France est [Paris].',
-    textHelp: 'Placez chaque réponse entre crochets : [Paris]. Séparez les autres réponses acceptées par |, par ex. [Paris|Paname] — la première est la bonne réponse.',
+    textHelp: 'Placez chaque réponse entre crochets : [Paris]. Séparez les autres réponses acceptées par |, par ex. [Paris|Paname]. La première est la bonne réponse.',
     fbModeType: 'Saisir la réponse',
     fbModeSelect: 'Choisir dans une liste',
     caseSensitive: 'Réponses sensibles à la casse',
     caseSensitiveHelp: 'Désactivé : « paris » est aussi accepté pour « Paris ». S’applique aux réponses saisies.',
     blanksCount: 'Trous : {n}',
-    noBlanks: 'Aucun trou pour l’instant — placez une réponse entre [crochets].',
+    noBlanks: 'Aucun trou pour l’instant. Placez une réponse entre [crochets].',
 
-    // Fill in the blanks — learner
+    // Fill in the blanks: learner
     blankN: 'Trou {n}',
     correctAnswer: 'Réponse : {a}',
   },
   es: {
-    // Ordering — editor
+    // Ordering: editor
     modeSequence: 'Poner en orden',
     modeCategories: 'Clasificar en categorías',
     promptLabel: 'Tarea',
@@ -158,9 +158,9 @@ const assessment: LocaleTable = {
     addCategory: '+ Categoría',
     removeCategory: 'Eliminar la categoría',
     itemCategory: 'Categoría correcta',
-    noCategory: '— Categoría —',
+    noCategory: 'Sin categoría',
 
-    // Ordering — learner
+    // Ordering: learner
     sequenceHint: 'Arrastra los elementos, o usa las flechas, para ponerlos en el orden correcto.',
     categoriesHint: 'Arrastra cada elemento a una categoría o elígela en su lista.',
     unsorted: 'Sin clasificar',
@@ -169,7 +169,7 @@ const assessment: LocaleTable = {
     correctCategory: 'Categoría correcta: {c}',
     dragItem: 'Arrastra para cambiar el orden',
 
-    // Fill in the blanks — editor
+    // Fill in the blanks: editor
     textLabel: 'Texto con huecos',
     textPlaceholder: 'La capital de Francia es [París].',
     textHelp: 'Pon cada respuesta entre corchetes: [París]. Separa las demás respuestas aceptadas con |, p. ej. [París|Paris]; la primera es la respuesta correcta.',
@@ -180,12 +180,12 @@ const assessment: LocaleTable = {
     blanksCount: 'Huecos: {n}',
     noBlanks: 'Aún no hay huecos: pon una respuesta entre [corchetes].',
 
-    // Fill in the blanks — learner
+    // Fill in the blanks: learner
     blankN: 'Hueco {n}',
     correctAnswer: 'Respuesta: {a}',
   },
   de: {
-    // Ordering — editor
+    // Ordering: editor
     modeSequence: 'In Reihenfolge bringen',
     modeCategories: 'In Kategorien einordnen',
     promptLabel: 'Aufgabe',
@@ -203,9 +203,9 @@ const assessment: LocaleTable = {
     addCategory: '+ Kategorie',
     removeCategory: 'Kategorie entfernen',
     itemCategory: 'Richtige Kategorie',
-    noCategory: '— Kategorie —',
+    noCategory: 'Ohne Kategorie',
 
-    // Ordering — learner
+    // Ordering: learner
     sequenceHint: 'Ziehen Sie die Elemente oder verwenden Sie die Pfeile, um sie in die richtige Reihenfolge zu bringen.',
     categoriesHint: 'Ziehen Sie jedes Element in eine Kategorie oder wählen Sie eine aus der Liste.',
     unsorted: 'Noch nicht einsortiert',
@@ -214,7 +214,7 @@ const assessment: LocaleTable = {
     correctCategory: 'Richtig: {c}',
     dragItem: 'Zum Umsortieren ziehen',
 
-    // Fill in the blanks — editor
+    // Fill in the blanks: editor
     textLabel: 'Text mit Lücken',
     textPlaceholder: 'Die Hauptstadt von Frankreich ist [Paris].',
     textHelp: 'Setzen Sie jede Antwort in eckige Klammern: [Paris]. Trennen Sie weitere akzeptierte Antworten mit |, z. B. [Paris|Paname] – die erste ist die richtige Antwort.',
@@ -225,7 +225,7 @@ const assessment: LocaleTable = {
     blanksCount: 'Lücken: {n}',
     noBlanks: 'Noch keine Lücken – setzen Sie eine Antwort in [eckige Klammern].',
 
-    // Fill in the blanks — learner
+    // Fill in the blanks: learner
     blankN: 'Lücke {n}',
     correctAnswer: 'Antwort: {a}',
   },

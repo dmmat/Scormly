@@ -50,7 +50,7 @@ export default function CourseOutlineBlock({
             {title}
           </p>
         )}
-        {/* The current lesson is excluded — it only links to the others. */}
+        {/* The current lesson is excluded: it only links to the others. */}
         <GroupedLessons
           course={course}
           className="divide-y divide-gray-100"

@@ -4,7 +4,7 @@ import type { Block } from '../types/course'
 // ends a page. Mirrored by pagesOf() in public/scorm-player/player.js.
 
 /** Whether blocks[i] ends a page (a Continue set to start a new page, not
- *  the lesson's last block — that one leads to the next lesson). */
+ *  the lesson's last block; that one leads to the next lesson). */
 export function isPageBreak(blocks: Block[], i: number): boolean {
   const b = blocks[i]
   return !!b && b.type === 'continue' && b.data.newPage === true && i < blocks.length - 1

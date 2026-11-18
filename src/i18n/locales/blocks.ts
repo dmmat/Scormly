@@ -1,7 +1,7 @@
 import type { LocaleTable } from '../types'
 
 // Block type names and descriptions for the "Add block" menu.
-// Keys: <type> — name, <type>Desc — description, variant_<type>_<id> — style.
+// Keys: <type> is the name, <type>Desc the description, variant_<type>_<id> a style.
 const blocks: LocaleTable = {
   en: {
     heading: 'Heading',

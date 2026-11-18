@@ -1,5 +1,5 @@
 /* ==========================================================================
- * Learner-facing block design — shared by the editor canvas, the in-app
+ * Learner-facing block design, shared by the editor canvas, the in-app
  * preview and the exported SCORM player.
  *
  * SOURCE OF TRUTH. public/scorm-player/player.css carries a copy between the
@@ -1023,7 +1023,7 @@
    column; the height comes from the block or the page's content. */
 .sc-html-frame { display: block; width: 100%; border: 0; background: transparent; color-scheme: light; }
 
-/* Scenario — scene layout: a 16:9 stage (background picture, a waist-up
+/* Scenario: scene layout: a 16:9 stage (background picture, a waist-up
    character standing on its bottom edge) with the character's line in a bubble
    at the top right and the learner's answers as bubbles at the bottom right,
    on the stage itself. On a narrow screen the answers drop below the stage. */

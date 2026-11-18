@@ -30,8 +30,8 @@ const preview: LocaleTable = {
     autoTestHint: 'Preview only: answers the questions and submits, so you can check the result.',
     autoPass: 'Passed',
     autoFail: 'Not passed',
-    autoPassOff: 'This test can’t be passed — check its correct answers.',
-    autoFailOff: 'This test can’t be failed — check its passing score.',
+    autoPassOff: 'This test can’t be passed. Check its correct answers.',
+    autoFailOff: 'This test can’t be failed. Check its passing score.',
 
     // Scenario
     restart: 'Restart',
@@ -68,8 +68,8 @@ const preview: LocaleTable = {
     autoTestHint: 'Лише в перегляді: відповідає на запитання й надсилає тест, щоб перевірити результат.',
     autoPass: 'Успішно',
     autoFail: 'Неуспішно',
-    autoPassOff: 'Цей тест неможливо скласти — перевірте правильні відповіді.',
-    autoFailOff: 'Цей тест неможливо не скласти — перевірте прохідний бал.',
+    autoPassOff: 'Цей тест неможливо скласти. Перевірте правильні відповіді.',
+    autoFailOff: 'Цей тест неможливо не скласти. Перевірте прохідний бал.',
 
     // Scenario
     restart: 'Спочатку',
@@ -106,8 +106,8 @@ const preview: LocaleTable = {
     autoTestHint: 'Aperçu uniquement : répond aux questions et les valide, pour que vous puissiez vérifier le résultat.',
     autoPass: 'Réussi',
     autoFail: 'Non réussi',
-    autoPassOff: 'Ce test ne peut pas être réussi — vérifiez ses bonnes réponses.',
-    autoFailOff: 'Ce test ne peut pas être raté — vérifiez son score de réussite.',
+    autoPassOff: 'Ce test ne peut pas être réussi. Vérifiez ses bonnes réponses.',
+    autoFailOff: 'Ce test ne peut pas être raté. Vérifiez son score de réussite.',
 
     // Scenario
     restart: 'Recommencer',
@@ -144,8 +144,8 @@ const preview: LocaleTable = {
     autoTestHint: 'Solo en la vista previa: responde las preguntas y las envía, para que puedas comprobar el resultado.',
     autoPass: 'Aprobado',
     autoFail: 'No aprobado',
-    autoPassOff: 'Esta prueba no se puede aprobar — revisa sus respuestas correctas.',
-    autoFailOff: 'Esta prueba no se puede suspender — revisa su puntuación mínima.',
+    autoPassOff: 'Esta prueba no se puede aprobar. Revisa sus respuestas correctas.',
+    autoFailOff: 'Esta prueba no se puede suspender. Revisa su puntuación mínima.',
 
     // Scenario
     restart: 'Reiniciar',

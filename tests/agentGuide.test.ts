@@ -19,7 +19,7 @@ describe('buildAgentGuide', () => {
   test('documents the current settings and quality rules', () => {
     expect(md).toContain("navigation: 'free' | 'linear'")
     expect(md).toContain('requireWatch?: boolean')
-    expect(md).toContain('## Before you finish — quality checklist')
+    expect(md).toContain('## Before you finish: quality checklist')
   })
 
   test('the example is valid JSON with escaped title', () => {

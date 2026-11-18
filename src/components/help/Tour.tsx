@@ -52,8 +52,8 @@ function spotlightRect(el: HTMLElement): Rect {
   }
 }
 
-// Place the card below, above, right or left of the target — whichever fits
-// first — then clamp it into the viewport.
+// Place the card below, above, right or left of the target (whichever fits
+// first), then clamp it into the viewport.
 function placeCard(target: Rect | null, w: number, h: number) {
   const vw = window.innerWidth
   const vh = window.innerHeight

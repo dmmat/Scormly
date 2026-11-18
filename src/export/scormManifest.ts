@@ -19,7 +19,7 @@ function hrefXml(path: string): string {
   return escapeXml(encodeURI(path))
 }
 
-// Collect scored block IDs (quiz, ordering, fill in the blanks) in order — used
+// Collect scored block IDs (quiz, ordering, fill in the blanks) in order, used
 // to declare one non-primary objective per scored block in the SCORM 2004
 // manifest, so the LMS recognises the runtime `cmi.objectives.n.id =
 // 'QUIZ_<id>'` writes from the player (the prefix is shared by all of them).
@@ -37,7 +37,7 @@ function quizIds(course: Course): string[] {
 // catalog can show the course description without the author re-typing it at
 // import time. Not emitted for 1.2: its <metadata> holds a strict wildcard, so
 // inline IMS MD requires imsmd_rootv1p2p1.xsd, whose content model is not
-// deterministic — strict validators (libxml2, i.e. PHP schemaValidate) fail to
+// deterministic: strict validators (libxml2, i.e. PHP schemaValidate) fail to
 // compile it and reject the whole manifest.
 function lomMetadata(course: Course, lang: string): string {
   const title = escapeXml(course.title || 'Course')

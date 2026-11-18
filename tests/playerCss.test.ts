@@ -2,7 +2,7 @@
 
 import { describe, test, expect } from 'vitest'
 import { readFileSync } from 'node:fs'
-// @ts-expect-error — plain .mjs build script without type declarations
+// @ts-expect-error: plain .mjs build script without type declarations
 import { syncedPlayerCss } from '../scripts/syncPlayerCss.mjs'
 
 describe('player.css', () => {

@@ -671,7 +671,7 @@ export default function Landing() {
             <p className="reveal-visible mt-5 text-sm text-gray-500">{t('heroNote')}</p>
           </div>
 
-          {/* Live, self-playing dialogue trainer — a real product block. */}
+          {/* Live, self-playing dialogue trainer: a real product block. */}
           <div className="reveal-visible animate-float">
             <ChatDemo />
           </div>
@@ -750,7 +750,7 @@ export default function Landing() {
 
   // Interactive "play with the real blocks" section.
   // Visual design: cover pages, themed block panels, image/quote layouts,
-  // carousels, downloads and motion — shown with the real learner components.
+  // carousels, downloads and motion, shown with the real learner components.
   function Design() {
     const points = [
       { icon: 'theme', title: t('designPoint1Title'), text: t('designPoint1Text') },

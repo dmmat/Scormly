@@ -76,7 +76,7 @@ async function syncAgentGuide(
     const current = await readText(handle, AGENT_GUIDE_FILE)
     if (current !== next) await writeFile(handle, AGENT_GUIDE_FILE, next)
   } catch {
-    // ignore — convenience only.
+    // ignore, convenience only.
   }
 }
 

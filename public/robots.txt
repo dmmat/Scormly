@@ -1,4 +1,4 @@
-# Scormly — https://scormly.app
+# Scormly: https://scormly.app
 # Everything here is public: the landing page and a client-side app with no
 # server data. Search engines and AI assistants are welcome; for a summary
 # written for language models, see https://scormly.app/llms.txt
