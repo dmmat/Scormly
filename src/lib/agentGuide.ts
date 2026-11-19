@@ -409,23 +409,6 @@ Keep the blocks of one idea close: give every block of a group except the last
 sits close to what follows it. Reach for a Widget only when the content needs
 behaviour or a layout no block has.
 
-## See your work rendered
-
-You can look at the course as a learner sees it, without the Scormly app:
-
-\`\`\`bash
-curl -sO https://scormly.app/tools/render-course.mjs
-node render-course.mjs . --shots          # run in this folder; Node 22+, Chromium or Chrome
-\`\`\`
-
-It writes the course as plain pages to \`.render/\` (one per lesson, Continue
-gates dropped so the whole lesson shows) and, with \`--shots\`, a full-page
-screenshot \`.render/lesson-N.png\` of each. Look at the screenshots after a
-round of edits and fix what reads badly: crowded or uneven spacing, a wall of
-text, a block that would say it better. \`.render/\` is scratch output: delete
-it when you are done, and never put it in the \`.zip\` you return. Options:
-\`--width 420\` for a phone, \`--keep-gates\`, \`--out <dir>\`.
-
 ## Authoring rules
 
 - **IDs**: every \`id\` (course, lesson, block, and nested items like quiz
@@ -537,8 +520,7 @@ passes them is ready to export:
 1. Read \`project.json\` (and this guide) to understand the current course.
 2. Make your edits (add lessons/blocks, rewrite text, build quizzes), keeping
    ids unique and the JSON valid.
-3. Walk through the checklist above, and render the course to look at it if
-   you can (see "See your work rendered").
+3. Walk through the checklist above.
 4. Ask the author to reopen the project in Scormly (the folder, or the \`.zip\`
    you return; see below) to review, preview and export (SCORM 2004 / 1.2 or
    cmi5). Exporting happens in the app, not from the file.

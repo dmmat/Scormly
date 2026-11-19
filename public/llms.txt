@@ -96,10 +96,6 @@ merge into the author's.
   it is edited in Project settings → AI assistant and never overwritten by Scormly.
 - Scormly repairs a hand- or AI-edited `project.json` when it is opened (ids, types, missing
   fields) and reports what it fixed.
-- [render-course.mjs](https://scormly.app/tools/render-course.mjs) is a standalone Node script
-  (no dependencies) that renders a project folder as the learner sees it and screenshots
-  every lesson (`node render-course.mjs <project folder> --shots`), so an assistant can
-  check its own work; `AGENTS.md` explains when to use it.
 - To hand a project to an assistant: download it as a .zip (or point the assistant at the
   project folder), ask it to follow `AGENTS.md`, then open the .zip it returns.
 
