@@ -5,7 +5,7 @@ import { useCourseStore } from '../../store/courseStore'
 import { translate, useT } from '../../i18n/I18nProvider'
 import { uid } from '../../lib/id'
 import RichTextEditor from '../../components/editor/RichTextEditor'
-import { Segmented, SettingsBar } from '../../components/editor/controls'
+import { AutoTextarea, Segmented, SettingsBar } from '../../components/editor/controls'
 import CardsPreview from '../../preview/components/CardsPreview'
 
 // Cards: edited in place on the learner's cards. Same markup as CardsPreview
@@ -94,50 +94,61 @@ export default function CardsBlock({
         style={perRow && !rows ? ({ '--per': perRow } as CSSProperties) : undefined}
       >
         {items.map((item, i) => (
-          <div key={item.id} className={`sc-card${item.highlight ? ' sc-card-hl' : ''}`}>
-            <div className="sc-card-top">
-              {numbered && <span className="sc-card-num">{i + 1}</span>}
-              <input
-                type="text"
-                value={item.badge}
-                placeholder={t('cardBadge')}
-                aria-label={t('cardBadge')}
-                onChange={(e) => patch(item.id, { badge: e.target.value }, `card-badge-${item.id}`)}
-                // Sized to its text, so the pill looks as the learner sees it.
-                size={Math.max(item.badge.length, t('cardBadge').length) + 1}
-                className={`${ghost} sc-card-badge${item.badge || labelStyle === 'text' ? '' : ' !bg-transparent ring-1 ring-inset ring-gray-200'}`}
-              />
-              <span className="ml-auto flex items-center">
+          <div key={item.id} className={`sc-card relative${rows ? ' !pr-14' : ''}${item.highlight ? ' sc-card-hl' : ''}`}>
+            {/* Out of the flow, so the card's own lines sit where the learner sees them. */}
+            <span className="absolute right-1.5 top-1.5 flex items-center">
+              <button
+                type="button"
+                onClick={() => patch(item.id, { highlight: !item.highlight })}
+                aria-pressed={!!item.highlight}
+                title={t('cardHighlight')}
+                aria-label={t('cardHighlight')}
+                className={`${iconBtn}${item.highlight ? ' !text-brand' : ''}`}
+              >
+                {item.highlight ? '★' : '☆'}
+              </button>
+              {items.length > 1 && (
                 <button
                   type="button"
-                  onClick={() => patch(item.id, { highlight: !item.highlight })}
-                  aria-pressed={!!item.highlight}
-                  title={t('cardHighlight')}
-                  aria-label={t('cardHighlight')}
-                  className={`${iconBtn}${item.highlight ? ' !text-brand' : ''}`}
+                  onClick={() => update(lessonId, block.id, { items: items.filter((it) => it.id !== item.id) })}
+                  className={iconBtn}
+                  aria-label={t('removeCard')}
                 >
-                  {item.highlight ? '★' : '☆'}
+                  ✕
                 </button>
-                {items.length > 1 && (
-                  <button
-                    type="button"
-                    onClick={() => update(lessonId, block.id, { items: items.filter((it) => it.id !== item.id) })}
-                    className={iconBtn}
-                    aria-label={t('removeCard')}
-                  >
-                    ✕
-                  </button>
-                )}
-              </span>
+              )}
+            </span>
+            <div className={`sc-card-top${rows ? '' : ' pr-12'}`}>
+              {numbered && <span className="sc-card-num">{i + 1}</span>}
+              {labelStyle === 'text' ? (
+                // Wraps like the learner's label.
+                <AutoTextarea
+                  value={item.badge}
+                  placeholder={t('cardBadge')}
+                  aria-label={t('cardBadge')}
+                  onChange={(e) => patch(item.id, { badge: e.target.value.replace(/\n/g, ' ') }, `card-badge-${item.id}`)}
+                  className={`${ghost} sc-card-badge block w-full`}
+                />
+              ) : (
+                <input
+                  type="text"
+                  value={item.badge}
+                  placeholder={t('cardBadge')}
+                  aria-label={t('cardBadge')}
+                  onChange={(e) => patch(item.id, { badge: e.target.value }, `card-badge-${item.id}`)}
+                  // Sized to its text, so the pill looks as the learner sees it.
+                  size={Math.max(item.badge.length, t('cardBadge').length) + 1}
+                  className={`${ghost} sc-card-badge max-w-full${item.badge ? '' : ' !bg-transparent ring-1 ring-inset ring-gray-200'}`}
+                />
+              )}
             </div>
             <h3 className="sc-card-title">
-              <input
-                type="text"
+              <AutoTextarea
                 value={item.title}
                 placeholder={t('cardTitle')}
                 aria-label={t('cardTitle')}
-                onChange={(e) => patch(item.id, { title: e.target.value }, `card-title-${item.id}`)}
-                className={`${ghost} w-full`}
+                onChange={(e) => patch(item.id, { title: e.target.value.replace(/\n/g, ' ') }, `card-title-${item.id}`)}
+                className={`${ghost} block w-full`}
               />
             </h3>
             <RichTextEditor
