@@ -1943,6 +1943,12 @@
 
   var GRIP_ICON = '<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><circle cx="9" cy="6" r="1.5"/><circle cx="15" cy="6" r="1.5"/><circle cx="9" cy="12" r="1.5"/><circle cx="15" cy="12" r="1.5"/><circle cx="9" cy="18" r="1.5"/><circle cx="15" cy="18" r="1.5"/></svg>';
 
+  // A card label's own color: the tint and the deepened text derive from it.
+  function badgeVars(color) {
+    var m = /^#?([0-9a-f]{6})$/i.exec(String(color || '').trim());
+    return m ? '--sc-badge:#' + m[1] + ';--sc-badge-text:color-mix(in srgb, #' + m[1] + ' 72%, #000)' : null;
+  }
+
   // Cards: tiles with an optional number and label, a title and rich text.
   function renderCards(b) {
     var d = b.data || {}, items = d.items || [];
@@ -1954,7 +1960,7 @@
       wrap.appendChild(h('div', { class: 'sc-card' + (it.highlight ? ' sc-card-hl' : '') + (it.tone === 'positive' ? ' sc-card-pos' : it.tone === 'negative' ? ' sc-card-neg' : '') }, [
         d.numbered || it.badge ? h('div', { class: 'sc-card-top' }, [
           d.numbered ? h('span', { class: 'sc-card-num', text: String(i + 1) }) : null,
-          it.badge ? h('span', { class: 'sc-card-badge', text: it.badge }) : null,
+          it.badge ? h('span', { class: 'sc-card-badge', text: it.badge, style: badgeVars(it.badgeColor) }) : null,
         ]) : null,
         it.title ? h('h3', { class: 'sc-card-title', text: it.title }) : null,
         it.html ? h('div', { class: 'sc-card-text rich-text', html: it.html }) : null,

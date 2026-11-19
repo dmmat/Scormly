@@ -674,6 +674,8 @@ export interface CardItem {
   id: string
   /** Small label above the title (a category, a code); empty = none. */
   badge: string
+  /** The label's own color (#rrggbb); missing = the theme's second accent. */
+  badgeColor?: string
   title: string
   /** Rich text. */
   html: string

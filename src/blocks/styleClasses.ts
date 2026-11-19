@@ -87,6 +87,13 @@ export function tableHeadStyle(headerColor?: string): CSSProperties | undefined 
   return { '--sc-thead-bg': bg, '--sc-thead-fg': fg } as CSSProperties
 }
 
+/** Inline variables for a card label with its own color (CardItem.badgeColor). */
+export function badgeStyle(color?: string): CSSProperties | undefined {
+  const hex = normalizeHex(color ?? '')
+  if (!hex) return undefined
+  return { '--sc-badge': hex, '--sc-badge-text': `color-mix(in srgb, ${hex} 72%, #000)` } as CSSProperties
+}
+
 /** A table shown as cards (layout 'cards'): one card per column after the
  *  first. Null when there is nothing to make a card of. */
 export function tableCards(rows: string[][]) {

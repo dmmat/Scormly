@@ -7,6 +7,8 @@ import { uid } from '../../lib/id'
 import RichTextEditor from '../../components/editor/RichTextEditor'
 import { AutoTextarea, Segmented, SettingsBar } from '../../components/editor/controls'
 import CardsPreview from '../../preview/components/CardsPreview'
+import { normalizeHex } from '../../theme/customTheme'
+import { badgeStyle } from '../styleClasses'
 
 type Look = 'plain' | 'highlight' | 'positive' | 'negative'
 const LOOKS: { key: Look; patch: Partial<CardItem> }[] = [
@@ -15,6 +17,12 @@ const LOOKS: { key: Look; patch: Partial<CardItem> }[] = [
   { key: 'positive', patch: { highlight: false, tone: 'positive' } },
   { key: 'negative', patch: { highlight: false, tone: 'negative' } },
 ]
+const SWATCH: Record<Look, string> = {
+  plain: 'border-gray-400 bg-white',
+  highlight: 'border-brand bg-brand',
+  positive: 'border-green-600 bg-green-500',
+  negative: 'border-red-600 bg-red-500',
+}
 const lookOf = (item: CardItem): Look => item.tone ?? (item.highlight ? 'highlight' : 'plain')
 
 // Cards: edited in place on the learner's cards. Same markup as CardsPreview
@@ -114,24 +122,27 @@ export default function CardsBlock({
         style={perRow && !rows ? ({ '--per': perRow } as CSSProperties) : undefined}
       >
         {items.map((item, i) => (
-          <div key={item.id} className={`sc-card relative${rows ? ' !pr-14' : ''}${item.highlight ? ' sc-card-hl' : ''}${item.tone === 'positive' ? ' sc-card-pos' : item.tone === 'negative' ? ' sc-card-neg' : ''}`}>
+          <div key={item.id} className={`sc-card relative${rows ? ' !pr-32' : ''}${item.highlight ? ' sc-card-hl' : ''}${item.tone === 'positive' ? ' sc-card-pos' : item.tone === 'negative' ? ' sc-card-neg' : ''}`}>
             {/* Out of the flow, so the card's own lines sit where the learner sees them. */}
             <span className="absolute right-1.5 top-1.5 flex items-center">
-              {/* One button walks through the looks: plain, highlighted, green, red. */}
-              <button
-                type="button"
-                onClick={() => patch(item.id, LOOKS[(LOOKS.findIndex((l) => l.key === lookOf(item)) + 1) % LOOKS.length].patch)}
-                title={`${t('cardLook')}: ${t(`cardLook_${lookOf(item)}`)}`}
-                aria-label={`${t('cardLook')}: ${t(`cardLook_${lookOf(item)}`)}`}
-                className={iconBtn}
-              >
-                <span
-                  aria-hidden
-                  className={`h-3 w-3 rounded-full border ${
-                    { plain: 'border-gray-400', highlight: 'border-brand bg-brand', positive: 'border-green-600 bg-green-600', negative: 'border-red-600 bg-red-600' }[lookOf(item)]
-                  }`}
-                />
-              </button>
+              {/* The card's look: plain, highlighted, green or red. */}
+              <span role="radiogroup" aria-label={t('cardLook')} className="mr-1 flex items-center gap-1 rounded-full bg-white/80 px-1.5 py-1 ring-1 ring-gray-200">
+                {LOOKS.map((look) => {
+                  const on = lookOf(item) === look.key
+                  return (
+                    <button
+                      key={look.key}
+                      type="button"
+                      role="radio"
+                      aria-checked={on}
+                      onClick={() => patch(item.id, look.patch)}
+                      title={`${t('cardLook')}: ${t(`cardLook_${look.key}`)}`}
+                      aria-label={t(`cardLook_${look.key}`)}
+                      className={`h-3.5 w-3.5 rounded-full border ${SWATCH[look.key]} ${on ? 'ring-2 ring-gray-900/70 ring-offset-1' : 'opacity-70 hover:opacity-100'}`}
+                    />
+                  )
+                })}
+              </span>
               {items.length > 1 && (
                 <button
                   type="button"
@@ -143,7 +154,7 @@ export default function CardsBlock({
                 </button>
               )}
             </span>
-            <div className={`sc-card-top${rows ? '' : ' pr-12'}`}>
+            <div className={`sc-card-top${rows ? '' : ' pt-7'}`}>
               {numbered && <span className="sc-card-num">{i + 1}</span>}
               {labelStyle === 'text' ? (
                 // Wraps like the learner's label.
@@ -153,6 +164,7 @@ export default function CardsBlock({
                   aria-label={t('cardBadge')}
                   onChange={(e) => patch(item.id, { badge: e.target.value.replace(/\n/g, ' ') }, `card-badge-${item.id}`)}
                   className={`${ghost} sc-card-badge block w-full`}
+                  style={badgeStyle(item.badgeColor)}
                 />
               ) : (
                 <input
@@ -164,7 +176,32 @@ export default function CardsBlock({
                   // Sized to its text, so the pill looks as the learner sees it.
                   size={Math.max(item.badge.length, t('cardBadge').length) + 1}
                   className={`${ghost} sc-card-badge max-w-full${item.badge ? '' : ' !bg-transparent ring-1 ring-inset ring-gray-200'}`}
+                  style={badgeStyle(item.badgeColor)}
                 />
+              )}
+              {item.badge && (
+                // The label's own color; the small cross goes back to the theme's.
+                <span className="flex shrink-0 items-center gap-0.5">
+                  <input
+                    type="color"
+                    value={normalizeHex(item.badgeColor ?? '') ?? '#6b7280'}
+                    title={t('cardBadgeColor')}
+                    aria-label={t('cardBadgeColor')}
+                    onChange={(e) => patch(item.id, { badgeColor: e.target.value }, `card-badge-color-${item.id}`)}
+                    className="h-5 w-5 cursor-pointer rounded-full border border-gray-300 bg-white p-0 [&::-webkit-color-swatch-wrapper]:p-0.5 [&::-webkit-color-swatch]:rounded-full [&::-webkit-color-swatch]:border-0"
+                  />
+                  {item.badgeColor && (
+                    <button
+                      type="button"
+                      onClick={() => patch(item.id, { badgeColor: undefined })}
+                      title={t('cardBadgeColorReset')}
+                      aria-label={t('cardBadgeColorReset')}
+                      className="flex h-4 w-4 items-center justify-center rounded text-[10px] text-gray-400 hover:bg-gray-100 hover:text-gray-700"
+                    >
+                      ✕
+                    </button>
+                  )}
+                </span>
               )}
             </div>
             <h3 className="sc-card-title">

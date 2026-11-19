@@ -193,7 +193,7 @@ const BLOCK_DOCS: Record<BlockType, BlockDoc> = {
   },
   cards: {
     summary: 'Cards (tiles) with an optional label, a title and text: key points, platforms, teams, terms with their codes.',
-    data: `{ items: { id: string, badge: string, title: string, html: string, highlight?: boolean, tone?: 'positive' | 'negative' }[], layout?: 'grid' | 'rows', labelStyle?: 'pill' | 'text', titleStyle?: 'plain' | 'band', numbered?: boolean, perRow?: 2 | 3 | 4 }  // badge: small label above the title ('' = none), drawn as a tinted pill or, with labelStyle 'text', as small grey capitals; html: rich text like paragraph, keep it short; highlight: accent tint for the card that matters most; tone: green (a good outcome, do) or red (a bad one, don't); titleStyle band: the title on a tinted strip across the card, with a ruled list under it (good for a few options with bullet points); layout rows: a ruled list, one card per line (number, label over title, text beside), good for terms or for who-does-what steps (label = who, title = what); numbered: 1, 2, 3 on the cards; perRow: cards per line on wide screens (default: as many as fit)`,
+    data: `{ items: { id: string, badge: string, badgeColor?: string, title: string, html: string, highlight?: boolean, tone?: 'positive' | 'negative' }[], layout?: 'grid' | 'rows', labelStyle?: 'pill' | 'text', titleStyle?: 'plain' | 'band', numbered?: boolean, perRow?: 2 | 3 | 4 }  // badge: small label above the title ('' = none; badgeColor '#rrggbb' gives it its own color instead of the theme's second accent), drawn as a tinted pill or, with labelStyle 'text', as small grey capitals; html: rich text like paragraph, keep it short; highlight: accent tint for the card that matters most; tone: green (a good outcome, do) or red (a bad one, don't); titleStyle band: the title on a tinted strip across the card, with a ruled list under it (good for a few options with bullet points); layout rows: a ruled list, one card per line (number, label over title, text beside), good for terms or for who-does-what steps (label = who, title = what); numbered: 1, 2, 3 on the cards; perRow: cards per line on wide screens (default: as many as fit)`,
   },
   comparison: {
     summary: 'Comparison cards: pros and cons, or options side by side.',
@@ -384,6 +384,48 @@ one, media blocks (text on image, carousel, quote on image) span the page.
 
 ${blockReference()}
 
+## Choosing a block (before you reach for a Widget)
+
+The built-in blocks are themed, accessible, editable by the author in the app
+and tracked; a Widget (\`html\`) is none of these by default. Most "designed"
+layouts are a block with the right options:
+
+| What you want to show | Use |
+| --- | --- |
+| The opening of a section: small line, heading, lead-in | \`heading\` with \`eyebrow\` and \`subtitle\` |
+| Key points, platforms, teams, terms with codes | \`cards\` (grid; \`badge\` for the label, \`numbered\`, \`highlight\`) |
+| A glossary or who-does-what steps, read line by line | \`cards\` with \`layout: 'rows'\` (\`badge\` = who, \`title\` = what, \`html\` = the detail) |
+| A few options, each with bullet points | \`cards\` with \`titleStyle: 'band'\` and a \`<ul>\` in \`html\` |
+| A good and a bad outcome side by side | \`cards\` with \`tone: 'positive'\` / \`'negative'\` |
+| Do / don't, pros / cons | \`comparison\` (\`tone: 'pro'\` / \`'con'\`) |
+| The same attributes for 2 to 4 items | \`table\` with \`layout: 'cards'\` (one card per column) |
+| A reference table | \`table\` with \`style: 'panel'\`; \`rowMarks\` to highlight or mute a row |
+| A callout with a label ("Key terms", "Out of scope") | \`note\` with \`title\` (and \`icon: false\` for a quiet box) |
+| A sequence with arrows | \`process\` (flow / chevrons), or one \`paragraph\` with → between the steps |
+| A walkthrough with screenshots | \`steps\` |
+
+Keep the blocks of one idea close: give every block of a group except the last
+\`settings.spacing: 'compact'\`. A heading with an eyebrow or subtitle already
+sits close to what follows it. Reach for a Widget only when the content needs
+behaviour or a layout no block has.
+
+## See your work rendered
+
+You can look at the course as a learner sees it, without the Scormly app:
+
+\`\`\`bash
+curl -sO https://scormly.app/tools/render-course.mjs
+node render-course.mjs . --shots          # run in this folder; Node 22+, Chromium or Chrome
+\`\`\`
+
+It writes the course as plain pages to \`.render/\` (one per lesson, Continue
+gates dropped so the whole lesson shows) and, with \`--shots\`, a full-page
+screenshot \`.render/lesson-N.png\` of each. Look at the screenshots after a
+round of edits and fix what reads badly: crowded or uneven spacing, a wall of
+text, a block that would say it better. \`.render/\` is scratch output: delete
+it when you are done, and never put it in the \`.zip\` you return. Options:
+\`--width 420\` for a phone, \`--keep-gates\`, \`--out <dir>\`.
+
 ## Authoring rules
 
 - **IDs**: every \`id\` (course, lesson, block, and nested items like quiz
@@ -396,8 +438,10 @@ ${blockReference()}
   italic / underline, lists, links (\`<a href … target="_blank" rel="noopener
   noreferrer">\`; web, mailto: or tel: addresses only) and inline images with
   relative \`assets/\` paths, plus tables as described under \`paragraph\`.
-  A process step's \`html\` is inline only (bold, italic, underline, links,
-  line breaks); no lists, tables or images inside diagram shapes.
+  A process step's \`html\`, a note's \`html\` and a heading's \`subtitle\` are
+  inline only (bold, italic, underline, links, line breaks); no lists, tables
+  or images there. Table cells and comparison points are plain text where
+  \`**double asterisks**\` make bold.
 - **Media**: reference files by relative path under \`assets/images/\`,
   \`assets/videos/\`, \`assets/audio/\`, \`assets/captions/\` (WebVTT),
   \`assets/files/\` (attachments) or \`assets/html/<folder>/\` (a Widget
@@ -480,8 +524,8 @@ passes them is ready to export:
 - fill-in-the-blanks blocks contain at least one \`[blank]\`;
 - scenarios start at an existing node and have no links to missing nodes;
 - process diagrams have at least 2 steps, step-by-step guides at least one
-  step, every comparison column at least one point, before / after blocks
-  both images, and reflections a question;
+  step, every comparison column at least one point, cards blocks at least one
+  card, before / after blocks both images, and reflections a question;
 - accessibility: non-decorative images (image, gallery, hotspot, before /
   after, step-by-step pictures, images in rich text) have alt text, videos
   have captions or a transcript, audio has a transcript, embeds and custom
@@ -493,7 +537,8 @@ passes them is ready to export:
 1. Read \`project.json\` (and this guide) to understand the current course.
 2. Make your edits (add lessons/blocks, rewrite text, build quizzes), keeping
    ids unique and the JSON valid.
-3. Walk through the checklist above.
+3. Walk through the checklist above, and render the course to look at it if
+   you can (see "See your work rendered").
 4. Ask the author to reopen the project in Scormly (the folder, or the \`.zip\`
    you return; see below) to review, preview and export (SCORM 2004 / 1.2 or
    cmi5). Exporting happens in the app, not from the file.
