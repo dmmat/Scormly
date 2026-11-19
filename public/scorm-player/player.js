@@ -1649,7 +1649,7 @@
           el = h('div', { class: 'sc-head sc-head-open sc-head-' + halign }, [
             b.data.eyebrow ? h('p', { class: 'sc-head-eyebrow', text: b.data.eyebrow }) : null,
             el,
-            b.data.subtitle ? h('p', { class: 'sc-head-sub', text: b.data.subtitle }) : null,
+            b.data.subtitle ? h('div', { class: 'sc-head-sub', html: b.data.subtitle }) : null,
           ]);
         }
         el.style.textAlign = halign;

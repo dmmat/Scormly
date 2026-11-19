@@ -19,7 +19,7 @@ interface BlockDoc {
 const BLOCK_DOCS: Record<BlockType, BlockDoc> = {
   heading: {
     summary: 'Section heading (H1–H3).',
-    data: `{ level: 1 | 2 | 3, text: string, align?: 'left' | 'center' | 'right', eyebrow?: string, subtitle?: string }  // eyebrow: small accent line above the heading; subtitle: lead-in line under it (both plain text, optional): use them to open a section (such a heading sits closer to the block after it, and settings.spacing 'spacious' on it adds air above only)`,
+    data: `{ level: 1 | 2 | 3, text: string, align?: 'left' | 'center' | 'right', eyebrow?: string, subtitle?: string }  // eyebrow: small accent line above the heading; subtitle: lead-in line under it, inline rich text (<strong>, <em>, <u>, <a>); both optional: use them to open a section (such a heading sits closer to the block after it, and settings.spacing 'spacious' on it adds air above only)`,
   },
   paragraph: {
     summary: 'Rich text paragraph.',

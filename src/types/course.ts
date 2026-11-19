@@ -84,7 +84,8 @@ export interface HeadingData {
   align?: TextAlign
   /** Small accent line above the heading; empty = none. */
   eyebrow?: string
-  /** Lead-in line under the heading; empty = none. */
+  /** Lead-in line under the heading, as inline rich text (bold, italic,
+   *  underline, links); empty = none. */
   subtitle?: string
 }
 

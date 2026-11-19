@@ -1024,6 +1024,11 @@ table.sc-table.sc-table-panel .sc-table-head :is(input, textarea) { text-transfo
    introduces, and "spacious" on it means air above only. */
 .sc-head-open { margin-bottom: -0.75rem; }
 .blk-pad-spacious:not(.blk-has-bg):has(> .sc-head-open) { padding-bottom: 0; }
+.sc-head-sub :is(p, div) { margin: 0; }
+/* The editor's field takes the subtitle look. */
+.sc-head-sub[contenteditable], .sc-head-sub [contenteditable] { color: inherit; font-size: inherit; line-height: inherit; }
+.sc-head-sub :is(strong, b) { color: #1f2937; font-weight: 600; }
+.blk-on-dark .sc-head .sc-head-sub :is(strong, b) { color: inherit; }
 .sc-head-center .sc-head-sub { margin-inline: auto; }
 .sc-head-right .sc-head-sub { margin-left: auto; }
 .blk-on-dark .sc-head :is(.sc-head-eyebrow, .sc-head-sub) { color: #fff; }

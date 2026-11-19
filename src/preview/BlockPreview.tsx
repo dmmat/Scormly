@@ -66,7 +66,7 @@ export default function BlockPreview({
           <div className={`sc-head sc-head-open sc-head-${align}`} style={{ textAlign: align }}>
             {eyebrow && <p className="sc-head-eyebrow">{eyebrow}</p>}
             <Tag className={`text-gray-900 ${cls}`}>{text}</Tag>
-            {subtitle && <p className="sc-head-sub">{subtitle}</p>}
+            {subtitle && <RichHtml html={subtitle} className="sc-head-sub" />}
           </div>
         )
       }

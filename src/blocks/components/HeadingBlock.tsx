@@ -3,6 +3,7 @@ import type { BlockOfType, HeadingLevel, TextAlign } from '../../types/course'
 import { useCourseStore } from '../../store/courseStore'
 import { useT } from '../../i18n/I18nProvider'
 import { AutoTextarea } from '../../components/editor/controls'
+import RichTextEditor from '../../components/editor/RichTextEditor'
 
 const LEVELS: HeadingLevel[] = [1, 2, 3]
 
@@ -31,8 +32,6 @@ export default function HeadingBlock({
 
   // The eyebrow and the subtitle are optional: their fields show while the
   // block is selected, or once they have text.
-  const ghost = 'block w-full bg-transparent outline-none placeholder:text-current placeholder:opacity-40'
-
   return (
     <div className="space-y-3">
       {selected && (
@@ -109,15 +108,12 @@ export default function HeadingBlock({
         />
       </Tag>
       {(selected || subtitle) && (
-        <AutoTextarea
-          value={subtitle}
+        <RichTextEditor
+          inline
+          html={subtitle}
           placeholder={t('subtitlePlaceholder')}
-          aria-label={t('subtitlePlaceholder')}
-          onChange={(e) =>
-            update(lessonId, block.id, { subtitle: e.target.value.replace(/\n/g, ' ') }, `heading-subtitle-${block.id}`)
-          }
-          className={`${ghost} sc-head-sub`}
-          style={{ textAlign: align }}
+          className="sc-head-sub"
+          onChange={(html) => update(lessonId, block.id, { subtitle: html }, `heading-subtitle-${block.id}`)}
         />
       )}
       </div>
