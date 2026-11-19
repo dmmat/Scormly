@@ -17,7 +17,7 @@
   border-radius: calc(var(--radius-interactive) * 1.5);
   padding: 2rem clamp(1.25rem, 5%, 2.75rem);
 }
-.blk-has-bg.blk-pad-compact { padding-block: 1.25rem; }
+.blk-has-bg.blk-pad-compact { padding-block: 0.875rem; }
 .blk-has-bg.blk-pad-spacious { padding-block: 3.75rem; }
 .blk-pad-spacious:not(.blk-has-bg) { padding-block: 1.75rem; }
 /* Compact without a panel: the block moves closer to its neighbours. The
@@ -154,6 +154,7 @@ table.sc-table.sc-table-panel {
   border: 1px solid rgb(17 24 39 / 0.12); border-radius: calc(var(--radius-interactive) * 1.5 + 2px);
 }
 table.sc-table.sc-table-panel :is(th, td) { border-width: 1px 0 0; padding: 0.75rem 0.95rem; vertical-align: top; line-height: 1.45; }
+table.sc-table.sc-table-panel { font-size: 0.94rem; }
 table.sc-table.sc-table-panel > :first-child > tr:first-child > * { border-top-width: 0; }
 /* The editor's row of column buttons sits above the header, not in the table. */
 table.sc-table.sc-table-panel tr.sc-table-tools + tr > * { border-top-width: 0; }
@@ -454,6 +455,8 @@ table.sc-table.sc-table-panel .sc-table-head :is(input, textarea) { text-transfo
 }
 .sc-note-text { margin: 0; line-height: 1.6; color: inherit; white-space: pre-line; }
 .sc-note-text :is(p, div) { margin: 0; }
+/* Under a label the note reads as a small reference box. */
+.sc-note-title + .sc-note-text { font-size: 0.95rem; }
 .sc-note-text[contenteditable], .sc-note-text [contenteditable] { color: inherit; font-size: inherit; line-height: inherit; }
 .sc-note-text a { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
 .blk-on-dark .sc-note .sc-note-title { color: color-mix(in srgb, var(--note) 75%, #000); }
@@ -853,16 +856,22 @@ table.sc-table.sc-table-panel .sc-table-head :is(input, textarea) { text-transfo
 }
 .sc-compare-col {
   --tone: var(--color-brand); --tone-soft: color-mix(in srgb, var(--color-brand) 12%, #fff); --tone-text: var(--color-brand-dark);
-  align-self: stretch; min-width: 0; padding: 1.25rem 1.375rem 1.375rem; background: #fff;
-  border: 1px solid rgb(17 24 39 / 0.08); border-top: 4px solid var(--tone);
+  align-self: stretch; min-width: 0; padding: 0 0 0.6rem; overflow: hidden; background: #fff;
+  border: 1px solid rgb(17 24 39 / 0.1);
   border-radius: calc(var(--radius-interactive) * 1.5 + 2px);
-  box-shadow: 0 1px 2px rgb(15 23 42 / 0.04), 0 14px 30px -22px rgb(15 23 42 / 0.35);
 }
+/* Everything under the title strip keeps the card's side padding. */
+.sc-compare-col > :not(.sc-compare-title) { margin-inline: 1.25rem; }
 .sc-compare-pro { --tone: #16a34a; --tone-soft: #dcfce7; --tone-text: #15803d; }
 .sc-compare-con { --tone: #dc2626; --tone-soft: #fee2e2; --tone-text: #b91c1c; }
-.sc-compare-title { margin: 0 0 0.875rem; font-size: 1.1rem; line-height: 1.3; font-weight: 700; color: var(--tone-text); }
-.sc-compare-list { display: grid; gap: 0.625rem; margin: 0; padding: 0; list-style: none; }
-.sc-compare-item { display: flex; gap: 0.625rem; line-height: 1.5; color: #374151; }
+.sc-compare-title {
+  margin: 0; padding: 0.8rem 1.25rem; font-size: 1.05rem; line-height: 1.3; font-weight: 700; color: var(--tone-text);
+  background: var(--tone-soft); border-bottom: 1px solid color-mix(in srgb, var(--tone) 22%, #fff);
+}
+.sc-compare-list { display: grid; gap: 0; margin-block: 0.15rem 0; padding: 0; list-style: none; }
+.sc-compare-item { display: flex; gap: 0.625rem; padding: 0.7rem 0; font-size: 0.95rem; border-top: 1px solid rgb(17 24 39 / 0.08); line-height: 1.5; color: #374151; }
+.sc-compare-item:first-child { border-top: 0; }
+.sc-compare-item strong { color: #111827; font-weight: 600; }
 .sc-compare-mark {
   position: relative; flex-shrink: 0; width: 1.375rem; height: 1.375rem; margin-top: 0.05rem;
   border-radius: 9999px; background: var(--tone-soft);
@@ -1073,34 +1082,60 @@ table.sc-table.sc-table-panel .sc-table-head :is(input, textarea) { text-transfo
 /* Labels as plain text: small grey capitals under the number. */
 .sc-cards-text .sc-card-top { flex-direction: column; align-items: flex-start; }
 .sc-cards-text .sc-card-badge { padding: 0; border-radius: 0; background: none; color: #6b7280; font-size: 0.68rem; letter-spacing: 0.07em; }
+.sc-cards-rows.sc-cards-text .sc-card-badge { color: var(--color-accent2-dark, var(--color-brand-dark)); }
 .sc-cards .sc-card .sc-card-title { margin: 0; color: #111827; font-size: 1.08rem; line-height: 1.3; font-weight: 600; }
 .sc-cards .sc-card .sc-card-text,
 .sc-cards .sc-card .sc-card-text :is(p, li) { color: #374151; }
 .sc-card-text { font-size: 0.92rem; line-height: 1.55; }
 .sc-card-text > :first-child { margin-top: 0; }
 .sc-card-text > :last-child { margin-bottom: 0; }
-/* Rows: one framed list, each card a line (label, title, text across). */
-.sc-cards-rows {
-  display: block; overflow: hidden; background: #fff;
-  border: 1px solid rgb(17 24 39 / 0.12); border-radius: calc(var(--radius-interactive) * 1.5 + 2px);
+/* Tones: a good or a bad outcome. */
+.sc-card-pos { background: #f0fdf4; border-color: #bbf7d0; }
+.sc-card-neg { background: #fef2f2; border-color: #fecaca; }
+.sc-cards .sc-card-pos :is(.sc-card-badge, .sc-card-num) { background: #dcfce7; color: #15803d; }
+.sc-cards .sc-card-neg :is(.sc-card-badge, .sc-card-num) { background: #fee2e2; color: #b91c1c; }
+.sc-cards.sc-cards-text :is(.sc-card-pos, .sc-card-neg) .sc-card-badge { background: none; }
+/* Title on a strip across the top of the card; a list under it is ruled. */
+.sc-cards-band .sc-card { padding: 0 0 0.5rem; gap: 0; overflow: hidden; }
+.sc-cards-band .sc-card > * { padding-inline: 1.1rem; }
+.sc-cards-band .sc-card > .sc-card-top { padding-block: 0.8rem 0; }
+.sc-cards.sc-cards-band .sc-card .sc-card-title {
+  order: -1; padding-block: 0.8rem; font-size: 1rem;
+  background: color-mix(in srgb, var(--color-accent2, var(--color-brand)) 11%, #fff);
+  color: var(--color-accent2-dark, var(--color-brand-dark));
+  border-bottom: 1px solid color-mix(in srgb, var(--color-accent2, var(--color-brand)) 24%, #fff);
 }
-.sc-cards-rows .sc-card { padding: 0.95rem 1.1rem; border: 0; border-top: 1px solid rgb(17 24 39 / 0.08); border-radius: 0; }
-.sc-cards-rows .sc-card:first-child { border-top: 0; }
-.sc-cards-rows .sc-card:nth-child(even):not(.sc-card-hl) { background: #f9fafb; }
-/* Each part has its own column, so a card without a title or a label keeps
-   its text in the wide one; with subgrid the columns line up down the list. */
+.sc-cards.sc-cards-band .sc-card-pos .sc-card-title { background: #dcfce7; color: #15803d; border-bottom-color: #bbf7d0; }
+.sc-cards.sc-cards-band .sc-card-neg .sc-card-title { background: #fee2e2; color: #b91c1c; border-bottom-color: #fecaca; }
+.sc-cards-band .sc-card-pos, .sc-cards-band .sc-card-neg { background: #fff; }
+.sc-cards-band .sc-card-text { padding-top: 0.6rem; }
+.sc-cards-band .sc-card-text :is(ul, ol) { margin: 0; padding: 0; list-style: none; }
+.sc-cards-band .sc-card-text li { padding: 0.55rem 0; border-top: 1px solid rgb(17 24 39 / 0.08); }
+.sc-cards-band .sc-card-text li:first-child { border-top: 0; padding-top: 0.1rem; }
+/* Rows: a list ruled between its lines. Number | label over title | text. */
+.sc-cards-rows { display: block; }
+.sc-cards-rows .sc-card {
+  padding: 0.95rem 0; border: 0; border-top: 1px solid rgb(17 24 39 / 0.1); border-radius: 0; background: none;
+}
+.sc-cards-rows .sc-card:first-child { border-top: 0; padding-top: 0.25rem; }
+.sc-cards-rows .sc-card:last-child { padding-bottom: 0.6rem; }
+.sc-cards-rows :is(.sc-card-hl, .sc-card-pos, .sc-card-neg) { padding-inline: 0.9rem; border-radius: calc(var(--radius-interactive) + 2px); }
+.sc-cards-rows .sc-card-hl { background: color-mix(in srgb, var(--color-accent2, var(--color-brand)) 8%, #fff); }
+.sc-cards-rows .sc-card-pos { background: #f0fdf4; }
+.sc-cards-rows .sc-card-neg { background: #fef2f2; }
+.sc-cards-rows .sc-card-top { display: contents; }
+.sc-cards-rows .sc-card { display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: 0; row-gap: 0.2rem; align-items: start; }
+.sc-cards-rows .sc-card-num { grid-column: 1; grid-row: 1 / span 2; margin-right: 0.9rem; }
+.sc-cards-rows .sc-card-badge { grid-column: 2; grid-row: 1; justify-self: start; }
+.sc-cards-rows .sc-card-title { grid-column: 2; }
+.sc-cards-rows .sc-card-text { grid-column: 2; margin-top: 0.25rem; }
+/* Rows sit on the page, not on a card: on a dark panel they take its text color. */
+.blk-on-dark .sc-cards.sc-cards-rows .sc-card:not(.sc-card-hl, .sc-card-pos, .sc-card-neg) :is(.sc-card-title, .sc-card-text, .sc-card-text :is(p, li)) { color: #fff; }
+.blk-on-dark .sc-cards-rows .sc-card { border-top-color: rgb(255 255 255 / 0.25); }
 @media (min-width: 40rem) {
-  .sc-cards-rows .sc-card { display: grid; grid-template-columns: minmax(0, 14rem) minmax(0, 1fr); gap: 0.9rem; align-items: start; }
-  .sc-cards-rows .sc-card-title { grid-column: 1; }
-  .sc-cards-rows .sc-card-text { grid-column: 2; }
-  .sc-cards-rows:has(.sc-card-top) .sc-card { grid-template-columns: auto minmax(0, 14rem) minmax(0, 1fr); }
-  .sc-cards-rows:has(.sc-card-top) .sc-card-top { grid-column: 1; }
-  .sc-cards-rows:has(.sc-card-top) .sc-card-title { grid-column: 2; }
-  .sc-cards-rows:has(.sc-card-top) .sc-card-text { grid-column: 3; }
-  @supports (grid-template-columns: subgrid) {
-    .sc-cards-rows:has(.sc-card-top) { display: grid; gap: 0; grid-template-columns: auto minmax(0, 14rem) minmax(0, 1fr); }
-    .sc-cards-rows:has(.sc-card-top) .sc-card { grid-column: 1 / -1; grid-template-columns: subgrid; }
-  }
+  .sc-cards-rows .sc-card { grid-template-columns: auto minmax(0, 15rem) minmax(0, 1fr); }
+  .sc-cards-rows :is(.sc-card-badge, .sc-card-title) { padding-right: 1.5rem; }
+  .sc-cards-rows .sc-card-text { grid-column: 3; grid-row: 1 / span 2; margin-top: 0.1rem; }
 }
 
 /* ── Tables in rich text ────────────────────────────────────────────────── */

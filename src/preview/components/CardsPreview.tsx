@@ -4,16 +4,16 @@ import RichHtml from '../RichHtml'
 
 // Same markup/classes as the player's renderCards (shared CSS in blocks.css).
 export default function CardsPreview({ block }: PreviewProps<'cards'>) {
-  const { items, layout, numbered, perRow, labelStyle } = block.data
+  const { items, layout, numbered, perRow, labelStyle, titleStyle } = block.data
   if (!items.length) return null
   const rows = layout === 'rows'
   return (
     <div
-      className={`sc-cards${rows ? ' sc-cards-rows' : ''}${labelStyle === 'text' ? ' sc-cards-text' : ''}`}
+      className={`sc-cards${rows ? ' sc-cards-rows' : ''}${labelStyle === 'text' ? ' sc-cards-text' : ''}${titleStyle === 'band' && !rows ? ' sc-cards-band' : ''}`}
       style={perRow && !rows ? ({ '--per': perRow } as CSSProperties) : undefined}
     >
       {items.map((item, i) => (
-        <div key={item.id} className={`sc-card${item.highlight ? ' sc-card-hl' : ''}`}>
+        <div key={item.id} className={`sc-card${item.highlight ? ' sc-card-hl' : ''}${item.tone === 'positive' ? ' sc-card-pos' : item.tone === 'negative' ? ' sc-card-neg' : ''}`}>
           {(numbered || item.badge) && (
             <div className="sc-card-top">
               {numbered && <span className="sc-card-num">{i + 1}</span>}

@@ -679,6 +679,8 @@ export interface CardItem {
   html: string
   /** Drawn with an accent tint, to single one card out. */
   highlight?: boolean
+  /** Green (a good outcome) or red (a bad one) instead of the neutral card. */
+  tone?: 'positive' | 'negative'
 }
 
 export interface CardsData {
@@ -689,6 +691,9 @@ export interface CardsData {
   /** How a card's label is drawn: 'pill' (default, a tinted tag) or 'text'
    *  (small grey capitals on their own line). */
   labelStyle?: 'pill' | 'text'
+  /** 'band' draws each title on a tinted strip across the top of its card
+   *  (grid layout), with rules between the lines of a list below it. */
+  titleStyle?: 'plain' | 'band'
   /** Number the cards 1, 2, 3… */
   numbered?: boolean
   /** Cards per line on wide screens (grid); missing = as many as fit. */

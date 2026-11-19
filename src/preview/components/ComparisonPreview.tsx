@@ -1,5 +1,6 @@
 import { Fragment, type CSSProperties } from 'react'
 import type { PreviewProps } from '../types'
+import { cellRuns } from '../../blocks/styleClasses'
 
 // Same markup/classes as the player's renderComparison (shared CSS in blocks.css).
 export default function ComparisonPreview({ block }: PreviewProps<'comparison'>) {
@@ -18,7 +19,7 @@ export default function ComparisonPreview({ block }: PreviewProps<'comparison'>)
                 {col.items.filter((it) => it.trim()).map((it, k) => (
                   <li key={k} className="sc-compare-item">
                     <span className="sc-compare-mark" aria-hidden />
-                    <span>{it}</span>
+                    <span>{cellRuns(it).map((run, j) => (run.bold ? <strong key={j}>{run.text}</strong> : run.text))}</span>
                   </li>
                 ))}
               </ul>

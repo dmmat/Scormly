@@ -193,12 +193,12 @@ const BLOCK_DOCS: Record<BlockType, BlockDoc> = {
   },
   cards: {
     summary: 'Cards (tiles) with an optional label, a title and text: key points, platforms, teams, terms with their codes.',
-    data: `{ items: { id: string, badge: string, title: string, html: string, highlight?: boolean }[], layout?: 'grid' | 'rows', labelStyle?: 'pill' | 'text', numbered?: boolean, perRow?: 2 | 3 | 4 }  // badge: small label above the title ('' = none), drawn as a tinted pill or, with labelStyle 'text', as small grey capitals; html: rich text like paragraph, keep it short; highlight: accent tint for the card that matters most; layout rows: one card per line (label, title, text across), good for a list of terms; numbered: 1, 2, 3 on the cards; perRow: cards per line on wide screens (default: as many as fit)`,
+    data: `{ items: { id: string, badge: string, title: string, html: string, highlight?: boolean, tone?: 'positive' | 'negative' }[], layout?: 'grid' | 'rows', labelStyle?: 'pill' | 'text', titleStyle?: 'plain' | 'band', numbered?: boolean, perRow?: 2 | 3 | 4 }  // badge: small label above the title ('' = none), drawn as a tinted pill or, with labelStyle 'text', as small grey capitals; html: rich text like paragraph, keep it short; highlight: accent tint for the card that matters most; tone: green (a good outcome, do) or red (a bad one, don't); titleStyle band: the title on a tinted strip across the card, with a ruled list under it (good for a few options with bullet points); layout rows: a ruled list, one card per line (number, label over title, text beside), good for terms or for who-does-what steps (label = who, title = what); numbered: 1, 2, 3 on the cards; perRow: cards per line on wide screens (default: as many as fit)`,
   },
   comparison: {
     summary: 'Comparison cards: pros and cons, or options side by side.',
     data: `{
-    columns: { id: string, title: string, tone: 'pro' | 'con' | 'neutral', items: string[] }[],  // 2–4 columns; tone sets the item marker: pro = green check, con = red cross, neutral = dot
+    columns: { id: string, title: string, tone: 'pro' | 'con' | 'neutral', items: string[] }[],  // 2–4 columns; tone sets the item marker: pro = green check, con = red cross, neutral = dot; an item is plain text where **double asterisks** make bold
     versus?: boolean  // a "VS" badge between exactly two columns
   }`,
   },

@@ -8,6 +8,15 @@ import RichTextEditor from '../../components/editor/RichTextEditor'
 import { AutoTextarea, Segmented, SettingsBar } from '../../components/editor/controls'
 import CardsPreview from '../../preview/components/CardsPreview'
 
+type Look = 'plain' | 'highlight' | 'positive' | 'negative'
+const LOOKS: { key: Look; patch: Partial<CardItem> }[] = [
+  { key: 'plain', patch: { highlight: false, tone: undefined } },
+  { key: 'highlight', patch: { highlight: true, tone: undefined } },
+  { key: 'positive', patch: { highlight: false, tone: 'positive' } },
+  { key: 'negative', patch: { highlight: false, tone: 'negative' } },
+]
+const lookOf = (item: CardItem): Look => item.tone ?? (item.highlight ? 'highlight' : 'plain')
+
 // Cards: edited in place on the learner's cards. Same markup as CardsPreview
 // and the player's renderCards.
 export default function CardsBlock({
@@ -18,7 +27,7 @@ export default function CardsBlock({
   const update = useCourseStore((s) => s.updateBlockData)
   const { t } = useT('newblocks')
   const { t: tt } = useT('text')
-  const { items, layout = 'grid', numbered, perRow, labelStyle = 'pill' } = block.data
+  const { items, layout = 'grid', numbered, perRow, labelStyle = 'pill', titleStyle = 'plain' } = block.data
 
   // With no cards there is nothing to preview: keep the bar with “Add card”.
   if (!selected && items.length) return <CardsPreview block={block} />
@@ -75,6 +84,17 @@ export default function CardsBlock({
             ['text', t('cardsLabel_text')],
           ]}
         />
+        {!rows && (
+          <Segmented<NonNullable<CardsData['titleStyle']>>
+            label={t('cardsTitle')}
+            value={titleStyle}
+            onChange={(v) => update(lessonId, block.id, { titleStyle: v })}
+            options={[
+              ['plain', t('cardsTitle_plain')],
+              ['band', t('cardsTitle_band')],
+            ]}
+          />
+        )}
         <label className="flex cursor-pointer items-center gap-2 text-sm">
           <input
             type="checkbox"
@@ -90,22 +110,27 @@ export default function CardsBlock({
       </SettingsBar>
 
       <div
-        className={`sc-cards${rows ? ' sc-cards-rows' : ''}${labelStyle === 'text' ? ' sc-cards-text' : ''}`}
+        className={`sc-cards${rows ? ' sc-cards-rows' : ''}${labelStyle === 'text' ? ' sc-cards-text' : ''}${titleStyle === 'band' && !rows ? ' sc-cards-band' : ''}`}
         style={perRow && !rows ? ({ '--per': perRow } as CSSProperties) : undefined}
       >
         {items.map((item, i) => (
-          <div key={item.id} className={`sc-card relative${rows ? ' !pr-14' : ''}${item.highlight ? ' sc-card-hl' : ''}`}>
+          <div key={item.id} className={`sc-card relative${rows ? ' !pr-14' : ''}${item.highlight ? ' sc-card-hl' : ''}${item.tone === 'positive' ? ' sc-card-pos' : item.tone === 'negative' ? ' sc-card-neg' : ''}`}>
             {/* Out of the flow, so the card's own lines sit where the learner sees them. */}
             <span className="absolute right-1.5 top-1.5 flex items-center">
+              {/* One button walks through the looks: plain, highlighted, green, red. */}
               <button
                 type="button"
-                onClick={() => patch(item.id, { highlight: !item.highlight })}
-                aria-pressed={!!item.highlight}
-                title={t('cardHighlight')}
-                aria-label={t('cardHighlight')}
-                className={`${iconBtn}${item.highlight ? ' !text-brand' : ''}`}
+                onClick={() => patch(item.id, LOOKS[(LOOKS.findIndex((l) => l.key === lookOf(item)) + 1) % LOOKS.length].patch)}
+                title={`${t('cardLook')}: ${t(`cardLook_${lookOf(item)}`)}`}
+                aria-label={`${t('cardLook')}: ${t(`cardLook_${lookOf(item)}`)}`}
+                className={iconBtn}
               >
-                {item.highlight ? '★' : '☆'}
+                <span
+                  aria-hidden
+                  className={`h-3 w-3 rounded-full border ${
+                    { plain: 'border-gray-400', highlight: 'border-brand bg-brand', positive: 'border-green-600 bg-green-600', negative: 'border-red-600 bg-red-600' }[lookOf(item)]
+                  }`}
+                />
               </button>
               {items.length > 1 && (
                 <button

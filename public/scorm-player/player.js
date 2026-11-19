@@ -1949,9 +1949,9 @@
     if (!items.length) return null;
     var rows = d.layout === 'rows';
     var per = { 2: 1, 3: 1, 4: 1 }[d.perRow] ? d.perRow : 0;
-    var wrap = h('div', { class: 'sc-cards' + (rows ? ' sc-cards-rows' : '') + (d.labelStyle === 'text' ? ' sc-cards-text' : ''), style: per && !rows ? '--per:' + per : null });
+    var wrap = h('div', { class: 'sc-cards' + (rows ? ' sc-cards-rows' : '') + (d.labelStyle === 'text' ? ' sc-cards-text' : '') + (d.titleStyle === 'band' && !rows ? ' sc-cards-band' : ''), style: per && !rows ? '--per:' + per : null });
     items.forEach(function (it, i) {
-      wrap.appendChild(h('div', { class: 'sc-card' + (it.highlight ? ' sc-card-hl' : '') }, [
+      wrap.appendChild(h('div', { class: 'sc-card' + (it.highlight ? ' sc-card-hl' : '') + (it.tone === 'positive' ? ' sc-card-pos' : it.tone === 'negative' ? ' sc-card-neg' : '') }, [
         d.numbered || it.badge ? h('div', { class: 'sc-card-top' }, [
           d.numbered ? h('span', { class: 'sc-card-num', text: String(i + 1) }) : null,
           it.badge ? h('span', { class: 'sc-card-badge', text: it.badge }) : null,
@@ -2131,7 +2131,7 @@
         c.title ? h('h3', { class: 'sc-compare-title', text: c.title }) : null,
         h('ul', { class: 'sc-compare-list' }, items.map(function (it) {
           return h('li', { class: 'sc-compare-item' }, [
-            h('span', { class: 'sc-compare-mark', 'aria-hidden': 'true' }), h('span', { text: it })]);
+            h('span', { class: 'sc-compare-mark', 'aria-hidden': 'true' }), h('span', null, cellNodes(it))]);
         })),
       ]));
     });
