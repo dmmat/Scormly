@@ -51,6 +51,9 @@ type ProjectItem =
   | { kind: 'browser'; key: string; title: string; at: number; project: BrowserProject }
   | { kind: 'folder'; key: string; title: string; at: number; recent: RecentProject }
 
+// How long an open may take before the screen explains the wait.
+const STALL_HINT_MS = 6000
+
 export default function WelcomeScreen({ onSkip, onSample }: WelcomeScreenProps) {
   const { t } = useT('welcome')
   const folders = isFileSystemAccessSupported()
@@ -96,12 +99,39 @@ export default function WelcomeScreen({ onSkip, onSample }: WelcomeScreenProps) 
     if (newOpen) newRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
   }, [newOpen])
 
-  async function run(action: () => Promise<void>) {
+  // An open can wait forever without failing: a permission prompt nobody
+  // sees, or a synced folder (OneDrive) that isn't ready after a restart. Past
+  // a few seconds say so and offer a way out instead of a bare spinner.
+  // Only opens of a listed project are watched: a picker stays open as long
+  // as the author likes.
+  const [stalled, setStalled] = useState(false)
+  const [watched, setWatched] = useState(0)
+  const runId = useRef(0)
+  useEffect(() => {
+    if (!watched) return
+    const timer = window.setTimeout(() => setStalled(true), STALL_HINT_MS)
+    return () => {
+      clearTimeout(timer)
+      setStalled(false)
+    }
+  }, [watched])
+
+  // Give the screen back; the abandoned open is left to finish or not.
+  function stopWaiting() {
+    runId.current++
+    setWatched(0)
+    setBusy(false)
+  }
+
+  async function run(action: () => Promise<void>, watch = false) {
+    const id = ++runId.current
     setError(null)
     setBusy(true)
+    setWatched(watch ? id : 0)
     try {
       await action()
     } catch (err) {
+      if (id !== runId.current) return
       // User dismissing the OS picker is not an error.
       if (err instanceof DOMException && err.name === 'AbortError') {
         // ignore
@@ -113,7 +143,10 @@ export default function WelcomeScreen({ onSkip, onSample }: WelcomeScreenProps) 
         setError(t('genericError'))
       }
     } finally {
-      setBusy(false)
+      if (id === runId.current) {
+        setWatched(0)
+        setBusy(false)
+      }
     }
   }
 
@@ -338,6 +371,22 @@ export default function WelcomeScreen({ onSkip, onSample }: WelcomeScreenProps) 
             {t('opening')}
           </p>
         )}
+        {busy && stalled && (
+          <div role="status" className="mx-auto mt-3 max-w-md text-center text-sm text-gray-500">
+            <p>{t('openingStalled')}</p>
+            <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
+              {/* The click is the gesture the folder picker needs. */}
+              {folders && (
+                <button type="button" className="btn-primary" onClick={() => run(openExistingProject)}>
+                  {t('openingPickFolder')}
+                </button>
+              )}
+              <button type="button" className="btn-secondary" onClick={stopWaiting}>
+                {t('openingStop')}
+              </button>
+            </div>
+          </div>
+        )}
 
         <p className="mt-12 text-center text-xs text-gray-400">
           🔒 {t('privacyNote')}
@@ -439,7 +488,7 @@ function ProjectCard({
 }: {
   item: ProjectItem
   busy: boolean
-  run: (action: () => Promise<void>) => Promise<void>
+  run: (action: () => Promise<void>, watch?: boolean) => Promise<void>
   onRemoved: () => Promise<void>
 }) {
   const { t, lang } = useT('welcome')
@@ -450,7 +499,7 @@ function ProjectCard({
       <button
         type="button"
         disabled={busy}
-        onClick={() => run(() => item.kind === 'browser' ? openBrowserProject(item.project.id) : openRecentProject(item.recent.handle))}
+        onClick={() => run(() => item.kind === 'browser' ? openBrowserProject(item.project.id) : openRecentProject(item.recent.handle), true)}
         className="flex w-full items-center gap-3 rounded-2xl border border-gray-200 bg-white p-4 pr-10 text-left shadow-sm transition hover:-translate-y-0.5 hover:border-brand/40 hover:shadow-md disabled:opacity-50"
       >
         <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand/10 text-brand">
