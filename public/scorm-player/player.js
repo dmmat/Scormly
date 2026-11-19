@@ -20,6 +20,21 @@
     terminal: ['#15803d', '#166534', '0', '0'],
   };
 
+  // Second accent per theme [accent2, accent2-dark]: decorative details
+  // (labels, numbers, table and card headers). Same values as index.css.
+  var THEME_ACCENT2 = {
+    rose: ['#7c3aed', '#6d28d9'],
+    ocean: ['#c2410c', '#9a3412'],
+    forest: ['#b45309', '#92400e'],
+    sunset: ['#7e22ce', '#6b21a8'],
+    mono: ['#2563eb', '#1d4ed8'],
+    indigo: ['#db2777', '#be185d'],
+    crimson: ['#1e40af', '#1e3a8a'],
+    mint: ['#be185d', '#9d174d'],
+    grape: ['#0f766e', '#115e59'],
+    terminal: ['#b45309', '#92400e'],
+  };
+
   var T = {
     en: { prev: 'Previous', next: 'Next', progress: 'Lesson {n} of {total}',
       empty: 'This lesson has no content yet.', submit: 'Submit answer', submitAll: 'Submit answers', retry: 'Try again',
@@ -506,6 +521,10 @@
       : THEME_ACCENT[course.theme] || THEME_ACCENT.rose;
     document.documentElement.style.setProperty('--brand', accent[0]);
     document.documentElement.style.setProperty('--brand-dark', accent[1]);
+    var accent2 = tk ? [tk.accent2 || tk.brand, tk.accent2Dark || tk.brandDark]
+      : THEME_ACCENT2[course.theme] || THEME_ACCENT2.rose;
+    document.documentElement.style.setProperty('--accent2', accent2[0]);
+    document.documentElement.style.setProperty('--accent2-dark', accent2[1]);
     document.documentElement.style.setProperty('--radius-btn', accent[2]);
     document.documentElement.style.setProperty('--radius-surface', accent[3]);
     // Theme-specific extras beyond color/radius (e.g. terminal font) live in player.css.
@@ -1627,7 +1646,7 @@
         var el = h('h' + b.data.level, { text: b.data.text });
         var halign = { center: 1, right: 1 }[b.data.align] ? b.data.align : 'left';
         if (b.data.eyebrow || b.data.subtitle) {
-          el = h('div', { class: 'sc-head sc-head-' + halign }, [
+          el = h('div', { class: 'sc-head sc-head-open sc-head-' + halign }, [
             b.data.eyebrow ? h('p', { class: 'sc-head-eyebrow', text: b.data.eyebrow }) : null,
             el,
             b.data.subtitle ? h('p', { class: 'sc-head-sub', text: b.data.subtitle }) : null,

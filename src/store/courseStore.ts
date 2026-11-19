@@ -182,7 +182,7 @@ export interface CourseState {
 // A first custom theme starts from the current preset's color and shape.
 function seedCustomTheme(course: Course): CustomTheme {
   const preset = course.theme === 'custom' ? THEMES[DEFAULT_THEME] : THEMES[course.theme] ?? THEMES[DEFAULT_THEME]
-  return { accent: preset.accent, shape: preset.shape }
+  return { accent: preset.accent, accent2: preset.accent2, shape: preset.shape }
 }
 
 function findLesson(course: Course, lessonId: string): Lesson | undefined {

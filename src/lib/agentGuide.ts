@@ -19,7 +19,7 @@ interface BlockDoc {
 const BLOCK_DOCS: Record<BlockType, BlockDoc> = {
   heading: {
     summary: 'Section heading (H1–H3).',
-    data: `{ level: 1 | 2 | 3, text: string, align?: 'left' | 'center' | 'right', eyebrow?: string, subtitle?: string }  // eyebrow: small accent line above the heading; subtitle: lead-in line under it (both plain text, optional): use them to open a section`,
+    data: `{ level: 1 | 2 | 3, text: string, align?: 'left' | 'center' | 'right', eyebrow?: string, subtitle?: string }  // eyebrow: small accent line above the heading; subtitle: lead-in line under it (both plain text, optional): use them to open a section (such a heading sits closer to the block after it, and settings.spacing 'spacious' on it adds air above only)`,
   },
   paragraph: {
     summary: 'Rich text paragraph.',
@@ -321,7 +321,7 @@ Course
   description: string,
   coverImage?: string,
   theme: 'rose' | 'ocean' | 'forest' | 'sunset' | 'mono' | 'indigo' | 'crimson' | 'mint' | 'grape' | 'terminal' | 'custom',
-  customTheme?: { accent: string, shape: 'sharp' | 'soft' | 'rounded' | 'pill' },  // used by theme 'custom'; accent '#rrggbb' (darkened automatically if white text on it would be hard to read)
+  customTheme?: { accent: string, accent2?: string, shape: 'sharp' | 'soft' | 'rounded' | 'pill' },  // used by theme 'custom'; accent '#rrggbb' (darkened automatically if white text on it would be hard to read)
   settings: {
     completion: 'view' | 'quiz',   // 'quiz' also requires every scored block (quiz, ordering, fillBlanks) answered
     scored: boolean,               // report a pass/fail result

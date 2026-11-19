@@ -70,21 +70,26 @@ export default function HeadingBlock({
           ))}
         </div>
       )}
-      <div className={`sc-head sc-head-${align}`} style={{ textAlign: align }}>
+      <div className={`sc-head sc-head-${align}${!selected && (eyebrow || subtitle) ? ' sc-head-open' : ''}`} style={{ textAlign: align }}>
       {(selected || eyebrow) && (
         // The wrapper carries the look (and the hairline after the text), the
         // field is as wide as its text.
         <div className="sc-head-eyebrow">
-          <input
-            type="text"
-            value={eyebrow}
-            placeholder={t('eyebrowPlaceholder')}
-            aria-label={t('eyebrowPlaceholder')}
-            onChange={(e) => update(lessonId, block.id, { eyebrow: e.target.value }, `heading-eyebrow-${block.id}`)}
-            size={align === 'left' ? Math.max(eyebrow.length, t('eyebrowPlaceholder').length) + 2 : undefined}
-            className={`${align === 'left' ? 'min-w-0 max-w-full flex-none' : 'block w-full'} bg-transparent outline-none placeholder:text-current placeholder:opacity-40`}
-            style={{ textAlign: align, font: 'inherit', letterSpacing: 'inherit', textTransform: 'inherit' }}
-          />
+          {/* The hidden copy gives the field the exact width of its text. */}
+          <span className={`relative ${align === 'left' ? 'inline-grid max-w-full flex-none' : 'grid'}`}>
+            <span aria-hidden className="invisible whitespace-pre">
+              {eyebrow || t('eyebrowPlaceholder')}
+            </span>
+            <input
+              type="text"
+              value={eyebrow}
+              placeholder={t('eyebrowPlaceholder')}
+              aria-label={t('eyebrowPlaceholder')}
+              onChange={(e) => update(lessonId, block.id, { eyebrow: e.target.value }, `heading-eyebrow-${block.id}`)}
+              className="absolute inset-0 h-full w-full bg-transparent p-0 outline-none placeholder:text-current placeholder:opacity-40"
+              style={{ textAlign: align, font: 'inherit', letterSpacing: 'inherit', textTransform: 'inherit' }}
+            />
+          </span>
         </div>
       )}
       <Tag className={LEVEL_CLASS[level]} style={{ textAlign: align }}>

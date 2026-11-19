@@ -24,7 +24,7 @@ export default function ThemeChooser() {
   // Before the first switch, the Custom swatch previews the current preset's
   // color and shape, which is what it starts from.
   const preset = THEMES[theme === 'custom' ? DEFAULT_THEME : theme] ?? THEMES[DEFAULT_THEME]
-  const customDraft = custom ?? { accent: preset.accent, shape: preset.shape }
+  const customDraft = custom ?? { accent: preset.accent, accent2: preset.accent2, shape: preset.shape }
 
   return (
     <div className="space-y-3">
@@ -54,6 +54,12 @@ export default function ThemeChooser() {
         <span className="text-xs font-medium text-gray-500">{t('themePreview')}</span>
         <span className="btn-primary pointer-events-none text-sm">{t('themeSample')}</span>
         <span className="btn-secondary pointer-events-none text-sm">{t('themeSample')}</span>
+        <span
+          className="rounded-full px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wider"
+          style={{ background: 'color-mix(in srgb, var(--color-accent2) 14%, #fff)', color: 'var(--color-accent2-dark)' }}
+        >
+          {t('themeSampleLabel')}
+        </span>
         <span className="interactive-surface border border-brand/30 bg-brand/10 px-3 py-1.5 text-sm font-medium text-brand-dark">
           {t('themeSampleCard')}
         </span>
@@ -88,15 +94,22 @@ function Swatch({
       }`}
     >
       <input type="radio" name="settings-theme" checked={checked} onChange={onSelect} className="sr-only" />
-      {/* The theme's button: its color and corner shape. */}
+      {/* The theme's button (its color and corner shape) with the second accent as a dot. */}
       <span
         aria-hidden
-        className="h-7 w-full bg-brand shadow-inner"
+        className="relative h-7 w-full bg-brand shadow-inner"
         style={{
           borderRadius: 'var(--radius-btn)',
           ...(rainbow ? { background: 'conic-gradient(#ef4444, #f59e0b, #22c55e, #06b6d4, #6366f1, #d946ef, #ef4444)' } : {}),
         }}
-      />
+      >
+        {!rainbow && (
+          <span
+            className="absolute -bottom-1 -right-1 h-3.5 w-3.5 rounded-full ring-2 ring-white"
+            style={{ background: 'var(--color-accent2)' }}
+          />
+        )}
+      </span>
       <span className={`text-xs ${checked ? 'font-semibold text-gray-900' : 'text-gray-600'}`}>{label}</span>
     </label>
   )
@@ -138,6 +151,16 @@ function CustomThemeEditor() {
             className="w-24 rounded-md border border-gray-300 px-2 py-1 font-mono text-sm outline-none focus:border-brand"
           />
         </div>
+        <div className="flex items-center gap-2">
+          <span className="text-xs font-medium text-gray-500">{t('customAccent2')}</span>
+          <input
+            type="color"
+            value={normalizeHex(custom.accent2 ?? '') ?? accent}
+            aria-label={t('customAccent2')}
+            onChange={(e) => update({ accent2: e.target.value }, 'custom-theme-accent2')}
+            className="h-8 w-10 cursor-pointer rounded-md border border-gray-300 bg-white p-0.5"
+          />
+        </div>
         <Segmented<ThemeShape>
           label={t('customShape')}
           value={custom.shape}
@@ -145,6 +168,7 @@ function CustomThemeEditor() {
           options={THEME_SHAPES.map((s) => [s, t(`shape_${s}`)] as const)}
         />
       </div>
+      <p className="text-xs leading-snug text-gray-500">{t('customAccent2Help')}</p>
       {accentAdjusted({ ...custom, accent }) && <p className="text-xs text-amber-700">{t('customAdjusted')}</p>}
     </div>
   )

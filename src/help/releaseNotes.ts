@@ -24,6 +24,7 @@ export const RELEASES: Release[] = [
         'If opening a project from “Your projects” takes too long, the welcome screen now explains why and lets you choose the folder again or stop waiting.',
         'Widgets size themselves reliably: a frame no longer ends up a pixel short (with a scrollbar) or taller than its page, so setting a height by hand is rarely needed.',
         'Block spacing: “Compact” in a block’s style now also brings a block without a background closer to the blocks around it, to keep related blocks together.',
+        'Themes have a second color: labels, card numbers, the line above a heading and table and card headers now take it, so a course is no longer painted in one accent. In a custom theme, pick it next to the main color.',
       ],
       uk: [
         'Новий блок «Картки»: плитки з необов’язковою позначкою, назвою і текстом, сіткою або рядками; їх можна пронумерувати й виділити найважливішу.',
@@ -34,6 +35,7 @@ export const RELEASES: Release[] = [
         'Якщо проєкт зі списку «Ваші проєкти» відкривається надто довго, екран вітання тепер пояснює чому й дає змогу вибрати папку ще раз або не чекати.',
         'Віджети надійніше підбирають свою висоту: кадр більше не виходить на піксель нижчим за сторінку (зі смугою прокрутки) чи вищим за неї, тож задавати висоту вручну майже не потрібно.',
         'Відступи між блоками: «Щільно» у стилі блоку тепер також наближає блок без фону до сусідніх, щоб пов’язані блоки трималися разом.',
+        'Теми мають другий колір: позначки, номери карток, рядок над заголовком і шапки таблиць та карток тепер беруть його, тож курс більше не пофарбований одним акцентом. У власній темі він обирається поруч з основним кольором.',
       ],
       fr: [
         'Nouveau bloc Cartes : des tuiles avec une étiquette facultative, un titre et un texte, en grille ou en lignes ; numérotez-les ou mettez en évidence la plus importante.',
@@ -44,6 +46,7 @@ export const RELEASES: Release[] = [
         'Si l’ouverture d’un projet depuis « Vos projets » prend trop de temps, l’écran d’accueil explique désormais pourquoi et permet de choisir à nouveau le dossier ou de ne plus attendre.',
         'Les widgets se dimensionnent de façon fiable : le cadre ne se retrouve plus un pixel trop court (avec une barre de défilement) ni plus haut que sa page, il est donc rarement nécessaire de fixer une hauteur à la main.',
         'Espacement des blocs : « Compact » dans le style d’un bloc rapproche désormais aussi un bloc sans arrière-plan de ses voisins, pour garder ensemble les blocs liés.',
+        'Les thèmes ont une seconde couleur : étiquettes, numéros des cartes, surtitres et en-têtes de tableaux et de cartes la prennent désormais, le cours n’est donc plus peint d’un seul accent. Dans un thème personnalisé, choisissez-la à côté de la couleur principale.',
       ],
       es: [
         'Nuevo bloque Tarjetas: fichas con una etiqueta opcional, un título y texto, en cuadrícula o en filas; numéralas o destaca la más importante.',
@@ -54,6 +57,7 @@ export const RELEASES: Release[] = [
         'Si abrir un proyecto desde “Tus proyectos” tarda demasiado, la pantalla de bienvenida ahora explica por qué y permite elegir la carpeta de nuevo o dejar de esperar.',
         'Los widgets ajustan su tamaño de forma fiable: el marco ya no queda un píxel corto (con barra de desplazamiento) ni más alto que su página, así que rara vez hace falta fijar la altura a mano.',
         'Espaciado de bloques: “Compacto” en el estilo de un bloque ahora también acerca un bloque sin fondo a los que lo rodean, para mantener juntos los bloques relacionados.',
+        'Los temas tienen un segundo color: etiquetas, números de tarjetas, antetítulos y encabezados de tablas y tarjetas ahora lo usan, así el curso ya no se pinta con un solo acento. En un tema personalizado se elige junto al color principal.',
       ],
       de: [
         'Neuer Block Karten: Kacheln mit optionalem Label, Titel und Text, als Raster oder in Zeilen; nummerieren Sie sie oder heben Sie die wichtigste hervor.',
@@ -64,6 +68,7 @@ export const RELEASES: Release[] = [
         'Wenn das Öffnen eines Projekts aus „Ihre Projekte“ zu lange dauert, erklärt der Startbildschirm jetzt den Grund und lässt Sie den Ordner erneut auswählen oder das Warten beenden.',
         'Widgets passen ihre Höhe zuverlässig an: Der Rahmen ist nicht mehr einen Pixel zu kurz (mit Bildlaufleiste) oder höher als seine Seite, eine Höhe von Hand ist also selten nötig.',
         'Blockabstände: „Kompakt“ im Stil eines Blocks rückt jetzt auch einen Block ohne Hintergrund näher an seine Nachbarn, damit zusammengehörige Blöcke beieinander bleiben.',
+        'Designs haben eine zweite Farbe: Labels, Kartennummern, Dachzeilen sowie Tabellen- und Kartenköpfe übernehmen sie jetzt, der Kurs ist also nicht mehr in nur einem Akzent gefärbt. Im eigenen Design wählen Sie sie neben der Hauptfarbe.',
       ],
     },
   },

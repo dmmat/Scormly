@@ -63,7 +63,7 @@ export default function BlockPreview({
             : 'text-xl font-semibold'
       if (eyebrow || subtitle) {
         return (
-          <div className={`sc-head sc-head-${align}`} style={{ textAlign: align }}>
+          <div className={`sc-head sc-head-open sc-head-${align}`} style={{ textAlign: align }}>
             {eyebrow && <p className="sc-head-eyebrow">{eyebrow}</p>}
             <Tag className={`text-gray-900 ${cls}`}>{text}</Tag>
             {subtitle && <p className="sc-head-sub">{subtitle}</p>}

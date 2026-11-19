@@ -828,6 +828,9 @@ export type ThemeShape = 'sharp' | 'soft' | 'rounded' | 'pill'
 export interface CustomTheme {
   /** #rrggbb */
   accent: string
+  /** Second accent (#rrggbb) for details: labels, numbers, table and card
+   *  headers. Missing = the accent. */
+  accent2?: string
   shape: ThemeShape
 }
 
