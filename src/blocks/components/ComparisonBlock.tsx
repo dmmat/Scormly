@@ -5,7 +5,7 @@ import { useCourseStore } from '../../store/courseStore'
 import { translate, useT } from '../../i18n/I18nProvider'
 import { uid } from '../../lib/id'
 import { AutoTextarea, Segmented, SettingsBar } from '../../components/editor/controls'
-import { toggleBold } from './TableBlock'
+import { toggleBoldAt } from './TableBlock'
 import ComparisonPreview from '../../preview/components/ComparisonPreview'
 
 const TONES: ComparisonTone[] = ['pro', 'con', 'neutral']
@@ -55,8 +55,12 @@ export default function ComparisonBlock({
     if ((e.ctrlKey || e.metaKey) && e.code === 'KeyB') {
       e.preventDefault()
       e.stopPropagation()
-      const { selectionStart: a, selectionEnd: b, value } = e.currentTarget
-      if (a !== b) patch(col.id, { items: col.items.map((x, j) => (j === k ? toggleBold(value, a, b) : x)) })
+      const el = e.currentTarget
+      const { selectionStart: a, selectionEnd: b, value } = el
+      if (a === b) return
+      const [next, from, to] = toggleBoldAt(value, a, b)
+      patch(col.id, { items: col.items.map((x, j) => (j === k ? next : x)) })
+      requestAnimationFrame(() => el.setSelectionRange(from, to))
       return
     }
     if (e.key === 'Enter') {

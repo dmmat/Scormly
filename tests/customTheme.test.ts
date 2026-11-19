@@ -1,7 +1,7 @@
 // Custom theme palette (src/theme/customTheme.ts) and its export.
 
 import { describe, test, expect } from 'vitest'
-import { contrastRatio, customThemeTokens, normalizeHex, accentAdjusted } from '../src/theme/customTheme'
+import { contrastRatio, customThemeTokens, normalizeHex, accentAdjusted, readableText } from '../src/theme/customTheme'
 import { withThemeTokens } from '../src/export/packageCommon'
 import type { Course } from '../src/types/course'
 import { readFileSync } from 'node:fs'
@@ -42,6 +42,13 @@ describe('customThemeTokens', () => {
       expect(contrastRatio(dark, '#ffffff'), th.id).toBeGreaterThanOrEqual(4.5)
       expect(player).toContain(`${th.id}: ['${th.accent2}', '${dark}'],`)
     }
+  })
+
+  test('a color deepened for text reads on white, however light it starts', () => {
+    for (const hex of ['#ffeb3b', '#7dd3fc', '#ffffff', '#004685', '#ef4444']) {
+      expect(contrastRatio(readableText(hex)!, '#ffffff'), hex).toBeGreaterThanOrEqual(4.5)
+    }
+    expect(readableText('nope')).toBeNull()
   })
 
   test('shape sets the radii', () => {

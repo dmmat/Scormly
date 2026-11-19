@@ -301,7 +301,7 @@ export default function RichTextEditor({
     const plain = e.clipboardData.getData('text/plain')
     if (!html && !plain) return
     e.preventDefault()
-    document.execCommand('insertHTML', false, cleanPaste(html, plain, inline))
+    document.execCommand('insertHTML', false, cleanPaste(html, plain, inline, tools === 'basic'))
     // A pasted project image arrives with its assets/ path: show it.
     resolveAssetImages()
     emit()

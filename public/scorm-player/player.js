@@ -1668,7 +1668,8 @@
         var nv = NOTE_ICONS[b.data.variant] ? b.data.variant : 'note';
         var icon = h('span', { class: 'sc-note-icon', 'aria-hidden': 'true' });
         icon.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="' + NOTE_ICONS[nv] + '"/></svg>';
-        return h('div', { class: 'sc-note sc-note-' + nv }, [
+        var noteOwn = ownColor('note', b.data.color);
+        return h('div', { class: 'sc-note sc-note-' + nv + (noteOwn ? ' sc-note-own' : ''), style: noteOwn }, [
           b.data.icon === false ? null : icon,
           h('div', { class: 'sc-note-body' }, [
             b.data.title ? h('p', { class: 'sc-note-title', text: b.data.title }) : null,
@@ -1947,10 +1948,33 @@
 
   var GRIP_ICON = '<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><circle cx="9" cy="6" r="1.5"/><circle cx="15" cy="6" r="1.5"/><circle cx="9" cy="12" r="1.5"/><circle cx="15" cy="12" r="1.5"/><circle cx="9" cy="18" r="1.5"/><circle cx="15" cy="18" r="1.5"/></svg>';
 
-  // A card label's own color: the tint and the deepened text derive from it.
+  // '#abc' / 'aabbcc' -> 'aabbcc'; null when not a hex color.
+  function hex6(color) {
+    var m = /^#?([0-9a-f]{3}|[0-9a-f]{6})$/i.exec(String(color || '').trim());
+    return m ? (m[1].length === 3 ? m[1].replace(/./g, '$&$&') : m[1]).toLowerCase() : null;
+  }
+  // A color deepened until it reads as text on its own pale tint: darkened to
+  // 4.5:1 against white, then a quarter further (readableText in customTheme.ts).
+  function deepText(hex) {
+    var c = [0, 2, 4].map(function (i) { return parseInt(hex.slice(i, i + 2), 16); });
+    var onWhite = function (rgb) {
+      var l = rgb.map(function (v) { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); });
+      return 1.05 / (0.2126 * l[0] + 0.7152 * l[1] + 0.0722 * l[2] + 0.05);
+    };
+    for (var i = 0; i < 40 && onWhite(c.map(Math.round)) < 4.5; i++) c = c.map(function (v) { return v * 0.95; });
+    return '#' + c.map(function (v) { var d = Math.round(v * 0.75).toString(16); return d.length < 2 ? '0' + d : d; }).join('');
+  }
+  // Variables for something with its own color (a card, a note, a label): the
+  // color and its text version. Null when the color isn't a hex.
+  function ownColor(name, color) {
+    var hex = hex6(color);
+    return hex ? '--sc-' + name + ':#' + hex + ';--sc-' + name + '-text:' + deepText(hex) : null;
+  }
+
+  // A card label's color: the theme's main color, grey or its own.
   function badgeVars(color) {
-    var m = /^#?([0-9a-f]{6})$/i.exec(String(color || '').trim());
-    return m ? '--sc-badge:#' + m[1] + ';--sc-badge-text:color-mix(in srgb, #' + m[1] + ' 72%, #000)' : null;
+    if (color === 'accent') return '--sc-badge:var(--brand);--sc-badge-text:var(--brand-dark)';
+    return ownColor('badge', color === 'grey' ? '#6b7280' : color);
   }
 
   // Cards: tiles with an optional number and label, a title and rich text.
@@ -1961,10 +1985,11 @@
     var per = { 2: 1, 3: 1, 4: 1 }[d.perRow] ? d.perRow : 0;
     var wrap = h('div', { class: 'sc-cards' + (rows ? ' sc-cards-rows' : '') + (d.labelStyle === 'text' ? ' sc-cards-text' : '') + (d.titleStyle === 'band' && !rows ? ' sc-cards-band' : ''), style: per && !rows ? '--per:' + per : null });
     items.forEach(function (it, i) {
-      wrap.appendChild(h('div', { class: 'sc-card' + (it.highlight ? ' sc-card-hl' : '') + (it.tone === 'positive' ? ' sc-card-pos' : it.tone === 'negative' ? ' sc-card-neg' : '') }, [
+      var own = ownColor('card', it.color);
+      wrap.appendChild(h('div', { class: 'sc-card' + (own ? ' sc-card-own' : (it.highlight ? ' sc-card-hl' : '') + (it.tone === 'positive' ? ' sc-card-pos' : it.tone === 'negative' ? ' sc-card-neg' : '')), style: own }, [
         d.numbered || it.badge ? h('div', { class: 'sc-card-top' }, [
           d.numbered ? h('span', { class: 'sc-card-num', text: String(i + 1) }) : null,
-          it.badge ? h('span', { class: 'sc-card-badge', text: it.badge, style: badgeVars(it.badgeColor) }) : null,
+          it.badge ? h('span', { class: 'sc-card-badge' + (badgeVars(it.badgeColor) ? ' sc-badge-own' : ''), text: it.badge, style: badgeVars(it.badgeColor) }) : null,
         ]) : null,
         it.title ? h('h3', { class: 'sc-card-title', text: it.title }) : null,
         it.html ? h('div', { class: 'sc-card-text rich-text', html: it.html }) : null,

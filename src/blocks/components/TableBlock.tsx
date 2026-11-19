@@ -5,7 +5,7 @@ import { useCourseStore } from '../../store/courseStore'
 import { useT } from '../../i18n/I18nProvider'
 import { MOD } from '../../lib/keyboard'
 import { parseGrid, pasteGrid } from '../../lib/tablePaste'
-import { AutoTextarea, Segmented } from '../../components/editor/controls'
+import { AutoTextarea, Segmented, SwatchPicker } from '../../components/editor/controls'
 import TablePreview from '../../preview/components/TablePreview'
 import { normalizeHex } from '../../theme/customTheme'
 import { TABLE_STYLES, rowMarkClass, tableCards, tableClass, tableHeadStyle } from '../styleClasses'
@@ -17,21 +17,23 @@ const MARKS: TableRowMark[] = ['', 'highlight', 'muted']
 
 /** `value` with the selection a..b made bold (wrapped in ** **), or plain
  *  again when it already is: the markers may sit inside the selection or
- *  just around it. */
-export function toggleBold(value: string, a: number, b: number): string {
+ *  just around it. Returns the new text and where the same words now are. */
+export function toggleBoldAt(value: string, a: number, b: number): [string, number, number] {
   // Bold hugs the words: spaces at the ends of the selection stay outside.
   while (a < b && /\s/.test(value[a])) a++
   while (b > a && /\s/.test(value[b - 1])) b--
-  if (a === b) return value
+  if (a === b) return [value, a, b]
   const picked = value.slice(a, b)
   if (picked.length > 4 && picked.startsWith('**') && picked.endsWith('**')) {
-    return value.slice(0, a) + picked.slice(2, -2) + value.slice(b)
+    return [value.slice(0, a) + picked.slice(2, -2) + value.slice(b), a, b - 4]
   }
   if (value.slice(a - 2, a) === '**' && value.slice(b, b + 2) === '**') {
-    return value.slice(0, a - 2) + picked + value.slice(b + 2)
+    return [value.slice(0, a - 2) + picked + value.slice(b + 2), a - 2, b - 2]
   }
-  return value.slice(0, a) + `**${picked}**` + value.slice(b)
+  return [value.slice(0, a) + `**${picked}**` + value.slice(b), a + 2, b + 2]
 }
+
+export const toggleBold = (value: string, a: number, b: number): string => toggleBoldAt(value, a, b)[0]
 
 const iconBtn =
   'flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-gray-400 hover:bg-gray-100 hover:text-gray-700'
@@ -50,12 +52,12 @@ export default function TableBlock({
   const columnCount = rows[0]?.length ?? 0
   const cards = layout === 'cards' ? tableCards(rows) : null
 
-  function setCell(r: number, c: number, value: string) {
+  function setCell(r: number, c: number, value: string, typing = true) {
     // A short row (hand-edited data) is filled out to the cell being typed in.
     const next = rows.map((row, ri) =>
       ri === r ? Array.from({ length: Math.max(row.length, c + 1) }, (_, ci) => (ci === c ? value : row[ci] ?? '')) : row,
     )
-    update(lessonId, block.id, { rows: next }, `table-${block.id}-${r}-${c}`)
+    update(lessonId, block.id, { rows: next }, typing ? `table-${block.id}-${r}-${c}` : undefined)
   }
 
   // Ctrl/Cmd+B wraps the selected text in ** ** (bold), or unwraps it.
@@ -63,9 +65,13 @@ export default function TableBlock({
     if (!(e.ctrlKey || e.metaKey) || e.code !== 'KeyB') return
     e.preventDefault()
     e.stopPropagation()
-    const { selectionStart: a, selectionEnd: b, value } = e.currentTarget
+    const el = e.currentTarget
+    const { selectionStart: a, selectionEnd: b, value } = el
     if (a == null || b == null || a === b) return
-    setCell(r, c, toggleBold(value, a, b))
+    const [next, from, to] = toggleBoldAt(value, a, b)
+    // Its own undo step (not part of the typing before it), with the words still selected.
+    setCell(r, c, next, false)
+    requestAnimationFrame(() => el.setSelectionRange(from, to))
   }
 
   function addRow() {
@@ -167,23 +173,23 @@ export default function TableBlock({
       )}
       {(cards || style === 'panel') && (
         <>
-          <Segmented<'theme' | 'dark' | 'custom'>
-            label={t('tableHead')}
-            value={headMode}
-            onChange={(v) =>
-              update(lessonId, block.id, { headerColor: v === 'custom' ? CUSTOM_HEAD : v === 'dark' ? 'dark' : undefined })
-            }
-            options={(['theme', 'dark', 'custom'] as const).map((m) => [m, t(`tableHead_${m}`)] as const)}
-          />
-          {headMode === 'custom' && (
-            <input
-              type="color"
-              value={normalizeHex(headerColor ?? '') ?? CUSTOM_HEAD}
-              aria-label={t('tableHead')}
-              onChange={(e) => update(lessonId, block.id, { headerColor: e.target.value }, `table-head-${block.id}`)}
-              className="h-8 w-10 cursor-pointer rounded-md border border-gray-300 bg-white p-0.5"
+          <span className="flex items-center gap-1 text-xs font-medium text-gray-500">
+            {t('tableHead')}
+            <SwatchPicker<'theme' | 'dark'>
+              label={t('tableHead')}
+              value={headMode}
+              options={[
+                { key: 'theme', label: t('tableHead_theme'), color: 'var(--color-accent2, var(--color-brand))' },
+                { key: 'dark', label: t('tableHead_dark'), color: '#1f2937' },
+              ]}
+              onSelect={(v) => update(lessonId, block.id, { headerColor: v === 'dark' ? 'dark' : undefined })}
+              custom={{
+                label: t('tableHead_custom'),
+                color: normalizeHex(headerColor ?? '') ?? CUSTOM_HEAD,
+                onPick: (hex) => update(lessonId, block.id, { headerColor: hex }, `table-head-${block.id}`),
+              }}
             />
-          )}
+          </span>
         </>
       )}
       <button type="button" onClick={addRow} className="btn-secondary text-sm">

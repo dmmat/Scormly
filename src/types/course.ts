@@ -117,6 +117,8 @@ export interface NoteData {
   title?: string
   /** false hides the icon. */
   icon?: boolean
+  /** The note's own color (#rrggbb) instead of its variant's. */
+  color?: string
 }
 
 // ── Multimedia ────────────────────────────────────────────────────────────────
@@ -674,7 +676,8 @@ export interface CardItem {
   id: string
   /** Small label above the title (a category, a code); empty = none. */
   badge: string
-  /** The label's own color (#rrggbb); missing = the theme's second accent. */
+  /** The label's color: 'accent' (the theme's main color), 'grey' or a hex
+   *  (#rrggbb); missing = the theme's second accent. */
   badgeColor?: string
   title: string
   /** Rich text. */
@@ -683,6 +686,8 @@ export interface CardItem {
   highlight?: boolean
   /** Green (a good outcome) or red (a bad one) instead of the neutral card. */
   tone?: 'positive' | 'negative'
+  /** The card's own tint (#rrggbb); wins over highlight and tone. */
+  color?: string
 }
 
 export interface CardsData {

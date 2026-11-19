@@ -3,7 +3,7 @@
 // and attributes, and player.css mirrors the rules from index.css.
 
 import type { CSSProperties } from 'react'
-import { contrastRatio, normalizeHex } from '../theme/customTheme'
+import { contrastRatio, normalizeHex, readableText } from '../theme/customTheme'
 import type { BlockBackground, BlockSettings, ImageSize, TableRowMark, TableStyle, TextAlign } from '../types/course'
 
 /** Backgrounds with light text on a dark/saturated fill. */
@@ -90,9 +90,23 @@ export function tableHeadStyle(headerColor?: string): CSSProperties | undefined 
 
 /** Inline variables for a card label with its own color (CardItem.badgeColor). */
 export function badgeStyle(color?: string): CSSProperties | undefined {
+  if (color === 'accent') return { '--sc-badge': 'var(--color-brand)', '--sc-badge-text': 'var(--color-brand-dark)' } as CSSProperties
+  return ownColorStyle('badge', color === 'grey' ? '#6b7280' : color)
+}
+
+/** Classes of one card: its own color wins over the tones. */
+export function cardClass(item: { highlight?: boolean; tone?: string; color?: string }): string {
+  if (normalizeHex(item.color ?? '')) return 'sc-card sc-card-own'
+  return `sc-card${item.highlight ? ' sc-card-hl' : ''}${item.tone === 'positive' ? ' sc-card-pos' : item.tone === 'negative' ? ' sc-card-neg' : ''}`
+}
+
+/** Inline variables for something with its own color (a card, a note, a
+ *  label): the color, and a version of it deepened until it reads as text.
+ *  The player's ownColor mirrors it. */
+export function ownColorStyle(name: string, color?: string): CSSProperties | undefined {
   const hex = normalizeHex(color ?? '')
   if (!hex) return undefined
-  return { '--sc-badge': hex, '--sc-badge-text': `color-mix(in srgb, ${hex} 72%, #000)` } as CSSProperties
+  return { [`--sc-${name}`]: hex, [`--sc-${name}-text`]: readableText(hex) } as CSSProperties
 }
 
 /** A table shown as cards (layout 'cards'): one card per column after the

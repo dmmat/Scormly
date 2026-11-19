@@ -5,10 +5,10 @@ import { useCourseStore } from '../../store/courseStore'
 import { translate, useT } from '../../i18n/I18nProvider'
 import { uid } from '../../lib/id'
 import RichTextEditor from '../../components/editor/RichTextEditor'
-import { AutoTextarea, Segmented, SettingsBar } from '../../components/editor/controls'
+import { AutoTextarea, Segmented, SettingsBar, SwatchPicker } from '../../components/editor/controls'
 import CardsPreview from '../../preview/components/CardsPreview'
 import { normalizeHex } from '../../theme/customTheme'
-import { badgeStyle } from '../styleClasses'
+import { badgeStyle, cardClass, ownColorStyle } from '../styleClasses'
 
 type Look = 'plain' | 'highlight' | 'positive' | 'negative'
 const LOOKS: { key: Look; patch: Partial<CardItem> }[] = [
@@ -17,11 +17,18 @@ const LOOKS: { key: Look; patch: Partial<CardItem> }[] = [
   { key: 'positive', patch: { highlight: false, tone: 'positive' } },
   { key: 'negative', patch: { highlight: false, tone: 'negative' } },
 ]
-const SWATCH: Record<Look, string> = {
-  plain: 'border-gray-400 bg-white',
-  highlight: 'border-brand bg-brand',
-  positive: 'border-green-600 bg-green-500',
-  negative: 'border-red-600 bg-red-500',
+const LOOK_COLOR: Record<Look, string> = {
+  plain: '#fff',
+  highlight: 'var(--color-accent2, var(--color-brand))',
+  positive: '#22c55e',
+  negative: '#ef4444',
+}
+type BadgeTone = 'theme' | 'accent' | 'grey'
+const BADGE_TONES: BadgeTone[] = ['theme', 'accent', 'grey']
+const BADGE_COLOR: Record<BadgeTone, string> = {
+  theme: 'var(--color-accent2, var(--color-brand))',
+  accent: 'var(--color-brand)',
+  grey: '#6b7280',
 }
 const lookOf = (item: CardItem): Look => item.tone ?? (item.highlight ? 'highlight' : 'plain')
 
@@ -122,27 +129,21 @@ export default function CardsBlock({
         style={perRow && !rows ? ({ '--per': perRow } as CSSProperties) : undefined}
       >
         {items.map((item, i) => (
-          <div key={item.id} className={`sc-card relative${rows ? ' !pr-32' : ''}${item.highlight ? ' sc-card-hl' : ''}${item.tone === 'positive' ? ' sc-card-pos' : item.tone === 'negative' ? ' sc-card-neg' : ''}`}>
+          <div key={item.id} className={`${cardClass(item)} relative${rows ? ' !pr-14' : ''}`} style={ownColorStyle('card', item.color)}>
             {/* Out of the flow, so the card's own lines sit where the learner sees them. */}
             <span className="absolute right-1.5 top-1.5 flex items-center">
               {/* The card's look: plain, highlighted, green or red. */}
-              <span role="radiogroup" aria-label={t('cardLook')} className="mr-1 flex items-center gap-1 rounded-full bg-white/80 px-1.5 py-1 ring-1 ring-gray-200">
-                {LOOKS.map((look) => {
-                  const on = lookOf(item) === look.key
-                  return (
-                    <button
-                      key={look.key}
-                      type="button"
-                      role="radio"
-                      aria-checked={on}
-                      onClick={() => patch(item.id, look.patch)}
-                      title={`${t('cardLook')}: ${t(`cardLook_${look.key}`)}`}
-                      aria-label={t(`cardLook_${look.key}`)}
-                      className={`h-3.5 w-3.5 rounded-full border ${SWATCH[look.key]} ${on ? 'ring-2 ring-gray-900/70 ring-offset-1' : 'opacity-70 hover:opacity-100'}`}
-                    />
-                  )
-                })}
-              </span>
+              <SwatchPicker<Look>
+                label={t('cardLook')}
+                value={normalizeHex(item.color ?? '') ? 'custom' : lookOf(item)}
+                options={LOOKS.map((look) => ({ key: look.key, label: t(`cardLook_${look.key}`), color: LOOK_COLOR[look.key] }))}
+                onSelect={(key) => patch(item.id, { ...LOOKS.find((l) => l.key === key)!.patch, color: undefined })}
+                custom={{
+                  label: t('cardBadgeColor_custom'),
+                  color: normalizeHex(item.color ?? '') ?? '#004685',
+                  onPick: (hex) => patch(item.id, { color: hex }, `card-color-${item.id}`),
+                }}
+              />
               {items.length > 1 && (
                 <button
                   type="button"
@@ -154,8 +155,10 @@ export default function CardsBlock({
                 </button>
               )}
             </span>
-            <div className={`sc-card-top${rows ? '' : ' pt-7'}`}>
+            <div className={`sc-card-top${rows ? '' : ' pr-12'}`}>
               {numbered && <span className="sc-card-num">{i + 1}</span>}
+              {/* The label and its color dot share a line. */}
+              <span className="sc-card-badge-row">
               {labelStyle === 'text' ? (
                 // Wraps like the learner's label.
                 <AutoTextarea
@@ -163,7 +166,7 @@ export default function CardsBlock({
                   placeholder={t('cardBadge')}
                   aria-label={t('cardBadge')}
                   onChange={(e) => patch(item.id, { badge: e.target.value.replace(/\n/g, ' ') }, `card-badge-${item.id}`)}
-                  className={`${ghost} sc-card-badge block w-full`}
+                  className={`${ghost} sc-card-badge${badgeStyle(item.badgeColor) ? ' sc-badge-own' : ''} block w-auto min-w-16 max-w-full [field-sizing:content]`}
                   style={badgeStyle(item.badgeColor)}
                 />
               ) : (
@@ -175,34 +178,25 @@ export default function CardsBlock({
                   onChange={(e) => patch(item.id, { badge: e.target.value }, `card-badge-${item.id}`)}
                   // Sized to its text, so the pill looks as the learner sees it.
                   size={Math.max(item.badge.length, t('cardBadge').length) + 1}
-                  className={`${ghost} sc-card-badge max-w-full${item.badge ? '' : ' !bg-transparent ring-1 ring-inset ring-gray-200'}`}
+                  className={`${ghost} sc-card-badge${badgeStyle(item.badgeColor) ? ' sc-badge-own' : ''} max-w-full${item.badge ? '' : ' !bg-transparent ring-1 ring-inset ring-gray-200'}`}
                   style={badgeStyle(item.badgeColor)}
                 />
               )}
               {item.badge && (
-                // The label's own color; the small cross goes back to the theme's.
-                <span className="flex shrink-0 items-center gap-0.5">
-                  <input
-                    type="color"
-                    value={normalizeHex(item.badgeColor ?? '') ?? '#6b7280'}
-                    title={t('cardBadgeColor')}
-                    aria-label={t('cardBadgeColor')}
-                    onChange={(e) => patch(item.id, { badgeColor: e.target.value }, `card-badge-color-${item.id}`)}
-                    className="h-5 w-5 cursor-pointer rounded-full border border-gray-300 bg-white p-0 [&::-webkit-color-swatch-wrapper]:p-0.5 [&::-webkit-color-swatch]:rounded-full [&::-webkit-color-swatch]:border-0"
-                  />
-                  {item.badgeColor && (
-                    <button
-                      type="button"
-                      onClick={() => patch(item.id, { badgeColor: undefined })}
-                      title={t('cardBadgeColorReset')}
-                      aria-label={t('cardBadgeColorReset')}
-                      className="flex h-4 w-4 items-center justify-center rounded text-[10px] text-gray-400 hover:bg-gray-100 hover:text-gray-700"
-                    >
-                      ✕
-                    </button>
-                  )}
-                </span>
+                // The label's color: the theme's second or main color, grey, or the author's own.
+                <SwatchPicker<BadgeTone>
+                  label={t('cardBadgeColor')}
+                  value={item.badgeColor === 'accent' || item.badgeColor === 'grey' ? item.badgeColor : normalizeHex(item.badgeColor ?? '') ? 'custom' : 'theme'}
+                  options={BADGE_TONES.map((tone) => ({ key: tone, label: t(`cardBadgeColor_${tone}`), color: BADGE_COLOR[tone] }))}
+                  onSelect={(tone) => patch(item.id, { badgeColor: tone === 'theme' ? undefined : tone })}
+                  custom={{
+                    label: t('cardBadgeColor_custom'),
+                    color: normalizeHex(item.badgeColor ?? '') ?? '#004685',
+                    onPick: (hex) => patch(item.id, { badgeColor: hex }, `card-badge-color-${item.id}`),
+                  }}
+                />
               )}
+              </span>
             </div>
             <h3 className="sc-card-title">
               <AutoTextarea

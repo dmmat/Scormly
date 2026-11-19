@@ -949,6 +949,9 @@ table.sc-table.sc-table-panel .sc-table-head :is(input, textarea) { text-transfo
   background: var(--note-bg); color: var(--note-text);
 }
 .sc-note-tip { --note: var(--brand); --note-bg: color-mix(in srgb, var(--brand) 9%, #fff); --note-text: color-mix(in srgb, var(--brand-dark) 80%, #000); }
+/* A note's own color (NoteData.color). */
+.sc-note.sc-note-own { --note: var(--sc-note); --note-bg: color-mix(in srgb, var(--sc-note) 9%, #fff); --note-text: var(--sc-note-text); }
+.sc-note.sc-note-own .sc-note-title { color: var(--sc-note-text); }
 .sc-note-success { --note: #16a34a; --note-bg: #f0fdf4; --note-text: #14532d; }
 .sc-note-warning { --note: #d97706; --note-bg: #fffbeb; --note-text: #78350f; }
 .sc-note-icon {
@@ -1593,7 +1596,7 @@ table.sc-table.sc-table-panel .sc-table-head :is(input, textarea) { text-transfo
 .sc-cards-text .sc-card-top { flex-direction: column; align-items: flex-start; }
 .sc-cards-text .sc-card-badge { padding: 0; border-radius: 0; background: none; color: #6b7280; font-size: 0.68rem; letter-spacing: 0.07em; }
 .sc-cards-rows.sc-cards-text .sc-card-badge { color: var(--sc-badge-text, var(--accent2-dark, var(--brand-dark))); }
-.sc-cards-text .sc-card-badge[style] { color: var(--sc-badge-text); }
+.sc-cards-text .sc-card-badge.sc-badge-own { color: var(--sc-badge-text); }
 .sc-cards .sc-card .sc-card-title { margin: 0; color: #111827; font-size: 1.08rem; line-height: 1.3; font-weight: 600; }
 .sc-cards .sc-card .sc-card-text,
 .sc-cards .sc-card .sc-card-text :is(p, li) { color: #374151; }
@@ -1606,6 +1609,10 @@ table.sc-table.sc-table-panel .sc-table-head :is(input, textarea) { text-transfo
 .sc-cards .sc-card-pos :is(.sc-card-badge, .sc-card-num) { background: #dcfce7; color: #15803d; }
 .sc-cards .sc-card-neg :is(.sc-card-badge, .sc-card-num) { background: #fee2e2; color: #b91c1c; }
 .sc-cards.sc-cards-text :is(.sc-card-pos, .sc-card-neg) .sc-card-badge { background: none; }
+/* A card's own color (CardItem.color). */
+.sc-card-own { background: color-mix(in srgb, var(--sc-card) 7%, #fff); border-color: color-mix(in srgb, var(--sc-card) 35%, #fff); }
+.sc-cards .sc-card-own :is(.sc-card-badge:not(.sc-badge-own), .sc-card-num) { background: color-mix(in srgb, var(--sc-card) 15%, #fff); color: var(--sc-card-text); }
+.sc-cards.sc-cards-text .sc-card-own .sc-card-badge { background: none; }
 /* Title on a strip across the top of the card; a list under it is ruled. */
 .sc-cards-band .sc-card { padding: 0 0 0.5rem; gap: 0; overflow: hidden; }
 .sc-cards-band .sc-card > * { padding-inline: 1.1rem; }
@@ -1618,7 +1625,8 @@ table.sc-table.sc-table-panel .sc-table-head :is(input, textarea) { text-transfo
 }
 .sc-cards.sc-cards-band .sc-card-pos .sc-card-title { background: #dcfce7; color: #15803d; border-bottom-color: #bbf7d0; }
 .sc-cards.sc-cards-band .sc-card-neg .sc-card-title { background: #fee2e2; color: #b91c1c; border-bottom-color: #fecaca; }
-.sc-cards-band .sc-card-pos, .sc-cards-band .sc-card-neg { background: #fff; }
+.sc-cards.sc-cards-band .sc-card-own .sc-card-title { background: color-mix(in srgb, var(--sc-card) 15%, #fff); color: var(--sc-card-text); border-bottom-color: color-mix(in srgb, var(--sc-card) 30%, #fff); }
+.sc-cards-band .sc-card-pos, .sc-cards-band .sc-card-neg, .sc-cards-band .sc-card-own { background: #fff; }
 .sc-cards-band .sc-card-text { padding-top: 0.6rem; }
 .sc-cards-band .sc-card-text :is(ul, ol) { margin: 0; padding: 0; list-style: none; }
 .sc-cards-band .sc-card-text li { padding: 0.55rem 0; border-top: 1px solid rgb(17 24 39 / 0.08); }
@@ -1631,19 +1639,23 @@ table.sc-table.sc-table-panel .sc-table-head :is(input, textarea) { text-transfo
 .sc-cards-rows .sc-card:first-child { border-top: 0; padding-top: 0.25rem; }
 .sc-cards-rows .sc-card:last-child { padding-bottom: 0.6rem; }
 /* A colored row grows outward, so its number and text stay in line with the others. */
-.sc-cards-rows :is(.sc-card-hl, .sc-card-pos, .sc-card-neg) { margin-inline: -0.9rem; padding-inline: 0.9rem; border-radius: calc(var(--radius-surface) + 2px); }
-.sc-cards-rows :is(.sc-card-hl, .sc-card-pos, .sc-card-neg), .sc-cards-rows :is(.sc-card-hl, .sc-card-pos, .sc-card-neg) + .sc-card { border-top-color: transparent; }
+.sc-cards-rows :is(.sc-card-hl, .sc-card-pos, .sc-card-neg, .sc-card-own) { margin-inline: -0.9rem; padding-inline: 0.9rem; border-radius: calc(var(--radius-surface) + 2px); }
+.sc-cards-rows :is(.sc-card-hl, .sc-card-pos, .sc-card-neg, .sc-card-own), .sc-cards-rows :is(.sc-card-hl, .sc-card-pos, .sc-card-neg, .sc-card-own) + .sc-card { border-top-color: transparent; }
 .sc-cards-rows .sc-card-hl { background: color-mix(in srgb, var(--accent2, var(--brand)) 8%, #fff); }
 .sc-cards-rows .sc-card-pos { background: #f0fdf4; }
 .sc-cards-rows .sc-card-neg { background: #fef2f2; }
+.sc-cards-rows .sc-card-own { background: color-mix(in srgb, var(--sc-card) 7%, #fff); }
 .sc-cards-rows .sc-card-top { display: contents; }
 .sc-cards-rows .sc-card { display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: 0; row-gap: 0.2rem; align-items: start; }
 .sc-cards-rows .sc-card-num { grid-column: 1; grid-row: 1 / span 2; margin-right: 0.9rem; }
 .sc-cards-rows .sc-card-badge { grid-column: 2; grid-row: 1; justify-self: start; }
+/* The editor's label field with its color dot. */
+.sc-card-badge-row { display: flex; align-items: center; gap: 0.25rem; min-width: 0; max-width: 100%; }
+.sc-cards-rows .sc-card-badge-row { grid-column: 2; grid-row: 1; }
 .sc-cards-rows .sc-card-title { grid-column: 2; }
 .sc-cards-rows .sc-card-text { grid-column: 2; margin-top: 0.25rem; }
 /* Rows sit on the page, not on a card: on a dark panel they take its text color. */
-.blk-on-dark .sc-cards.sc-cards-rows .sc-card:not(.sc-card-hl, .sc-card-pos, .sc-card-neg) :is(.sc-card-title, .sc-card-text, .sc-card-text :is(p, li)) { color: #fff; }
+.blk-on-dark .sc-cards.sc-cards-rows .sc-card:not(.sc-card-hl, .sc-card-pos, .sc-card-neg, .sc-card-own) :is(.sc-card-title, .sc-card-text, .sc-card-text :is(p, li)) { color: #fff; }
 .blk-on-dark .sc-cards-rows .sc-card { border-top-color: rgb(255 255 255 / 0.25); }
 @media (min-width: 40rem) {
   .sc-cards-rows .sc-card { grid-template-columns: auto minmax(0, 15rem) minmax(0, 1fr); }

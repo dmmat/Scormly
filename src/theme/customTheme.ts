@@ -92,6 +92,13 @@ export function customThemeTokens(theme: CustomTheme): ThemeTokens {
   }
 }
 
+/** A color deepened for text on its own pale tint (or on white): readable at
+ *  4.5:1 whatever the color. The player's deepText mirrors it. */
+export function readableText(hex: string): string | null {
+  const rgb = parseHex(hex)
+  return rgb ? toHex(mix(readableBrand(rgb), BLACK, 0.25)) : null
+}
+
 /** Whether the accent had to be darkened to keep text readable. */
 export function accentAdjusted(theme: CustomTheme): boolean {
   return customThemeTokens(theme).brand.toLowerCase() !== (theme.accent || '').toLowerCase()

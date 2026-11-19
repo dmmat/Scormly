@@ -30,7 +30,7 @@ function marks(el: HTMLElement, inner: string): string {
 const hasBlocks = (el: Element) => !!el.querySelector('p, div, h1, h2, h3, h4, h5, h6, blockquote, pre, ul, ol, table, section, article')
 const tidyBreaks = (html: string) => html.replace(/(?:\s*<br>\s*){3,}/g, '<br><br>').replace(/^(?:\s*<br>\s*)+|(?:\s*<br>\s*)+$/g, '')
 
-function walk(node: Node, inline: boolean): string {
+function walk(node: Node, inline: boolean, basic = false): string {
   if (node.nodeType === Node.TEXT_NODE) return esc((node.textContent ?? '').replace(/\s*\n\s*/g, ' '))
   if (node.nodeType !== Node.ELEMENT_NODE) return ''
   const el = node as HTMLElement
@@ -40,14 +40,18 @@ function walk(node: Node, inline: boolean): string {
   if (tag === 'IMG') {
     // In the editor a project image shows through a blob: URL; its real path is in data-asset.
     const src = el.getAttribute('data-asset') ?? el.getAttribute('src') ?? ''
-    return !inline && SAFE_IMAGE.test(src) ? `<img src="${esc(src).replace(/"/g, '&quot;')}" alt="${esc(el.getAttribute('alt') ?? '').replace(/"/g, '&quot;')}">` : ''
+    return !inline && !basic && SAFE_IMAGE.test(src) ? `<img src="${esc(src).replace(/"/g, '&quot;')}" alt="${esc(el.getAttribute('alt') ?? '').replace(/"/g, '&quot;')}">` : ''
   }
-  const children = (flat: boolean) => [...el.childNodes].map((ch) => walk(ch, flat)).join('')
+  const children = (flat: boolean) => [...el.childNodes].map((ch) => walk(ch, flat, basic)).join('')
 
   if (!inline) {
     if (tag === 'UL' || tag === 'OL') {
       const items = [...el.children].filter((ch) => ch.tagName === 'LI').map((li) => `<li>${tidyBreaks(walk(li, true))}</li>`)
       return items.length ? `<${tag.toLowerCase()}>${items.join('')}</${tag.toLowerCase()}>` : ''
+    }
+    if (tag === 'TABLE' && basic) {
+      // No tables in a narrow place: each row becomes a line of text.
+      return [...el.querySelectorAll('tr')].map((tr) => `<p>${tidyBreaks([...tr.children].map((c) => walk(c, true)).join(' ')).trim()}</p>`).join('')
     }
     if (tag === 'TABLE') {
       const rows = [...el.querySelectorAll('tr')].filter((tr) => tr.closest('table') === el)
@@ -78,17 +82,18 @@ function walk(node: Node, inline: boolean): string {
 /**
  * The HTML to insert for a paste: `html` (the clipboard's rich flavour) cut
  * down to bold, italic, underline, links and line breaks when `inline`, plus
- * paragraphs, lists, simple tables and the project's own images otherwise.
+ * paragraphs, lists, simple tables and the project's own images otherwise
+ * (`basic`: without the tables and images, as the short toolbar has none).
  * Without `html` the plain text is used, one paragraph (or line) per line.
  */
-export function cleanPaste(html: string, plain: string, inline: boolean): string {
+export function cleanPaste(html: string, plain: string, inline: boolean, basic = false): string {
   if (!html.trim()) {
     const lines = plain.replace(/\r\n?/g, '\n').split('\n')
     if (inline || lines.length === 1) return lines.map(esc).join('<br>')
     return lines.filter((l) => l.trim()).map((l) => `<p>${esc(l)}</p>`).join('')
   }
   const doc = new DOMParser().parseFromString(html, 'text/html')
-  const out = [...doc.body.childNodes].map((n) => walk(n, inline)).join('')
+  const out = [...doc.body.childNodes].map((n) => walk(n, inline, basic)).join('')
   // One line of text has no paragraphs: a gap between pasted blocks is one line break.
   return inline ? tidyBreaks(out.replace(/(?:\s*<br>\s*){2,}/g, '<br>')) : out
 }

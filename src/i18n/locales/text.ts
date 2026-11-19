@@ -24,6 +24,9 @@ const text: LocaleTable = {
     // Note
     noteKind: 'Type',
     noteIcon: 'Icon',
+    noteColor: 'Color',
+    noteColor_type: 'The type’s color',
+    noteColor_custom: 'Your own color',
     noteTitlePlaceholder: 'Label (optional)',
     note: 'Note',
     tip: 'Tip',
@@ -59,6 +62,9 @@ const text: LocaleTable = {
     // Note
     noteKind: 'Тип',
     noteIcon: 'Іконка',
+    noteColor: 'Колір',
+    noteColor_type: 'Колір типу',
+    noteColor_custom: 'Свій колір',
     noteTitlePlaceholder: 'Напис зверху (необов’язково)',
     note: 'Примітка',
     tip: 'Порада',
@@ -94,6 +100,9 @@ const text: LocaleTable = {
     // Note
     noteKind: 'Type',
     noteIcon: 'Icône',
+    noteColor: 'Couleur',
+    noteColor_type: 'Couleur du type',
+    noteColor_custom: 'Votre couleur',
     noteTitlePlaceholder: 'Libellé (facultatif)',
     note: 'Note',
     tip: 'Conseil',
@@ -129,6 +138,9 @@ const text: LocaleTable = {
     // Note
     noteKind: 'Tipo',
     noteIcon: 'Icono',
+    noteColor: 'Color',
+    noteColor_type: 'Color del tipo',
+    noteColor_custom: 'Tu propio color',
     noteTitlePlaceholder: 'Etiqueta (opcional)',
     note: 'Nota',
     tip: 'Consejo',
@@ -164,6 +176,9 @@ const text: LocaleTable = {
     // Note
     noteKind: 'Typ',
     noteIcon: 'Symbol',
+    noteColor: 'Farbe',
+    noteColor_type: 'Farbe des Typs',
+    noteColor_custom: 'Eigene Farbe',
     noteTitlePlaceholder: 'Label (optional)',
     note: 'Hinweis',
     tip: 'Tipp',

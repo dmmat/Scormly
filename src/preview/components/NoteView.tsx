@@ -2,6 +2,7 @@ import type { ReactNode } from 'react'
 import type { NoteVariant } from '../../types/course'
 import { stepHtml } from '../../blocks/process'
 import RichHtml from '../RichHtml'
+import { ownColorStyle } from '../../blocks/styleClasses'
 
 // Callout icons (24×24, stroked). The SCORM player has the same paths.
 export const NOTE_ICONS: Record<NoteVariant, string> = {
@@ -19,6 +20,7 @@ export default function NoteView({
   html,
   title,
   icon,
+  color,
   children,
 }: {
   variant: NoteVariant
@@ -26,11 +28,13 @@ export default function NoteView({
   html?: string
   title?: string
   icon?: boolean
+  color?: string
   children?: ReactNode
 }) {
   const v = NOTE_ICONS[variant] ? variant : 'note'
+  const own = ownColorStyle('note', color)
   return (
-    <div className={`sc-note sc-note-${v}`}>
+    <div className={`sc-note sc-note-${v}${own ? ' sc-note-own' : ''}`} style={own}>
       {icon !== false && (
         <span className="sc-note-icon" aria-hidden>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
