@@ -214,6 +214,7 @@ export default function CardsBlock({
               />
             </h3>
             <RichTextEditor
+              tools="basic"
               html={item.html}
               placeholder={tt('paragraphPlaceholder')}
               className="sc-card-text"

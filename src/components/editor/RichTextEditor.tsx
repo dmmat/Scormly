@@ -1,5 +1,6 @@
 import {
   useEffect,
+  useLayoutEffect,
   useReducer,
   useRef,
   useState,
@@ -98,6 +99,9 @@ interface RichTextEditorProps {
   /** Inline formatting only (bold, italic, underline, links): for short
    *  texts inside shapes, such as process diagram steps. */
   inline?: boolean
+  /** 'basic' leaves out alignment, images and tables: for text in a narrow
+   *  place, such as a card. Default 'full'. */
+  tools?: 'full' | 'basic'
 }
 
 // Lightweight rich-text editor: a contentEditable area plus a formatting toolbar
@@ -109,6 +113,7 @@ export default function RichTextEditor({
   placeholder,
   className,
   inline = false,
+  tools = 'full',
 }: RichTextEditorProps) {
   const { t } = useT('richtext')
   const ref = useRef<HTMLDivElement>(null)
@@ -129,6 +134,17 @@ export default function RichTextEditor({
   const [picker, setPicker] = useState(false)
   // Link editor: the URL being typed, and the link the caret was in (if any).
   const [link, setLink] = useState<{ url: string; anchor: HTMLAnchorElement | null } | null>(null)
+  // A short strip (inline text, basic tools) floats above the text instead of
+  // pushing it down, and hangs from the right edge when it would leave the page.
+  const floating = inline || tools === 'basic'
+  const barRef = useRef<HTMLDivElement>(null)
+  const [barRight, setBarRight] = useState(false)
+  useLayoutEffect(() => {
+    const bar = barRef.current
+    const root = rootRef.current
+    if (!floating || !bar || !root) return
+    setBarRight(root.getBoundingClientRect().left + bar.offsetWidth > window.innerWidth - 12)
+  }, [floating, focused])
   // Re-render after table edits that change the DOM but not React state.
   const [, bump] = useReducer((n: number) => n + 1, 0)
 
@@ -559,9 +575,14 @@ export default function RichTextEditor({
         />
       )}
       {(focused || link || picker) && (
-        // As wide as its buttons, not the text below: a floating tool strip.
-        <div className="relative mb-2 w-fit max-w-full rounded-lg border border-gray-200/80 bg-white p-1 text-gray-600 shadow-[0_1px_2px_rgba(15,23,42,0.06),0_6px_16px_-8px_rgba(15,23,42,0.25)]">
-          <div className="flex flex-wrap items-center gap-0.5">
+        // As wide as its buttons, not the text below.
+        <div
+          ref={barRef}
+          className={`${
+            floating ? `absolute bottom-full z-20 mb-1.5 w-max ${barRight ? 'right-0' : 'left-0'}` : 'relative mb-2 w-fit max-w-full'
+          } rounded-lg border border-gray-200/80 bg-white p-1 text-gray-600 shadow-[0_1px_2px_rgba(15,23,42,0.06),0_6px_16px_-8px_rgba(15,23,42,0.25)]`}
+        >
+          <div className={`flex items-center gap-0.5 ${floating ? 'flex-nowrap' : 'flex-wrap'}`}>
             <ToolButton label={t('bold')} keys={KEYS.bold} active={fmt.bold} onClick={() => run('bold')}>
               <IconBold />
             </ToolButton>
@@ -591,6 +612,8 @@ export default function RichTextEditor({
                 <ToolButton label={t('numberedList')} keys={KEYS.numberedList} active={fmt.ol} onClick={() => run('ol')}>
                   <IconNumbered />
                 </ToolButton>
+                {tools === 'full' && (
+                  <>
                 <Divider />
                 <ToolButton label={t('alignLeft')} keys={KEYS.alignLeft} onClick={() => run('left')}>
                   <IconAlign align="left" />
@@ -622,6 +645,8 @@ export default function RichTextEditor({
                 >
                   <IconTable />
                 </ToolButton>
+                  </>
+                )}
                 <Divider />
                 <ToolButton label={t('clearFormat')} keys={KEYS.clearFormat} onClick={() => run('clear')}>
                   <IconClear />
