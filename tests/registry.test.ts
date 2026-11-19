@@ -84,6 +84,9 @@ describe('block registry', () => {
     // Already bold: the markers inside the selection or just around it come off.
     expect(toggleBold('**Yes:** ok', 0, 8)).toBe('Yes: ok')
     expect(toggleBold('**Yes:** ok', 2, 6)).toBe('Yes: ok')
+    expect(cellRuns('a ** b ** c')).toEqual([{ text: 'a ** b ** c', bold: false }])
+    expect(cellRuns('**kwargs and **args')).toEqual([{ text: '**kwargs and **args', bold: false }])
+    expect(toggleBold('one two three', 3, 8)).toBe('one **two** three')
     expect(cellRuns('2 * 3 ** 4')).toEqual([{ text: '2 * 3 ** 4', bold: false }])
     expect(tableCards([['', 'A'], ['Price', '$1']])).toEqual({ labels: ['Price'], cards: [{ title: 'A', values: ['$1'] }] })
     expect(createBlock('heading', 'section').data).toMatchObject({ level: 2, eyebrow: expect.any(String), subtitle: expect.any(String) })

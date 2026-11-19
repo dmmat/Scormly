@@ -1856,9 +1856,13 @@
     function fit() {
       var de = doc.documentElement, body = doc.body;
       if (!body) return;
-      set(body.getBoundingClientRect().bottom + (win.scrollY || 0) + (parseFloat(win.getComputedStyle(body).marginBottom) || 0));
-      // Content can reach below the body (floats, collapsed margins): grow
-      // until nothing scrolls.
+      // One height per pass (so a page sized to the frame is caught by the
+      // same-step guard): the body's bottom, or what already scrolls.
+      var hh = body.getBoundingClientRect().bottom + (win.scrollY || 0) + (parseFloat(win.getComputedStyle(body).marginBottom) || 0);
+      if (de.scrollHeight > de.clientHeight) hh = Math.max(hh, de.scrollHeight + 1);
+      set(hh);
+      // Content can reach below the body (floats, collapsed margins), which
+      // only shows once the frame is that short: grow until nothing scrolls.
       if (de.scrollHeight > de.clientHeight) set(de.scrollHeight + 1);
     }
     fr._scFit = fit;
@@ -2435,9 +2439,10 @@
     return '--sc-thead-bg:#' + hex + ';--sc-thead-fg:' + (white >= ink ? '#fff' : '#111827') + ';';
   }
 
-  // A cell is plain text where **double asterisks** mark bold.
+  // A cell is plain text where **double asterisks** mark bold (the markers
+  // hug the text, so "a ** b ** c" stays as typed).
   function cellNodes(text) {
-    return String(text == null ? '' : text).split(/\*\*([\s\S]+?)\*\*/).map(function (part, i) {
+    return String(text == null ? '' : text).split(/\*\*(\S(?:[\s\S]*?\S)?)\*\*/).map(function (part, i) {
       return i % 2 ? h('strong', { text: part }) : part;
     });
   }

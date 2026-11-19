@@ -19,6 +19,10 @@ const MARKS: TableRowMark[] = ['', 'highlight', 'muted']
  *  again when it already is: the markers may sit inside the selection or
  *  just around it. */
 export function toggleBold(value: string, a: number, b: number): string {
+  // Bold hugs the words: spaces at the ends of the selection stay outside.
+  while (a < b && /\s/.test(value[a])) a++
+  while (b > a && /\s/.test(value[b - 1])) b--
+  if (a === b) return value
   const picked = value.slice(a, b)
   if (picked.length > 4 && picked.startsWith('**') && picked.endsWith('**')) {
     return value.slice(0, a) + picked.slice(2, -2) + value.slice(b)
@@ -47,8 +51,9 @@ export default function TableBlock({
   const cards = layout === 'cards' ? tableCards(rows) : null
 
   function setCell(r: number, c: number, value: string) {
+    // A short row (hand-edited data) is filled out to the cell being typed in.
     const next = rows.map((row, ri) =>
-      ri === r ? row.map((cell, ci) => (ci === c ? value : cell)) : row,
+      ri === r ? Array.from({ length: Math.max(row.length, c + 1) }, (_, ci) => (ci === c ? value : row[ci] ?? '')) : row,
     )
     update(lessonId, block.id, { rows: next }, `table-${block.id}-${r}-${c}`)
   }
@@ -86,7 +91,10 @@ export default function TableBlock({
     const grid = parseGrid(e.clipboardData.getData('text/plain'), e.clipboardData.getData('text/html'))
     if (!grid) return
     e.preventDefault()
-    update(lessonId, block.id, { rows: pasteGrid(rows, r, c, grid) })
+    let next = pasteGrid(rows, r, c, grid)
+    // Card titles and line labels are one line each.
+    if (cards) next = next.map((row, ri) => row.map((cell, ci) => (ri === 0 || ci === 0 ? cell.replace(/\s*\n\s*/g, ' ') : cell)))
+    update(lessonId, block.id, { rows: next })
   }
 
   const markButton = (r: number) => {

@@ -297,7 +297,8 @@ class Repairer {
           : undefined
       }
       if (data.highlightColumn !== undefined) {
-        const n = Number(data.highlightColumn)
+        const raw = data.highlightColumn
+        const n = typeof raw === 'number' || (typeof raw === 'string' && /^\d+$/.test(raw.trim())) ? Number(raw) : NaN
         data.highlightColumn = Number.isInteger(n) && n > 0 ? n : undefined
       }
     }

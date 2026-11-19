@@ -38,7 +38,8 @@ function walk(node: Node, inline: boolean): string {
   if (SKIP.has(tag)) return ''
   if (tag === 'BR') return '<br>'
   if (tag === 'IMG') {
-    const src = el.getAttribute('src') ?? ''
+    // In the editor a project image shows through a blob: URL; its real path is in data-asset.
+    const src = el.getAttribute('data-asset') ?? el.getAttribute('src') ?? ''
     return !inline && SAFE_IMAGE.test(src) ? `<img src="${esc(src).replace(/"/g, '&quot;')}" alt="${esc(el.getAttribute('alt') ?? '').replace(/"/g, '&quot;')}">` : ''
   }
   const children = (flat: boolean) => [...el.childNodes].map((ch) => walk(ch, flat)).join('')

@@ -59,11 +59,12 @@ export function tableClass(width: 'full' | 'auto' = 'full', align: TextAlign = '
 
 export const TABLE_STYLES: readonly TableStyle[] = ['grid', 'lines', 'stripes', 'panel']
 
-/** A table cell is plain text where **double asterisks** mark bold. Splits it
- *  into runs; the player's cellNodes does the same. */
+/** A table cell is plain text where **double asterisks** mark bold: the
+ *  markers hug the text (no space just inside them), so "a ** b ** c" stays
+ *  as typed. Splits it into runs; the player's cellNodes does the same. */
 export function cellRuns(text: string): { text: string; bold: boolean }[] {
   return text
-    .split(/\*\*([\s\S]+?)\*\*/)
+    .split(/\*\*(\S(?:[\s\S]*?\S)?)\*\*/)
     .map((part, i) => ({ text: part, bold: i % 2 === 1 }))
     .filter((run) => run.text)
 }

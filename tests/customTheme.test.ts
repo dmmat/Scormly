@@ -54,6 +54,7 @@ describe('customThemeTokens', () => {
     expect(normalizeHex('0369A1')).toBe('#0369a1')
     expect(normalizeHex('#12345')).toBeNull()
     expect(normalizeHex('red')).toBeNull()
+    expect(normalizeHex(0 as unknown as string)).toBeNull()
   })
 })
 
