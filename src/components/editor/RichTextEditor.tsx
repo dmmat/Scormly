@@ -547,7 +547,8 @@ export default function RichTextEditor({
         />
       )}
       {(focused || link || picker) && (
-        <div className="relative mb-2 rounded-md border border-gray-200 bg-white p-1 shadow-sm">
+        // As wide as its buttons, not the text below: a floating tool strip.
+        <div className="relative mb-2 w-fit max-w-full rounded-lg border border-gray-200/80 bg-white p-1 text-gray-600 shadow-[0_1px_2px_rgba(15,23,42,0.06),0_6px_16px_-8px_rgba(15,23,42,0.25)]">
           <div className="flex flex-wrap items-center gap-0.5">
             <ToolButton label={t('bold')} keys={KEYS.bold} active={fmt.bold} onClick={() => run('bold')}>
               <IconBold />
@@ -558,13 +559,17 @@ export default function RichTextEditor({
             <ToolButton label={t('underline')} keys={KEYS.underline} active={fmt.underline} onClick={() => run('underline')}>
               <IconUnderline />
             </ToolButton>
+            <Divider />
             <ToolButton label={t('link')} keys={KEYS.link} active={fmt.link || !!link} onClick={() => (link ? setLink(null) : openLink())}>
               <IconLink />
             </ToolButton>
             {inline ? (
-              <ToolButton label={t('clearFormat')} keys={KEYS.clearFormat} onClick={() => run('clear')}>
-                <IconClear />
-              </ToolButton>
+              <>
+                <Divider />
+                <ToolButton label={t('clearFormat')} keys={KEYS.clearFormat} onClick={() => run('clear')}>
+                  <IconClear />
+                </ToolButton>
+              </>
             ) : (
               <>
                 <Divider />
@@ -605,6 +610,7 @@ export default function RichTextEditor({
                 >
                   <IconTable />
                 </ToolButton>
+                <Divider />
                 <ToolButton label={t('clearFormat')} keys={KEYS.clearFormat} onClick={() => run('clear')}>
                   <IconClear />
                 </ToolButton>
@@ -684,7 +690,7 @@ export default function RichTextEditor({
 }
 
 function Divider() {
-  return <span className="mx-0.5 h-5 w-px bg-gray-200" />
+  return <span aria-hidden className="mx-1 h-4 w-px shrink-0 bg-gray-200" />
 }
 
 function ToolButton({
@@ -715,8 +721,8 @@ function ToolButton({
       onMouseDown={(e) => e.preventDefault()}
       onClick={onClick}
       disabled={disabled}
-      className={`flex h-8 w-8 items-center justify-center rounded disabled:opacity-30 ${
-        active ? 'bg-brand/10 text-brand-dark' : 'text-gray-600 hover:bg-gray-100 disabled:hover:bg-transparent'
+      className={`flex h-7 w-7 items-center justify-center rounded-md transition-colors disabled:opacity-30 ${
+        active ? 'bg-brand/10 text-brand-dark' : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900 disabled:hover:bg-transparent'
       }`}
     >
       {children}
