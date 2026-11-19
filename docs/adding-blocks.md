@@ -50,7 +50,7 @@ divider: {
 
 The registry entry automatically appears in the "+ Add block" menu under its
 `category`, one of `'text'`, `'media'`, `'structure'` (structure & explanation:
-process, steps, timeline, comparison, tabs, accordion), `'interactive'`,
+process, steps, timeline, comparison, cards, tabs, accordion), `'interactive'`,
 `'assessment'` (knowledge check: scored blocks) or `'navigation'`. Within a
 category, blocks are listed in registry order. The name and description come
 from the `blocks` i18n namespace (`divider`, `dividerDesc`).

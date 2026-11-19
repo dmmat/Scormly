@@ -227,9 +227,15 @@ In the LMS, the player implements the SCORM API: for 1.2 that is `LMSInitialize`
   answers everything right, or as many right as possible while staying
   under the passing score, and submits, so authors can check the result
   panels and the gates after a test without answering by hand.
-- **Explainer blocks**: `process`, `steps`, `comparison`, `beforeAfter`,
+- **Explainer blocks**: `process`, `steps`, `comparison`, `cards`, `beforeAfter`,
   `reflection` (shared CSS `sc-process*`, `sc-steps*`, `sc-compare*`,
-  `sc-ba*`, `sc-reflect*`). Process and comparison lay out with container
+  `sc-card*`, `sc-ba*`, `sc-reflect*`).
+- **Table block**: `rows: string[][]` is the only content; `style` (design),
+  `headerColor`, `rowMarks` and `layout: 'cards'` (one card per column,
+  `sc-tcard*`) only change how it is drawn, so a table switches to cards and
+  back without losing anything. A cell is plain text where `**…**` marks bold
+  (`cellRuns` in `blocks/styleClasses.ts`, `cellNodes` in the player); a
+  spreadsheet range pastes through `lib/tablePaste.ts`. Process and comparison lay out with container
   queries, so they follow the block's own width in the editor, preview and
   player; pyramid / ring geometry lives in `src/blocks/process.ts` (mirrored in
   the player).

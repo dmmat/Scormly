@@ -544,11 +544,7 @@ export default function AddBlockMenu({
                               </span>
                               <span className="min-w-0 flex-1 text-sm font-medium leading-tight text-gray-800">{item.title}</span>
                               {item.variants &&
-                                (matchedLabel ? (
-                                  <span className="shrink-0 rounded-full bg-brand/15 px-1.5 py-px text-[10.5px] font-medium text-brand-dark">
-                                    {matchedLabel}
-                                  </span>
-                                ) : (
+                                !matchedLabel && (
                                   // Compact "has styles" mark, so titles keep to one line.
                                   <span
                                     title={tb('variantsCount', { n: item.variants.length })}
@@ -561,8 +557,14 @@ export default function AddBlockMenu({
                                     <span aria-hidden>{item.variants.length}</span>
                                     <span className="sr-only">{tb('variantsCount', { n: item.variants.length })}</span>
                                   </span>
-                                ))}
+                                )}
                             </span>
+                            {matchedLabel && (
+                              // The style the search matched, on its own line: a long name doesn't fit beside the title.
+                              <span className="max-w-full self-start truncate rounded-full bg-brand/15 px-1.5 py-px text-[10.5px] font-medium text-brand-dark">
+                                {matchedLabel}
+                              </span>
+                            )}
                             <span className="text-xs leading-tight text-gray-500">{item.description}</span>
                           </button>
                           {showChips && item.type && (

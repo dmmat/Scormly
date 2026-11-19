@@ -47,6 +47,7 @@ const ITEMS: Record<string, Record<string, Obj>> = {
   process: { steps: { title: '', text: '' } },
   steps: { steps: { title: '', html: '' } },
   comparison: { columns: { title: '', tone: 'neutral', items: [] } },
+  cards: { items: { badge: '', title: '', html: '' } },
   scenario: { nodes: { text: '', emotion: 'neutral', choices: [] } },
 }
 
@@ -287,7 +288,20 @@ class Repairer {
     if (type === 'comparison') {
       for (const col of data.columns as Obj[]) col.items = this.strings(col.items as unknown[], { ...vars, key: 'columns' })
     }
-    if (type === 'table') data.rows = this.rows(data.rows as unknown[], { ...vars, key: 'rows' })
+    if (type === 'table') {
+      data.rows = this.rows(data.rows as unknown[], { ...vars, key: 'rows' })
+      // Optional drawing hints: a malformed one is dropped quietly.
+      if (data.rowMarks !== undefined) {
+        data.rowMarks = Array.isArray(data.rowMarks)
+          ? data.rowMarks.map((m) => (m === 'highlight' || m === 'muted' ? m : ''))
+          : undefined
+      }
+      if (data.highlightColumn !== undefined) {
+        const raw = data.highlightColumn
+        const n = typeof raw === 'number' || (typeof raw === 'string' && /^\d+$/.test(raw.trim())) ? Number(raw) : NaN
+        data.highlightColumn = Number.isInteger(n) && n > 0 ? n : undefined
+      }
+    }
     if (type === 'scenario') {
       for (const node of data.nodes as Obj[]) {
         node.choices = this.items(node.choices as unknown[], CHOICE_TEMPLATE, true, { ...vars, key: 'choices' })

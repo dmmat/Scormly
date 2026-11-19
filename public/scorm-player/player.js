@@ -20,6 +20,21 @@
     terminal: ['#15803d', '#166534', '0', '0'],
   };
 
+  // Second accent per theme [accent2, accent2-dark]: decorative details
+  // (labels, numbers, table and card headers). Same values as index.css.
+  var THEME_ACCENT2 = {
+    rose: ['#7c3aed', '#6d28d9'],
+    ocean: ['#c2410c', '#9a3412'],
+    forest: ['#b45309', '#92400e'],
+    sunset: ['#7e22ce', '#6b21a8'],
+    mono: ['#2563eb', '#1d4ed8'],
+    indigo: ['#db2777', '#be185d'],
+    crimson: ['#1e40af', '#1e3a8a'],
+    mint: ['#be185d', '#9d174d'],
+    grape: ['#0f766e', '#115e59'],
+    terminal: ['#b45309', '#92400e'],
+  };
+
   var T = {
     en: { prev: 'Previous', next: 'Next', progress: 'Lesson {n} of {total}',
       empty: 'This lesson has no content yet.', submit: 'Submit answer', submitAll: 'Submit answers', retry: 'Try again',
@@ -506,6 +521,10 @@
       : THEME_ACCENT[course.theme] || THEME_ACCENT.rose;
     document.documentElement.style.setProperty('--brand', accent[0]);
     document.documentElement.style.setProperty('--brand-dark', accent[1]);
+    var accent2 = tk ? [tk.accent2 || tk.brand, tk.accent2Dark || tk.brandDark]
+      : THEME_ACCENT2[course.theme] || THEME_ACCENT2.rose;
+    document.documentElement.style.setProperty('--accent2', accent2[0]);
+    document.documentElement.style.setProperty('--accent2-dark', accent2[1]);
     document.documentElement.style.setProperty('--radius-btn', accent[2]);
     document.documentElement.style.setProperty('--radius-surface', accent[3]);
     // Theme-specific extras beyond color/radius (e.g. terminal font) live in player.css.
@@ -1625,7 +1644,15 @@
     switch (b.type) {
       case 'heading': {
         var el = h('h' + b.data.level, { text: b.data.text });
-        el.style.textAlign = b.data.align || 'left';
+        var halign = { center: 1, right: 1 }[b.data.align] ? b.data.align : 'left';
+        if (b.data.eyebrow || b.data.subtitle) {
+          el = h('div', { class: 'sc-head sc-head-open sc-head-' + halign }, [
+            b.data.eyebrow ? h('p', { class: 'sc-head-eyebrow', text: b.data.eyebrow }) : null,
+            el,
+            b.data.subtitle ? h('div', { class: 'sc-head-sub', html: b.data.subtitle }) : null,
+          ]);
+        }
+        el.style.textAlign = halign;
         return el;
       }
       case 'paragraph': {
@@ -1641,7 +1668,14 @@
         var nv = NOTE_ICONS[b.data.variant] ? b.data.variant : 'note';
         var icon = h('span', { class: 'sc-note-icon', 'aria-hidden': 'true' });
         icon.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="' + NOTE_ICONS[nv] + '"/></svg>';
-        return h('div', { class: 'sc-note sc-note-' + nv }, [icon, h('p', { class: 'sc-note-text', text: b.data.text || '' })]);
+        var noteOwn = ownColor('note', b.data.color);
+        return h('div', { class: 'sc-note sc-note-' + nv + (noteOwn ? ' sc-note-own' : ''), style: noteOwn }, [
+          b.data.icon === false ? null : icon,
+          h('div', { class: 'sc-note-body' }, [
+            b.data.title ? h('p', { class: 'sc-note-title', text: b.data.title }) : null,
+            h('div', { class: 'sc-note-text', html: stepHtml(b.data) }),
+          ]),
+        ]);
       }
       case 'image': {
         if (!b.data.src) return null;
@@ -1715,6 +1749,7 @@
       case 'imageText': return renderImageText(b);
       case 'attachment': return renderAttachment(b);
       case 'columns': return renderColumns(b);
+      case 'cards': return renderCards(b);
       case 'process': return renderProcess(b);
       case 'steps': return renderSteps(b);
       case 'comparison': return renderComparison(b);
@@ -1798,28 +1833,40 @@
     doc.head.insertBefore(link, style);
   }
 
-  // Size a frame to its page's content (see HEIGHT_REPORTER in the builder's
-  // htmlBundle.ts for the rules). A cross-origin page can't be measured; it
-  // may post { type: 'scormly:height', height } instead.
+  // Size a frame to its page's content (same rules as HEIGHT_REPORTER in the
+  // builder's htmlBundle.ts). The height is the body's bottom edge rounded up:
+  // scrollHeight is a whole number and never below the frame's own height, so
+  // alone it leaves a fraction of a pixel scrolling, or a short page in a tall
+  // frame. A cross-origin page can't be measured; it may post
+  // { type: 'scormly:height', height } instead.
   function fitFrame(fr) {
     var win, doc;
     try { win = fr.contentWindow; doc = fr.contentDocument; } catch (e) { return; }
     if (!doc || !doc.documentElement) return;
     var last = 0, step = 0, same = 0;
-    function measure() {
-      var de = doc.documentElement, body = doc.body;
-      if (!body) return 0;
-      if (de.scrollHeight > de.clientHeight + 1) return de.scrollHeight;
-      return Math.ceil(body.getBoundingClientRect().bottom + (parseFloat(win.getComputedStyle(body).marginBottom) || 0));
-    }
-    function fit() {
-      var hh = Math.min(measure(), 4000);
-      if (!hh || Math.abs(hh - last) < 2) return;
+    function set(hh) {
+      hh = Math.min(Math.ceil(hh), 4000);
+      if (!(hh > 0) || hh === last) return;
+      // A page sized to the frame (100vh + a margin) grows by the same step
+      // every time: leave it alone.
       if (hh - last === step && step > 0 && ++same > 2) return;
       if (hh - last !== step) same = 0;
       step = hh - last; last = hh;
       fr.style.height = hh + 'px';
     }
+    function fit() {
+      var de = doc.documentElement, body = doc.body;
+      if (!body) return;
+      // One height per pass (so a page sized to the frame is caught by the
+      // same-step guard): the body's bottom, or what already scrolls.
+      var hh = body.getBoundingClientRect().bottom + (win.scrollY || 0) + (parseFloat(win.getComputedStyle(body).marginBottom) || 0);
+      if (de.scrollHeight > de.clientHeight) hh = Math.max(hh, de.scrollHeight + 1);
+      set(hh);
+      // Content can reach below the body (floats, collapsed margins), which
+      // only shows once the frame is that short: grow until nothing scrolls.
+      if (de.scrollHeight > de.clientHeight) set(de.scrollHeight + 1);
+    }
+    fr._scFit = fit;
     fit();
     if (win.ResizeObserver) {
       var ro = new win.ResizeObserver(fit);
@@ -1833,7 +1880,11 @@
     if (!m || m.type !== 'scormly:height' || typeof m.height !== 'number' || !(m.height > 0)) return;
     var frames = document.querySelectorAll('iframe.sc-html-frame[data-fit]');
     for (var i = 0; i < frames.length; i++) {
-      if (frames[i].contentWindow === e.source) frames[i].style.height = Math.min(Math.ceil(m.height), 4000) + 'px';
+      if (frames[i].contentWindow !== e.source) continue;
+      // A page we can measure is measured again (its own number is often
+      // scrollHeight, which can't shrink); otherwise its number is all we have.
+      if (frames[i]._scFit) frames[i]._scFit();
+      else frames[i].style.height = Math.min(Math.ceil(m.height), 4000) + 'px';
     }
   });
 
@@ -1896,6 +1947,56 @@
   }
 
   var GRIP_ICON = '<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><circle cx="9" cy="6" r="1.5"/><circle cx="15" cy="6" r="1.5"/><circle cx="9" cy="12" r="1.5"/><circle cx="15" cy="12" r="1.5"/><circle cx="9" cy="18" r="1.5"/><circle cx="15" cy="18" r="1.5"/></svg>';
+
+  // '#abc' / 'aabbcc' -> 'aabbcc'; null when not a hex color.
+  function hex6(color) {
+    var m = /^#?([0-9a-f]{3}|[0-9a-f]{6})$/i.exec(String(color || '').trim());
+    return m ? (m[1].length === 3 ? m[1].replace(/./g, '$&$&') : m[1]).toLowerCase() : null;
+  }
+  // A color deepened until it reads as text on its own pale tint: darkened to
+  // 4.5:1 against white, then a quarter further (readableText in customTheme.ts).
+  function deepText(hex) {
+    var c = [0, 2, 4].map(function (i) { return parseInt(hex.slice(i, i + 2), 16); });
+    var onWhite = function (rgb) {
+      var l = rgb.map(function (v) { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); });
+      return 1.05 / (0.2126 * l[0] + 0.7152 * l[1] + 0.0722 * l[2] + 0.05);
+    };
+    for (var i = 0; i < 40 && onWhite(c.map(Math.round)) < 4.5; i++) c = c.map(function (v) { return v * 0.95; });
+    return '#' + c.map(function (v) { var d = Math.round(v * 0.75).toString(16); return d.length < 2 ? '0' + d : d; }).join('');
+  }
+  // Variables for something with its own color (a card, a note, a label): the
+  // color and its text version. Null when the color isn't a hex.
+  function ownColor(name, color) {
+    var hex = hex6(color);
+    return hex ? '--sc-' + name + ':#' + hex + ';--sc-' + name + '-text:' + deepText(hex) : null;
+  }
+
+  // A card label's color: the theme's main color, grey or its own.
+  function badgeVars(color) {
+    if (color === 'accent') return '--sc-badge:var(--brand);--sc-badge-text:var(--brand-dark)';
+    return ownColor('badge', color === 'grey' ? '#6b7280' : color);
+  }
+
+  // Cards: tiles with an optional number and label, a title and rich text.
+  function renderCards(b) {
+    var d = b.data || {}, items = d.items || [];
+    if (!items.length) return null;
+    var rows = d.layout === 'rows';
+    var per = { 2: 1, 3: 1, 4: 1 }[d.perRow] ? d.perRow : 0;
+    var wrap = h('div', { class: 'sc-cards' + (rows ? ' sc-cards-rows' : '') + (d.labelStyle === 'text' ? ' sc-cards-text' : '') + (d.titleStyle === 'band' && !rows ? ' sc-cards-band' : ''), style: per && !rows ? '--per:' + per : null });
+    items.forEach(function (it, i) {
+      var own = ownColor('card', it.color);
+      wrap.appendChild(h('div', { class: 'sc-card' + (own ? ' sc-card-own' : (it.highlight ? ' sc-card-hl' : '') + (it.tone === 'positive' ? ' sc-card-pos' : it.tone === 'negative' ? ' sc-card-neg' : '')), style: own }, [
+        d.numbered || it.badge ? h('div', { class: 'sc-card-top' }, [
+          d.numbered ? h('span', { class: 'sc-card-num', text: String(i + 1) }) : null,
+          it.badge ? h('span', { class: 'sc-card-badge' + (badgeVars(it.badgeColor) ? ' sc-badge-own' : ''), text: it.badge, style: badgeVars(it.badgeColor) }) : null,
+        ]) : null,
+        it.title ? h('h3', { class: 'sc-card-title', text: it.title }) : null,
+        it.html ? h('div', { class: 'sc-card-text rich-text', html: it.html }) : null,
+      ]));
+    });
+    return wrap;
+  }
 
   // 2–4 side-by-side text columns (stacked on phones).
   function renderColumns(b) {
@@ -2065,7 +2166,7 @@
         c.title ? h('h3', { class: 'sc-compare-title', text: c.title }) : null,
         h('ul', { class: 'sc-compare-list' }, items.map(function (it) {
           return h('li', { class: 'sc-compare-item' }, [
-            h('span', { class: 'sc-compare-mark', 'aria-hidden': 'true' }), h('span', { text: it })]);
+            h('span', { class: 'sc-compare-mark', 'aria-hidden': 'true' }), h('span', null, cellNodes(it))]);
         })),
       ]));
     });
@@ -2345,15 +2446,64 @@
     return withTranscript(wrap, b.data.transcript);
   }
 
+  // Header color of a table (data.headerColor): '' = the theme accent the
+  // stylesheet falls back to. Keep in sync with tableHeadStyle (styleClasses.ts).
+  function tableHead(color) {
+    var m = /^#?([0-9a-f]{3}|[0-9a-f]{6})$/i.exec(String(color === 'dark' ? '#1f2937' : color || '').trim());
+    if (!m) return '';
+    var hex = m[1].length === 3 ? m[1].replace(/./g, '$&$&') : m[1];
+    var lum = function (h6) {
+      var c = [0, 2, 4].map(function (i) {
+        var v = parseInt(h6.slice(i, i + 2), 16) / 255;
+        return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+      });
+      return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2];
+    };
+    var l = lum(hex);
+    var white = 1.05 / (l + 0.05), ink = (l + 0.05) / (lum('111827') + 0.05);
+    return '--sc-thead-bg:#' + hex + ';--sc-thead-fg:' + (white >= ink ? '#fff' : '#111827') + ';';
+  }
+
+  // A cell is plain text where **double asterisks** mark bold (the markers
+  // hug the text, so "a ** b ** c" stays as typed).
+  function cellNodes(text) {
+    return String(text == null ? '' : text).split(/\*\*(\S(?:[\s\S]*?\S)?)\*\*/).map(function (part, i) {
+      return i % 2 ? h('strong', { text: part }) : part;
+    });
+  }
+
   function renderTable(b) {
     var rows = b.data.rows || [];
+    var head = tableHead(b.data.headerColor);
+    var marks = b.data.rowMarks || [];
+    var markClass = function (r) { return marks[r] === 'highlight' ? ' sc-row-hl' : marks[r] === 'muted' ? ' sc-row-muted' : ''; };
+    // Cards: every column after the first is a card, titled by the first row
+    // and labelled by the first column.
+    var count = rows.length ? (rows[0] || []).length - 1 : 0;
+    if (b.data.layout === 'cards' && count > 0) {
+      var cards = h('div', { class: 'sc-tcards', style: head + '--rows:' + rows.length });
+      for (var c = 1; c <= count; c++) {
+        var card = h('div', { class: 'sc-tcard' + (b.data.highlightColumn === c ? ' sc-tcard-hl' : '') }, [h('h3', { class: 'sc-tcard-title' }, cellNodes(rows[0][c]))]);
+        for (var r = 1; r < rows.length; r++) {
+          card.appendChild(h('div', { class: 'sc-tcard-cell' + markClass(r) }, [
+            rows[r][0] ? h('span', { class: 'sc-tcard-label' }, cellNodes(rows[r][0])) : null,
+            h('span', { class: 'sc-tcard-value' }, cellNodes(rows[r][c])),
+          ]));
+        }
+        cards.appendChild(card);
+      }
+      return cards;
+    }
     var auto = b.data.width === 'auto';
     var align = { center: 1, right: 1 }[b.data.align] ? b.data.align : 'left';
-    var table = h('table', { class: 'data-table ' + (auto ? 'sc-table sc-table-auto sc-table-' + align : 'sc-table') });
+    var design = { lines: 1, stripes: 1, panel: 1 }[b.data.style] ? ' sc-table-' + b.data.style : '';
+    var table = h('table', { class: 'data-table ' + (auto ? 'sc-table sc-table-auto sc-table-' + align : 'sc-table') + design + (head ? ' sc-thead-set' : ''), style: head || null });
     rows.forEach(function (row, ri) {
-      var tr = h('tr');
+      // Every second body row, for the striped design.
+      var body = b.data.header ? ri - 1 : ri;
+      var tr = h('tr', { class: (body > 0 && body % 2 ? 'sc-table-alt' : '') + (body >= 0 ? markClass(ri) : '') });
       row.forEach(function (cell) {
-        tr.appendChild(h(b.data.header && ri === 0 ? 'th' : 'td', { text: cell }));
+        tr.appendChild(h(b.data.header && ri === 0 ? 'th' : 'td', null, cellNodes(cell)));
       });
       table.appendChild(tr);
     });

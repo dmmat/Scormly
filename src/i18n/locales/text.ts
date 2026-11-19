@@ -5,6 +5,8 @@ const text: LocaleTable = {
   en: {
     // Heading
     headingPlaceholder: 'Heading',
+    eyebrowPlaceholder: 'Line above (optional)',
+    subtitlePlaceholder: 'Subtitle (optional)',
     headingLevel: 'Heading level {level}',
 
     // Paragraph
@@ -21,6 +23,11 @@ const text: LocaleTable = {
 
     // Note
     noteKind: 'Type',
+    noteIcon: 'Icon',
+    noteColor: 'Color',
+    noteColor_type: 'The type’s color',
+    noteColor_custom: 'Your own color',
+    noteTitlePlaceholder: 'Label (optional)',
     note: 'Note',
     tip: 'Tip',
     success: 'Success',
@@ -36,6 +43,8 @@ const text: LocaleTable = {
   uk: {
     // Heading
     headingPlaceholder: 'Заголовок',
+    eyebrowPlaceholder: 'Рядок над заголовком (необов’язково)',
+    subtitlePlaceholder: 'Підзаголовок (необов’язково)',
     headingLevel: 'Рівень заголовка {level}',
 
     // Paragraph
@@ -52,6 +61,11 @@ const text: LocaleTable = {
 
     // Note
     noteKind: 'Тип',
+    noteIcon: 'Іконка',
+    noteColor: 'Колір',
+    noteColor_type: 'Колір типу',
+    noteColor_custom: 'Свій колір',
+    noteTitlePlaceholder: 'Напис зверху (необов’язково)',
     note: 'Примітка',
     tip: 'Порада',
     success: 'Успіх',
@@ -67,6 +81,8 @@ const text: LocaleTable = {
   fr: {
     // Heading
     headingPlaceholder: 'Titre',
+    eyebrowPlaceholder: 'Surtitre (facultatif)',
+    subtitlePlaceholder: 'Sous-titre (facultatif)',
     headingLevel: 'Titre de niveau {level}',
 
     // Paragraph
@@ -83,6 +99,11 @@ const text: LocaleTable = {
 
     // Note
     noteKind: 'Type',
+    noteIcon: 'Icône',
+    noteColor: 'Couleur',
+    noteColor_type: 'Couleur du type',
+    noteColor_custom: 'Votre couleur',
+    noteTitlePlaceholder: 'Libellé (facultatif)',
     note: 'Note',
     tip: 'Conseil',
     success: 'Succès',
@@ -98,6 +119,8 @@ const text: LocaleTable = {
   es: {
     // Heading
     headingPlaceholder: 'Título',
+    eyebrowPlaceholder: 'Antetítulo (opcional)',
+    subtitlePlaceholder: 'Subtítulo (opcional)',
     headingLevel: 'Título de nivel {level}',
 
     // Paragraph
@@ -114,6 +137,11 @@ const text: LocaleTable = {
 
     // Note
     noteKind: 'Tipo',
+    noteIcon: 'Icono',
+    noteColor: 'Color',
+    noteColor_type: 'Color del tipo',
+    noteColor_custom: 'Tu propio color',
+    noteTitlePlaceholder: 'Etiqueta (opcional)',
     note: 'Nota',
     tip: 'Consejo',
     success: 'Éxito',
@@ -129,6 +157,8 @@ const text: LocaleTable = {
   de: {
     // Heading
     headingPlaceholder: 'Überschrift',
+    eyebrowPlaceholder: 'Dachzeile (optional)',
+    subtitlePlaceholder: 'Untertitel (optional)',
     headingLevel: 'Überschrift Ebene {level}',
 
     // Paragraph
@@ -145,6 +175,11 @@ const text: LocaleTable = {
 
     // Note
     noteKind: 'Typ',
+    noteIcon: 'Symbol',
+    noteColor: 'Farbe',
+    noteColor_type: 'Farbe des Typs',
+    noteColor_custom: 'Eigene Farbe',
+    noteTitlePlaceholder: 'Label (optional)',
     note: 'Hinweis',
     tip: 'Tipp',
     success: 'Erfolg',

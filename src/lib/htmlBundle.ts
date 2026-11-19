@@ -129,12 +129,16 @@ export async function loadHtmlBundle(bundleDir: string): Promise<Map<string, Blo
   return files
 }
 
-// Posts the page's content height to the editor, which sizes the frame to it.
-// scrollHeight never drops below the frame's own height, so a page shorter
-// than the frame is measured by its body; a height that keeps growing by the
+// Posts the page's content height to the editor, which sizes the frame to it
+// (messages marked `auto`). The height is the body's bottom edge rounded up:
+// scrollHeight is a whole number and never below the frame's own height, so
+// alone it leaves a fraction of a pixel scrolling, or a short page in a tall
+// frame. Content reaching below the body is caught by the overflow check, run
+// again once the frame has been resized; a height that keeps growing by the
 // same step is a page sized to the frame (100vh + margin) and is left alone.
-// Same rule as fitFrame() in the player.
-const HEIGHT_REPORTER = `<script>(function(){var l=0,d=0,n=0;function m(){var e=document.documentElement,b=document.body;if(!b)return 0;if(e.scrollHeight>e.clientHeight+1)return e.scrollHeight;return Math.ceil(b.getBoundingClientRect().bottom+(parseFloat(getComputedStyle(b).marginBottom)||0))}function s(){var h=m();if(!h||Math.abs(h-l)<2)return;if(h-l===d&&d>0&&++n>2)return;if(h-l!==d)n=0;d=h-l;l=h;parent.postMessage({type:'scormly:height',height:h},'*')}addEventListener('load',s);if(window.ResizeObserver){var o=new ResizeObserver(s);o.observe(document.documentElement);addEventListener('DOMContentLoaded',function(){o.observe(document.body)})}setTimeout(s,0)})()</script>`
+// The editor asks for a new measurement with { type: 'scormly:measure' }.
+// Same rules as fitFrame() in the player.
+const HEIGHT_REPORTER = `<script>(function(){var l=0,d=0,n=0;function p(h){h=Math.ceil(h);if(!(h>0)||h===l)return;if(h-l===d&&d>0&&++n>2)return;if(h-l!==d)n=0;d=h-l;l=h;parent.postMessage({type:'scormly:height',height:h,auto:true},'*')}function o(){var e=document.documentElement;if(e.scrollHeight>e.clientHeight)p(e.scrollHeight+1)}function s(){var b=document.body,e=document.documentElement;if(!b)return;var h=b.getBoundingClientRect().bottom+(window.scrollY||0)+(parseFloat(getComputedStyle(b).marginBottom)||0);if(e.scrollHeight>e.clientHeight)h=Math.max(h,e.scrollHeight+1);p(h)}addEventListener('load',s);addEventListener('resize',o);addEventListener('message',function(e){if(e.source===parent&&e.data&&e.data.type==='scormly:measure')s()});if(window.ResizeObserver){var r=new ResizeObserver(s);r.observe(document.documentElement);addEventListener('DOMContentLoaded',function(){r.observe(document.body)})}setTimeout(s,0)})()</script>`
 
 /** Code-mode document for the editor frame; `head` is injected first
  *  (the course styles, see kitHead). */

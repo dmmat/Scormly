@@ -1,5 +1,8 @@
 import type { ReactNode } from 'react'
 import type { NoteVariant } from '../../types/course'
+import { stepHtml } from '../../blocks/process'
+import RichHtml from '../RichHtml'
+import { ownColorStyle } from '../../blocks/styleClasses'
 
 // Callout icons (24×24, stroked). The SCORM player has the same paths.
 export const NOTE_ICONS: Record<NoteVariant, string> = {
@@ -9,25 +12,44 @@ export const NOTE_ICONS: Record<NoteVariant, string> = {
   warning: 'M12 9v4m0 4h.01M10.3 3.9 2.4 17.6A2 2 0 0 0 4.1 20.6h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z',
 }
 
-/** Callout box (learner view; the editor passes a textarea as children). */
+/** Callout box (learner view; the editor passes its fields as children).
+ *  Same markup as the player's note. */
 export default function NoteView({
   variant,
-  text,
+  text = '',
+  html,
+  title,
+  icon,
+  color,
   children,
 }: {
   variant: NoteVariant
   text?: string
+  html?: string
+  title?: string
+  icon?: boolean
+  color?: string
   children?: ReactNode
 }) {
   const v = NOTE_ICONS[variant] ? variant : 'note'
+  const own = ownColorStyle('note', color)
   return (
-    <div className={`sc-note sc-note-${v}`}>
-      <span className="sc-note-icon" aria-hidden>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-          <path d={NOTE_ICONS[v]} />
-        </svg>
-      </span>
-      {children ?? <p className="sc-note-text">{text}</p>}
+    <div className={`sc-note sc-note-${v}${own ? ' sc-note-own' : ''}`} style={own}>
+      {icon !== false && (
+        <span className="sc-note-icon" aria-hidden>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+            <path d={NOTE_ICONS[v]} />
+          </svg>
+        </span>
+      )}
+      <div className="sc-note-body">
+        {children ?? (
+          <>
+            {title && <p className="sc-note-title">{title}</p>}
+            <RichHtml html={stepHtml({ text, html })} className="sc-note-text" />
+          </>
+        )}
+      </div>
     </div>
   )
 }

@@ -37,6 +37,7 @@ Legend: `[ ]` planned · `[~]` in progress · `[x]` done
 - [x] Media: image (single), gallery, video (HTML5): data URL for now, assets/ in Phase 3
 - [x] Continue (unrestricted / restricted): reveals the rest of the lesson; restricted locks until the tasks above are done
 - [x] Process diagram, step-by-step guide, comparison, before / after slider, reflection (2026-10-26)
+- [x] Cards block; table designs, card view, header color, row marks, bold cells, spreadsheet paste; heading eyebrow and subtitle (2026-11-19)
 - [x] Widget block (`html`; Rise calls this a Code block; ours is Widget so it isn't confused with our `code` snippet block): the author's own HTML / CSS / JS, or an uploaded .html page / .zip site (unpacked to `assets/html/<folder>/`, the whole folder ships); fits the page's height or a fixed one; "Copy instructions for AI" + an AGENTS.md section on writing such pages (2026-11-09)
 - [x] Tabs, Accordion (functional + inline editing)
 - [x] Flashcards (CSS 3D flip)

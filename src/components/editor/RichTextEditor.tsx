@@ -1,14 +1,17 @@
 import {
   useEffect,
+  useLayoutEffect,
   useReducer,
   useRef,
   useState,
   type ChangeEvent,
+  type ClipboardEvent,
   type KeyboardEvent as ReactKeyboardEvent,
   type MouseEvent as ReactMouseEvent,
   type ReactNode,
 } from 'react'
 import { useT } from '../../i18n/I18nProvider'
+import { cleanPaste } from './pasteClean'
 import { saveAsset, resolveAssetUrl } from '../../lib/assets'
 import { KEYS } from '../../lib/keyboard'
 import ContextMenu, { type ContextMenuItem } from './ContextMenu'
@@ -96,6 +99,9 @@ interface RichTextEditorProps {
   /** Inline formatting only (bold, italic, underline, links): for short
    *  texts inside shapes, such as process diagram steps. */
   inline?: boolean
+  /** 'basic' leaves out alignment, images and tables: for text in a narrow
+   *  place, such as a card. Default 'full'. */
+  tools?: 'full' | 'basic'
 }
 
 // Lightweight rich-text editor: a contentEditable area plus a formatting toolbar
@@ -107,6 +113,7 @@ export default function RichTextEditor({
   placeholder,
   className,
   inline = false,
+  tools = 'full',
 }: RichTextEditorProps) {
   const { t } = useT('richtext')
   const ref = useRef<HTMLDivElement>(null)
@@ -127,6 +134,17 @@ export default function RichTextEditor({
   const [picker, setPicker] = useState(false)
   // Link editor: the URL being typed, and the link the caret was in (if any).
   const [link, setLink] = useState<{ url: string; anchor: HTMLAnchorElement | null } | null>(null)
+  // A short strip (inline text, basic tools) floats above the text instead of
+  // pushing it down, and hangs from the right edge when it would leave the page.
+  const floating = inline || tools === 'basic'
+  const barRef = useRef<HTMLDivElement>(null)
+  const [barRight, setBarRight] = useState(false)
+  useLayoutEffect(() => {
+    const bar = barRef.current
+    const root = rootRef.current
+    if (!floating || !bar || !root) return
+    setBarRight(root.getBoundingClientRect().left + bar.offsetWidth > window.innerWidth - 12)
+  }, [floating, focused])
   // Re-render after table edits that change the DOM but not React state.
   const [, bump] = useReducer((n: number) => n + 1, 0)
 
@@ -275,6 +293,18 @@ export default function RichTextEditor({
 
   function emit() {
     onChange(modelHtml())
+  }
+
+  // Pasted text keeps only what the toolbar offers (no colors, fonts or sizes).
+  function onPaste(e: ClipboardEvent<HTMLDivElement>) {
+    const html = e.clipboardData.getData('text/html')
+    const plain = e.clipboardData.getData('text/plain')
+    if (!html && !plain) return
+    e.preventDefault()
+    document.execCommand('insertHTML', false, cleanPaste(html, plain, inline, tools === 'basic'))
+    // A pasted project image arrives with its assets/ path: show it.
+    resolveAssetImages()
+    emit()
   }
 
   function exec(command: string, value?: string) {
@@ -547,8 +577,14 @@ export default function RichTextEditor({
         />
       )}
       {(focused || link || picker) && (
-        <div className="relative mb-2 rounded-md border border-gray-200 bg-white p-1 shadow-sm">
-          <div className="flex flex-wrap items-center gap-0.5">
+        // As wide as its buttons, not the text below.
+        <div
+          ref={barRef}
+          className={`${
+            floating ? `absolute bottom-full z-20 mb-1.5 w-max ${barRight ? 'right-0' : 'left-0'}` : 'relative mb-2 w-fit max-w-full'
+          } rounded-lg border border-gray-200/80 bg-white p-1 text-gray-600 shadow-[0_1px_2px_rgba(15,23,42,0.06),0_6px_16px_-8px_rgba(15,23,42,0.25)]`}
+        >
+          <div className={`flex items-center gap-0.5 ${floating ? 'flex-nowrap' : 'flex-wrap'}`}>
             <ToolButton label={t('bold')} keys={KEYS.bold} active={fmt.bold} onClick={() => run('bold')}>
               <IconBold />
             </ToolButton>
@@ -558,13 +594,17 @@ export default function RichTextEditor({
             <ToolButton label={t('underline')} keys={KEYS.underline} active={fmt.underline} onClick={() => run('underline')}>
               <IconUnderline />
             </ToolButton>
+            <Divider />
             <ToolButton label={t('link')} keys={KEYS.link} active={fmt.link || !!link} onClick={() => (link ? setLink(null) : openLink())}>
               <IconLink />
             </ToolButton>
             {inline ? (
-              <ToolButton label={t('clearFormat')} keys={KEYS.clearFormat} onClick={() => run('clear')}>
-                <IconClear />
-              </ToolButton>
+              <>
+                <Divider />
+                <ToolButton label={t('clearFormat')} keys={KEYS.clearFormat} onClick={() => run('clear')}>
+                  <IconClear />
+                </ToolButton>
+              </>
             ) : (
               <>
                 <Divider />
@@ -574,6 +614,8 @@ export default function RichTextEditor({
                 <ToolButton label={t('numberedList')} keys={KEYS.numberedList} active={fmt.ol} onClick={() => run('ol')}>
                   <IconNumbered />
                 </ToolButton>
+                {tools === 'full' && (
+                  <>
                 <Divider />
                 <ToolButton label={t('alignLeft')} keys={KEYS.alignLeft} onClick={() => run('left')}>
                   <IconAlign align="left" />
@@ -605,6 +647,9 @@ export default function RichTextEditor({
                 >
                   <IconTable />
                 </ToolButton>
+                  </>
+                )}
+                <Divider />
                 <ToolButton label={t('clearFormat')} keys={KEYS.clearFormat} onClick={() => run('clear')}>
                   <IconClear />
                 </ToolButton>
@@ -671,6 +716,7 @@ export default function RichTextEditor({
         suppressContentEditableWarning
         data-placeholder={placeholder}
         onInput={emit}
+        onPaste={onPaste}
         onKeyDown={onEditorKeyDown}
         onClick={onEditorClick}
         onContextMenu={onEditorContextMenu}
@@ -684,7 +730,7 @@ export default function RichTextEditor({
 }
 
 function Divider() {
-  return <span className="mx-0.5 h-5 w-px bg-gray-200" />
+  return <span aria-hidden className="mx-1 h-4 w-px shrink-0 bg-gray-200" />
 }
 
 function ToolButton({
@@ -715,8 +761,8 @@ function ToolButton({
       onMouseDown={(e) => e.preventDefault()}
       onClick={onClick}
       disabled={disabled}
-      className={`flex h-8 w-8 items-center justify-center rounded disabled:opacity-30 ${
-        active ? 'bg-brand/10 text-brand-dark' : 'text-gray-600 hover:bg-gray-100 disabled:hover:bg-transparent'
+      className={`flex h-7 w-7 items-center justify-center rounded-md transition-colors disabled:opacity-30 ${
+        active ? 'bg-brand/10 text-brand-dark' : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900 disabled:hover:bg-transparent'
       }`}
     >
       {children}
@@ -1059,8 +1105,10 @@ const IconTrash = () => (
     <path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3" />
   </SVG>
 )
+// "Tx": a letter T with a cross beside its foot.
 const IconClear = () => (
   <SVG>
-    <path d="M6 4h12M9 4l-1 16M15 4l1 16M4 8h16" />
+    <path d="M4 5h13M10.5 5v14M8 19h5" />
+    <path d="M16 14l5 5M21 14l-5 5" />
   </SVG>
 )

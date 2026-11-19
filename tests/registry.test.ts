@@ -5,6 +5,8 @@ import { describe, test, expect } from 'vitest'
 import { LANGUAGES } from '../src/i18n/types'
 import { BLOCK_CATEGORIES, BLOCK_REGISTRY, blockVariants, createBlock } from '../src/blocks/registry'
 import { checkCourse } from '../src/export/courseCheck'
+import { toggleBold } from '../src/blocks/components/TableBlock'
+import { cellRuns, tableCards } from '../src/blocks/styleClasses'
 import blocks from '../src/i18n/locales/blocks'
 import common from '../src/i18n/locales/common'
 import type { Block, BlockType, Course } from '../src/types/course'
@@ -71,6 +73,26 @@ describe('block registry', () => {
     const vs = createBlock('comparison', 'versus')
     expect(vs.type === 'comparison' && vs.data.versus).toBe(true)
     expect(vs.type === 'comparison' && vs.data.columns.every((c) => c.tone === 'neutral')).toBe(true)
+    const cards = createBlock('table', 'cards')
+    expect(cards.type === 'table' && cards.data.layout).toBe('cards')
+    // Cards need a title row and a label column to draw from.
+    expect(cards.type === 'table' && tableCards(cards.data.rows)?.cards.length).toBe(2)
+    expect(tableCards([['only']])).toBeNull()
+    expect(cellRuns('**Yes:** linked')).toEqual([{ text: 'Yes:', bold: true }, { text: ' linked', bold: false }])
+    expect(cellRuns('**two\nlines**')).toEqual([{ text: 'two\nlines', bold: true }])
+    expect(toggleBold('Yes: ok', 0, 4)).toBe('**Yes:** ok')
+    // Already bold: the markers inside the selection or just around it come off.
+    expect(toggleBold('**Yes:** ok', 0, 8)).toBe('Yes: ok')
+    expect(toggleBold('**Yes:** ok', 2, 6)).toBe('Yes: ok')
+    expect(cellRuns('a ** b ** c')).toEqual([{ text: 'a ** b ** c', bold: false }])
+    expect(cellRuns('**kwargs and **args')).toEqual([{ text: '**kwargs and **args', bold: false }])
+    expect(toggleBold('one two three', 3, 8)).toBe('one **two** three')
+    expect(cellRuns('2 * 3 ** 4')).toEqual([{ text: '2 * 3 ** 4', bold: false }])
+    expect(tableCards([['', 'A'], ['Price', '$1']])).toEqual({ labels: ['Price'], cards: [{ title: 'A', values: ['$1'] }] })
+    expect(createBlock('heading', 'section').data).toMatchObject({ level: 2, eyebrow: expect.any(String), subtitle: expect.any(String) })
+    expect(createBlock('cards', 'rows').data).toMatchObject({ layout: 'rows', numbered: true })
+    const labelled = createBlock('cards', 'labels')
+    expect(labelled.type === 'cards' && labelled.data.items.every((it) => it.badge)).toBe(true)
     // An unknown style falls back to the default block.
     expect(createBlock('note', 'nope').data).toEqual(createBlock('note').data)
   })

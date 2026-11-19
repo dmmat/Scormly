@@ -191,7 +191,13 @@ which all `*-brand` utilities read) and the button/interactive radius. Component
 must use the `.btn-primary` / `.btn-secondary` / `.interactive-surface` classes
 and the `*-brand` utilities so themes apply automatically.
 
-`theme: 'custom'` uses `Course.customTheme` (accent color + corner shape).
+Every theme also has a **second accent** (`--color-accent2` / `-dark`, the
+player's `--accent2`; `THEME_ACCENT2` in player.js mirrors index.css) for
+decorative details of learner content: labels, card numbers, a heading's
+eyebrow, table and card headers. It keeps the same AA contract as the brand.
+
+`theme: 'custom'` uses `Course.customTheme` (accent color, optional second
+accent `accent2`, corner shape).
 `src/theme/customTheme.ts` derives the shades, darkening the accent when
 needed to keep the AA contrast rule above; the editor applies them as inline
 CSS variables (`themeStyle`), and exports embed the resolved palette as
@@ -261,7 +267,7 @@ base path is enabled with the `GITHUB_PAGES=true` env var (see `vite.config.ts`)
 ## Roadmap (high level)
 
 Done: editor, all block types (incl. process diagram, step-by-step guide,
-comparison, before / after, reflection), themes (incl. custom), i18n, landing,
+comparison, cards, before / after, reflection), themes (incl. custom), i18n, landing,
 folder / browser / tab projects with autosave and history, project .zip,
 SCORM 1.2 / 2004 and cmi5 export, keyboard shortcuts, context menus,
 drag-and-drop. Next: plain xAPI export; later a paid tier (AI, cloud, sharing), so

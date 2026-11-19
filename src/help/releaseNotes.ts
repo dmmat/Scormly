@@ -12,6 +12,52 @@ export interface Release {
 
 export const RELEASES: Release[] = [
   {
+    id: '2026-11-19-cards-tables',
+    date: '2026-11-19',
+    items: {
+      en: [
+        'New Cards block: tiles with a label, a title and text, as a grid or as a ruled list. Number them, put titles on a strip, give any card its own color.',
+        'Tables: four designs, a header color, highlighted rows, bold in cells (Ctrl+B) and paste straight from Excel or Google Sheets. A table can also be shown as comparison cards, one per column.',
+        'Headings can open a section with a small line above and a subtitle. Notes take a label, can hide the icon, and their text can be bold or hold a link.',
+        'Themes have a second color for details (labels, numbers, headers), and cards, labels, notes and table headers can take a color of your own.',
+        'Text: a paste keeps only bold, italic, underline, links and lists, without foreign colors and fonts. In cards and notes the formatting bar floats above the text.',
+        'Fixes: widgets fit their height without a stray scrollbar, “Compact” brings a block closer to its neighbours, and a project that won’t open offers to choose its folder again.',
+      ],
+      uk: [
+        'Новий блок «Картки»: плитки з позначкою, назвою і текстом, сіткою або списком із лініями. Їх можна пронумерувати, винести назву на смугу й дати будь-якій картці свій колір.',
+        'Таблиці: чотири дизайни, колір шапки, виділені рядки, жирний у клітинках (Ctrl+B) і вставка прямо з Excel чи Google Sheets. Таблицю можна показати й картками порівняння, по одній на стовпець.',
+        'Заголовок може відкривати розділ: малий рядок над ним і підзаголовок. Примітка має напис зверху, іконку можна вимкнути, а текст може бути жирним чи з посиланням.',
+        'У тем з’явився другий колір для деталей (позначки, номери, шапки), а карткам, позначкам, приміткам і шапкам таблиць можна задати свій колір.',
+        'Текст: під час вставки лишаються тільки жирний, курсив, підкреслення, посилання й списки, без чужих кольорів і шрифтів. У картках і примітках панель форматування плаває над текстом.',
+        'Виправлення: віджети підбирають висоту без зайвої прокрутки, «Щільно» наближає блок до сусідніх, а проєкт, який не відкривається, пропонує вибрати папку ще раз.',
+      ],
+      fr: [
+        'Nouveau bloc Cartes : des tuiles avec étiquette, titre et texte, en grille ou en liste à filets. Numérotez-les, placez les titres sur un bandeau, donnez à une carte sa propre couleur.',
+        'Tableaux : quatre styles, couleur d’en-tête, lignes mises en évidence, gras dans les cellules (Ctrl+B) et collage direct depuis Excel ou Google Sheets. Un tableau peut aussi s’afficher en cartes comparatives, une par colonne.',
+        'Un titre peut ouvrir une section avec un surtitre et un sous-titre. Les notes acceptent un libellé, peuvent masquer l’icône, et leur texte peut être en gras ou contenir un lien.',
+        'Les thèmes ont une seconde couleur pour les détails (étiquettes, numéros, en-têtes), et les cartes, étiquettes, notes et en-têtes de tableau peuvent prendre votre propre couleur.',
+        'Texte : un collage ne garde que le gras, l’italique, le souligné, les liens et les listes, sans couleurs ni polices étrangères. Dans les cartes et les notes, la barre de mise en forme flotte au-dessus du texte.',
+        'Correctifs : les widgets s’ajustent en hauteur sans barre de défilement, « Compact » rapproche un bloc de ses voisins, et un projet qui ne s’ouvre pas propose de choisir à nouveau son dossier.',
+      ],
+      es: [
+        'Nuevo bloque Tarjetas: fichas con etiqueta, título y texto, en cuadrícula o como lista con líneas. Numéralas, pon los títulos en una franja y da a cualquier tarjeta su propio color.',
+        'Tablas: cuatro diseños, color del encabezado, filas destacadas, negrita en las celdas (Ctrl+B) y pegado directo desde Excel o Google Sheets. Una tabla también puede mostrarse como tarjetas comparativas, una por columna.',
+        'Un título puede abrir una sección con un antetítulo y un subtítulo. Las notas admiten una etiqueta, pueden ocultar el icono y su texto puede ir en negrita o llevar un enlace.',
+        'Los temas tienen un segundo color para los detalles (etiquetas, números, encabezados), y las tarjetas, etiquetas, notas y encabezados de tabla pueden usar un color propio.',
+        'Texto: al pegar solo se conservan negrita, cursiva, subrayado, enlaces y listas, sin colores ni fuentes ajenos. En tarjetas y notas la barra de formato flota sobre el texto.',
+        'Correcciones: los widgets ajustan su altura sin barra de desplazamiento, “Compacto” acerca un bloque a sus vecinos, y un proyecto que no se abre ofrece elegir su carpeta de nuevo.',
+      ],
+      de: [
+        'Neuer Block Karten: Kacheln mit Label, Titel und Text, als Raster oder als Liste mit Linien. Nummerieren Sie sie, setzen Sie Titel auf einen Streifen, geben Sie jeder Karte eine eigene Farbe.',
+        'Tabellen: vier Designs, Kopfzeilenfarbe, hervorgehobene Zeilen, Fett in Zellen (Strg+B) und Einfügen direkt aus Excel oder Google Sheets. Eine Tabelle lässt sich auch als Vergleichskarten zeigen, eine pro Spalte.',
+        'Überschriften können einen Abschnitt mit Dachzeile und Untertitel eröffnen. Hinweise erhalten ein Label, das Symbol lässt sich ausblenden, und der Text kann fett sein oder einen Link enthalten.',
+        'Designs haben eine zweite Farbe für Details (Labels, Nummern, Kopfzeilen), und Karten, Labels, Hinweise und Tabellenköpfe können eine eigene Farbe bekommen.',
+        'Text: Beim Einfügen bleiben nur Fett, Kursiv, Unterstrichen, Links und Listen, ohne fremde Farben und Schriften. In Karten und Hinweisen schwebt die Formatleiste über dem Text.',
+        'Korrekturen: Widgets passen ihre Höhe ohne Bildlaufleiste an, „Kompakt“ rückt einen Block näher an seine Nachbarn, und ein Projekt, das sich nicht öffnet, bietet an, den Ordner erneut zu wählen.',
+      ],
+    },
+  },
+  {
     id: '2026-11-17-units-pages',
     date: '2026-11-17',
     items: {

@@ -19,7 +19,7 @@ interface BlockDoc {
 const BLOCK_DOCS: Record<BlockType, BlockDoc> = {
   heading: {
     summary: 'Section heading (H1–H3).',
-    data: `{ level: 1 | 2 | 3, text: string, align?: 'left' | 'center' | 'right' }`,
+    data: `{ level: 1 | 2 | 3, text: string, align?: 'left' | 'center' | 'right', eyebrow?: string, subtitle?: string }  // eyebrow: small accent line above the heading; subtitle: lead-in line under it, inline rich text (<strong>, <em>, <u>, <a>); both optional: use them to open a section (such a heading sits closer to the block after it, and settings.spacing 'spacious' on it adds air above only)`,
   },
   paragraph: {
     summary: 'Rich text paragraph.',
@@ -31,7 +31,7 @@ const BLOCK_DOCS: Record<BlockType, BlockDoc> = {
   },
   note: {
     summary: 'Callout box with an icon.',
-    data: `{ variant: 'note' | 'tip' | 'success' | 'warning', text: string }  // note = blue info, tip = theme color, success = green, warning = amber`,
+    data: `{ variant: 'note' | 'tip' | 'success' | 'warning', text: string, html?: string, title?: string, icon?: boolean, color?: string }  // note = blue info, tip = theme color, success = green, warning = amber; text: the plain text; html: the same text as inline rich text (<strong>, <em>, <u>, <a>, <br>), wins over text (keep text as its plain version); title: small label above the text, e.g. "Key terms"; icon: false hides the icon; color '#rrggbb': the note's own color instead of its variant's`,
   },
   image: {
     summary: 'Single image with optional caption, in one of four sizes.',
@@ -62,8 +62,8 @@ const BLOCK_DOCS: Record<BlockType, BlockDoc> = {
     data: `{ code: string, language?: string }`,
   },
   table: {
-    summary: 'Simple table; every row has the same number of columns.',
-    data: `{ header: boolean, rows: string[][], width?: 'full' | 'auto', align?: 'left' | 'center' | 'right' }  // header=true → first row is <th>; width: full (default) or fit content; align places an 'auto' table`,
+    summary: 'Simple table; every row has the same number of columns. With layout "cards" it compares items side by side as cards.',
+    data: `{ header: boolean, rows: string[][], width?: 'full' | 'auto', align?: 'left' | 'center' | 'right', style?: 'grid' | 'lines' | 'stripes' | 'panel', headerColor?: 'theme' | 'dark' | '#rrggbb', layout?: 'table' | 'cards' }  // cells are plain text, **double asterisks** make bold; header=true → first row is <th>; width: full (default) or fit content; align places an 'auto' table; style: grid (default, boxed cells), lines (rules between rows), stripes (tinted alternate rows), panel (rounded frame, colored header, bold first column: good for reference tables); headerColor colors the panel header and the card titles: theme (default, the theme's second color), dark, or a hex color; rowMarks: one entry per row ('' | 'highlight' | 'muted') to tint or grey out a row, e.g. ['', '', 'highlight']. highlightColumn (cards only): the column number of the card to frame (1 = first card). layout 'cards': every column after the first is a card (rows[0] = the card titles, rows[0][0] unused; column 0 = the label shown above each value), e.g. [["", "Plan A", "Plan B"], ["Price", "$10", "$20"], ["Best for", "Teams", "Companies"]]; best with 2-4 cards and short labels`,
   },
   quote: {
     summary: 'Highlighted quotation in one of five styles.',
@@ -191,10 +191,14 @@ const BLOCK_DOCS: Record<BlockType, BlockDoc> = {
     steps: { id: string, title: string, html: string, src?: string, alt?: string }[]
   }  // html: rich text like paragraph; src: optional picture under the text (assets/images/ path) with its alt text`,
   },
+  cards: {
+    summary: 'Cards (tiles) with an optional label, a title and text: key points, platforms, teams, terms with their codes.',
+    data: `{ items: { id: string, badge: string, badgeColor?: string, title: string, html: string, highlight?: boolean, tone?: 'positive' | 'negative', color?: string }[], layout?: 'grid' | 'rows', labelStyle?: 'pill' | 'text', titleStyle?: 'plain' | 'band', numbered?: boolean, perRow?: 2 | 3 | 4 }  // badge: small label above the title ('' = none; badgeColor 'accent' (the theme's main color), 'grey' or '#rrggbb' gives it another color than the theme's second accent), drawn as a tinted pill or, with labelStyle 'text', as small grey capitals; html: rich text like paragraph, keep it short; highlight: accent tint for the card that matters most; tone: green (a good outcome, do) or red (a bad one, don't); color '#rrggbb': the card's own tint, wins over highlight and tone; titleStyle band: the title on a tinted strip across the card, with a ruled list under it (good for a few options with bullet points); layout rows: a ruled list, one card per line (number, label over title, text beside), good for terms or for who-does-what steps (label = who, title = what); numbered: 1, 2, 3 on the cards; perRow: cards per line on wide screens (default: as many as fit)`,
+  },
   comparison: {
     summary: 'Comparison cards: pros and cons, or options side by side.',
     data: `{
-    columns: { id: string, title: string, tone: 'pro' | 'con' | 'neutral', items: string[] }[],  // 2–4 columns; tone sets the item marker: pro = green check, con = red cross, neutral = dot
+    columns: { id: string, title: string, tone: 'pro' | 'con' | 'neutral', items: string[] }[],  // 2–4 columns; tone sets the item marker: pro = green check, con = red cross, neutral = dot; an item is plain text where **double asterisks** make bold
     versus?: boolean  // a "VS" badge between exactly two columns
   }`,
   },
@@ -260,8 +264,10 @@ e-learning course (SCORM / cmi5 in an LMS), possibly offline.
 - **Self-contained**: don't navigate the top window, open pop-ups unasked,
   or rely on cookies; wrap \`localStorage\` in try / catch (it can be
   unavailable). Don't ask for personal data or send anything to a server.
-- **Optional height message**: a page whose height changes in a way the frame
-  can't see may report it: \`parent.postMessage({ type: 'scormly:height',
+- **Height**: the frame measures the page and follows it as it changes
+  (content, width, fonts), so don't add code that reports the height. Only a
+  page whose height changes in a way that moves nothing in the document may
+  ask for a new measurement: \`parent.postMessage({ type: 'scormly:height',
   height: document.documentElement.scrollHeight }, '*')\`.
 - The course tracks completion and scores itself; the page doesn't need to
   talk to the LMS.`
@@ -315,7 +321,7 @@ Course
   description: string,
   coverImage?: string,
   theme: 'rose' | 'ocean' | 'forest' | 'sunset' | 'mono' | 'indigo' | 'crimson' | 'mint' | 'grape' | 'terminal' | 'custom',
-  customTheme?: { accent: string, shape: 'sharp' | 'soft' | 'rounded' | 'pill' },  // used by theme 'custom'; accent '#rrggbb' (darkened automatically if white text on it would be hard to read)
+  customTheme?: { accent: string, accent2?: string, shape: 'sharp' | 'soft' | 'rounded' | 'pill' },  // used by theme 'custom'; accent '#rrggbb' (darkened automatically if white text on it would be hard to read); accent2 '#rrggbb': the second color, for details (labels, card numbers, a heading's eyebrow, table and card headers); missing = the accent
   settings: {
     completion: 'view' | 'quiz',   // 'quiz' also requires every scored block (quiz, ordering, fillBlanks) answered
     scored: boolean,               // report a pass/fail result
@@ -341,7 +347,7 @@ Course
     blocks?: Block[]               // extra content under the title: text and media blocks only
                                    // (heading, paragraph, list, note, quote, columns, table, code, image,
                                    // gallery, imageText, video, audio, embed, html, attachment, divider,
-                                   // process, steps, comparison, beforeAfter)
+                                   // process, steps, comparison, cards, beforeAfter)
   },                               // the cover page shows the course title, description and coverImage
   units?: { id: string, title: string }[],  // optional units (modules, sections) grouping the lessons
   lessons: Lesson[]
@@ -368,7 +374,7 @@ The \`type\` field selects the shape of \`data\` (a discriminated union).
 theme (muted = light gray, soft = accent tint, accent / gradient = accent color
 with white text, dark = near-black with white text, image = \`backgroundImage\`
 (assets/images/ path) dimmed under white text); consecutive blocks with
-the same background join into one panel. \`settings.spacing\` is its inner padding.
+the same background join into one panel. \`settings.spacing\` is its inner padding; on a block without a background, \`compact\` moves it closer to the blocks around it (use it to keep related blocks together) and \`spacious\` adds air.
 \`settings.width\`: 'narrow' (~60% of the column, centered), 'normal' (default),
 'wide' (breaks out past the column), 'full' stretches the block edge to edge of the page: with a
 background it becomes a full-width band (content stays in the column); without
@@ -378,20 +384,56 @@ one, media blocks (text on image, carousel, quote on image) span the page.
 
 ${blockReference()}
 
+## Choosing a block (before you reach for a Widget)
+
+The built-in blocks are themed, accessible, editable by the author in the app
+and tracked; a Widget (\`html\`) is none of these by default. Most "designed"
+layouts are a block with the right options:
+
+| What you want to show | Use |
+| --- | --- |
+| The opening of a section: small line, heading, lead-in | \`heading\` with \`eyebrow\` and \`subtitle\` |
+| Key points, platforms, teams, terms with codes | \`cards\` (grid; \`badge\` for the label, \`numbered\`, \`highlight\`) |
+| A glossary or who-does-what steps, read line by line | \`cards\` with \`layout: 'rows'\` (\`badge\` = who, \`title\` = what, \`html\` = the detail) |
+| A few options, each with bullet points | \`cards\` with \`titleStyle: 'band'\` and a \`<ul>\` in \`html\` |
+| A good and a bad outcome side by side | \`cards\` with \`tone: 'positive'\` / \`'negative'\` |
+| Do / don't, pros / cons | \`comparison\` (\`tone: 'pro'\` / \`'con'\`) |
+| The same attributes for 2 to 4 items | \`table\` with \`layout: 'cards'\` (one card per column) |
+| A reference table | \`table\` with \`style: 'panel'\`; \`rowMarks\` to highlight or mute a row |
+| A callout with a label ("Key terms", "Out of scope") | \`note\` with \`title\` (and \`icon: false\` for a quiet box) |
+| A sequence with arrows | \`process\` (flow / chevrons), or one \`paragraph\` with → between the steps |
+| A walkthrough with screenshots | \`steps\` |
+
+Keep the blocks of one idea close: give every block of a group except the last
+\`settings.spacing: 'compact'\`. A heading with an eyebrow or subtitle already
+sits close to what follows it. Reach for a Widget only when the content needs
+behaviour or a layout no block has.
+
 ## Authoring rules
 
 - **IDs**: every \`id\` (course, lesson, block, and nested items like quiz
   options, scenario nodes, tabs) must be unique within the file. Any unique
   string works; the app uses a short prefix + random suffix (e.g. \`block-x7f3a9\`).
+- **Colors**: the course theme gives two colors, the accent (buttons, links)
+  and a second color for details; blocks take them by themselves, so leave
+  colors alone unless there is a reason. Where a color means something, set
+  it on the block: a card's \`color\` or \`tone\`, a card label's
+  \`badgeColor\`, a note's \`color\`, a table's \`headerColor\` (all
+  \`'#rrggbb'\`; text on them is kept readable automatically). Use one or two
+  extra colors per course and keep each to one meaning (for example blue for
+  one team, green for "allowed"). There is no color inside text: rich text has
+  no colored spans.
 - **Adding content**: append a block object to a lesson's \`blocks\` array, or a
   whole lesson to \`lessons\`. Order in the array = order shown to the learner.
-- **Rich text** (the \`html\` of \`paragraph\`, \`tabs\`, \`accordion\`, \`columns\`,
+- **Rich text** (the \`html\` of \`paragraph\`, \`tabs\`, \`accordion\`, \`columns\`, \`cards\`,
   \`imageText\` and \`steps\`) is a small subset of HTML: paragraphs, bold /
   italic / underline, lists, links (\`<a href … target="_blank" rel="noopener
   noreferrer">\`; web, mailto: or tel: addresses only) and inline images with
   relative \`assets/\` paths, plus tables as described under \`paragraph\`.
-  A process step's \`html\` is inline only (bold, italic, underline, links,
-  line breaks); no lists, tables or images inside diagram shapes.
+  A process step's \`html\`, a note's \`html\` and a heading's \`subtitle\` are
+  inline only (bold, italic, underline, links, line breaks); no lists, tables
+  or images there. Table cells and comparison points are plain text where
+  \`**double asterisks**\` make bold.
 - **Media**: reference files by relative path under \`assets/images/\`,
   \`assets/videos/\`, \`assets/audio/\`, \`assets/captions/\` (WebVTT),
   \`assets/files/\` (attachments) or \`assets/html/<folder>/\` (a Widget
@@ -474,8 +516,8 @@ passes them is ready to export:
 - fill-in-the-blanks blocks contain at least one \`[blank]\`;
 - scenarios start at an existing node and have no links to missing nodes;
 - process diagrams have at least 2 steps, step-by-step guides at least one
-  step, every comparison column at least one point, before / after blocks
-  both images, and reflections a question;
+  step, every comparison column at least one point, cards blocks at least one
+  card, before / after blocks both images, and reflections a question;
 - accessibility: non-decorative images (image, gallery, hotspot, before /
   after, step-by-step pictures, images in rich text) have alt text, videos
   have captions or a transcript, audio has a transcript, embeds and custom

@@ -10,6 +10,7 @@ const END = '/* <<< shared block design */'
 
 export function playerBlockCss(source) {
   return source
+    .replace(/--color-accent2/g, '--accent2')
     .replace(/var\(--color-brand-dark\)/g, 'var(--brand-dark)')
     .replace(/var\(--color-brand\)/g, 'var(--brand)')
     .replace(/var\(--radius-interactive\)/g, 'var(--radius-surface)')

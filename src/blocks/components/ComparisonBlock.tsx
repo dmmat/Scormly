@@ -4,7 +4,8 @@ import type { BlockOfType, ComparisonColumn, ComparisonTone } from '../../types/
 import { useCourseStore } from '../../store/courseStore'
 import { translate, useT } from '../../i18n/I18nProvider'
 import { uid } from '../../lib/id'
-import { Segmented, SettingsBar } from '../../components/editor/controls'
+import { AutoTextarea, Segmented, SettingsBar } from '../../components/editor/controls'
+import { toggleBoldAt } from './TableBlock'
 import ComparisonPreview from '../../preview/components/ComparisonPreview'
 
 const TONES: ComparisonTone[] = ['pro', 'con', 'neutral']
@@ -27,7 +28,7 @@ export default function ComparisonBlock({
 
   useEffect(() => {
     if (!focusKey) return
-    rootRef.current?.querySelector<HTMLInputElement>(`[data-point="${focusKey}"]`)?.focus()
+    rootRef.current?.querySelector<HTMLTextAreaElement>(`[data-point="${focusKey}"]`)?.focus()
     setFocusKey(null)
   }, [focusKey])
 
@@ -50,7 +51,18 @@ export default function ComparisonBlock({
     setColumns(next)
   }
 
-  function onPointKey(e: KeyboardEvent<HTMLInputElement>, col: ComparisonColumn, k: number) {
+  function onPointKey(e: KeyboardEvent<HTMLTextAreaElement>, col: ComparisonColumn, k: number) {
+    if ((e.ctrlKey || e.metaKey) && e.code === 'KeyB') {
+      e.preventDefault()
+      e.stopPropagation()
+      const el = e.currentTarget
+      const { selectionStart: a, selectionEnd: b, value } = el
+      if (a === b) return
+      const [next, from, to] = toggleBoldAt(value, a, b)
+      patch(col.id, { items: col.items.map((x, j) => (j === k ? next : x)) })
+      requestAnimationFrame(() => el.setSelectionRange(from, to))
+      return
+    }
     if (e.key === 'Enter') {
       e.preventDefault()
       const items = [...col.items]
@@ -119,19 +131,19 @@ export default function ComparisonBlock({
                 />
                 <ul className="sc-compare-list">
                   {col.items.map((it, k) => (
-                    <li key={k} className="sc-compare-item items-center">
+                    <li key={k} className="sc-compare-item">
                       <span className="sc-compare-mark" aria-hidden />
-                      <input
-                        type="text"
+                      {/* Wraps like the learner's point; Ctrl/Cmd+B makes the selection bold (**…**). */}
+                      <AutoTextarea
                         value={it}
                         data-point={`${col.id}:${k}`}
                         placeholder={t('pointPlaceholder')}
                         aria-label={t('pointPlaceholder')}
                         onChange={(e) =>
-                          patch(col.id, { items: col.items.map((x, j) => (j === k ? e.target.value : x)) }, `compare-item-${col.id}-${k}`)
+                          patch(col.id, { items: col.items.map((x, j) => (j === k ? e.target.value.replace(/\n/g, ' ') : x)) }, `compare-item-${col.id}-${k}`)
                         }
                         onKeyDown={(e) => onPointKey(e, col, k)}
-                        className={ghost}
+                        className={`${ghost} block`}
                       />
                       <button
                         type="button"

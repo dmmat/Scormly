@@ -3,6 +3,7 @@ import type { BlockOfType, HeadingLevel, TextAlign } from '../../types/course'
 import { useCourseStore } from '../../store/courseStore'
 import { useT } from '../../i18n/I18nProvider'
 import { AutoTextarea } from '../../components/editor/controls'
+import RichTextEditor from '../../components/editor/RichTextEditor'
 
 const LEVELS: HeadingLevel[] = [1, 2, 3]
 
@@ -26,9 +27,11 @@ export default function HeadingBlock({
   const update = useCourseStore((s) => s.updateBlockData)
   const { t } = useT('text')
   const { t: tr } = useT('richtext')
-  const { level, text, align = 'left' } = block.data
+  const { level, text, align = 'left', eyebrow = '', subtitle = '' } = block.data
   const Tag = `h${level}` as const
 
+  // The eyebrow and the subtitle are optional: their fields show while the
+  // block is selected, or once they have text.
   return (
     <div className="space-y-3">
       {selected && (
@@ -66,6 +69,28 @@ export default function HeadingBlock({
           ))}
         </div>
       )}
+      <div className={`sc-head sc-head-${align}${!selected && (eyebrow || subtitle) ? ' sc-head-open' : ''}`} style={{ textAlign: align }}>
+      {(selected || eyebrow) && (
+        // The wrapper carries the look (and the hairline after the text), the
+        // field is as wide as its text.
+        <div className="sc-head-eyebrow">
+          {/* The hidden copy gives the field the exact width of its text. */}
+          <span className={`relative ${align === 'left' ? 'inline-grid max-w-full flex-none' : 'grid'}`}>
+            <span aria-hidden className="invisible whitespace-pre">
+              {eyebrow || t('eyebrowPlaceholder')}
+            </span>
+            <input
+              type="text"
+              value={eyebrow}
+              placeholder={t('eyebrowPlaceholder')}
+              aria-label={t('eyebrowPlaceholder')}
+              onChange={(e) => update(lessonId, block.id, { eyebrow: e.target.value }, `heading-eyebrow-${block.id}`)}
+              className="absolute inset-0 h-full w-full bg-transparent p-0 outline-none placeholder:text-current placeholder:opacity-40"
+              style={{ textAlign: align, font: 'inherit', letterSpacing: 'inherit', textTransform: 'inherit' }}
+            />
+          </span>
+        </div>
+      )}
       <Tag className={LEVEL_CLASS[level]} style={{ textAlign: align }}>
         <AutoTextarea
           value={text}
@@ -82,6 +107,16 @@ export default function HeadingBlock({
           style={{ textAlign: align }}
         />
       </Tag>
+      {(selected || subtitle) && (
+        <RichTextEditor
+          inline
+          html={subtitle}
+          placeholder={t('subtitlePlaceholder')}
+          className="sc-head-sub"
+          onChange={(html) => update(lessonId, block.id, { subtitle: html }, `heading-subtitle-${block.id}`)}
+        />
+      )}
+      </div>
     </div>
   )
 }

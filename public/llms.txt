@@ -24,15 +24,20 @@ can also save a project straight to a folder on disk.
 
 ## Blocks
 
-- **Text:** heading, paragraph (rich text with links, lists, tables and inline images), list,
-  quote, note / callout, columns, table, code.
+- **Text:** heading (optionally with a small line above and a subtitle, to open a section),
+  paragraph (rich text with links, lists, tables and inline images), list, quote,
+  note / callout, columns, code, and table: four designs (grid, lines, stripes, or a panel
+  with a colored header), highlighted or muted rows, bold text in cells, and a range copied
+  from Excel or Google Sheets pastes straight into the cells. A table can also be shown as
+  comparison cards, one card per column.
 - **Media:** image, gallery / carousel, image & text, video (captions, transcript, optional
   "must watch to continue"), audio, embed, attachment (downloadable file).
 - **Widget:** custom HTML / CSS / JavaScript, or an uploaded .html page or .zip site, for
   simulations, calculators and mini-games. It gets the course theme and a small CSS kit, and
   has "Copy instructions for AI" so a chat assistant can write the page.
-- **Explainers:** process diagram, step-by-step guide, timeline, comparison, before / after
-  slider, tabs, accordion, flashcards, image hotspots.
+- **Explainers:** process diagram, step-by-step guide, timeline, comparison, cards (tiles
+  with a label, a title and text, in a grid or as a list of terms, numbered or with one
+  highlighted), before / after slider, tabs, accordion, flashcards, image hotspots.
 - **Practice and assessment:** quiz (single choice, multiple choice, matching, ordering and
   fill-in-the-blanks questions mixed under one Submit, with feedback and a passing score),
   sort-the-order and fill-in-the-blanks exercises, branching dialogue scenario (classic,

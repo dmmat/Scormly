@@ -124,6 +124,7 @@ describe('checkCourse', () => {
       .toEqual(['chkA11yStepsAlt'])
     const col = (items: string[]) => ({ id: 'c', title: 'Pros', tone: 'pro', items })
     expect(keys(course([[block('comparison', { columns: [col(['A']), col([' '])] })]]))).toEqual(['chkComparisonEmpty'])
+    expect(keys(course([[block('cards', { items: [] })]]))).toEqual(['chkCardsEmpty'])
     expect(keys(course([[block('comparison', { columns: [col(['A']), col(['B'])] })]]))).toEqual([])
     const ba = { before: 'assets/images/a.png', beforeAlt: 'Old', beforeLabel: 'Before', after: '', afterAlt: '', afterLabel: 'After' }
     expect(keys(course([[block('beforeAfter', ba)]]))).toEqual(['chkBeforeAfterImages'])

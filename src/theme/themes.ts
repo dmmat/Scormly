@@ -11,6 +11,9 @@ export interface ThemeMeta {
   label: string
   /** Swatch color for the preview in the theme switcher. */
   accent: string
+  /** Second accent (details: labels, numbers, table and card headers); the
+   *  same value as --color-accent2 in index.css. */
+  accent2: string
   /** Closest corner shape (seeds a custom theme started from this one). */
   shape: ThemeShape
   /** Short description of the style. */
@@ -22,6 +25,7 @@ export const THEMES: Record<PresetThemeId, ThemeMeta> = {
     id: 'rose',
     label: 'Rose',
     accent: '#db2777',
+    accent2: '#7c3aed',
     shape: 'soft',
     description: 'Рожевий акцент, м’які заокруглені кнопки',
   },
@@ -29,6 +33,7 @@ export const THEMES: Record<PresetThemeId, ThemeMeta> = {
     id: 'ocean',
     label: 'Ocean',
     accent: '#0369a1',
+    accent2: '#c2410c',
     shape: 'pill',
     description: 'Блакитний акцент, кнопки-пігулки',
   },
@@ -36,6 +41,7 @@ export const THEMES: Record<PresetThemeId, ThemeMeta> = {
     id: 'forest',
     label: 'Forest',
     accent: '#15803d',
+    accent2: '#b45309',
     shape: 'sharp',
     description: 'Зелений акцент, кутасті кнопки',
   },
@@ -43,6 +49,7 @@ export const THEMES: Record<PresetThemeId, ThemeMeta> = {
     id: 'sunset',
     label: 'Sunset',
     accent: '#c2410c',
+    accent2: '#7e22ce',
     shape: 'rounded',
     description: 'Помаранчевий акцент, виразні кнопки',
   },
@@ -50,6 +57,7 @@ export const THEMES: Record<PresetThemeId, ThemeMeta> = {
     id: 'mono',
     label: 'Mono',
     accent: '#334155',
+    accent2: '#2563eb',
     shape: 'sharp',
     description: 'Графітовий акцент, гострі прямі кути',
   },
@@ -57,6 +65,7 @@ export const THEMES: Record<PresetThemeId, ThemeMeta> = {
     id: 'indigo',
     label: 'Indigo',
     accent: '#4f46e5',
+    accent2: '#db2777',
     shape: 'sharp',
     description: 'Індиго-акцент, чіткі прямокутні кнопки',
   },
@@ -64,6 +73,7 @@ export const THEMES: Record<PresetThemeId, ThemeMeta> = {
     id: 'crimson',
     label: 'Crimson',
     accent: '#dc2626',
+    accent2: '#1e40af',
     shape: 'sharp',
     description: 'Малиново-червоний акцент, гострі кути',
   },
@@ -71,6 +81,7 @@ export const THEMES: Record<PresetThemeId, ThemeMeta> = {
     id: 'mint',
     label: 'Mint',
     accent: '#0f766e',
+    accent2: '#be185d',
     shape: 'rounded',
     description: 'Бірюзовий акцент, дуже м’які великі заокруглення',
   },
@@ -78,6 +89,7 @@ export const THEMES: Record<PresetThemeId, ThemeMeta> = {
     id: 'grape',
     label: 'Grape',
     accent: '#9333ea',
+    accent2: '#0f766e',
     shape: 'pill',
     description: 'Фіолетовий акцент, кнопки-пігулки й чіткі картки',
   },
@@ -85,6 +97,7 @@ export const THEMES: Record<PresetThemeId, ThemeMeta> = {
     id: 'terminal',
     label: 'Terminal',
     accent: '#15803d',
+    accent2: '#b45309',
     shape: 'sharp',
     description: 'Хакерський термінал: моноширинний шрифт, зелений фосфор',
   },

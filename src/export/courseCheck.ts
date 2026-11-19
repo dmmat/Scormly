@@ -74,6 +74,7 @@ function checkBlockA11y(block: Block): BlockIssue[] {
     }
     case 'paragraph':
     case 'tabs':
+    case 'cards':
     case 'accordion': {
       const html =
         block.type === 'paragraph'
@@ -169,6 +170,8 @@ function checkBlock(block: Block): BlockIssue[] {
       return block.data.steps.length < 2 ? [{ key: 'chkProcessFewSteps' }] : []
     case 'steps':
       return block.data.steps.length ? [] : [{ key: 'chkStepsEmpty' }]
+    case 'cards':
+      return block.data.items.length ? [] : [{ key: 'chkCardsEmpty' }]
     case 'comparison':
       return block.data.columns.some((c) => !c.items.some((it) => it.trim())) ? [{ key: 'chkComparisonEmpty' }] : []
     case 'beforeAfter':

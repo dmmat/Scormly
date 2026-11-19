@@ -9,6 +9,9 @@ export interface ThemeTokens {
   brand: string
   brandLight: string
   brandDark: string
+  /** Second accent, with the same contrast contract as brand / brandDark. */
+  accent2: string
+  accent2Dark: string
   radiusBtn: string
   radiusInteractive: string
 }
@@ -31,6 +34,8 @@ type Rgb = [number, number, number]
 
 /** '#rgb' / '#rrggbb' → [r, g, b]; null when not a hex color. */
 export function parseHex(hex: string): Rgb | null {
+  // Hand-edited project files can hold anything here.
+  if (typeof hex !== 'string') return null
   const m = /^#?([0-9a-f]{3}|[0-9a-f]{6})$/i.exec(hex.trim())
   if (!m) return null
   const h = m[1].length === 3 ? [...m[1]].map((c) => c + c).join('') : m[1]
@@ -74,14 +79,24 @@ function readableBrand(accent: Rgb): Rgb {
 export function customThemeTokens(theme: CustomTheme): ThemeTokens {
   const accent = parseHex(theme.accent) ?? parseHex(DEFAULT_CUSTOM_THEME.accent)!
   const brand = readableBrand(accent)
+  const second = readableBrand(parseHex(theme.accent2 ?? '') ?? accent)
   const [radiusBtn, radiusInteractive] = SHAPE_RADII[theme.shape] ?? SHAPE_RADII.rounded
   return {
     brand: toHex(brand),
     brandLight: toHex(mix(brand, WHITE, 0.6)),
     brandDark: toHex(mix(brand, BLACK, 0.2)),
+    accent2: toHex(second),
+    accent2Dark: toHex(mix(second, BLACK, 0.2)),
     radiusBtn,
     radiusInteractive,
   }
+}
+
+/** A color deepened for text on its own pale tint (or on white): readable at
+ *  4.5:1 whatever the color. The player's deepText mirrors it. */
+export function readableText(hex: string): string | null {
+  const rgb = parseHex(hex)
+  return rgb ? toHex(mix(readableBrand(rgb), BLACK, 0.25)) : null
 }
 
 /** Whether the accent had to be darkened to keep text readable. */
@@ -98,6 +113,8 @@ export function themeStyle(course: Pick<Course, 'theme' | 'customTheme'>): React
     '--color-brand': t.brand,
     '--color-brand-light': t.brandLight,
     '--color-brand-dark': t.brandDark,
+    '--color-accent2': t.accent2,
+    '--color-accent2-dark': t.accent2Dark,
     '--radius-btn': t.radiusBtn,
     '--radius-interactive': t.radiusInteractive,
   } as React.CSSProperties

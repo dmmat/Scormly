@@ -146,6 +146,14 @@ const PATHS: Record<BlockType, ReactNode> = {
   ),
   process: <path d="M2.5 6H9l3 6-3 6H2.5l3-6zM13 6h5.5l3 6-3 6H13l3-6z" />,
   steps: <path d="M3 20h5v-5h5v-5h5V5h3" />,
+  cards: (
+    <>
+      <rect x="3" y="4" width="8" height="7" rx="1.5" />
+      <rect x="13" y="4" width="8" height="7" rx="1.5" />
+      <rect x="3" y="13" width="8" height="7" rx="1.5" />
+      <rect x="13" y="13" width="8" height="7" rx="1.5" />
+    </>
+  ),
   comparison: (
     <>
       <rect x="3" y="4" width="18" height="16" rx="2" />
