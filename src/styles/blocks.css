@@ -447,7 +447,16 @@ table.sc-table.sc-table-panel .sc-table-head :is(input, textarea) { text-transfo
   width: 2rem; height: 2rem; border-radius: 9999px; color: #fff; background: var(--note);
 }
 .sc-note-icon svg { width: 1.1rem; height: 1.1rem; }
-.sc-note-text { flex: 1; margin: 0; padding-top: 0.25rem; line-height: 1.6; color: inherit; white-space: pre-line; }
+.sc-note-body { flex: 1; min-width: 0; padding-top: 0.25rem; }
+.sc-note-title {
+  margin: 0 0 0.3rem; color: color-mix(in srgb, var(--note) 75%, #000);
+  font-size: 0.68rem; line-height: 1.3; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
+}
+.sc-note-text { margin: 0; line-height: 1.6; color: inherit; white-space: pre-line; }
+.sc-note-text :is(p, div) { margin: 0; }
+.sc-note-text[contenteditable], .sc-note-text [contenteditable] { color: inherit; font-size: inherit; line-height: inherit; }
+.sc-note-text a { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
+.blk-on-dark .sc-note .sc-note-title { color: color-mix(in srgb, var(--note) 75%, #000); }
 
 /* ── Paragraph styles ───────────────────────────────────────────────────── */
 .sc-para-lead { font-size: clamp(1.2rem, 1.05rem + 0.5vw, 1.4rem); line-height: 1.55; letter-spacing: -0.005em; }

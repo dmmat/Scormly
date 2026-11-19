@@ -31,7 +31,7 @@ const BLOCK_DOCS: Record<BlockType, BlockDoc> = {
   },
   note: {
     summary: 'Callout box with an icon.',
-    data: `{ variant: 'note' | 'tip' | 'success' | 'warning', text: string }  // note = blue info, tip = theme color, success = green, warning = amber`,
+    data: `{ variant: 'note' | 'tip' | 'success' | 'warning', text: string, html?: string, title?: string, icon?: boolean }  // note = blue info, tip = theme color, success = green, warning = amber; text: the plain text; html: the same text as inline rich text (<strong>, <em>, <u>, <a>, <br>), wins over text (keep text as its plain version); title: small label above the text, e.g. "Key terms"; icon: false hides the icon`,
   },
   image: {
     summary: 'Single image with optional caption, in one of four sizes.',

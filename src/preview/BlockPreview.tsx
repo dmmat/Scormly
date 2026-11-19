@@ -97,7 +97,7 @@ export default function BlockPreview({
       )
     }
     case 'note':
-      return <NoteView variant={block.data.variant} text={block.data.text} />
+      return <NoteView {...block.data} />
     case 'image':
       return <ImagePreview block={block} />
     case 'gallery':

@@ -23,6 +23,8 @@ const text: LocaleTable = {
 
     // Note
     noteKind: 'Type',
+    noteIcon: 'Icon',
+    noteTitlePlaceholder: 'Label (optional)',
     note: 'Note',
     tip: 'Tip',
     success: 'Success',
@@ -56,6 +58,8 @@ const text: LocaleTable = {
 
     // Note
     noteKind: 'Тип',
+    noteIcon: 'Іконка',
+    noteTitlePlaceholder: 'Напис зверху (необов’язково)',
     note: 'Примітка',
     tip: 'Порада',
     success: 'Успіх',
@@ -89,6 +93,8 @@ const text: LocaleTable = {
 
     // Note
     noteKind: 'Type',
+    noteIcon: 'Icône',
+    noteTitlePlaceholder: 'Libellé (facultatif)',
     note: 'Note',
     tip: 'Conseil',
     success: 'Succès',
@@ -122,6 +128,8 @@ const text: LocaleTable = {
 
     // Note
     noteKind: 'Tipo',
+    noteIcon: 'Icono',
+    noteTitlePlaceholder: 'Etiqueta (opcional)',
     note: 'Nota',
     tip: 'Consejo',
     success: 'Éxito',
@@ -155,6 +163,8 @@ const text: LocaleTable = {
 
     // Note
     noteKind: 'Typ',
+    noteIcon: 'Symbol',
+    noteTitlePlaceholder: 'Label (optional)',
     note: 'Hinweis',
     tip: 'Tipp',
     success: 'Erfolg',

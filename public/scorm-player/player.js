@@ -1668,7 +1668,13 @@
         var nv = NOTE_ICONS[b.data.variant] ? b.data.variant : 'note';
         var icon = h('span', { class: 'sc-note-icon', 'aria-hidden': 'true' });
         icon.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="' + NOTE_ICONS[nv] + '"/></svg>';
-        return h('div', { class: 'sc-note sc-note-' + nv }, [icon, h('p', { class: 'sc-note-text', text: b.data.text || '' })]);
+        return h('div', { class: 'sc-note sc-note-' + nv }, [
+          b.data.icon === false ? null : icon,
+          h('div', { class: 'sc-note-body' }, [
+            b.data.title ? h('p', { class: 'sc-note-title', text: b.data.title }) : null,
+            h('div', { class: 'sc-note-text', html: stepHtml(b.data) }),
+          ]),
+        ]);
       }
       case 'image': {
         if (!b.data.src) return null;

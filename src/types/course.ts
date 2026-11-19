@@ -109,7 +109,14 @@ export type NoteVariant = 'note' | 'tip' | 'success' | 'warning'
 
 export interface NoteData {
   variant: NoteVariant
+  /** Plain text (kept in sync as the plain version of html). */
   text: string
+  /** The text as inline rich text (bold, italic, underline, links); wins over text. */
+  html?: string
+  /** Small label above the text ("Key terms", "Out of scope"); empty = none. */
+  title?: string
+  /** false hides the icon. */
+  icon?: boolean
 }
 
 // ── Multimedia ────────────────────────────────────────────────────────────────
