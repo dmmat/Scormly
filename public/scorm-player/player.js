@@ -1625,7 +1625,15 @@
     switch (b.type) {
       case 'heading': {
         var el = h('h' + b.data.level, { text: b.data.text });
-        el.style.textAlign = b.data.align || 'left';
+        var halign = { center: 1, right: 1 }[b.data.align] ? b.data.align : 'left';
+        if (b.data.eyebrow || b.data.subtitle) {
+          el = h('div', { class: 'sc-head sc-head-' + halign }, [
+            b.data.eyebrow ? h('p', { class: 'sc-head-eyebrow', text: b.data.eyebrow }) : null,
+            el,
+            b.data.subtitle ? h('p', { class: 'sc-head-sub', text: b.data.subtitle }) : null,
+          ]);
+        }
+        el.style.textAlign = halign;
         return el;
       }
       case 'paragraph': {
@@ -1715,6 +1723,7 @@
       case 'imageText': return renderImageText(b);
       case 'attachment': return renderAttachment(b);
       case 'columns': return renderColumns(b);
+      case 'cards': return renderCards(b);
       case 'process': return renderProcess(b);
       case 'steps': return renderSteps(b);
       case 'comparison': return renderComparison(b);
@@ -1896,6 +1905,26 @@
   }
 
   var GRIP_ICON = '<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><circle cx="9" cy="6" r="1.5"/><circle cx="15" cy="6" r="1.5"/><circle cx="9" cy="12" r="1.5"/><circle cx="15" cy="12" r="1.5"/><circle cx="9" cy="18" r="1.5"/><circle cx="15" cy="18" r="1.5"/></svg>';
+
+  // Cards: tiles with an optional number and label, a title and rich text.
+  function renderCards(b) {
+    var d = b.data || {}, items = d.items || [];
+    if (!items.length) return null;
+    var rows = d.layout === 'rows';
+    var per = { 2: 1, 3: 1, 4: 1 }[d.perRow] ? d.perRow : 0;
+    var wrap = h('div', { class: 'sc-cards' + (rows ? ' sc-cards-rows' : ''), style: per && !rows ? '--per:' + per : null });
+    items.forEach(function (it, i) {
+      wrap.appendChild(h('div', { class: 'sc-card' + (it.highlight ? ' sc-card-hl' : '') }, [
+        d.numbered || it.badge ? h('div', { class: 'sc-card-top' }, [
+          d.numbered ? h('span', { class: 'sc-card-num', text: String(i + 1) }) : null,
+          it.badge ? h('span', { class: 'sc-card-badge', text: it.badge }) : null,
+        ]) : null,
+        it.title ? h('h3', { class: 'sc-card-title', text: it.title }) : null,
+        it.html ? h('div', { class: 'sc-card-text rich-text', html: it.html }) : null,
+      ]));
+    });
+    return wrap;
+  }
 
   // 2–4 side-by-side text columns (stacked on phones).
   function renderColumns(b) {
@@ -2345,15 +2374,63 @@
     return withTranscript(wrap, b.data.transcript);
   }
 
+  // Header color of a table (data.headerColor): '' = the theme accent the
+  // stylesheet falls back to. Keep in sync with tableHeadStyle (styleClasses.ts).
+  function tableHead(color) {
+    var m = /^#?([0-9a-f]{3}|[0-9a-f]{6})$/i.exec(String(color === 'dark' ? '#1f2937' : color || '').trim());
+    if (!m) return '';
+    var hex = m[1].length === 3 ? m[1].replace(/./g, '$&$&') : m[1];
+    var lum = function (h6) {
+      var c = [0, 2, 4].map(function (i) {
+        var v = parseInt(h6.slice(i, i + 2), 16) / 255;
+        return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+      });
+      return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2];
+    };
+    var l = lum(hex);
+    var white = 1.05 / (l + 0.05), ink = (l + 0.05) / (lum('111827') + 0.05);
+    return '--sc-thead-bg:#' + hex + ';--sc-thead-fg:' + (white >= ink ? '#fff' : '#111827') + ';';
+  }
+
+  // A cell is plain text where **double asterisks** mark bold.
+  function cellNodes(text) {
+    return String(text == null ? '' : text).split(/\*\*([\s\S]+?)\*\*/).map(function (part, i) {
+      return i % 2 ? h('strong', { text: part }) : part;
+    });
+  }
+
   function renderTable(b) {
     var rows = b.data.rows || [];
+    var head = tableHead(b.data.headerColor);
+    var marks = b.data.rowMarks || [];
+    var markClass = function (r) { return marks[r] === 'highlight' ? ' sc-row-hl' : marks[r] === 'muted' ? ' sc-row-muted' : ''; };
+    // Cards: every column after the first is a card, titled by the first row
+    // and labelled by the first column.
+    var count = rows.length ? (rows[0] || []).length - 1 : 0;
+    if (b.data.layout === 'cards' && count > 0) {
+      var cards = h('div', { class: 'sc-tcards', style: head + '--rows:' + rows.length });
+      for (var c = 1; c <= count; c++) {
+        var card = h('div', { class: 'sc-tcard' + (b.data.highlightColumn === c ? ' sc-tcard-hl' : '') }, [h('h3', { class: 'sc-tcard-title' }, cellNodes(rows[0][c]))]);
+        for (var r = 1; r < rows.length; r++) {
+          card.appendChild(h('div', { class: 'sc-tcard-cell' + markClass(r) }, [
+            rows[r][0] ? h('span', { class: 'sc-tcard-label' }, cellNodes(rows[r][0])) : null,
+            h('span', { class: 'sc-tcard-value' }, cellNodes(rows[r][c])),
+          ]));
+        }
+        cards.appendChild(card);
+      }
+      return cards;
+    }
     var auto = b.data.width === 'auto';
     var align = { center: 1, right: 1 }[b.data.align] ? b.data.align : 'left';
-    var table = h('table', { class: 'data-table ' + (auto ? 'sc-table sc-table-auto sc-table-' + align : 'sc-table') });
+    var design = { lines: 1, stripes: 1, panel: 1 }[b.data.style] ? ' sc-table-' + b.data.style : '';
+    var table = h('table', { class: 'data-table ' + (auto ? 'sc-table sc-table-auto sc-table-' + align : 'sc-table') + design + (head ? ' sc-thead-set' : ''), style: head || null });
     rows.forEach(function (row, ri) {
-      var tr = h('tr');
+      // Every second body row, for the striped design.
+      var body = b.data.header ? ri - 1 : ri;
+      var tr = h('tr', { class: (body > 0 && body % 2 ? 'sc-table-alt' : '') + (body >= 0 ? markClass(ri) : '') });
       row.forEach(function (cell) {
-        tr.appendChild(h(b.data.header && ri === 0 ? 'th' : 'td', { text: cell }));
+        tr.appendChild(h(b.data.header && ri === 0 ? 'th' : 'td', null, cellNodes(cell)));
       });
       table.appendChild(tr);
     });

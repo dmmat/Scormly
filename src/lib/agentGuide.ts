@@ -19,7 +19,7 @@ interface BlockDoc {
 const BLOCK_DOCS: Record<BlockType, BlockDoc> = {
   heading: {
     summary: 'Section heading (H1–H3).',
-    data: `{ level: 1 | 2 | 3, text: string, align?: 'left' | 'center' | 'right' }`,
+    data: `{ level: 1 | 2 | 3, text: string, align?: 'left' | 'center' | 'right', eyebrow?: string, subtitle?: string }  // eyebrow: small accent line above the heading; subtitle: lead-in line under it (both plain text, optional): use them to open a section`,
   },
   paragraph: {
     summary: 'Rich text paragraph.',
@@ -62,8 +62,8 @@ const BLOCK_DOCS: Record<BlockType, BlockDoc> = {
     data: `{ code: string, language?: string }`,
   },
   table: {
-    summary: 'Simple table; every row has the same number of columns.',
-    data: `{ header: boolean, rows: string[][], width?: 'full' | 'auto', align?: 'left' | 'center' | 'right' }  // header=true → first row is <th>; width: full (default) or fit content; align places an 'auto' table`,
+    summary: 'Simple table; every row has the same number of columns. With layout "cards" it compares items side by side as cards.',
+    data: `{ header: boolean, rows: string[][], width?: 'full' | 'auto', align?: 'left' | 'center' | 'right', style?: 'grid' | 'lines' | 'stripes' | 'panel', headerColor?: 'theme' | 'dark' | '#rrggbb', layout?: 'table' | 'cards' }  // cells are plain text, **double asterisks** make bold; header=true → first row is <th>; width: full (default) or fit content; align places an 'auto' table; style: grid (default, boxed cells), lines (rules between rows), stripes (tinted alternate rows), panel (rounded frame, colored header, bold first column: good for reference tables); headerColor colors the panel header and the card titles: theme (default, the course accent), dark, or a hex color; rowMarks: one entry per row ('' | 'highlight' | 'muted') to tint or grey out a row, e.g. ['', '', 'highlight']. highlightColumn (cards only): the column number of the card to frame (1 = first card). layout 'cards': every column after the first is a card (rows[0] = the card titles, rows[0][0] unused; column 0 = the label shown above each value), e.g. [["", "Plan A", "Plan B"], ["Price", "$10", "$20"], ["Best for", "Teams", "Companies"]]; best with 2-4 cards and short labels`,
   },
   quote: {
     summary: 'Highlighted quotation in one of five styles.',
@@ -190,6 +190,10 @@ const BLOCK_DOCS: Record<BlockType, BlockDoc> = {
     layout: 'list' | 'slides',  // list = all steps in a numbered column; slides = one step at a time with Back/Next
     steps: { id: string, title: string, html: string, src?: string, alt?: string }[]
   }  // html: rich text like paragraph; src: optional picture under the text (assets/images/ path) with its alt text`,
+  },
+  cards: {
+    summary: 'Cards (tiles) with an optional label, a title and text: key points, platforms, teams, terms with their codes.',
+    data: `{ items: { id: string, badge: string, title: string, html: string, highlight?: boolean }[], layout?: 'grid' | 'rows', numbered?: boolean, perRow?: 2 | 3 | 4 }  // badge: small label above the title ('' = none); html: rich text like paragraph, keep it short; highlight: accent tint for the card that matters most; layout rows: one card per line (label, title, text across), good for a list of terms; numbered: 1, 2, 3 on the cards; perRow: cards per line on wide screens (default: as many as fit)`,
   },
   comparison: {
     summary: 'Comparison cards: pros and cons, or options side by side.',
@@ -341,7 +345,7 @@ Course
     blocks?: Block[]               // extra content under the title: text and media blocks only
                                    // (heading, paragraph, list, note, quote, columns, table, code, image,
                                    // gallery, imageText, video, audio, embed, html, attachment, divider,
-                                   // process, steps, comparison, beforeAfter)
+                                   // process, steps, comparison, cards, beforeAfter)
   },                               // the cover page shows the course title, description and coverImage
   units?: { id: string, title: string }[],  // optional units (modules, sections) grouping the lessons
   lessons: Lesson[]
@@ -385,7 +389,7 @@ ${blockReference()}
   string works; the app uses a short prefix + random suffix (e.g. \`block-x7f3a9\`).
 - **Adding content**: append a block object to a lesson's \`blocks\` array, or a
   whole lesson to \`lessons\`. Order in the array = order shown to the learner.
-- **Rich text** (the \`html\` of \`paragraph\`, \`tabs\`, \`accordion\`, \`columns\`,
+- **Rich text** (the \`html\` of \`paragraph\`, \`tabs\`, \`accordion\`, \`columns\`, \`cards\`,
   \`imageText\` and \`steps\`) is a small subset of HTML: paragraphs, bold /
   italic / underline, lists, links (\`<a href … target="_blank" rel="noopener
   noreferrer">\`; web, mailto: or tel: addresses only) and inline images with

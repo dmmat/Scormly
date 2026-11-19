@@ -53,6 +53,14 @@ const htmlSample = () => `<!doctype html>
 </html>
 `
 
+const sampleCards = (badge = '') =>
+  [1, 2, 3].map((n) => ({
+    id: uid('card'),
+    badge,
+    title: c('cardTitle', { n }),
+    html: `<p>${c('cardText')}</p>`,
+  }))
+
 export const BLOCK_REGISTRY: { [T in BlockType]: BlockMeta<T> } = {
   heading: {
     type: 'heading',
@@ -63,6 +71,10 @@ export const BLOCK_REGISTRY: { [T in BlockType]: BlockMeta<T> } = {
       settings: { ...baseSettings },
       data: { level: 2, text: c('newHeading') },
     }),
+    variants: [
+      { id: 'plain' },
+      { id: 'section', data: () => ({ eyebrow: c('headingEyebrow'), subtitle: c('headingSubtitle') }) },
+    ],
   },
   paragraph: {
     type: 'paragraph',
@@ -147,6 +159,19 @@ export const BLOCK_REGISTRY: { [T in BlockType]: BlockMeta<T> } = {
         ],
       },
     }),
+    variants: [
+      { id: 'table' },
+      {
+        id: 'cards',
+        data: () => ({
+          layout: 'cards' as const,
+          rows: [
+            ['', c('comparisonOption', { n: 1 }), c('comparisonOption', { n: 2 })],
+            ...[1, 2, 3].map((n) => [c('tableHeader') + ' ' + n, c('tableCell'), c('tableCell')]),
+          ],
+        }),
+      },
+    ],
   },
   code: {
     type: 'code',
@@ -317,6 +342,22 @@ export const BLOCK_REGISTRY: { [T in BlockType]: BlockMeta<T> } = {
         })),
       },
     }),
+  },
+  cards: {
+    type: 'cards',
+    category: 'structure',
+    create: () => ({
+      id: uid('block'),
+      type: 'cards',
+      settings: { ...baseSettings },
+      data: { items: sampleCards() },
+    }),
+    variants: [
+      { id: 'plain' },
+      { id: 'numbered', data: () => ({ numbered: true, items: sampleCards() }) },
+      { id: 'labels', data: () => ({ items: sampleCards(c('cardBadge')) }) },
+      { id: 'rows', data: () => ({ layout: 'rows' as const, numbered: true, items: sampleCards() }) },
+    ],
   },
   comparison: {
     type: 'comparison',

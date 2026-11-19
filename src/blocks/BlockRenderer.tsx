@@ -30,6 +30,7 @@ import FillBlanksBlock from './components/FillBlanksBlock'
 import ImageTextBlock from './components/ImageTextBlock'
 import AttachmentBlock from './components/AttachmentBlock'
 import ColumnsBlock from './components/ColumnsBlock'
+import CardsBlock from './components/CardsBlock'
 import ProcessBlock from './components/ProcessBlock'
 import StepsBlock from './components/StepsBlock'
 import ComparisonBlock from './components/ComparisonBlock'
@@ -70,6 +71,7 @@ const BLOCK_COMPONENTS: Record<
   imageText: ImageTextBlock as ComponentType<BlockComponentProps>,
   attachment: AttachmentBlock as ComponentType<BlockComponentProps>,
   columns: ColumnsBlock as ComponentType<BlockComponentProps>,
+  cards: CardsBlock as ComponentType<BlockComponentProps>,
   process: ProcessBlock as ComponentType<BlockComponentProps>,
   steps: StepsBlock as ComponentType<BlockComponentProps>,
   comparison: ComparisonBlock as ComponentType<BlockComponentProps>,

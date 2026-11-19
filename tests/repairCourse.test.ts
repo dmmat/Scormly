@@ -110,7 +110,7 @@ describe('repairCourse', () => {
         { id: 'b', type: 'tabs', settings: {}, data: { tabs: 'none' } },
         { id: 'c', type: 'heading', settings: {}, data: { level: '3', text: null } },
         { id: 'd', type: 'hotspot', settings: {}, data: { src: '', alt: '', hotspots: [{ id: 'h', x: '10', title: 'T' }, 'junk'] } },
-        { id: 'e', type: 'table', settings: {}, data: { header: true, rows: [['a', 1], 'x'] } },
+        { id: 'e', type: 'table', settings: {}, data: { header: true, rows: [['a', 1], 'x'], rowMarks: { 1: 'highlight' }, highlightColumn: '2' } },
         { id: 'f', type: 'comparison', settings: {}, data: { columns: [{ id: 'k', title: 'Pros', tone: 'pro', items: 'nope' }] } },
       ] }],
     }) as { course: Any }
@@ -120,6 +120,8 @@ describe('repairCourse', () => {
     expect(heading.data).toEqual({ level: 3, text: '' })
     expect(hot.data.hotspots).toEqual([{ id: 'h', x: 10, y: 50, title: 'T', text: '' }])
     expect(table.data.rows).toEqual([['a', '1'], []])
+    expect(table.data.rowMarks).toBeUndefined()
+    expect(table.data.highlightColumn).toBe(2)
     expect(cmp.data.columns[0].items).toEqual([])
   })
 

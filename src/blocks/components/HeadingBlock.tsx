@@ -26,8 +26,12 @@ export default function HeadingBlock({
   const update = useCourseStore((s) => s.updateBlockData)
   const { t } = useT('text')
   const { t: tr } = useT('richtext')
-  const { level, text, align = 'left' } = block.data
+  const { level, text, align = 'left', eyebrow = '', subtitle = '' } = block.data
   const Tag = `h${level}` as const
+
+  // The eyebrow and the subtitle are optional: their fields show while the
+  // block is selected, or once they have text.
+  const ghost = 'block w-full bg-transparent outline-none placeholder:text-current placeholder:opacity-40'
 
   return (
     <div className="space-y-3">
@@ -66,6 +70,18 @@ export default function HeadingBlock({
           ))}
         </div>
       )}
+      <div className={`sc-head sc-head-${align}`} style={{ textAlign: align }}>
+      {(selected || eyebrow) && (
+        <input
+          type="text"
+          value={eyebrow}
+          placeholder={t('eyebrowPlaceholder')}
+          aria-label={t('eyebrowPlaceholder')}
+          onChange={(e) => update(lessonId, block.id, { eyebrow: e.target.value }, `heading-eyebrow-${block.id}`)}
+          className={`${ghost} sc-head-eyebrow`}
+          style={{ textAlign: align }}
+        />
+      )}
       <Tag className={LEVEL_CLASS[level]} style={{ textAlign: align }}>
         <AutoTextarea
           value={text}
@@ -82,6 +98,19 @@ export default function HeadingBlock({
           style={{ textAlign: align }}
         />
       </Tag>
+      {(selected || subtitle) && (
+        <AutoTextarea
+          value={subtitle}
+          placeholder={t('subtitlePlaceholder')}
+          aria-label={t('subtitlePlaceholder')}
+          onChange={(e) =>
+            update(lessonId, block.id, { subtitle: e.target.value.replace(/\n/g, ' ') }, `heading-subtitle-${block.id}`)
+          }
+          className={`${ghost} sc-head-sub`}
+          style={{ textAlign: align }}
+        />
+      )}
+      </div>
     </div>
   )
 }

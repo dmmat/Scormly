@@ -26,6 +26,7 @@ import NoteView from './components/NoteView'
 import ImageTextPreview from './components/ImageTextPreview'
 import AttachmentPreview from './components/AttachmentPreview'
 import ColumnsPreview from './components/ColumnsPreview'
+import CardsPreview from './components/CardsPreview'
 import ProcessPreview from './components/ProcessPreview'
 import StepsPreview from './components/StepsPreview'
 import ComparisonPreview from './components/ComparisonPreview'
@@ -52,7 +53,7 @@ export default function BlockPreview({
 }) {
   switch (block.type) {
     case 'heading': {
-      const { level, text, align = 'left' } = block.data
+      const { level, text, align = 'left', eyebrow, subtitle } = block.data
       const Tag = `h${level}` as const
       const cls =
         level === 1
@@ -60,6 +61,15 @@ export default function BlockPreview({
           : level === 2
             ? 'text-2xl font-bold'
             : 'text-xl font-semibold'
+      if (eyebrow || subtitle) {
+        return (
+          <div className={`sc-head sc-head-${align}`} style={{ textAlign: align }}>
+            {eyebrow && <p className="sc-head-eyebrow">{eyebrow}</p>}
+            <Tag className={`text-gray-900 ${cls}`}>{text}</Tag>
+            {subtitle && <p className="sc-head-sub">{subtitle}</p>}
+          </div>
+        )
+      }
       return (
         <Tag className={`text-gray-900 ${cls}`} style={{ textAlign: align }}>
           {text}
@@ -148,6 +158,8 @@ export default function BlockPreview({
       return <AttachmentPreview block={block} />
     case 'columns':
       return <ColumnsPreview block={block} />
+    case 'cards':
+      return <CardsPreview block={block} />
     case 'process':
       return <ProcessPreview block={block} />
     case 'steps':

@@ -135,6 +135,38 @@
 .sc-table-auto { width: auto; }
 .sc-table-center { margin-inline: auto; }
 .sc-table-right { margin-left: auto; }
+/* Table designs; the default is the grid. Rows carry sc-table-alt (the editor
+   adds helper rows, so nth-child would drift). */
+table.sc-table.sc-table-lines :is(th, td),
+table.sc-table.sc-table-stripes :is(th, td) { border-width: 0 0 1px; }
+table.sc-table.sc-table-lines { border-width: 0; }
+table.sc-table.sc-table-stripes { border-width: 0; }
+table.sc-table.sc-table-lines :is(th, .sc-table-head > td) { background: none; border-bottom: 2px solid var(--color-brand); }
+table.sc-table.sc-table-stripes :is(th, .sc-table-head > td) { background: none; border-bottom-width: 2px; }
+table.sc-table.sc-table-stripes .sc-table-alt > td { background: color-mix(in srgb, currentColor 5%, transparent); }
+table.sc-table.sc-table-panel {
+  border-collapse: separate; border-spacing: 0; overflow: hidden;
+  border: 1px solid rgb(17 24 39 / 0.12); border-radius: calc(var(--radius-interactive) * 1.5 + 2px);
+}
+table.sc-table.sc-table-panel :is(th, td) { border-width: 1px 0 0; padding: 0.75rem 0.95rem; vertical-align: top; line-height: 1.45; }
+table.sc-table.sc-table-panel > :first-child > tr:first-child > * { border-top-width: 0; }
+/* The editor's row of column buttons sits above the header, not in the table. */
+table.sc-table.sc-table-panel tr.sc-table-tools + tr > * { border-top-width: 0; }
+table.sc-table.sc-table-panel :is(th, .sc-table-head > td:not(.sc-table-tool)) {
+  background: var(--sc-thead-bg, var(--color-brand)); color: var(--sc-thead-fg, #fff);
+  font-size: 0.7rem; line-height: 1.3; font-weight: 600; letter-spacing: 0.09em; text-transform: uppercase;
+}
+table.sc-table.sc-table-panel tr:not(.sc-table-head) > td:first-child { font-weight: 600; }
+/* Line breaks typed in a cell are kept. */
+.sc-table :is(th, td) { white-space: pre-line; }
+/* Row marks (TableData.rowMarks). */
+table.sc-table.sc-table tr.sc-row-hl > td:not(.sc-table-tool) { background: color-mix(in srgb, var(--color-brand) 10%, transparent); }
+table.sc-table.sc-table tr.sc-row-muted > td:not(.sc-table-tool) {
+  background: color-mix(in srgb, currentColor 4%, transparent); color: color-mix(in srgb, currentColor 55%, transparent);
+}
+.blk-on-dark table.sc-table.sc-table tr.sc-row-hl > td:not(.sc-table-tool) { background: rgb(255 255 255 / 0.14); }
+/* The editor's cell inputs take the header look too. */
+table.sc-table.sc-table-panel .sc-table-head :is(input, textarea) { text-transform: inherit; letter-spacing: inherit; }
 
 .sc-img { margin: 0; }
 .sc-img img {
@@ -941,6 +973,107 @@
 .blk-on-dark .sc-process-soft .sc-cycle-node.is-seen:not(.is-active) { background: rgb(255 255 255 / 0.75); }
 .blk-on-dark .sc-process-soft .sc-cycle-node.is-active { background: var(--color-brand-dark); color: #fff; box-shadow: 0 0 0 5px rgb(255 255 255 / 0.35); }
 
+/* ── Table as cards ─────────────────────────────────────────────────────── */
+/* One card per column; subgrid keeps the lines of neighbouring cards level.
+   Cards are their own light surface, so they read on any block background. */
+.sc-tcards { display: grid; gap: 0.875rem; grid-template-columns: repeat(auto-fit, minmax(min(15rem, 100%), 1fr)); }
+.sc-tcard {
+  min-width: 0; overflow: hidden; background: #fff; color: #374151;
+  border: 1px solid rgb(17 24 39 / 0.12); border-radius: calc(var(--radius-interactive) * 1.5 + 2px);
+}
+/* Without subgrid (older LMS browsers) a card is a plain stack of its lines. */
+@supports (grid-template-rows: subgrid) {
+  .sc-tcard { display: grid; grid-row: span var(--rows, 1); grid-template-rows: subgrid; row-gap: 0; }
+}
+.sc-tcard-title {
+  display: flex; align-items: center; margin: 0; padding: 0.9rem 1.05rem;
+  background: var(--sc-thead-bg, var(--color-brand)); color: var(--sc-thead-fg, #fff); font-size: 1.05rem; line-height: 1.25; font-weight: 600;
+}
+.sc-tcard-cell { padding: 0.75rem 1.05rem 0.85rem; border-top: 1px solid rgb(17 24 39 / 0.08); }
+.sc-tcard-title + .sc-tcard-cell { border-top: 0; }
+.sc-tcard-label {
+  display: block; margin-bottom: 0.35rem; color: #6b7280;
+  font-size: 0.68rem; line-height: 1.2; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
+}
+.sc-tcard-value { display: block; font-size: 0.92rem; line-height: 1.5; white-space: pre-line; }
+/* On a dark panel headings turn white; the title keeps the header's own text color. */
+.sc-tcards .sc-tcard .sc-tcard-title { color: var(--sc-thead-fg, #fff); }
+.sc-tcard-cell.sc-row-hl { background: color-mix(in srgb, var(--color-brand) 8%, #fff); }
+.sc-tcard-cell.sc-row-muted { background: #f9fafb; color: #9ca3af; }
+.sc-tcard-cell.sc-row-muted .sc-tcard-label { color: #9ca3af; }
+.sc-tcard-hl {
+  border-color: var(--sc-thead-bg, var(--color-brand));
+  box-shadow: 0 0 0 2px var(--sc-thead-bg, var(--color-brand)), 0 14px 30px -18px rgb(15 23 42 / 0.45);
+}
+
+/* ── Heading with an eyebrow and a subtitle ─────────────────────────────── */
+.sc-head-eyebrow {
+  margin: 0 0 0.5rem; color: var(--color-brand-dark);
+  font-size: 0.72rem; line-height: 1.2; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase;
+}
+.sc-head-sub { margin: 0.6rem 0 0; max-width: 70ch; color: #4b5563; font-size: 1.05rem; line-height: 1.6; }
+.sc-head-center .sc-head-sub { margin-inline: auto; }
+.sc-head-right .sc-head-sub { margin-left: auto; }
+.blk-on-dark .sc-head :is(.sc-head-eyebrow, .sc-head-sub) { color: #fff; }
+.blk-on-dark .sc-head .sc-head-sub { opacity: 0.85; }
+
+/* ── Cards ──────────────────────────────────────────────────────────────── */
+/* At most --per cards on a line, fewer once they would get narrower than 13rem.
+   A card is its own light surface, so its colors are set against the white
+   and outrank the white text of a dark panel. */
+.sc-cards {
+  display: grid; gap: 0.875rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, max(13rem, calc((100% - (var(--per, 4) - 1) * 0.875rem) / var(--per, 4)))), 1fr));
+}
+.sc-card {
+  display: flex; flex-direction: column; gap: 0.55rem; min-width: 0; padding: 1.15rem 1.2rem;
+  background: #fff; border: 1px solid rgb(17 24 39 / 0.12); border-radius: calc(var(--radius-interactive) * 1.5 + 2px);
+}
+.sc-card-hl {
+  border-color: color-mix(in srgb, var(--color-brand) 45%, #fff);
+  background: linear-gradient(color-mix(in srgb, var(--color-brand) 10%, #fff), #fff 4.5rem);
+}
+.sc-card-top { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; min-width: 0; }
+.sc-card-num {
+  display: grid; place-items: center; flex: none; width: 1.8rem; height: 1.8rem; border-radius: 9999px;
+  background: color-mix(in srgb, var(--color-brand) 12%, #fff); color: var(--color-brand-dark);
+  font-size: 0.8rem; line-height: 1; font-weight: 700;
+}
+.sc-card-badge {
+  min-width: 0; padding: 0.3rem 0.6rem; border-radius: 9999px;
+  background: color-mix(in srgb, var(--color-brand) 12%, #fff); color: var(--color-brand-dark);
+  font-size: 0.66rem; line-height: 1.2; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
+}
+.sc-cards .sc-card .sc-card-title { margin: 0; color: #111827; font-size: 1.08rem; line-height: 1.3; font-weight: 600; }
+.sc-cards .sc-card .sc-card-text,
+.sc-cards .sc-card .sc-card-text :is(p, li) { color: #374151; }
+.sc-card-text { font-size: 0.92rem; line-height: 1.55; }
+.sc-card-text > :first-child { margin-top: 0; }
+.sc-card-text > :last-child { margin-bottom: 0; }
+/* Rows: one framed list, each card a line (label, title, text across). */
+.sc-cards-rows {
+  display: block; overflow: hidden; background: #fff;
+  border: 1px solid rgb(17 24 39 / 0.12); border-radius: calc(var(--radius-interactive) * 1.5 + 2px);
+}
+.sc-cards-rows .sc-card { padding: 0.95rem 1.1rem; border: 0; border-top: 1px solid rgb(17 24 39 / 0.08); border-radius: 0; }
+.sc-cards-rows .sc-card:first-child { border-top: 0; }
+.sc-cards-rows .sc-card:nth-child(even):not(.sc-card-hl) { background: #f9fafb; }
+/* Each part has its own column, so a card without a title or a label keeps
+   its text in the wide one; with subgrid the columns line up down the list. */
+@media (min-width: 40rem) {
+  .sc-cards-rows .sc-card { display: grid; grid-template-columns: minmax(0, 14rem) minmax(0, 1fr); gap: 0.9rem; align-items: start; }
+  .sc-cards-rows .sc-card-title { grid-column: 1; }
+  .sc-cards-rows .sc-card-text { grid-column: 2; }
+  .sc-cards-rows:has(.sc-card-top) .sc-card { grid-template-columns: auto minmax(0, 14rem) minmax(0, 1fr); }
+  .sc-cards-rows:has(.sc-card-top) .sc-card-top { grid-column: 1; }
+  .sc-cards-rows:has(.sc-card-top) .sc-card-title { grid-column: 2; }
+  .sc-cards-rows:has(.sc-card-top) .sc-card-text { grid-column: 3; }
+  @supports (grid-template-columns: subgrid) {
+    .sc-cards-rows:has(.sc-card-top) { display: grid; gap: 0; grid-template-columns: auto minmax(0, 14rem) minmax(0, 1fr); }
+    .sc-cards-rows:has(.sc-card-top) .sc-card { grid-column: 1 / -1; grid-template-columns: subgrid; }
+  }
+}
+
 /* ── Tables in rich text ────────────────────────────────────────────────── */
 /* Lines and tints derive from the text color, so a table reads on white,
    inside light cards and on dark panels alike. Styles: rt-table-grid
@@ -971,6 +1104,11 @@
 .blk-on-dark .sc-table,
 .blk-on-dark .sc-table :is(th, td) { color: #fff; border-color: rgb(255 255 255 / 0.3); }
 .blk-on-dark .sc-table :is(th, .sc-table-head) { background: rgb(255 255 255 / 0.12); }
+.blk-on-dark table.sc-table.sc-table-panel { border-color: rgb(255 255 255 / 0.3); }
+/* On a dark or accent panel the accent header would sink in; a chosen color stays. */
+.blk-on-dark table.sc-table.sc-table-panel:not(.sc-thead-set) :is(th, .sc-table-head > td:not(.sc-table-tool)) { background: rgb(255 255 255 / 0.16); }
+.blk-on-dark table.sc-table.sc-table-lines :is(th, .sc-table-head > td) { background: none; border-bottom-color: currentColor; }
+.blk-on-dark table.sc-table.sc-table-stripes :is(th, .sc-table-head > td) { background: none; }
 .blk-on-dark .sc-quote-statement::before,
 .blk-on-dark .sc-quote-statement::after { background: rgb(255 255 255 / 0.9); }
 .blk-on-dark :is(.sc-quote-classic, .sc-quote-statement, .sc-quote-photo) :is(.sc-quote-text, .sc-quote-author, .sc-quote-mark) { color: #fff; }

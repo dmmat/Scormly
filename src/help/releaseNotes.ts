@@ -12,6 +12,52 @@ export interface Release {
 
 export const RELEASES: Release[] = [
   {
+    id: '2026-11-19-cards-tables',
+    date: '2026-11-19',
+    items: {
+      en: [
+        'New Cards block: tiles with an optional label, a title and text, in a grid or as rows; number them or highlight the one that matters most.',
+        'Headings can open a section: add a small line above and a subtitle below (the “Section opener” style).',
+        'Tables: highlight or mute a row, frame one card in the card view, type long text in a cell (it wraps now), and paste a range copied from Excel or Google Sheets straight into the cells.',
+        'Table designs: pick Grid, Lines, Stripes or Panel for a table block. The panel header and the card titles take the theme color; “Header color” switches them to dark or to a color of your own. Text in a cell can be bold: select it and press Ctrl+B.',
+        'Comparison cards: switch a table to “Cards” (or add the “Comparison cards” style) to show every column as a card, with the first row as the card titles and the first column as the label of each line. Switch back to a table at any time.',
+        'If opening a project from “Your projects” takes too long, the welcome screen now explains why and lets you choose the folder again or stop waiting.',
+      ],
+      uk: [
+        'Новий блок «Картки»: плитки з необов’язковою позначкою, назвою і текстом, сіткою або рядками; їх можна пронумерувати й виділити найважливішу.',
+        'Заголовок може відкривати розділ: додайте малий рядок над ним і підзаголовок під ним (стиль «Початок розділу»).',
+        'Таблиці: виділіть або приглушіть рядок, обведіть одну картку у вигляді карток, вводьте довгий текст у клітинку (тепер він переноситься) і вставляйте діапазон, скопійований з Excel чи Google Sheets, одразу в клітинки.',
+        'Дизайни таблиць: оберіть для блоку таблиці «Сітка», «Лінії», «Смуги» чи «Панель». Шапка панелі й назви карток беруть колір теми; «Колір шапки» перемикає їх на темний або на власний колір. Текст у клітинці можна зробити жирним: виділіть його й натисніть Ctrl+B.',
+        'Картки порівняння: перемкніть таблицю на «Картки» (або додайте стиль «Картки порівняння»), щоб показати кожен стовпець карткою: перший рядок дає назви карток, а перший стовпець дає підписи рядків. Повернутися до таблиці можна будь-коли.',
+        'Якщо проєкт зі списку «Ваші проєкти» відкривається надто довго, екран вітання тепер пояснює чому й дає змогу вибрати папку ще раз або не чекати.',
+      ],
+      fr: [
+        'Nouveau bloc Cartes : des tuiles avec une étiquette facultative, un titre et un texte, en grille ou en lignes ; numérotez-les ou mettez en évidence la plus importante.',
+        'Un titre peut ouvrir une section : ajoutez un surtitre et un sous-titre (style « Ouverture de section »).',
+        'Tableaux : mettez une ligne en évidence ou atténuez-la, encadrez une carte dans la vue en cartes, saisissez un long texte dans une cellule (il passe à la ligne) et collez une plage copiée depuis Excel ou Google Sheets directement dans les cellules.',
+        'Styles de tableau : choisissez Grille, Lignes, Bandes ou Panneau pour un bloc tableau. L’en-tête du panneau et les titres des cartes prennent la couleur du thème ; « Couleur d’en-tête » les passe en sombre ou à une couleur de votre choix. Le texte d’une cellule peut être en gras : sélectionnez-le et appuyez sur Ctrl+B.',
+        'Cartes comparatives : passez un tableau en « Cartes » (ou ajoutez le style « Cartes comparatives ») pour afficher chaque colonne comme une carte, la première ligne donnant les titres et la première colonne le libellé de chaque ligne. Vous pouvez revenir au tableau à tout moment.',
+        'Si l’ouverture d’un projet depuis « Vos projets » prend trop de temps, l’écran d’accueil explique désormais pourquoi et permet de choisir à nouveau le dossier ou de ne plus attendre.',
+      ],
+      es: [
+        'Nuevo bloque Tarjetas: fichas con una etiqueta opcional, un título y texto, en cuadrícula o en filas; numéralas o destaca la más importante.',
+        'Un título puede abrir una sección: añade un antetítulo y un subtítulo (estilo “Inicio de sección”).',
+        'Tablas: destaca o atenúa una fila, enmarca una tarjeta en la vista de tarjetas, escribe texto largo en una celda (ahora se ajusta) y pega un rango copiado de Excel o Google Sheets directamente en las celdas.',
+        'Diseños de tabla: elige Cuadrícula, Líneas, Franjas o Panel para un bloque de tabla. El encabezado del panel y los títulos de las tarjetas toman el color del tema; “Color del encabezado” los cambia a oscuro o a un color propio. El texto de una celda puede ir en negrita: selecciónalo y pulsa Ctrl+B.',
+        'Tarjetas comparativas: cambia una tabla a “Tarjetas” (o añade el estilo “Tarjetas comparativas”) para mostrar cada columna como una tarjeta, con la primera fila como títulos y la primera columna como etiqueta de cada línea. Puedes volver a la tabla cuando quieras.',
+        'Si abrir un proyecto desde “Tus proyectos” tarda demasiado, la pantalla de bienvenida ahora explica por qué y permite elegir la carpeta de nuevo o dejar de esperar.',
+      ],
+      de: [
+        'Neuer Block Karten: Kacheln mit optionalem Label, Titel und Text, als Raster oder in Zeilen; nummerieren Sie sie oder heben Sie die wichtigste hervor.',
+        'Überschriften können einen Abschnitt eröffnen: Fügen Sie eine Dachzeile und einen Untertitel hinzu (Stil „Abschnittsauftakt“).',
+        'Tabellen: Zeilen hervorheben oder abschwächen, in der Kartenansicht eine Karte einrahmen, langen Text in eine Zelle schreiben (er bricht jetzt um) und einen aus Excel oder Google Sheets kopierten Bereich direkt in die Zellen einfügen.',
+        'Tabellendesigns: Wählen Sie für einen Tabellenblock Raster, Linien, Streifen oder Panel. Die Kopfzeile des Panels und die Kartentitel übernehmen die Designfarbe; mit „Kopfzeilenfarbe“ stellen Sie sie auf Dunkel oder eine eigene Farbe um. Text in einer Zelle kann fett sein: markieren und Strg+B drücken.',
+        'Vergleichskarten: Stellen Sie eine Tabelle auf „Karten“ um (oder fügen Sie den Stil „Vergleichskarten“ hinzu), um jede Spalte als Karte zu zeigen: Die erste Zeile liefert die Kartentitel, die erste Spalte die Beschriftung jeder Zeile. Sie können jederzeit zur Tabelle zurückwechseln.',
+        'Wenn das Öffnen eines Projekts aus „Ihre Projekte“ zu lange dauert, erklärt der Startbildschirm jetzt den Grund und lässt Sie den Ordner erneut auswählen oder das Warten beenden.',
+      ],
+    },
+  },
+  {
     id: '2026-11-17-units-pages',
     date: '2026-11-17',
     items: {

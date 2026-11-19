@@ -5,6 +5,8 @@ const text: LocaleTable = {
   en: {
     // Heading
     headingPlaceholder: 'Heading',
+    eyebrowPlaceholder: 'Line above (optional)',
+    subtitlePlaceholder: 'Subtitle (optional)',
     headingLevel: 'Heading level {level}',
 
     // Paragraph
@@ -36,6 +38,8 @@ const text: LocaleTable = {
   uk: {
     // Heading
     headingPlaceholder: 'Заголовок',
+    eyebrowPlaceholder: 'Рядок над заголовком (необов’язково)',
+    subtitlePlaceholder: 'Підзаголовок (необов’язково)',
     headingLevel: 'Рівень заголовка {level}',
 
     // Paragraph
@@ -67,6 +71,8 @@ const text: LocaleTable = {
   fr: {
     // Heading
     headingPlaceholder: 'Titre',
+    eyebrowPlaceholder: 'Surtitre (facultatif)',
+    subtitlePlaceholder: 'Sous-titre (facultatif)',
     headingLevel: 'Titre de niveau {level}',
 
     // Paragraph
@@ -98,6 +104,8 @@ const text: LocaleTable = {
   es: {
     // Heading
     headingPlaceholder: 'Título',
+    eyebrowPlaceholder: 'Antetítulo (opcional)',
+    subtitlePlaceholder: 'Subtítulo (opcional)',
     headingLevel: 'Título de nivel {level}',
 
     // Paragraph
@@ -129,6 +137,8 @@ const text: LocaleTable = {
   de: {
     // Heading
     headingPlaceholder: 'Überschrift',
+    eyebrowPlaceholder: 'Dachzeile (optional)',
+    subtitlePlaceholder: 'Untertitel (optional)',
     headingLevel: 'Überschrift Ebene {level}',
 
     // Paragraph

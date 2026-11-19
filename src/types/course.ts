@@ -36,6 +36,7 @@ export type BlockType =
   | 'process'
   | 'steps'
   | 'comparison'
+  | 'cards'
   | 'beforeAfter'
   | 'reflection'
 
@@ -81,6 +82,10 @@ export interface HeadingData {
   level: HeadingLevel
   text: string
   align?: TextAlign
+  /** Small accent line above the heading; empty = none. */
+  eyebrow?: string
+  /** Lead-in line under the heading; empty = none. */
+  subtitle?: string
 }
 
 /** normal · lead (larger intro text) · dropcap (big first letter) ·
@@ -194,6 +199,10 @@ export interface CodeData {
   language?: string
 }
 
+export type TableRowMark = '' | 'highlight' | 'muted'
+
+export type TableStyle = 'grid' | 'lines' | 'stripes' | 'panel'
+
 export interface TableData {
   /** Whether the first row is a header. */
   header: boolean
@@ -203,6 +212,24 @@ export interface TableData {
   width?: 'full' | 'auto'
   /** Where an 'auto' table sits (default 'left'). */
   align?: TextAlign
+  /** Design: 'grid' (default, every cell boxed), 'lines' (rules between rows,
+   *  accent line under the header), 'stripes' (tinted alternate rows) or
+   *  'panel' (rounded frame, colored header, bold first column). */
+  style?: TableStyle
+  /** Color of the header in the 'panel' design and of the card titles:
+   *  'theme' (default, the course accent), 'dark', or a hex color such as
+   *  '#0f766e' (the text turns white or dark to stay readable). */
+  headerColor?: string
+  /** A mark per row, by row index ('' or missing = none): 'highlight' tints
+   *  the row, 'muted' greys it out. The header row takes none. */
+  rowMarks?: TableRowMark[]
+  /** Layout 'cards' only: the column (1 = the first card) drawn with an
+   *  accent frame. */
+  highlightColumn?: number
+  /** 'cards' shows every column after the first as a card: the first row
+   *  gives the card titles, the first column the label of each line (its top
+   *  cell is unused). Needs two columns; `header`, `style`, `width`, `align` are ignored. */
+  layout?: 'table' | 'cards'
 }
 
 /** Quote presentation:
@@ -633,6 +660,30 @@ export interface ComparisonData {
   versus?: boolean
 }
 
+// ── Cards (tiles with a label, a title and text) ────────────────────────────
+
+export interface CardItem {
+  id: string
+  /** Small label above the title (a category, a code); empty = none. */
+  badge: string
+  title: string
+  /** Rich text. */
+  html: string
+  /** Drawn with an accent tint, to single one card out. */
+  highlight?: boolean
+}
+
+export interface CardsData {
+  items: CardItem[]
+  /** 'grid' (default): cards side by side; 'rows': one per line, as a list of
+   *  terms (label, title, text across). */
+  layout?: 'grid' | 'rows'
+  /** Number the cards 1, 2, 3… */
+  numbered?: boolean
+  /** Cards per line on wide screens (grid); missing = as many as fit. */
+  perRow?: 2 | 3 | 4
+}
+
 // ── Before / after slider ───────────────────────────────────────────────────
 
 export interface BeforeAfterData {
@@ -688,6 +739,7 @@ export type Block =
   | (BaseBlock & { type: 'process'; data: ProcessData })
   | (BaseBlock & { type: 'steps'; data: StepsData })
   | (BaseBlock & { type: 'comparison'; data: ComparisonData })
+  | (BaseBlock & { type: 'cards'; data: CardsData })
   | (BaseBlock & { type: 'beforeAfter'; data: BeforeAfterData })
   | (BaseBlock & { type: 'reflection'; data: ReflectionData })
 
@@ -717,7 +769,7 @@ export function isTaskBlock(block: Block): boolean {
 export const INTRO_BLOCK_TYPES: readonly BlockType[] = [
   'heading', 'paragraph', 'list', 'note', 'quote', 'columns', 'table', 'code',
   'image', 'gallery', 'imageText', 'video', 'audio', 'embed', 'html', 'attachment', 'divider',
-  'process', 'steps', 'comparison', 'beforeAfter',
+  'process', 'steps', 'comparison', 'cards', 'beforeAfter',
 ]
 
 /** `activeLessonId` (and block actions' lesson id) that addresses the course
