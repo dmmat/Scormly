@@ -1059,8 +1059,10 @@ const IconTrash = () => (
     <path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3" />
   </SVG>
 )
+// "Tx": a letter T with a cross beside its foot.
 const IconClear = () => (
   <SVG>
-    <path d="M6 4h12M9 4l-1 16M15 4l1 16M4 8h16" />
+    <path d="M4 5h13M10.5 5v14M8 19h5" />
+    <path d="M16 14l5 5M21 14l-5 5" />
   </SVG>
 )
