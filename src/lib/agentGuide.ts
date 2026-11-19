@@ -374,7 +374,7 @@ The \`type\` field selects the shape of \`data\` (a discriminated union).
 theme (muted = light gray, soft = accent tint, accent / gradient = accent color
 with white text, dark = near-black with white text, image = \`backgroundImage\`
 (assets/images/ path) dimmed under white text); consecutive blocks with
-the same background join into one panel. \`settings.spacing\` is its inner padding.
+the same background join into one panel. \`settings.spacing\` is its inner padding; on a block without a background, \`compact\` moves it closer to the blocks around it (use it to keep related blocks together) and \`spacious\` adds air.
 \`settings.width\`: 'narrow' (~60% of the column, centered), 'normal' (default),
 'wide' (breaks out past the column), 'full' stretches the block edge to edge of the page: with a
 background it becomes a full-width band (content stays in the column); without

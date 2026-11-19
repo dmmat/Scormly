@@ -23,6 +23,7 @@ export const RELEASES: Release[] = [
         'Comparison cards: switch a table to “Cards” (or add the “Comparison cards” style) to show every column as a card, with the first row as the card titles and the first column as the label of each line. Switch back to a table at any time.',
         'If opening a project from “Your projects” takes too long, the welcome screen now explains why and lets you choose the folder again or stop waiting.',
         'Widgets size themselves reliably: a frame no longer ends up a pixel short (with a scrollbar) or taller than its page, so setting a height by hand is rarely needed.',
+        'Block spacing: “Compact” in a block’s style now also brings a block without a background closer to the blocks around it, to keep related blocks together.',
       ],
       uk: [
         'Новий блок «Картки»: плитки з необов’язковою позначкою, назвою і текстом, сіткою або рядками; їх можна пронумерувати й виділити найважливішу.',
@@ -32,6 +33,7 @@ export const RELEASES: Release[] = [
         'Картки порівняння: перемкніть таблицю на «Картки» (або додайте стиль «Картки порівняння»), щоб показати кожен стовпець карткою: перший рядок дає назви карток, а перший стовпець дає підписи рядків. Повернутися до таблиці можна будь-коли.',
         'Якщо проєкт зі списку «Ваші проєкти» відкривається надто довго, екран вітання тепер пояснює чому й дає змогу вибрати папку ще раз або не чекати.',
         'Віджети надійніше підбирають свою висоту: кадр більше не виходить на піксель нижчим за сторінку (зі смугою прокрутки) чи вищим за неї, тож задавати висоту вручну майже не потрібно.',
+        'Відступи між блоками: «Щільно» у стилі блоку тепер також наближає блок без фону до сусідніх, щоб пов’язані блоки трималися разом.',
       ],
       fr: [
         'Nouveau bloc Cartes : des tuiles avec une étiquette facultative, un titre et un texte, en grille ou en lignes ; numérotez-les ou mettez en évidence la plus importante.',
@@ -41,6 +43,7 @@ export const RELEASES: Release[] = [
         'Cartes comparatives : passez un tableau en « Cartes » (ou ajoutez le style « Cartes comparatives ») pour afficher chaque colonne comme une carte, la première ligne donnant les titres et la première colonne le libellé de chaque ligne. Vous pouvez revenir au tableau à tout moment.',
         'Si l’ouverture d’un projet depuis « Vos projets » prend trop de temps, l’écran d’accueil explique désormais pourquoi et permet de choisir à nouveau le dossier ou de ne plus attendre.',
         'Les widgets se dimensionnent de façon fiable : le cadre ne se retrouve plus un pixel trop court (avec une barre de défilement) ni plus haut que sa page, il est donc rarement nécessaire de fixer une hauteur à la main.',
+        'Espacement des blocs : « Compact » dans le style d’un bloc rapproche désormais aussi un bloc sans arrière-plan de ses voisins, pour garder ensemble les blocs liés.',
       ],
       es: [
         'Nuevo bloque Tarjetas: fichas con una etiqueta opcional, un título y texto, en cuadrícula o en filas; numéralas o destaca la más importante.',
@@ -50,6 +53,7 @@ export const RELEASES: Release[] = [
         'Tarjetas comparativas: cambia una tabla a “Tarjetas” (o añade el estilo “Tarjetas comparativas”) para mostrar cada columna como una tarjeta, con la primera fila como títulos y la primera columna como etiqueta de cada línea. Puedes volver a la tabla cuando quieras.',
         'Si abrir un proyecto desde “Tus proyectos” tarda demasiado, la pantalla de bienvenida ahora explica por qué y permite elegir la carpeta de nuevo o dejar de esperar.',
         'Los widgets ajustan su tamaño de forma fiable: el marco ya no queda un píxel corto (con barra de desplazamiento) ni más alto que su página, así que rara vez hace falta fijar la altura a mano.',
+        'Espaciado de bloques: “Compacto” en el estilo de un bloque ahora también acerca un bloque sin fondo a los que lo rodean, para mantener juntos los bloques relacionados.',
       ],
       de: [
         'Neuer Block Karten: Kacheln mit optionalem Label, Titel und Text, als Raster oder in Zeilen; nummerieren Sie sie oder heben Sie die wichtigste hervor.',
@@ -59,6 +63,7 @@ export const RELEASES: Release[] = [
         'Vergleichskarten: Stellen Sie eine Tabelle auf „Karten“ um (oder fügen Sie den Stil „Vergleichskarten“ hinzu), um jede Spalte als Karte zu zeigen: Die erste Zeile liefert die Kartentitel, die erste Spalte die Beschriftung jeder Zeile. Sie können jederzeit zur Tabelle zurückwechseln.',
         'Wenn das Öffnen eines Projekts aus „Ihre Projekte“ zu lange dauert, erklärt der Startbildschirm jetzt den Grund und lässt Sie den Ordner erneut auswählen oder das Warten beenden.',
         'Widgets passen ihre Höhe zuverlässig an: Der Rahmen ist nicht mehr einen Pixel zu kurz (mit Bildlaufleiste) oder höher als seine Seite, eine Höhe von Hand ist also selten nötig.',
+        'Blockabstände: „Kompakt“ im Stil eines Blocks rückt jetzt auch einen Block ohne Hintergrund näher an seine Nachbarn, damit zusammengehörige Blöcke beieinander bleiben.',
       ],
     },
   },

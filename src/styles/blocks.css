@@ -20,6 +20,11 @@
 .blk-has-bg.blk-pad-compact { padding-block: 1.25rem; }
 .blk-has-bg.blk-pad-spacious { padding-block: 3.75rem; }
 .blk-pad-spacious:not(.blk-has-bg) { padding-block: 1.75rem; }
+/* Compact without a panel: the block moves closer to its neighbours. The
+   negative margins sit on the content, so they add to whatever gap the page
+   puts between blocks (editor, preview and player space them differently). */
+.blk-pad-compact:not(.blk-has-bg) > :first-child { margin-top: -1rem; }
+.blk-pad-compact:not(.blk-has-bg) > :last-child { margin-bottom: -1rem; }
 
 [data-bg="none"] { background-color: #fff; }
 [data-bg="muted"] { background-color: #f4f4f6; }
