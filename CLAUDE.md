@@ -261,7 +261,7 @@ base path is enabled with the `GITHUB_PAGES=true` env var (see `vite.config.ts`)
 ## Roadmap (high level)
 
 Done: editor, all block types (incl. process diagram, step-by-step guide,
-comparison, before / after, reflection), themes (incl. custom), i18n, landing,
+comparison, cards, before / after, reflection), themes (incl. custom), i18n, landing,
 folder / browser / tab projects with autosave and history, project .zip,
 SCORM 1.2 / 2004 and cmi5 export, keyboard shortcuts, context menus,
 drag-and-drop. Next: plain xAPI export; later a paid tier (AI, cloud, sharing), so

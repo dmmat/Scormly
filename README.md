@@ -30,8 +30,14 @@ exported as a **SCORM 1.2 / 2004** or **cmi5 (xAPI)** package for any LMS.
 - **Block-based editor**: a lesson is built from content blocks with inline
   WYSIWYG editing, drag-and-drop reordering, and a right-click context menu.
 - **Rich block library:**
-  - *Text:* headings, rich-text paragraphs, lists, callouts (note / warning),
-    code, tables, quotes.
+  - *Text:* headings (with an optional line above and a subtitle), rich-text
+    paragraphs, lists, callouts (note / warning), code, quotes, and tables:
+    four designs, a header in the theme color or your own, highlighted rows,
+    bold cells, paste from Excel / Google Sheets, or shown as comparison
+    cards (one card per column).
+  - *Explainers:* process diagrams, step-by-step guides, timelines,
+    comparisons, **cards** (tiles with a label, a title and text),
+    before / after sliders.
   - *Media:* images, galleries, video, audio, and embeds (YouTube / Vimeo /
     any https page).
   - *Code:* your own HTML / CSS / JavaScript, or an uploaded `.html` page or
