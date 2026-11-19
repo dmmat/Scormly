@@ -1630,7 +1630,9 @@ table.sc-table.sc-table-panel .sc-table-head :is(input, textarea) { text-transfo
 }
 .sc-cards-rows .sc-card:first-child { border-top: 0; padding-top: 0.25rem; }
 .sc-cards-rows .sc-card:last-child { padding-bottom: 0.6rem; }
-.sc-cards-rows :is(.sc-card-hl, .sc-card-pos, .sc-card-neg) { padding-inline: 0.9rem; border-radius: calc(var(--radius-surface) + 2px); }
+/* A colored row grows outward, so its number and text stay in line with the others. */
+.sc-cards-rows :is(.sc-card-hl, .sc-card-pos, .sc-card-neg) { margin-inline: -0.9rem; padding-inline: 0.9rem; border-radius: calc(var(--radius-surface) + 2px); }
+.sc-cards-rows :is(.sc-card-hl, .sc-card-pos, .sc-card-neg), .sc-cards-rows :is(.sc-card-hl, .sc-card-pos, .sc-card-neg) + .sc-card { border-top-color: transparent; }
 .sc-cards-rows .sc-card-hl { background: color-mix(in srgb, var(--accent2, var(--brand)) 8%, #fff); }
 .sc-cards-rows .sc-card-pos { background: #f0fdf4; }
 .sc-cards-rows .sc-card-neg { background: #fef2f2; }
