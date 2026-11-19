@@ -18,7 +18,7 @@ export default function CardsBlock({
   const update = useCourseStore((s) => s.updateBlockData)
   const { t } = useT('newblocks')
   const { t: tt } = useT('text')
-  const { items, layout = 'grid', numbered, perRow } = block.data
+  const { items, layout = 'grid', numbered, perRow, labelStyle = 'pill' } = block.data
 
   // With no cards there is nothing to preview: keep the bar with “Add card”.
   if (!selected && items.length) return <CardsPreview block={block} />
@@ -66,6 +66,15 @@ export default function CardsBlock({
             ]}
           />
         )}
+        <Segmented<NonNullable<CardsData['labelStyle']>>
+          label={t('cardsLabel')}
+          value={labelStyle}
+          onChange={(v) => update(lessonId, block.id, { labelStyle: v })}
+          options={[
+            ['pill', t('cardsLabel_pill')],
+            ['text', t('cardsLabel_text')],
+          ]}
+        />
         <label className="flex cursor-pointer items-center gap-2 text-sm">
           <input
             type="checkbox"
@@ -81,7 +90,7 @@ export default function CardsBlock({
       </SettingsBar>
 
       <div
-        className={`sc-cards${rows ? ' sc-cards-rows' : ''}`}
+        className={`sc-cards${rows ? ' sc-cards-rows' : ''}${labelStyle === 'text' ? ' sc-cards-text' : ''}`}
         style={perRow && !rows ? ({ '--per': perRow } as CSSProperties) : undefined}
       >
         {items.map((item, i) => (
@@ -96,7 +105,7 @@ export default function CardsBlock({
                 onChange={(e) => patch(item.id, { badge: e.target.value }, `card-badge-${item.id}`)}
                 // Sized to its text, so the pill looks as the learner sees it.
                 size={Math.max(item.badge.length, t('cardBadge').length) + 1}
-                className={`${ghost} sc-card-badge${item.badge ? '' : ' !bg-transparent ring-1 ring-inset ring-gray-200'}`}
+                className={`${ghost} sc-card-badge${item.badge || labelStyle === 'text' ? '' : ' !bg-transparent ring-1 ring-inset ring-gray-200'}`}
               />
               <span className="ml-auto flex items-center">
                 <button

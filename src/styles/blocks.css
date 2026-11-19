@@ -1011,6 +1011,9 @@ table.sc-table.sc-table-panel .sc-table-head :is(input, textarea) { text-transfo
   margin: 0 0 0.5rem; color: var(--color-brand-dark);
   font-size: 0.72rem; line-height: 1.2; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase;
 }
+/* Left-aligned, a hairline runs from the eyebrow to the edge. */
+.sc-head-left .sc-head-eyebrow { display: flex; align-items: center; gap: 0.65rem; }
+.sc-head-left .sc-head-eyebrow::after { content: ""; flex: 1; height: 1px; background: color-mix(in srgb, currentColor 22%, transparent); }
 .sc-head-sub { margin: 0.6rem 0 0; max-width: 70ch; color: #4b5563; font-size: 1.05rem; line-height: 1.6; }
 .sc-head-center .sc-head-sub { margin-inline: auto; }
 .sc-head-right .sc-head-sub { margin-left: auto; }
@@ -1044,6 +1047,9 @@ table.sc-table.sc-table-panel .sc-table-head :is(input, textarea) { text-transfo
   background: color-mix(in srgb, var(--color-brand) 12%, #fff); color: var(--color-brand-dark);
   font-size: 0.66rem; line-height: 1.2; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
 }
+/* Labels as plain text: small grey capitals under the number. */
+.sc-cards-text .sc-card-top { flex-direction: column; align-items: flex-start; }
+.sc-cards-text .sc-card-badge { padding: 0; border-radius: 0; background: none; color: #6b7280; font-size: 0.68rem; letter-spacing: 0.07em; }
 .sc-cards .sc-card .sc-card-title { margin: 0; color: #111827; font-size: 1.08rem; line-height: 1.3; font-weight: 600; }
 .sc-cards .sc-card .sc-card-text,
 .sc-cards .sc-card .sc-card-text :is(p, li) { color: #374151; }

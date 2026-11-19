@@ -72,15 +72,20 @@ export default function HeadingBlock({
       )}
       <div className={`sc-head sc-head-${align}`} style={{ textAlign: align }}>
       {(selected || eyebrow) && (
-        <input
-          type="text"
-          value={eyebrow}
-          placeholder={t('eyebrowPlaceholder')}
-          aria-label={t('eyebrowPlaceholder')}
-          onChange={(e) => update(lessonId, block.id, { eyebrow: e.target.value }, `heading-eyebrow-${block.id}`)}
-          className={`${ghost} sc-head-eyebrow`}
-          style={{ textAlign: align }}
-        />
+        // The wrapper carries the look (and the hairline after the text), the
+        // field is as wide as its text.
+        <div className="sc-head-eyebrow">
+          <input
+            type="text"
+            value={eyebrow}
+            placeholder={t('eyebrowPlaceholder')}
+            aria-label={t('eyebrowPlaceholder')}
+            onChange={(e) => update(lessonId, block.id, { eyebrow: e.target.value }, `heading-eyebrow-${block.id}`)}
+            size={align === 'left' ? Math.max(eyebrow.length, t('eyebrowPlaceholder').length) + 2 : undefined}
+            className={`${align === 'left' ? 'min-w-0 max-w-full flex-none' : 'block w-full'} bg-transparent outline-none placeholder:text-current placeholder:opacity-40`}
+            style={{ textAlign: align, font: 'inherit', letterSpacing: 'inherit', textTransform: 'inherit' }}
+          />
+        </div>
       )}
       <Tag className={LEVEL_CLASS[level]} style={{ textAlign: align }}>
         <AutoTextarea

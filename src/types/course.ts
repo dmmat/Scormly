@@ -678,6 +678,9 @@ export interface CardsData {
   /** 'grid' (default): cards side by side; 'rows': one per line, as a list of
    *  terms (label, title, text across). */
   layout?: 'grid' | 'rows'
+  /** How a card's label is drawn: 'pill' (default, a tinted tag) or 'text'
+   *  (small grey capitals on their own line). */
+  labelStyle?: 'pill' | 'text'
   /** Number the cards 1, 2, 3… */
   numbered?: boolean
   /** Cards per line on wide screens (grid); missing = as many as fit. */

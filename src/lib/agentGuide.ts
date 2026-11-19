@@ -193,7 +193,7 @@ const BLOCK_DOCS: Record<BlockType, BlockDoc> = {
   },
   cards: {
     summary: 'Cards (tiles) with an optional label, a title and text: key points, platforms, teams, terms with their codes.',
-    data: `{ items: { id: string, badge: string, title: string, html: string, highlight?: boolean }[], layout?: 'grid' | 'rows', numbered?: boolean, perRow?: 2 | 3 | 4 }  // badge: small label above the title ('' = none); html: rich text like paragraph, keep it short; highlight: accent tint for the card that matters most; layout rows: one card per line (label, title, text across), good for a list of terms; numbered: 1, 2, 3 on the cards; perRow: cards per line on wide screens (default: as many as fit)`,
+    data: `{ items: { id: string, badge: string, title: string, html: string, highlight?: boolean }[], layout?: 'grid' | 'rows', labelStyle?: 'pill' | 'text', numbered?: boolean, perRow?: 2 | 3 | 4 }  // badge: small label above the title ('' = none), drawn as a tinted pill or, with labelStyle 'text', as small grey capitals; html: rich text like paragraph, keep it short; highlight: accent tint for the card that matters most; layout rows: one card per line (label, title, text across), good for a list of terms; numbered: 1, 2, 3 on the cards; perRow: cards per line on wide screens (default: as many as fit)`,
   },
   comparison: {
     summary: 'Comparison cards: pros and cons, or options side by side.',
@@ -264,8 +264,10 @@ e-learning course (SCORM / cmi5 in an LMS), possibly offline.
 - **Self-contained**: don't navigate the top window, open pop-ups unasked,
   or rely on cookies; wrap \`localStorage\` in try / catch (it can be
   unavailable). Don't ask for personal data or send anything to a server.
-- **Optional height message**: a page whose height changes in a way the frame
-  can't see may report it: \`parent.postMessage({ type: 'scormly:height',
+- **Height**: the frame measures the page and follows it as it changes
+  (content, width, fonts), so don't add code that reports the height. Only a
+  page whose height changes in a way that moves nothing in the document may
+  ask for a new measurement: \`parent.postMessage({ type: 'scormly:height',
   height: document.documentElement.scrollHeight }, '*')\`.
 - The course tracks completion and scores itself; the page doesn't need to
   talk to the LMS.`

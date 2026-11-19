@@ -66,10 +66,15 @@ export function HtmlFrame({ data, inert, onMissing }: { data: HtmlData; inert?: 
 
   useEffect(() => {
     function onMessage(e: MessageEvent) {
-      const msg = e.data as { type?: unknown; height?: unknown } | null
+      const msg = e.data as { type?: unknown; height?: unknown; auto?: unknown } | null
       if (!e.source || e.source !== ref.current?.contentWindow) return
-      if (msg?.type === 'scormly:height' && typeof msg.height === 'number' && msg.height > 0) {
+      if (msg?.type !== 'scormly:height') return
+      if (msg.auto === true && typeof msg.height === 'number' && msg.height > 0) {
         setFit(Math.min(Math.ceil(msg.height), MAX_HEIGHT))
+      } else {
+        // The page's own report (often scrollHeight, which can't shrink) only
+        // asks for a new measurement by the reporter Scormly put in the page.
+        ref.current?.contentWindow?.postMessage({ type: 'scormly:measure' }, '*')
       }
     }
     window.addEventListener('message', onMessage)

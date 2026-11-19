@@ -1807,28 +1807,36 @@
     doc.head.insertBefore(link, style);
   }
 
-  // Size a frame to its page's content (see HEIGHT_REPORTER in the builder's
-  // htmlBundle.ts for the rules). A cross-origin page can't be measured; it
-  // may post { type: 'scormly:height', height } instead.
+  // Size a frame to its page's content (same rules as HEIGHT_REPORTER in the
+  // builder's htmlBundle.ts). The height is the body's bottom edge rounded up:
+  // scrollHeight is a whole number and never below the frame's own height, so
+  // alone it leaves a fraction of a pixel scrolling, or a short page in a tall
+  // frame. A cross-origin page can't be measured; it may post
+  // { type: 'scormly:height', height } instead.
   function fitFrame(fr) {
     var win, doc;
     try { win = fr.contentWindow; doc = fr.contentDocument; } catch (e) { return; }
     if (!doc || !doc.documentElement) return;
     var last = 0, step = 0, same = 0;
-    function measure() {
-      var de = doc.documentElement, body = doc.body;
-      if (!body) return 0;
-      if (de.scrollHeight > de.clientHeight + 1) return de.scrollHeight;
-      return Math.ceil(body.getBoundingClientRect().bottom + (parseFloat(win.getComputedStyle(body).marginBottom) || 0));
-    }
-    function fit() {
-      var hh = Math.min(measure(), 4000);
-      if (!hh || Math.abs(hh - last) < 2) return;
+    function set(hh) {
+      hh = Math.min(Math.ceil(hh), 4000);
+      if (!(hh > 0) || hh === last) return;
+      // A page sized to the frame (100vh + a margin) grows by the same step
+      // every time: leave it alone.
       if (hh - last === step && step > 0 && ++same > 2) return;
       if (hh - last !== step) same = 0;
       step = hh - last; last = hh;
       fr.style.height = hh + 'px';
     }
+    function fit() {
+      var de = doc.documentElement, body = doc.body;
+      if (!body) return;
+      set(body.getBoundingClientRect().bottom + (win.scrollY || 0) + (parseFloat(win.getComputedStyle(body).marginBottom) || 0));
+      // Content can reach below the body (floats, collapsed margins): grow
+      // until nothing scrolls.
+      if (de.scrollHeight > de.clientHeight) set(de.scrollHeight + 1);
+    }
+    fr._scFit = fit;
     fit();
     if (win.ResizeObserver) {
       var ro = new win.ResizeObserver(fit);
@@ -1842,7 +1850,11 @@
     if (!m || m.type !== 'scormly:height' || typeof m.height !== 'number' || !(m.height > 0)) return;
     var frames = document.querySelectorAll('iframe.sc-html-frame[data-fit]');
     for (var i = 0; i < frames.length; i++) {
-      if (frames[i].contentWindow === e.source) frames[i].style.height = Math.min(Math.ceil(m.height), 4000) + 'px';
+      if (frames[i].contentWindow !== e.source) continue;
+      // A page we can measure is measured again (its own number is often
+      // scrollHeight, which can't shrink); otherwise its number is all we have.
+      if (frames[i]._scFit) frames[i]._scFit();
+      else frames[i].style.height = Math.min(Math.ceil(m.height), 4000) + 'px';
     }
   });
 
@@ -1912,7 +1924,7 @@
     if (!items.length) return null;
     var rows = d.layout === 'rows';
     var per = { 2: 1, 3: 1, 4: 1 }[d.perRow] ? d.perRow : 0;
-    var wrap = h('div', { class: 'sc-cards' + (rows ? ' sc-cards-rows' : ''), style: per && !rows ? '--per:' + per : null });
+    var wrap = h('div', { class: 'sc-cards' + (rows ? ' sc-cards-rows' : '') + (d.labelStyle === 'text' ? ' sc-cards-text' : ''), style: per && !rows ? '--per:' + per : null });
     items.forEach(function (it, i) {
       wrap.appendChild(h('div', { class: 'sc-card' + (it.highlight ? ' sc-card-hl' : '') }, [
         d.numbered || it.badge ? h('div', { class: 'sc-card-top' }, [
