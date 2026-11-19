@@ -26,6 +26,7 @@ export const RELEASES: Release[] = [
         'Block spacing: “Compact” in a block’s style now also brings a block without a background closer to the blocks around it, to keep related blocks together.',
         'Themes have a second color: labels, card numbers, the line above a heading and table and card headers now take it, so a course is no longer painted in one accent. In a custom theme, pick it next to the main color.',
         'Notes take a small label above the text, can hide the icon, and their text can be bold or hold a link. A heading’s subtitle can be formatted the same way.',
+        'Pasting into text keeps only bold, italic, underline, links, lists and simple tables: colors, fonts and sizes from a web page, Word or Google Docs no longer come along.',
       ],
       uk: [
         'Новий блок «Картки»: плитки з необов’язковою позначкою, назвою і текстом, сіткою або рядками; їх можна пронумерувати й виділити найважливішу.',
@@ -38,6 +39,7 @@ export const RELEASES: Release[] = [
         'Відступи між блоками: «Щільно» у стилі блоку тепер також наближає блок без фону до сусідніх, щоб пов’язані блоки трималися разом.',
         'Теми мають другий колір: позначки, номери карток, рядок над заголовком і шапки таблиць та карток тепер беруть його, тож курс більше не пофарбований одним акцентом. У власній темі він обирається поруч з основним кольором.',
         'Примітка має необов’язковий напис над текстом, іконку можна вимкнути, а текст може бути жирним чи містити посилання. Так само форматується підзаголовок під заголовком.',
+        'Вставлений у текст фрагмент зберігає лише жирний, курсив, підкреслення, посилання, списки й прості таблиці: кольори, шрифти й розміри з вебсторінки, Word чи Google Docs більше не переносяться.',
       ],
       fr: [
         'Nouveau bloc Cartes : des tuiles avec une étiquette facultative, un titre et un texte, en grille ou en lignes ; numérotez-les ou mettez en évidence la plus importante.',
@@ -50,6 +52,7 @@ export const RELEASES: Release[] = [
         'Espacement des blocs : « Compact » dans le style d’un bloc rapproche désormais aussi un bloc sans arrière-plan de ses voisins, pour garder ensemble les blocs liés.',
         'Les thèmes ont une seconde couleur : étiquettes, numéros des cartes, surtitres et en-têtes de tableaux et de cartes la prennent désormais, le cours n’est donc plus peint d’un seul accent. Dans un thème personnalisé, choisissez-la à côté de la couleur principale.',
         'Les notes acceptent un petit libellé au-dessus du texte, peuvent masquer l’icône, et leur texte peut être en gras ou contenir un lien. Le sous-titre d’un titre se met en forme de la même façon.',
+        'Le texte collé ne garde que le gras, l’italique, le souligné, les liens, les listes et les tableaux simples : les couleurs, polices et tailles d’une page web, de Word ou de Google Docs ne suivent plus.',
       ],
       es: [
         'Nuevo bloque Tarjetas: fichas con una etiqueta opcional, un título y texto, en cuadrícula o en filas; numéralas o destaca la más importante.',
@@ -62,6 +65,7 @@ export const RELEASES: Release[] = [
         'Espaciado de bloques: “Compacto” en el estilo de un bloque ahora también acerca un bloque sin fondo a los que lo rodean, para mantener juntos los bloques relacionados.',
         'Los temas tienen un segundo color: etiquetas, números de tarjetas, antetítulos y encabezados de tablas y tarjetas ahora lo usan, así el curso ya no se pinta con un solo acento. En un tema personalizado se elige junto al color principal.',
         'Las notas admiten una pequeña etiqueta sobre el texto, pueden ocultar el icono y su texto puede ir en negrita o llevar un enlace. El subtítulo de un título se formatea igual.',
+        'El texto pegado conserva solo negrita, cursiva, subrayado, enlaces, listas y tablas sencillas: los colores, fuentes y tamaños de una página web, Word o Google Docs ya no se copian.',
       ],
       de: [
         'Neuer Block Karten: Kacheln mit optionalem Label, Titel und Text, als Raster oder in Zeilen; nummerieren Sie sie oder heben Sie die wichtigste hervor.',
@@ -74,6 +78,7 @@ export const RELEASES: Release[] = [
         'Blockabstände: „Kompakt“ im Stil eines Blocks rückt jetzt auch einen Block ohne Hintergrund näher an seine Nachbarn, damit zusammengehörige Blöcke beieinander bleiben.',
         'Designs haben eine zweite Farbe: Labels, Kartennummern, Dachzeilen sowie Tabellen- und Kartenköpfe übernehmen sie jetzt, der Kurs ist also nicht mehr in nur einem Akzent gefärbt. Im eigenen Design wählen Sie sie neben der Hauptfarbe.',
         'Hinweise erhalten ein kleines Label über dem Text, das Symbol lässt sich ausblenden, und der Text kann fett sein oder einen Link enthalten. Der Untertitel einer Überschrift lässt sich genauso formatieren.',
+        'Eingefügter Text behält nur Fett, Kursiv, Unterstrichen, Links, Listen und einfache Tabellen: Farben, Schriften und Größen aus einer Webseite, Word oder Google Docs kommen nicht mehr mit.',
       ],
     },
   },

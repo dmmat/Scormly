@@ -4,11 +4,13 @@ import {
   useRef,
   useState,
   type ChangeEvent,
+  type ClipboardEvent,
   type KeyboardEvent as ReactKeyboardEvent,
   type MouseEvent as ReactMouseEvent,
   type ReactNode,
 } from 'react'
 import { useT } from '../../i18n/I18nProvider'
+import { cleanPaste } from './pasteClean'
 import { saveAsset, resolveAssetUrl } from '../../lib/assets'
 import { KEYS } from '../../lib/keyboard'
 import ContextMenu, { type ContextMenuItem } from './ContextMenu'
@@ -275,6 +277,16 @@ export default function RichTextEditor({
 
   function emit() {
     onChange(modelHtml())
+  }
+
+  // Pasted text keeps only what the toolbar offers (no colors, fonts or sizes).
+  function onPaste(e: ClipboardEvent<HTMLDivElement>) {
+    const html = e.clipboardData.getData('text/html')
+    const plain = e.clipboardData.getData('text/plain')
+    if (!html && !plain) return
+    e.preventDefault()
+    document.execCommand('insertHTML', false, cleanPaste(html, plain, inline))
+    emit()
   }
 
   function exec(command: string, value?: string) {
@@ -677,6 +689,7 @@ export default function RichTextEditor({
         suppressContentEditableWarning
         data-placeholder={placeholder}
         onInput={emit}
+        onPaste={onPaste}
         onKeyDown={onEditorKeyDown}
         onClick={onEditorClick}
         onContextMenu={onEditorContextMenu}
