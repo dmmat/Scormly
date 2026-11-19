@@ -63,7 +63,7 @@ const BLOCK_DOCS: Record<BlockType, BlockDoc> = {
   },
   table: {
     summary: 'Simple table; every row has the same number of columns. With layout "cards" it compares items side by side as cards.',
-    data: `{ header: boolean, rows: string[][], width?: 'full' | 'auto', align?: 'left' | 'center' | 'right', style?: 'grid' | 'lines' | 'stripes' | 'panel', headerColor?: 'theme' | 'dark' | '#rrggbb', layout?: 'table' | 'cards' }  // cells are plain text, **double asterisks** make bold; header=true → first row is <th>; width: full (default) or fit content; align places an 'auto' table; style: grid (default, boxed cells), lines (rules between rows), stripes (tinted alternate rows), panel (rounded frame, colored header, bold first column: good for reference tables); headerColor colors the panel header and the card titles: theme (default, the course accent), dark, or a hex color; rowMarks: one entry per row ('' | 'highlight' | 'muted') to tint or grey out a row, e.g. ['', '', 'highlight']. highlightColumn (cards only): the column number of the card to frame (1 = first card). layout 'cards': every column after the first is a card (rows[0] = the card titles, rows[0][0] unused; column 0 = the label shown above each value), e.g. [["", "Plan A", "Plan B"], ["Price", "$10", "$20"], ["Best for", "Teams", "Companies"]]; best with 2-4 cards and short labels`,
+    data: `{ header: boolean, rows: string[][], width?: 'full' | 'auto', align?: 'left' | 'center' | 'right', style?: 'grid' | 'lines' | 'stripes' | 'panel', headerColor?: 'theme' | 'dark' | '#rrggbb', layout?: 'table' | 'cards' }  // cells are plain text, **double asterisks** make bold; header=true → first row is <th>; width: full (default) or fit content; align places an 'auto' table; style: grid (default, boxed cells), lines (rules between rows), stripes (tinted alternate rows), panel (rounded frame, colored header, bold first column: good for reference tables); headerColor colors the panel header and the card titles: theme (default, the theme's second color), dark, or a hex color; rowMarks: one entry per row ('' | 'highlight' | 'muted') to tint or grey out a row, e.g. ['', '', 'highlight']. highlightColumn (cards only): the column number of the card to frame (1 = first card). layout 'cards': every column after the first is a card (rows[0] = the card titles, rows[0][0] unused; column 0 = the label shown above each value), e.g. [["", "Plan A", "Plan B"], ["Price", "$10", "$20"], ["Best for", "Teams", "Companies"]]; best with 2-4 cards and short labels`,
   },
   quote: {
     summary: 'Highlighted quotation in one of five styles.',
@@ -321,7 +321,7 @@ Course
   description: string,
   coverImage?: string,
   theme: 'rose' | 'ocean' | 'forest' | 'sunset' | 'mono' | 'indigo' | 'crimson' | 'mint' | 'grape' | 'terminal' | 'custom',
-  customTheme?: { accent: string, accent2?: string, shape: 'sharp' | 'soft' | 'rounded' | 'pill' },  // used by theme 'custom'; accent '#rrggbb' (darkened automatically if white text on it would be hard to read)
+  customTheme?: { accent: string, accent2?: string, shape: 'sharp' | 'soft' | 'rounded' | 'pill' },  // used by theme 'custom'; accent '#rrggbb' (darkened automatically if white text on it would be hard to read); accent2 '#rrggbb': the second color, for details (labels, card numbers, a heading's eyebrow, table and card headers); missing = the accent
   settings: {
     completion: 'view' | 'quiz',   // 'quiz' also requires every scored block (quiz, ordering, fillBlanks) answered
     scored: boolean,               // report a pass/fail result
@@ -414,6 +414,15 @@ behaviour or a layout no block has.
 - **IDs**: every \`id\` (course, lesson, block, and nested items like quiz
   options, scenario nodes, tabs) must be unique within the file. Any unique
   string works; the app uses a short prefix + random suffix (e.g. \`block-x7f3a9\`).
+- **Colors**: the course theme gives two colors, the accent (buttons, links)
+  and a second color for details; blocks take them by themselves, so leave
+  colors alone unless there is a reason. Where a color means something, set
+  it on the block: a card's \`color\` or \`tone\`, a card label's
+  \`badgeColor\`, a note's \`color\`, a table's \`headerColor\` (all
+  \`'#rrggbb'\`; text on them is kept readable automatically). Use one or two
+  extra colors per course and keep each to one meaning (for example blue for
+  one team, green for "allowed"). There is no color inside text: rich text has
+  no colored spans.
 - **Adding content**: append a block object to a lesson's \`blocks\` array, or a
   whole lesson to \`lessons\`. Order in the array = order shown to the learner.
 - **Rich text** (the \`html\` of \`paragraph\`, \`tabs\`, \`accordion\`, \`columns\`, \`cards\`,
